@@ -185,24 +185,52 @@ func _resolve_surface_contact(delta: float, approach_velocity: Vector3) -> void:
 	var was_already_touching := _was_touching_surface
 	_was_touching_surface = true
 
+	# Immovable hull and loose debris need completely different answers, so
+	# split the frame's contacts before resolving either.
+	var hull_normal := Vector3.ZERO
+	var hull_point := Vector3.ZERO
+	var hull_contact_count := 0
+	var debris_contacts: Array[KinematicCollision3D] = []
+
+	for index in contact_count:
+		var contact := get_slide_collision(index)
+		if contact.get_collider() is RigidBody3D:
+			debris_contacts.append(contact)
+		else:
+			hull_normal += contact.get_normal()
+			hull_point += contact.get_position()
+			hull_contact_count += 1
+
+	if hull_contact_count > 0:
+		_resolve_hull_contact(
+			delta,
+			approach_velocity,
+			hull_normal,
+			hull_point / hull_contact_count,
+			was_already_touching
+		)
+
+	for contact in debris_contacts:
+		_shove_debris(contact, approach_velocity, was_already_touching)
+
+
+func _resolve_hull_contact(
+	delta: float,
+	approach_velocity: Vector3,
+	summed_normal: Vector3,
+	contact_point: Vector3,
+	was_already_touching: bool
+) -> void:
 	if was_already_touching:
 		velocity = velocity.lerp(Vector3.ZERO, minf(PrototypeKnobs.SCRAPE_FRICTION * delta, 1.0))
 		return
 
-	var contact_normal := Vector3.ZERO
-	var contact_point := Vector3.ZERO
-	for index in contact_count:
-		var contact := get_slide_collision(index)
-		contact_normal += contact.get_normal()
-		contact_point += contact.get_position()
-	contact_point /= contact_count
-
 	# Normals that cancel out mean opposing surfaces - wedged, with nowhere to
 	# bounce to. Dump the speed instead of picking a meaningless direction.
-	if contact_normal.length_squared() < 0.0001:
+	if summed_normal.length_squared() < 0.0001:
 		velocity = Vector3.ZERO
 		return
-	contact_normal = contact_normal.normalized()
+	var contact_normal := summed_normal.normalized()
 
 	var closing_speed := approach_velocity.dot(contact_normal)
 	if closing_speed >= 0.0:
@@ -218,6 +246,46 @@ func _resolve_surface_contact(delta: float, approach_velocity: Vector3) -> void:
 	)
 
 	_apply_impact_spin(along_surface, contact_point)
+
+
+## Resolves a hit against loose debris as a two-body momentum exchange, so the
+## same collision both redirects the player and sends the object tumbling. The
+## mass ratio does all the work: something far lighter than PLAYER_MASS gets
+## swatted aside barely slowing you, something far heavier shoves you off
+## course while still giving way.
+##
+## move_and_slide treats a RigidBody3D as an obstacle and has already stripped
+## the closing speed out of velocity, so the pre-move approach velocity is what
+## the exchange has to be computed from.
+func _shove_debris(
+	contact: KinematicCollision3D, approach_velocity: Vector3, was_already_touching: bool
+) -> void:
+	var debris := contact.get_collider() as RigidBody3D
+	if debris == null or debris.mass <= 0.0:
+		return
+
+	var contact_normal := contact.get_normal()
+	var contact_point := contact.get_position()
+	var relative_velocity := approach_velocity - debris.linear_velocity
+	var closing_speed := relative_velocity.dot(contact_normal)
+	if closing_speed >= 0.0:
+		return
+
+	# Bounce only on the frame contact begins; sustained contact becomes a
+	# steady push, which is what lets you shoulder something out of the way
+	# instead of pinballing off it.
+	var restitution := 0.0 if was_already_touching else PrototypeKnobs.COLLISION_RESTITUTION
+	var reduced_mass := 1.0 / (1.0 / PrototypeKnobs.PLAYER_MASS + 1.0 / debris.mass)
+	var impulse_magnitude := -(1.0 + restitution) * closing_speed * reduced_mass
+
+	velocity += contact_normal * (impulse_magnitude / PrototypeKnobs.PLAYER_MASS)
+	debris.apply_impulse(
+		-contact_normal * impulse_magnitude, contact_point - debris.global_position
+	)
+
+	var mass_ratio := debris.mass / (debris.mass + PrototypeKnobs.PLAYER_MASS)
+	var along_surface := relative_velocity - contact_normal * closing_speed
+	_apply_impact_spin(along_surface * mass_ratio, contact_point)
 
 
 ## Friction acts where the body actually touched, not at its centre, so it

@@ -51,7 +51,7 @@ const MAX_ANGULAR_SPEED := 10.0
 ## Applies in both modes, because collisions put spin on the body in DIRECT
 ## too. At 0.0 an impact leaves you tumbling until you counter it or hit the
 ## stabilizers, in either mode.
-const ANGULAR_DRAG := 0
+const ANGULAR_DRAG := 1.0
 
 ## Fraction of drift speed shed per second while stabilizers (Shift) are held.
 const LINEAR_STABILIZER_RATE := 4.0
@@ -77,6 +77,12 @@ const COLLISION_SPIN_TRANSFER := 1.5
 ## Fraction of speed shed per second while still scraping along a surface
 ## after the initial impact has been resolved.
 const SCRAPE_FRICTION := 1.5
+
+## The player's mass in kg, used only to weigh collisions against loose debris.
+## Compare it against LIGHT_DEBRIS_MASS and HEAVY_DEBRIS_MASS: an object at
+## this mass trades momentum with you evenly, lighter ones get swatted away,
+## heavier ones push you off course.
+const PLAYER_MASS := 90.0
 #endregion
 
 #region Draw Distance
@@ -128,10 +134,10 @@ const SPIKE_RANDOM_SEED := 20260731
 const SPIKE_SAMPLE_STEP := 0.6
 
 ## Chance of placing a spike at a sample point in the emptiest stretches.
-const SPIKE_SPARSE_CHANCE := 0.04
+const SPIKE_SPARSE_CHANCE := 0.02
 
 ## Chance of placing one in the thickest clusters.
-const SPIKE_DENSE_CHANCE := 0.7
+const SPIKE_DENSE_CHANCE := 0.32
 
 ## How quickly density swings between sparse and dense along the corridor.
 ## Lower spreads the clusters out into long stretches, higher chops the map
@@ -149,6 +155,38 @@ const SPIKE_MAX_TILT_DEGREES := 45.0
 
 ## How far a spike's base is buried in the wall so it never floats free of it.
 const SPIKE_EMBED_DEPTH := 0.15
+
+# --- Debris ----------------------------------------------------------------
+#
+# Loose objects drifting in the corridors, as opposed to the spikes, which are
+# immovable terrain. Two grades: light junk that barely registers when you hit
+# it, and heavy masses that will genuinely redirect you but still give way.
+#
+# The player's response to hitting one is a proper two-body impulse exchange,
+# so these masses are what decide the feel - a debris mass well under
+# PLAYER_MASS gets swatted aside, one well over it shoves you off course.
+
+const SPAWN_DEBRIS := true
+
+## Metres of corridor between debris considerations.
+const DEBRIS_SAMPLE_STEP := 2.0
+
+const LIGHT_DEBRIS_CHANCE := 0.8
+const LIGHT_DEBRIS_SIZE := 0.32
+const LIGHT_DEBRIS_MASS := 4.0
+
+const HEAVY_DEBRIS_CHANCE := 0.16
+const HEAVY_DEBRIS_SIZE := 0.85
+const HEAVY_DEBRIS_MASS := 220.0
+
+## Nothing slows down in vacuum, but a little damping stops loose objects
+## wandering the whole map after one nudge. Set to 0.0 for true drift.
+const DEBRIS_LINEAR_DAMP := 0.15
+const DEBRIS_ANGULAR_DAMP := 0.1
+
+## Speed and spin debris starts with, so the corridors are not static.
+const DEBRIS_INITIAL_DRIFT := 0.25
+const DEBRIS_INITIAL_SPIN := 0.4
 
 # --- Corridor layout -------------------------------------------------------
 #

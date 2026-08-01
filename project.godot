@@ -81,6 +81,7 @@ reset_player={
 
 3d_physics/layer_1="hull"
 3d_physics/layer_2="player"
+3d_physics/layer_3="debris"
 
 [physics]
 
