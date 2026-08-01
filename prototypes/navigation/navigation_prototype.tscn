@@ -1,0 +1,59 @@
+[gd_scene format=3 uid="uid://b6flw2niyxgva"]
+
+[ext_resource type="Script" uid="uid://b2hlxrpikwlvh" path="res://prototypes/navigation/navigation_prototype.gd" id="0_root"]
+[ext_resource type="Script" uid="uid://vinikvlmmyhc" path="res://prototypes/navigation/corridor_generator.gd" id="1_corridor"]
+[ext_resource type="PackedScene" path="res://prototypes/navigation/zero_g_player.tscn" id="2_player"]
+[ext_resource type="Script" uid="uid://bggwdwhp058wd" path="res://prototypes/navigation/prototype_hud.gd" id="3_hud"]
+
+[sub_resource type="Environment" id="Environment_void"]
+background_mode = 1
+ambient_light_source = 2
+ambient_light_color = Color(0.42, 0.48, 0.56, 1)
+ambient_light_energy = 0.02
+tonemap_mode = 4
+glow_enabled = true
+glow_intensity = 0.45
+glow_bloom = 0.05
+fog_enabled = true
+fog_mode = 1
+fog_light_color = Color(0.02, 0.024, 0.03, 1)
+fog_light_energy = 0.6
+fog_density = 1.0
+fog_depth_begin = 2.0
+fog_depth_end = 14.0
+
+[node name="NavigationPrototype" type="Node3D" unique_id=1013925193]
+script = ExtResource("0_root")
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="." unique_id=65014685]
+environment = SubResource("Environment_void")
+
+[node name="Corridor" type="Node3D" parent="." unique_id=37930842]
+script = ExtResource("1_corridor")
+
+[node name="ZeroGPlayer" parent="." unique_id=1556223583 instance=ExtResource("2_player")]
+
+[node name="HUD" type="CanvasLayer" parent="." unique_id=1895493360]
+script = ExtResource("3_hud")
+player_path = NodePath("../ZeroGPlayer")
+
+[node name="Crosshair" type="ColorRect" parent="HUD" unique_id=2100265014]
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -2.0
+offset_top = -2.0
+offset_right = 2.0
+offset_bottom = 2.0
+mouse_filter = 2
+color = Color(0.78, 0.88, 1, 0.55)
+
+[node name="Readout" type="Label" parent="HUD" unique_id=2129849658]
+offset_left = 16.0
+offset_top = 12.0
+offset_right = 420.0
+offset_bottom = 220.0
+theme_override_colors/font_color = Color(0.62, 0.74, 0.86, 0.85)
+theme_override_font_sizes/font_size = 14
