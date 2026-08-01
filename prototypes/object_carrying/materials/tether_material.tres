@@ -1,0 +1,7 @@
+[gd_resource type="StandardMaterial3D" format=3]
+
+[resource]
+resource_name = "TetherMaterial"
+shading_mode = 0
+albedo_color = Color(0.86, 0.72, 0.4, 1)
+disable_fog = true
