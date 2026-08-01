@@ -1,0 +1,462 @@
+extends Node3D
+
+## Carves the corridor network out of solid hull with CSG, then dresses it with
+## fixed spikes and free-floating debris.
+##
+## Every span contributes two brushes: a solid box the size of the hull, and a
+## smaller box that hollows the tunnel out of it. All the hull brushes are
+## unioned first, then all the tunnel brushes subtract from the result.
+##
+## The tunnel brush is always strictly narrower and shorter than its own hull
+## brush, so a span can never carve through to the outside no matter what angle
+## it sits at. That is what makes arbitrary angles and multi-way junctions safe
+## here - there are no seams to line up, only overlapping volumes.
+
+const HULL_MATERIAL := preload("res://prototypes/navigation/materials/hull_material.tres")
+const MARKER_MATERIAL := preload("res://prototypes/navigation/materials/marker_material.tres")
+const LIGHT_DEBRIS_MATERIAL := preload(
+	"res://prototypes/navigation/materials/light_debris_material.tres"
+)
+const HEAVY_DEBRIS_MATERIAL := preload(
+	"res://prototypes/navigation/materials/heavy_debris_material.tres"
+)
+
+const HULL_LAYER := 1
+const PLAYER_LAYER := 2
+const DEBRIS_LAYER := 4
+
+## How far a hull brush runs past each end of its span. Generous, so hulls of
+## adjoining spans always overlap through a junction.
+var _hull_overrun: float
+## How far a tunnel brush runs past each end. Must stay below _hull_overrun or
+## the tunnel would breach its own hull; it needs to be positive so adjoining
+## tunnels actually meet and the junction is passable.
+var _tunnel_overrun: float
+
+## One entry per straight run: start, end, length, transform.
+var _spans: Array[Dictionary] = []
+
+var _spike_body: StaticBody3D
+var _spike_mesh := BoxMesh.new()
+var _spike_count := 0
+var _rejected_spike_count := 0
+## Centre and radius of each placed spike, so debris is not spawned inside one.
+var _spike_centers := PackedVector3Array()
+var _spike_radii := PackedFloat32Array()
+
+var _debris_root: Node3D
+var _light_debris_count := 0
+var _heavy_debris_count := 0
+
+var _randomizer := RandomNumberGenerator.new()
+var _spike_density_noise := FastNoiseLite.new()
+
+
+func _ready() -> void:
+	_hull_overrun = PrototypeKnobs.CORRIDOR_WIDTH * 0.5 + PrototypeKnobs.WALL_THICKNESS
+	_tunnel_overrun = PrototypeKnobs.CORRIDOR_WIDTH * 0.5
+
+	_randomizer.seed = PrototypeKnobs.SPIKE_RANDOM_SEED
+	_spike_density_noise.seed = PrototypeKnobs.SPIKE_RANDOM_SEED
+	_spike_density_noise.frequency = PrototypeKnobs.SPIKE_CLUSTER_FREQUENCY
+
+	_collect_spans()
+	_assemble_combiner()
+	if PrototypeKnobs.SPAWN_SPIKES:
+		_scatter_spikes()
+	if PrototypeKnobs.SPAWN_DEBRIS:
+		_scatter_debris()
+	_build_end_marker()
+
+
+func get_spike_count() -> int:
+	return _spike_count
+
+
+## Spikes whose anchor turned out to be in open space and were dropped. Read by
+## the corridor probe; a non-zero value here is expected near junctions.
+func get_rejected_spike_count() -> int:
+	return _rejected_spike_count
+
+
+func get_light_debris_count() -> int:
+	return _light_debris_count
+
+
+func get_heavy_debris_count() -> int:
+	return _heavy_debris_count
+
+
+# --- Layout ----------------------------------------------------------------
+
+
+func _collect_spans() -> void:
+	for path: Array in PrototypeKnobs.CORRIDOR_PATHS:
+		if path.size() < 2:
+			push_warning("Corridor path needs at least two waypoints; skipped.")
+			continue
+		for index in path.size() - 1:
+			var span_start: Vector3 = path[index]
+			var span_end: Vector3 = path[index + 1]
+			if span_start.is_equal_approx(span_end):
+				push_warning("Corridor span has zero length at %s; skipped." % span_start)
+				continue
+			_spans.append({
+				"start": span_start,
+				"end": span_end,
+				"length": span_start.distance_to(span_end),
+				"transform": _make_span_transform(span_start, span_end),
+			})
+
+
+## Order matters: hulls union into one solid, then tunnels subtract from it.
+func _assemble_combiner() -> void:
+	var combiner := CSGCombiner3D.new()
+	combiner.name = "HullCombiner"
+	combiner.use_collision = true
+	combiner.collision_layer = HULL_LAYER
+	combiner.collision_mask = 0
+	combiner.material_override = HULL_MATERIAL
+	add_child(combiner)
+
+	var hull_side := PrototypeKnobs.CORRIDOR_WIDTH + PrototypeKnobs.WALL_THICKNESS * 2.0
+	for span in _spans:
+		combiner.add_child(
+			_make_brush(
+				span["transform"],
+				Vector3(hull_side, hull_side, span["length"] + _hull_overrun * 2.0),
+				CSGShape3D.OPERATION_UNION
+			)
+		)
+	for span in _spans:
+		combiner.add_child(
+			_make_brush(
+				span["transform"],
+				Vector3(
+					PrototypeKnobs.CORRIDOR_WIDTH,
+					PrototypeKnobs.CORRIDOR_WIDTH,
+					span["length"] + _tunnel_overrun * 2.0
+				),
+				CSGShape3D.OPERATION_SUBTRACTION
+			)
+		)
+
+
+func _make_brush(
+	brush_transform: Transform3D, brush_size: Vector3, operation: CSGShape3D.Operation
+) -> CSGBox3D:
+	var brush := CSGBox3D.new()
+	brush.size = brush_size
+	brush.operation = operation
+	brush.transform = brush_transform
+	return brush
+
+
+# --- Spikes ----------------------------------------------------------------
+
+
+func _scatter_spikes() -> void:
+	_spike_mesh.size = Vector3.ONE
+	_spike_mesh.material = HULL_MATERIAL
+
+	_spike_body = StaticBody3D.new()
+	_spike_body.name = "SpikeBody"
+	_spike_body.collision_layer = HULL_LAYER
+	_spike_body.collision_mask = 0
+	add_child(_spike_body)
+
+	for span in _spans:
+		_scatter_span_spikes(span)
+
+
+## Walks the span placing spikes against its four walls. Density comes from
+## noise sampled in world space, so clusters read as continuous thickets across
+## a stretch of corridor rather than restarting at every waypoint.
+func _scatter_span_spikes(span: Dictionary) -> void:
+	var span_start: Vector3 = span["start"]
+	var span_end: Vector3 = span["end"]
+	var span_length: float = span["length"]
+	var span_transform: Transform3D = span["transform"]
+	var span_direction := (span_end - span_start).normalized()
+	var wall_axes: Array[Vector3] = [
+		span_transform.basis.x, -span_transform.basis.x,
+		span_transform.basis.y, -span_transform.basis.y,
+	]
+	var margin := PrototypeKnobs.CORRIDOR_WIDTH * 0.5
+	var distance := margin
+
+	while distance < span_length - margin:
+		var axis_position := span_start + span_direction * distance
+		var density := (_spike_density_noise.get_noise_3dv(axis_position) + 1.0) * 0.5
+		var spawn_chance := lerpf(
+			PrototypeKnobs.SPIKE_SPARSE_CHANCE, PrototypeKnobs.SPIKE_DENSE_CHANCE, density
+		)
+		if _randomizer.randf() < spawn_chance:
+			_build_spike(axis_position, wall_axes[_randomizer.randi() % 4])
+		distance += PrototypeKnobs.SPIKE_SAMPLE_STEP
+
+
+func _build_spike(axis_position: Vector3, wall_outward: Vector3) -> void:
+	var length := _randomizer.randf_range(
+		PrototypeKnobs.SPIKE_MIN_LENGTH, PrototypeKnobs.SPIKE_MAX_LENGTH
+	)
+	var thickness := _randomizer.randf_range(
+		PrototypeKnobs.SPIKE_MIN_THICKNESS, PrototypeKnobs.SPIKE_MAX_THICKNESS
+	)
+
+	# Slide the base around on the wall face it is mounted to.
+	var along_wall := wall_outward.cross(Vector3.UP)
+	if along_wall.length_squared() < 0.01:
+		along_wall = wall_outward.cross(Vector3.BACK)
+	along_wall = along_wall.normalized()
+	var slide := PrototypeKnobs.CORRIDOR_WIDTH * 0.5 - thickness
+	var base_position := (
+		axis_position
+		+ wall_outward * PrototypeKnobs.CORRIDOR_WIDTH * 0.5
+		+ along_wall * _randomizer.randf_range(-slide, slide)
+	)
+
+	# Lean the spike off the wall normal by a random amount, in a random
+	# direction around it, so no two read as parallel.
+	var tilt := deg_to_rad(_randomizer.randf_range(0.0, PrototypeKnobs.SPIKE_MAX_TILT_DEGREES))
+	var tilt_axis := along_wall.rotated(wall_outward, _randomizer.randf_range(0.0, TAU))
+	var spike_direction := (-wall_outward).rotated(tilt_axis, tilt)
+
+	# A tilted spike meets the flat wall at an angle, so the far corner of its
+	# base face lifts clear of the surface unless it is sunk deeper than an
+	# upright one would need to be. Half the diagonal of the cross-section,
+	# projected onto the wall normal, is exactly how much deeper.
+	var embed_depth := (
+		PrototypeKnobs.SPIKE_EMBED_DEPTH + thickness * sqrt(2.0) * 0.5 * sin(tilt)
+	)
+
+	var spike_basis := Basis.looking_at(spike_direction, _pick_reference_up(spike_direction))
+	var spike_center := base_position + spike_direction * (length * 0.5 - embed_depth)
+
+	# A spike is only terrain if it is rooted in terrain.
+	if not _is_spike_rooted(spike_basis, spike_center, length, thickness):
+		_rejected_spike_count += 1
+		return
+
+	var spike_mesh_instance := MeshInstance3D.new()
+	spike_mesh_instance.mesh = _spike_mesh
+	spike_mesh_instance.transform = Transform3D(
+		# scaled_local, not scaled: the latter scales in parent space, which
+		# shears a tilted spike's mesh away from the collider sitting correctly
+		# in the wall and leaves it looking like it hangs in mid-air.
+		spike_basis.scaled_local(Vector3(thickness, thickness, length)), spike_center
+	)
+	add_child(spike_mesh_instance)
+
+	# The collider carries its size on the shape rather than as node scale,
+	# which physics does not handle reliably.
+	var spike_shape := BoxShape3D.new()
+	spike_shape.size = Vector3(thickness, thickness, length)
+	var spike_collider := CollisionShape3D.new()
+	spike_collider.shape = spike_shape
+	spike_collider.transform = Transform3D(spike_basis, spike_center)
+	_spike_body.add_child(spike_collider)
+
+	_spike_centers.append(spike_center)
+	_spike_radii.append(length * 0.5)
+	_spike_count += 1
+
+
+# --- Debris ----------------------------------------------------------------
+
+
+func _scatter_debris() -> void:
+	_debris_root = Node3D.new()
+	_debris_root.name = "Debris"
+	add_child(_debris_root)
+
+	for span in _spans:
+		_scatter_span_debris(span)
+
+
+func _scatter_span_debris(span: Dictionary) -> void:
+	var span_start: Vector3 = span["start"]
+	var span_end: Vector3 = span["end"]
+	var span_length: float = span["length"]
+	var span_transform: Transform3D = span["transform"]
+	var span_direction := (span_end - span_start).normalized()
+	var margin := PrototypeKnobs.CORRIDOR_WIDTH * 0.5
+	var distance := margin
+
+	while distance < span_length - margin:
+		var is_heavy := _randomizer.randf() < PrototypeKnobs.HEAVY_DEBRIS_CHANCE
+		var wants_light := _randomizer.randf() < PrototypeKnobs.LIGHT_DEBRIS_CHANCE
+		if is_heavy or wants_light:
+			var size := (
+				PrototypeKnobs.HEAVY_DEBRIS_SIZE if is_heavy else PrototypeKnobs.LIGHT_DEBRIS_SIZE
+			)
+			var drift_room := PrototypeKnobs.CORRIDOR_WIDTH * 0.5 - size
+			var candidate := (
+				span_start
+				+ span_direction * distance
+				+ span_transform.basis.x * _randomizer.randf_range(-drift_room, drift_room)
+				+ span_transform.basis.y * _randomizer.randf_range(-drift_room, drift_room)
+			)
+			if _is_clear_of_spikes(candidate, size):
+				_spawn_debris(candidate, is_heavy)
+		distance += PrototypeKnobs.DEBRIS_SAMPLE_STEP
+
+
+func _spawn_debris(spawn_position: Vector3, is_heavy: bool) -> void:
+	var size := (
+		PrototypeKnobs.HEAVY_DEBRIS_SIZE if is_heavy else PrototypeKnobs.LIGHT_DEBRIS_SIZE
+	)
+	var body := RigidBody3D.new()
+	body.mass = PrototypeKnobs.HEAVY_DEBRIS_MASS if is_heavy else PrototypeKnobs.LIGHT_DEBRIS_MASS
+	# Zero-g: nothing falls, it only goes where something pushed it.
+	body.gravity_scale = 0.0
+	body.linear_damp = PrototypeKnobs.DEBRIS_LINEAR_DAMP
+	body.angular_damp = PrototypeKnobs.DEBRIS_ANGULAR_DAMP
+	body.collision_layer = DEBRIS_LAYER
+	body.collision_mask = HULL_LAYER | PLAYER_LAYER | DEBRIS_LAYER
+	body.transform = Transform3D(
+		Basis.from_euler(
+			Vector3(
+				_randomizer.randf_range(0.0, TAU),
+				_randomizer.randf_range(0.0, TAU),
+				_randomizer.randf_range(0.0, TAU)
+			)
+		),
+		spawn_position
+	)
+
+	var debris_mesh := BoxMesh.new()
+	debris_mesh.size = Vector3.ONE * size
+	var mesh_instance := MeshInstance3D.new()
+	mesh_instance.mesh = debris_mesh
+	mesh_instance.material_override = (
+		HEAVY_DEBRIS_MATERIAL if is_heavy else LIGHT_DEBRIS_MATERIAL
+	)
+	body.add_child(mesh_instance)
+
+	var debris_shape := BoxShape3D.new()
+	debris_shape.size = Vector3.ONE * size
+	var collider := CollisionShape3D.new()
+	collider.shape = debris_shape
+	body.add_child(collider)
+
+	_debris_root.add_child(body)
+
+	# Set after the body is in the tree, or the physics server discards it.
+	body.linear_velocity = _random_unit_vector() * PrototypeKnobs.DEBRIS_INITIAL_DRIFT
+	body.angular_velocity = _random_unit_vector() * PrototypeKnobs.DEBRIS_INITIAL_SPIN
+
+	if is_heavy:
+		_heavy_debris_count += 1
+	else:
+		_light_debris_count += 1
+
+
+## Every corner of the buried end has to be in hull, not just its centre. A
+## thick spike leaning steeply can have its base centre well inside the wall
+## while a corner hangs out in the open.
+func _is_spike_rooted(
+	spike_basis: Basis, spike_center: Vector3, length: float, thickness: float
+) -> bool:
+	# Local -Z points along the spike, so +Z is back into the wall.
+	var root_end := spike_center + spike_basis.z * (length * 0.5)
+	if not _is_point_in_solid(root_end):
+		return false
+
+	var half_thickness := thickness * 0.5
+	for corner_x: float in [-half_thickness, half_thickness]:
+		for corner_y: float in [-half_thickness, half_thickness]:
+			var corner := root_end + spike_basis.x * corner_x + spike_basis.y * corner_y
+			if not _is_point_in_solid(corner):
+				return false
+	return true
+
+
+func _is_clear_of_spikes(candidate: Vector3, size: float) -> bool:
+	for index in _spike_centers.size():
+		if candidate.distance_to(_spike_centers[index]) < _spike_radii[index] + size:
+			return false
+	return true
+
+
+func _random_unit_vector() -> Vector3:
+	return Vector3(
+		_randomizer.randfn(), _randomizer.randfn(), _randomizer.randfn()
+	).normalized()
+
+
+# --- Geometry helpers ------------------------------------------------------
+
+
+## True if this point is buried in hull material: some span's hull has to reach
+## it, and no span's tunnel may have carved it back out.
+##
+## Both halves matter. Hull brushes only overrun the ends of their own span, so
+## where two spans meet at an angle the outside of the corner is a notch with
+## no material in it at all - not carved, simply never filled. Testing only for
+## "not carved" passes that notch and leaves anything mounted there hanging.
+func _is_point_in_solid(point: Vector3) -> bool:
+	var is_reached_by_hull := false
+	for span in _spans:
+		if _is_point_in_tunnel(point, span):
+			return false
+		if not is_reached_by_hull and _is_point_in_hull(point, span):
+			is_reached_by_hull = true
+	return is_reached_by_hull
+
+
+func _is_point_in_hull(point: Vector3, span: Dictionary) -> bool:
+	var local := (span["transform"] as Transform3D).affine_inverse() * point
+	var half_side := PrototypeKnobs.CORRIDOR_WIDTH * 0.5 + PrototypeKnobs.WALL_THICKNESS
+	var half_length: float = span["length"] * 0.5 + _hull_overrun
+	return (
+		absf(local.x) < half_side and absf(local.y) < half_side and absf(local.z) < half_length
+	)
+
+
+func _is_point_in_tunnel(point: Vector3, span: Dictionary) -> bool:
+	var local := (span["transform"] as Transform3D).affine_inverse() * point
+	var half_width := PrototypeKnobs.CORRIDOR_WIDTH * 0.5
+	var half_length: float = span["length"] * 0.5 + _tunnel_overrun
+	return (
+		absf(local.x) < half_width and absf(local.y) < half_width and absf(local.z) < half_length
+	)
+
+
+## Builds a basis whose local Z runs along the span, centred on its midpoint.
+func _make_span_transform(span_start: Vector3, span_end: Vector3) -> Transform3D:
+	var span_direction := (span_end - span_start).normalized()
+	return Transform3D(
+		Basis.looking_at(span_direction, _pick_reference_up(span_direction)),
+		(span_start + span_end) * 0.5
+	)
+
+
+## Basis.looking_at fails when its up vector is parallel to the direction, so
+## vertical spans and straight-down spikes need a different reference.
+func _pick_reference_up(direction: Vector3) -> Vector3:
+	if absf(direction.dot(Vector3.UP)) > 0.99:
+		return Vector3.BACK
+	return Vector3.UP
+
+
+## Caps the last waypoint of the last path with an emissive panel, so the run
+## has one unambiguous destination among all the dead ends.
+func _build_end_marker() -> void:
+	var final_path: Array = PrototypeKnobs.CORRIDOR_PATHS.back()
+	var marker_position: Vector3 = final_path.back()
+	var approach_direction: Vector3 = (marker_position - final_path[-2]).normalized()
+
+	var marker := MeshInstance3D.new()
+	marker.name = "EndMarker"
+	var marker_mesh := BoxMesh.new()
+	marker_mesh.size = Vector3(
+		PrototypeKnobs.CORRIDOR_WIDTH * 0.7, PrototypeKnobs.CORRIDOR_WIDTH * 0.7, 0.08
+	)
+	marker.mesh = marker_mesh
+	marker.material_override = MARKER_MATERIAL
+	marker.transform = Transform3D(
+		Basis.looking_at(approach_direction, _pick_reference_up(approach_direction)),
+		marker_position + approach_direction * (_tunnel_overrun - 0.1)
+	)
+	add_child(marker)
