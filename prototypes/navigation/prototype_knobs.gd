@@ -47,8 +47,11 @@ const MAX_ANGULAR_SPEED := 10.0
 ## counter it (raw tumble), and as it climbs the spin dies sooner after you
 ## stop moving the mouse, approaching DIRECT. Spin decays to roughly 5% of its
 ## peak after 3 / ANGULAR_DRAG seconds, so 3.0 settles in about a second.
-## INERTIAL only.
-const ANGULAR_DRAG := 1.0
+##
+## Applies in both modes, because collisions put spin on the body in DIRECT
+## too. At 0.0 an impact leaves you tumbling until you counter it or hit the
+## stabilizers, in either mode.
+const ANGULAR_DRAG := 0
 
 ## Fraction of drift speed shed per second while stabilizers (Shift) are held.
 const LINEAR_STABILIZER_RATE := 4.0
@@ -57,10 +60,22 @@ const LINEAR_STABILIZER_RATE := 4.0
 ## INERTIAL only - in DIRECT mode there is no spin to arrest.
 const ANGULAR_STABILIZER_RATE := 5.0
 
-## Fraction of speed kept on the frame an impact begins. Lower bites harder.
-const COLLISION_ENERGY_RETAINED := 0.6
+## How much of the into-the-wall speed is thrown back out again on impact.
+## 0.0 absorbs the hit dead, 1.0 is a perfect elastic bounce. This is what
+## makes a wall deflect you instead of just taxing your speed.
+const COLLISION_RESTITUTION := 0.35
 
-## Fraction of speed shed per second while scraping along a surface.
+## How much of the along-the-wall speed is scrubbed off on impact. 0.0 is a
+## frictionless skate along the surface, 1.0 stops the sliding dead.
+const COLLISION_FRICTION := 0.25
+
+## How strongly the friction at a contact point twists the body. This is what
+## makes a glancing blow set you spinning rather than sliding off level. 0.0
+## disables impact spin entirely.
+const COLLISION_SPIN_TRANSFER := 1.5
+
+## Fraction of speed shed per second while still scraping along a surface
+## after the initial impact has been resolved.
 const SCRAPE_FRICTION := 1.5
 #endregion
 

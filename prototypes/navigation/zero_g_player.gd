@@ -51,8 +51,11 @@ func _physics_process(delta: float) -> void:
 	stabilizers_engaged = Input.is_action_pressed("stabilize")
 	_update_orientation(delta)
 	_update_velocity(delta)
+	# move_and_slide reports what was hit but resolves contact its own way, so
+	# the approach velocity has to be kept to compute the bounce afterwards.
+	var approach_velocity := velocity
 	move_and_slide()
-	_resolve_surface_contact(delta)
+	_resolve_surface_contact(delta, approach_velocity)
 
 
 ## Returns the current drift speed in metres per second.
@@ -89,34 +92,46 @@ func _update_orientation(delta: float) -> void:
 	_accumulated_mouse_motion = Vector2.ZERO
 	var roll_input := Input.get_axis("roll_left", "roll_right")
 
-	if PrototypeKnobs.ROTATION_MODE == PrototypeKnobs.RotationMode.DIRECT:
-		_rotate_about_own_axes(
-			-mouse_motion.y * PrototypeKnobs.MOUSE_SENSITIVITY,
-			-mouse_motion.x * PrototypeKnobs.MOUSE_SENSITIVITY,
-			-roll_input * PrototypeKnobs.ROLL_RATE * delta
-		)
+	var is_inertial := PrototypeKnobs.ROTATION_MODE == PrototypeKnobs.RotationMode.INERTIAL
+	if is_inertial:
+		var aim_gain := PrototypeKnobs.MOUSE_SENSITIVITY * PrototypeKnobs.ANGULAR_ACCELERATION
+		angular_velocity.x += -mouse_motion.y * aim_gain
+		angular_velocity.y += -mouse_motion.x * aim_gain
+		angular_velocity.z += -roll_input * PrototypeKnobs.ROLL_RATE * delta
+		angular_velocity = angular_velocity.limit_length(PrototypeKnobs.MAX_ANGULAR_SPEED)
+
+	_damp_angular_velocity(delta)
+
+	# Both modes carry angular_velocity, because impacts write to it. DIRECT
+	# additionally steers straight from the mouse on top of whatever spin a
+	# collision has left you with; INERTIAL has already folded aim into it.
+	var aim_pitch := 0.0
+	var aim_yaw := 0.0
+	var aim_roll := 0.0
+	if not is_inertial:
+		aim_pitch = -mouse_motion.y * PrototypeKnobs.MOUSE_SENSITIVITY
+		aim_yaw = -mouse_motion.x * PrototypeKnobs.MOUSE_SENSITIVITY
+		aim_roll = -roll_input * PrototypeKnobs.ROLL_RATE * delta
+
+	_rotate_about_own_axes(
+		aim_pitch + angular_velocity.x * delta,
+		aim_yaw + angular_velocity.y * delta,
+		aim_roll + angular_velocity.z * delta
+	)
+
+
+## Passive drag runs whether or not anything is held; it is what stops a flick
+## or an impact spinning you indefinitely. Stabilizers brake on top of it.
+func _damp_angular_velocity(delta: float) -> void:
+	if angular_velocity.is_zero_approx():
 		return
-
-	var aim_gain := PrototypeKnobs.MOUSE_SENSITIVITY * PrototypeKnobs.ANGULAR_ACCELERATION
-	angular_velocity.x += -mouse_motion.y * aim_gain
-	angular_velocity.y += -mouse_motion.x * aim_gain
-	angular_velocity.z += -roll_input * PrototypeKnobs.ROLL_RATE * delta
-	angular_velocity = angular_velocity.limit_length(PrototypeKnobs.MAX_ANGULAR_SPEED)
-
-	# Passive drag runs whether or not anything is held. It is what keeps a
-	# flick from spinning you indefinitely; stabilizers then brake on top.
 	angular_velocity = angular_velocity.lerp(
 		Vector3.ZERO, minf(PrototypeKnobs.ANGULAR_DRAG * delta, 1.0)
 	)
-
 	if stabilizers_engaged:
 		angular_velocity = angular_velocity.lerp(
 			Vector3.ZERO, minf(PrototypeKnobs.ANGULAR_STABILIZER_RATE * delta, 1.0)
 		)
-
-	_rotate_about_own_axes(
-		angular_velocity.x * delta, angular_velocity.y * delta, angular_velocity.z * delta
-	)
 
 
 ## Applies successive rotations about the body's current local axes, so the
@@ -149,13 +164,76 @@ func _update_velocity(delta: float) -> void:
 	velocity = velocity.limit_length(PrototypeKnobs.MAX_SPEED)
 
 
-## Costs the player speed for touching the hull: a one-off hit when an impact
-## starts, then steady friction for as long as they keep scraping. Neither
-## imparts any spin - contact only affects linear velocity.
-func _resolve_surface_contact(delta: float) -> void:
-	var is_touching := get_slide_collision_count() > 0
-	if is_touching and not _was_touching_surface:
-		velocity *= PrototypeKnobs.COLLISION_ENERGY_RETAINED
-	elif is_touching:
+## Resolves a hull contact as an impulse rather than a flat speed penalty.
+##
+## The approach velocity is split into the part driving into the surface and
+## the part running along it. The first is thrown back out scaled by
+## restitution, which is what deflects your heading; the second is scrubbed by
+## friction, and that same friction acts at the contact point rather than at
+## the centre of mass, so it also twists the body.
+##
+## Only the frame an impact begins gets this treatment. Once you are already
+## riding a surface, re-applying restitution every frame would buzz you off a
+## wall you are deliberately thrusting against, so sustained contact falls
+## through to plain friction.
+func _resolve_surface_contact(delta: float, approach_velocity: Vector3) -> void:
+	var contact_count := get_slide_collision_count()
+	if contact_count == 0:
+		_was_touching_surface = false
+		return
+
+	var was_already_touching := _was_touching_surface
+	_was_touching_surface = true
+
+	if was_already_touching:
 		velocity = velocity.lerp(Vector3.ZERO, minf(PrototypeKnobs.SCRAPE_FRICTION * delta, 1.0))
-	_was_touching_surface = is_touching
+		return
+
+	var contact_normal := Vector3.ZERO
+	var contact_point := Vector3.ZERO
+	for index in contact_count:
+		var contact := get_slide_collision(index)
+		contact_normal += contact.get_normal()
+		contact_point += contact.get_position()
+	contact_point /= contact_count
+
+	# Normals that cancel out mean opposing surfaces - wedged, with nowhere to
+	# bounce to. Dump the speed instead of picking a meaningless direction.
+	if contact_normal.length_squared() < 0.0001:
+		velocity = Vector3.ZERO
+		return
+	contact_normal = contact_normal.normalized()
+
+	var closing_speed := approach_velocity.dot(contact_normal)
+	if closing_speed >= 0.0:
+		# Touched a surface without driving into it; nothing to rebound.
+		return
+
+	var into_surface := contact_normal * closing_speed
+	var along_surface := approach_velocity - into_surface
+
+	velocity = (
+		along_surface * (1.0 - PrototypeKnobs.COLLISION_FRICTION)
+		- into_surface * PrototypeKnobs.COLLISION_RESTITUTION
+	)
+
+	_apply_impact_spin(along_surface, contact_point)
+
+
+## Friction acts where the body actually touched, not at its centre, so it
+## applies a torque proportional to that offset. A square-on hit has no lever
+## and produces no spin; a graze has a long one and tumbles you.
+func _apply_impact_spin(along_surface: Vector3, contact_point: Vector3) -> void:
+	if is_zero_approx(PrototypeKnobs.COLLISION_SPIN_TRANSFER):
+		return
+
+	var friction_impulse := -along_surface * PrototypeKnobs.COLLISION_FRICTION
+	var lever_arm := contact_point - global_position
+	var world_torque := lever_arm.cross(friction_impulse)
+
+	# angular_velocity is held in body-local axes, so the torque has to come
+	# back out of world space before it can be added.
+	angular_velocity += (
+		global_transform.basis.inverse() * world_torque * PrototypeKnobs.COLLISION_SPIN_TRANSFER
+	)
+	angular_velocity = angular_velocity.limit_length(PrototypeKnobs.MAX_ANGULAR_SPEED)

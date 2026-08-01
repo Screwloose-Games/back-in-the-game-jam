@@ -18,9 +18,9 @@ var _shows_tumble: bool
 
 func _ready() -> void:
 	_rotation_mode_name = PrototypeKnobs.RotationMode.keys()[PrototypeKnobs.ROTATION_MODE]
-	# DIRECT mode never accumulates angular velocity, so a tumble gauge there
-	# would sit at zero forever and read as broken.
-	_shows_tumble = PrototypeKnobs.ROTATION_MODE == PrototypeKnobs.RotationMode.INERTIAL
+	# Both modes can accumulate spin now that impacts write to it, so the
+	# tumble gauge is live regardless of mode.
+	_shows_tumble = true
 
 	_player = get_node_or_null(player_path) as ZeroGPlayer
 	if _player == null:
