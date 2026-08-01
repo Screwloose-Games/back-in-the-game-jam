@@ -56,8 +56,9 @@ func _process(_delta: float) -> void:
 
 ## Strain is shown against the distance the active mode gives out at, so a
 ## number closing on its limit is a warning that the load is about to be lost.
-## A tether also reports its raw length, because whether it has gone taut at
-## all is the thing you are watching for.
+## A tether also reports the length of its whole bent path and how many bends
+## are in it: whether the line has gone taut, and how much of it a pillar has
+## eaten, are the two things you are watching for.
 func _describe_carry_link() -> String:
 	var mode_key: String = CarryKnobs.CarryMode.keys()[_player.get_carry_mode()]
 	var mode_name := mode_key.to_lower()
@@ -67,7 +68,7 @@ func _describe_carry_link() -> String:
 
 	if _player.get_carry_mode() == CarryKnobs.CarryMode.TETHER:
 		return (
-			"%s HELD %.0f kg  %4.2f / %4.2f m  taut %4.2f / %4.2f"
+			"%s HELD %.0f kg  %4.2f / %4.2f m  taut %4.2f / %4.2f  bends %d"
 			% [
 				mode_name,
 				held_object.mass,
@@ -75,6 +76,7 @@ func _describe_carry_link() -> String:
 				CarryKnobs.TETHER_LENGTH,
 				_player.get_link_strain(),
 				_player.get_link_break_distance(),
+				_player.get_tether_wrap_count(),
 			]
 		)
 	return (

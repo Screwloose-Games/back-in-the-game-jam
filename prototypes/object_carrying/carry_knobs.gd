@@ -126,7 +126,9 @@ enum CarryMode {
 	GRIP,
 	## Roped to a harness point behind you. The line does nothing until it
 	## pulls taut, so the object trails well back and stays out of your way,
-	## and every correction arrives late and through one axis.
+	## and every correction arrives late and through one axis. It also catches
+	## on the hull and bends around it, so where the pull comes from depends on
+	## what you have taken the rope past.
 	TETHER,
 }
 
@@ -175,7 +177,7 @@ const CARRY_SPIN_TRANSFER := 1.5
 
 ## Length of the line in metres. Below this the tether is limp and exerts
 ## nothing whatsoever; this is how far back the object settles under tow.
-const TETHER_LENGTH := 3.5
+const TETHER_LENGTH := 8.0
 
 ## Where the line is anchored on the suit, in suit-local metres: behind and
 ## a little below the eye, so the load trails rather than crowds the view.
@@ -204,6 +206,60 @@ const TETHER_BREAK_STRETCH := 1.5
 ## the load; keep this well under CARRY_SPIN_TRANSFER or towing turns into
 ## fighting your own heading.
 const TETHER_SPIN_TRANSFER := 0.6
+
+# --- Rope -------------------------------------------------------------------
+#
+# The line is not a straight segment between its two ends. It catches on hull
+# geometry and bends around it, and each end is hauled along the last span of
+# the line rather than toward the far end, so a tether wrapped around a pillar
+# pulls you toward the pillar. Bends are dropped again the moment the span they
+# stood in for comes clear, which is what lets the line pay back out when you
+# come around the way you went in.
+#
+# Wrapping eats into the same TETHER_LENGTH the straight run does: every bend
+# is more line spent, so a load that had metres of slack can go taut from
+# rounding one pillar. If it parts too readily once wrapped, TETHER_BREAK_
+# STRETCH is the knob, not these.
+
+## Which physics layers the line can catch on. Hull only: a rope that could
+## snag on the load it is tied to would fight itself.
+const TETHER_WRAP_LAYERS := 1
+
+## How far off a surface a new bend is placed, in metres. Bends sit clear of
+## the face they were found on so that the next span cast along the rope does
+## not immediately rediscover the same face and bend again in place.
+const TETHER_WRAP_OFFSET := 0.06
+
+## Most bends the line will hold at once. A ceiling rather than a budget:
+## reaching it means the rope stops hugging new corners and starts cutting
+## them, which is far better than an unbounded list.
+const TETHER_MAX_WRAPS := 12
+
+## Closest two bends may sit, in metres. A blockage nearer than this to an
+## existing bend is not something new to bend around, it is the same edge the
+## rope is already caught on, and it gets slid past rather than bent at.
+const TETHER_MIN_WRAP_SPACING := 0.12
+
+## How far a caught bend slides along a face per step, in metres, working its
+## way round the edge it is snagged on. Small enough that the rope does not
+## visibly jump, large enough to clear an edge in a handful of steps.
+const TETHER_CORNER_SLIDE := 0.08
+
+## Most casts one end of the line will spend per frame finding its way round
+## geometry. A rope coming round a corner spends several of these getting
+## there, so this wants to be comfortably above TETHER_MAX_WRAPS.
+const TETHER_WRAP_ITERATIONS := 24
+
+## How far a slack line bows away from a straight run, as a fraction of the
+## slack in it. Drawing only: there is no down to hang toward in zero g, so
+## slack is shown by letting the line trail the way you came. 0.0 draws the
+## rope dead straight and slack becomes invisible.
+const TETHER_SAG_SCALE := 0.35
+
+## How many pieces each span of the line is drawn in. Only matters when
+## TETHER_SAG_SCALE is above zero, since a straight span looks the same at any
+## resolution.
+const TETHER_LINE_SEGMENTS := 8
 #endregion
 
 #region Chamber
@@ -241,11 +297,11 @@ const DIVIDER_GAP := Vector2(5.0, 5.0)
 
 ## Edge length of the carried object in metres. Big enough that the grab point
 ## is well off its centre of mass, which is what makes it swing.
-const CARRY_OBJECT_SIZE := 1.01
+const CARRY_OBJECT_SIZE := 1.0
 
 ## Mass of the carried object in kg. Against PLAYER_MASS of 90 this is roughly
 ## four suits: you can move it, but every correction costs you.
-const CARRY_OBJECT_MASS := 90.0
+const CARRY_OBJECT_MASS := 45.0
 
 ## Where the object starts, and where R returns it to. Sits just inside
 ## FOG_DEPTH_END from PLAYER_SPAWN, so it is dimly visible on the first frame

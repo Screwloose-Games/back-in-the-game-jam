@@ -15,10 +15,11 @@ extends CharacterBody3D
 ## There are two ways to be attached, switchable live so they can be compared
 ## back to back. GRIP anchors at the hands with no slack, so the load answers
 ## instantly and rides in the middle of your view. TETHER anchors behind you
-## on a line that does nothing until it pulls taut, so the load trails out of
-## sight and only ever pulls along one axis. Everything downstream of
-## _apply_carry_force is shared; the modes differ only in where the suit end
-## is anchored and how the force along the link is computed.
+## on a rope that does nothing until it pulls taut, so the load trails out of
+## sight and only ever pulls along the line. That rope also catches on the hull
+## and bends around it, and each end is hauled along its own last span, so a
+## tether taken around a pillar hauls you toward the pillar. Both modes end at
+## _push_link_force, which is where the two bodies actually get moved.
 ##
 ## Every tunable value lives in carry_knobs.gd.
 
@@ -49,7 +50,12 @@ var _object_local_anchor := Vector3.ZERO
 var _suit_local_anchor := Vector3.ZERO
 ## Which of the two ways of being attached is active. Switchable at runtime.
 var _carry_mode := CarryKnobs.CarryMode.GRIP
-## Distance between the two anchors right now, in metres. Read by the HUD.
+## Where the rope is bent around hull geometry, in world space, ordered from
+## the object end to the suit end. Empty whenever the line runs straight, which
+## is the only case GRIP ever has.
+var _tether_wraps: Array[Vector3] = []
+## Length of the link right now, in metres: straight between the anchors in
+## GRIP, measured along the whole bent path in TETHER. Read by the HUD.
 var _link_distance := 0.0
 ## How far the link is stretched past what it holds for free, in metres: the
 ## whole distance in GRIP, only the part past TETHER_LENGTH in TETHER. It is
@@ -141,9 +147,16 @@ func get_carry_mode() -> CarryKnobs.CarryMode:
 	return _carry_mode
 
 
-## Distance between the two anchors, in metres. Zero when nothing is held.
+## Length of the link, in metres, measured the way the active mode measures it.
+## Zero when nothing is held.
 func get_link_distance() -> float:
 	return _link_distance
+
+
+## How many places the rope is currently bent around the hull. Always zero in
+## GRIP, and zero on a tether with a clear run to the load.
+func get_tether_wrap_count() -> int:
+	return _tether_wraps.size()
 
 
 ## How far the link is stretched past what it holds for free, in metres. Zero
@@ -174,6 +187,7 @@ func respawn() -> void:
 ## releasing mid-haul leaves it coasting away on its own.
 func release_object() -> void:
 	_held_object = null
+	_tether_wraps.clear()
 	_link_distance = 0.0
 	_link_strain = 0.0
 
@@ -232,6 +246,7 @@ func _toggle_carry_mode() -> void:
 ## harness, where it will hang slack until you pull away.
 func _attach_to(object: RigidBody3D, grab_point: Vector3) -> void:
 	_held_object = object
+	_tether_wraps.clear()
 	_object_local_anchor = object.global_transform.affine_inverse() * grab_point
 	if _carry_mode == CarryKnobs.CarryMode.TETHER:
 		_suit_local_anchor = CarryKnobs.TETHER_ANCHOR_OFFSET
@@ -241,8 +256,7 @@ func _attach_to(object: RigidBody3D, grab_point: Vector3) -> void:
 	_link_strain = 0.0
 
 
-## Measures the link, asks the active mode what force it is under, and hands
-## that force to both bodies.
+## Measures the link and hands the active mode the two points it runs between.
 func _apply_carry_force(delta: float) -> void:
 	if _held_object == null:
 		return
@@ -250,73 +264,90 @@ func _apply_carry_force(delta: float) -> void:
 	var suit_point := global_transform * _suit_local_anchor
 	var object_point := _held_object.global_transform * _object_local_anchor
 	var object_lever_arm := object_point - _held_object.global_position
-	var separation := suit_point - object_point
-
 	# The link is anchored to a point on the object's surface, so the object's
-	# spin contributes to how fast that point is moving away from the suit.
-	var relative_velocity := (
-		_held_object.linear_velocity
-		+ _held_object.angular_velocity.cross(object_lever_arm)
-		- velocity
+	# spin contributes to how fast that point is moving.
+	var object_point_velocity := (
+		_held_object.linear_velocity + _held_object.angular_velocity.cross(object_lever_arm)
 	)
 
-	_link_distance = separation.length()
-	var is_tether := _carry_mode == CarryKnobs.CarryMode.TETHER
-	_link_strain = (
-		maxf(_link_distance - CarryKnobs.TETHER_LENGTH, 0.0) if is_tether else _link_distance
-	)
-	if _link_strain > get_link_break_distance():
-		# Stretched past what the link can hold. Giving out is what keeps it
-		# from reading as a rubber band on a hard yank.
-		release_object()
-		return
-
-	var link_force: Vector3
-	var spin_transfer: float
-	if is_tether:
-		link_force = _compute_tether_force(separation, relative_velocity)
-		spin_transfer = CarryKnobs.TETHER_SPIN_TRANSFER
+	if _carry_mode == CarryKnobs.CarryMode.TETHER:
+		_apply_tether_force(
+			delta, suit_point, object_point, object_lever_arm, object_point_velocity
+		)
 	else:
-		link_force = _compute_grip_force(separation, relative_velocity)
-		spin_transfer = CarryKnobs.CARRY_SPIN_TRANSFER
-
-	# Off-centre on the object, so the same pull that tows it also tumbles it.
-	_held_object.apply_impulse(link_force * delta, object_lever_arm)
-
-	# The suit takes the reaction. Off-centre here too, which is why thrusting
-	# with the load out to one side slews your heading instead of just slowing
-	# you down.
-	var suit_velocity_change := -link_force * delta / CarryKnobs.PLAYER_MASS
-	velocity = (velocity + suit_velocity_change).limit_length(CarryKnobs.MAX_SPEED)
-	if not is_zero_approx(spin_transfer):
-		_add_spin_from_impulse(suit_velocity_change, suit_point, spin_transfer)
+		_apply_grip_force(delta, suit_point, object_point, object_lever_arm, object_point_velocity)
 
 
 ## A spring with no slack, pulling the two anchors back together in every
 ## direction at once. That is what makes GRIP feel like a hand: it fights
 ## sideways drift as hard as it fights the object trailing behind.
-func _compute_grip_force(separation: Vector3, relative_velocity: Vector3) -> Vector3:
+func _apply_grip_force(
+	delta: float,
+	suit_point: Vector3,
+	object_point: Vector3,
+	object_lever_arm: Vector3,
+	object_point_velocity: Vector3
+) -> void:
+	var separation := suit_point - object_point
+	_link_distance = separation.length()
+	_link_strain = _link_distance
+	if _link_strain > CarryKnobs.CARRY_BREAK_DISTANCE:
+		# Stretched past what the grip can hold. Giving out is what keeps it
+		# from reading as a rubber band on a hard yank.
+		release_object()
+		return
+
+	var relative_velocity := object_point_velocity - velocity
 	var angular_frequency := TAU * CarryKnobs.CARRY_SPRING_FREQUENCY
 	var reduced_mass := _measure_reduced_mass()
 	var stiffness := reduced_mass * angular_frequency * angular_frequency
 	var damping := 2.0 * CarryKnobs.CARRY_SPRING_DAMPING_RATIO * angular_frequency * reduced_mass
-	return (separation * stiffness - relative_velocity * damping).limit_length(
+	var grip_force := (separation * stiffness - relative_velocity * damping).limit_length(
 		CarryKnobs.CARRY_MAX_FORCE
+	)
+	_push_link_force(
+		delta, grip_force, object_lever_arm, -grip_force, suit_point, CarryKnobs.CARRY_SPIN_TRANSFER
 	)
 
 
 ## A rope: nothing at all below its length, and past that a pull along its own
 ## line and no other. The object is free to drift sideways, swing, and fall
-## behind, and only ever gets hauled straight back in - which is the whole
+## behind, and only ever gets hauled back along the line - which is the whole
 ## reason it stays out of your view.
-func _compute_tether_force(separation: Vector3, relative_velocity: Vector3) -> Vector3:
-	if _link_strain <= 0.0:
-		return Vector3.ZERO
+##
+## The line is measured along its whole bent path, not end to end, so anything
+## it has wrapped around has already spent some of its length.
+func _apply_tether_force(
+	delta: float,
+	suit_point: Vector3,
+	object_point: Vector3,
+	object_lever_arm: Vector3,
+	object_point_velocity: Vector3
+) -> void:
+	_update_tether_path(object_point, suit_point)
+	_link_distance = _measure_tether_path_length(object_point, suit_point)
+	_link_strain = maxf(_link_distance - CarryKnobs.TETHER_LENGTH, 0.0)
+	if _link_strain > CarryKnobs.TETHER_BREAK_STRETCH:
+		release_object()
+		return
+	if is_zero_approx(_link_strain):
+		return
 
-	var pull_direction := separation / _link_distance
-	# Positive while the object is still running out. Only motion along the
-	# line counts; the rest is slack the tether has no opinion about.
-	var stretch_rate := -relative_velocity.dot(pull_direction)
+	# Each end is hauled along its own last span rather than toward the far
+	# end. With the line bent around something those are different directions,
+	# and it is the bend the pull is really against: wrap a tether around a
+	# pillar and it drags you toward the pillar, not toward the load.
+	var suit_run := suit_point - _read_wrap_toward_suit(object_point)
+	var object_run := object_point - _read_wrap_toward_object(suit_point)
+	if suit_run.is_zero_approx() or object_run.is_zero_approx():
+		return
+	var suit_direction := suit_run.normalized()
+	var object_direction := object_run.normalized()
+
+	# How fast the whole path is lengthening. Each end contributes only the
+	# part of its motion that runs along the line it is paying out; the rest is
+	# slack the tether has no opinion about.
+	var stretch_rate := velocity.dot(suit_direction) + object_point_velocity.dot(object_direction)
 
 	var angular_frequency := TAU * CarryKnobs.TETHER_SPRING_FREQUENCY
 	var reduced_mass := _measure_reduced_mass()
@@ -325,8 +356,167 @@ func _compute_tether_force(separation: Vector3, relative_velocity: Vector3) -> V
 
 	# A rope pulls and never pushes, so damping can soften the haul but must
 	# not be allowed to invert it into a shove.
-	var pull_magnitude := maxf(_link_strain * stiffness + stretch_rate * damping, 0.0)
-	return pull_direction * minf(pull_magnitude, CarryKnobs.TETHER_MAX_FORCE)
+	var tension := maxf(_link_strain * stiffness + stretch_rate * damping, 0.0)
+	tension = minf(tension, CarryKnobs.TETHER_MAX_FORCE)
+
+	_push_link_force(
+		delta,
+		-object_direction * tension,
+		object_lever_arm,
+		-suit_direction * tension,
+		suit_point,
+		CarryKnobs.TETHER_SPIN_TRANSFER
+	)
+
+
+## Hands one frame of link force to both ends. A straight link gets the same
+## force with opposite signs; a rope bent around the hull does not, because
+## whatever it is bent around absorbs the difference.
+##
+## Both ends are pushed off centre, which is why thrusting with the load out to
+## one side slews your heading instead of just slowing you down, and why the
+## same pull that tows the object also tumbles it.
+func _push_link_force(
+	delta: float,
+	object_force: Vector3,
+	object_lever_arm: Vector3,
+	suit_force: Vector3,
+	suit_point: Vector3,
+	spin_transfer: float
+) -> void:
+	_held_object.apply_impulse(object_force * delta, object_lever_arm)
+
+	var suit_velocity_change := suit_force * delta / CarryKnobs.PLAYER_MASS
+	velocity = (velocity + suit_velocity_change).limit_length(CarryKnobs.MAX_SPEED)
+	if not is_zero_approx(spin_transfer):
+		_add_spin_from_impulse(suit_velocity_change, suit_point, spin_transfer)
+
+
+# --- Rope path -------------------------------------------------------------
+
+
+## The bend the suit end of the line pulls against, or the object itself when
+## the rope runs straight.
+func _read_wrap_toward_suit(object_point: Vector3) -> Vector3:
+	if _tether_wraps.is_empty():
+		return object_point
+	return _tether_wraps[-1]
+
+
+## The bend the object end of the line pulls against, or the suit itself when
+## the rope runs straight.
+func _read_wrap_toward_object(suit_point: Vector3) -> Vector3:
+	if _tether_wraps.is_empty():
+		return suit_point
+	return _tether_wraps[0]
+
+
+func _measure_tether_path_length(object_point: Vector3, suit_point: Vector3) -> float:
+	var path_length := 0.0
+	var span_start := object_point
+	for wrap_point: Vector3 in _tether_wraps:
+		path_length += span_start.distance_to(wrap_point)
+		span_start = wrap_point
+	return path_length + span_start.distance_to(suit_point)
+
+
+## Keeps the list of bends current: bends are dropped as soon as the span they
+## stood in for comes clear, then new ones are found wherever the line still
+## runs through something. Dropping first matters - a bend that has just been
+## rounded would otherwise be used as the anchor for finding the next one.
+func _update_tether_path(object_point: Vector3, suit_point: Vector3) -> void:
+	_drop_cleared_wraps(object_point, suit_point)
+	_grow_wraps_from_end(suit_point, object_point, true)
+	_grow_wraps_from_end(object_point, suit_point, false)
+
+
+## Walks in from both ends removing bends whose span has come clear. A rope
+## unwraps in the reverse order it wrapped, so only the outermost bend at each
+## end is ever a candidate.
+func _drop_cleared_wraps(object_point: Vector3, suit_point: Vector3) -> void:
+	while not _tether_wraps.is_empty():
+		var inboard_of_suit := object_point
+		if _tether_wraps.size() > 1:
+			inboard_of_suit = _tether_wraps[-2]
+		if _is_span_blocked(inboard_of_suit, suit_point):
+			break
+		_tether_wraps.remove_at(_tether_wraps.size() - 1)
+
+	while not _tether_wraps.is_empty():
+		var inboard_of_object := suit_point
+		if _tether_wraps.size() > 1:
+			inboard_of_object = _tether_wraps[1]
+		if _is_span_blocked(inboard_of_object, object_point):
+			break
+		_tether_wraps.remove_at(0)
+
+
+## Runs one end of the line out against the hull until the end span is clear.
+## Only the two end spans can newly catch on anything: everything between two
+## bends is pinned at both ends and has not moved. `at_suit_end` picks which
+## end, since the two are mirror images and differ only in which end of the
+## list they grow from.
+##
+## A span can be blocked in two ways that need different answers. Blocked out
+## in open space is the rope running into something new, and a bend goes where
+## it touched. Blocked immediately, right where the rope already bends, means
+## that bend is sitting on the face beside an edge rather than clear of the
+## edge itself - the rope has caught on the corner, and no number of extra
+## bends in the same spot will ever get it round. That one is answered by
+## sliding the bend along the face, away from the run it came in on, until it
+## comes past the edge.
+func _grow_wraps_from_end(moving_end: Vector3, far_end: Vector3, at_suit_end: bool) -> void:
+	for attempt: int in range(CarryKnobs.TETHER_WRAP_ITERATIONS):
+		var edge_index := _tether_wraps.size() - 1 if at_suit_end else 0
+		var span_start := far_end
+		var inboard_point := far_end
+		if not _tether_wraps.is_empty():
+			span_start = _tether_wraps[edge_index]
+			var inboard_index := edge_index - 1 if at_suit_end else 1
+			if inboard_index >= 0 and inboard_index < _tether_wraps.size():
+				inboard_point = _tether_wraps[inboard_index]
+
+		var snag := _cast_along_span(span_start, moving_end)
+		if snag.is_empty():
+			return
+
+		var contact_point: Vector3 = snag["position"]
+		var contact_normal: Vector3 = snag["normal"]
+		var bend := contact_point + contact_normal * CarryKnobs.TETHER_WRAP_OFFSET
+		if bend.distance_to(span_start) >= CarryKnobs.TETHER_MIN_WRAP_SPACING:
+			if _tether_wraps.size() >= CarryKnobs.TETHER_MAX_WRAPS:
+				return
+			if at_suit_end:
+				_tether_wraps.append(bend)
+			else:
+				_tether_wraps.insert(0, bend)
+			continue
+
+		if _tether_wraps.is_empty():
+			# The anchor itself is up against the hull, which happens when you
+			# back into a wall. There is no bend to slide, and moving an anchor
+			# is not this function's business.
+			return
+
+		var slide_direction := (span_start - inboard_point).slide(contact_normal)
+		if slide_direction.is_zero_approx():
+			return
+		_tether_wraps[edge_index] = (
+			span_start + slide_direction.normalized() * CarryKnobs.TETHER_CORNER_SLIDE
+		)
+
+
+func _is_span_blocked(from_point: Vector3, to_point: Vector3) -> bool:
+	return not _cast_along_span(from_point, to_point).is_empty()
+
+
+## Casts one span of the line at the hull, returning the raw intersection or an
+## empty dictionary when the span is clear.
+func _cast_along_span(from_point: Vector3, to_point: Vector3) -> Dictionary:
+	var query := PhysicsRayQueryParameters3D.create(
+		from_point, to_point, CarryKnobs.TETHER_WRAP_LAYERS
+	)
+	return get_world_3d().direct_space_state.intersect_ray(query)
 
 
 ## The effective mass of the two-body pair. Deriving stiffness from this keeps
@@ -337,21 +527,52 @@ func _measure_reduced_mass() -> float:
 	return 1.0 / (1.0 / CarryKnobs.PLAYER_MASS + 1.0 / _held_object.mass)
 
 
-## Redraws the line between the two anchors. Worth having even though nothing
+## Redraws the rope along its whole bent path. Worth having even though nothing
 ## about it is physical: on a tether the load spends most of its time behind
-## you and out of the lamp, and this is the only thing telling you where it is
-## and whether it has gone taut.
+## you and out of the lamp, and this is the only thing telling you where it is,
+## what it has caught on, and whether it has gone taut.
+##
+## The bow in a slack line is a drawing cue rather than a simulation. There is
+## no down to hang toward in zero g, so slack is shown by letting the line
+## trail the way you came, which is roughly where its own inertia would leave
+## it. Standing still it draws straight, having nothing to trail.
 func _update_tether_line() -> void:
 	var shows_tether := _held_object != null and _carry_mode == CarryKnobs.CarryMode.TETHER
 	_tether_line.visible = shows_tether
 	if not shows_tether:
 		return
 
+	var path := PackedVector3Array()
+	path.append(_held_object.global_transform * _object_local_anchor)
+	path.append_array(_tether_wraps)
+	path.append(global_transform * _suit_local_anchor)
+
+	var slack := maxf(CarryKnobs.TETHER_LENGTH - _link_distance, 0.0)
+	var bow := -velocity.normalized() * slack * CarryKnobs.TETHER_SAG_SCALE
+
 	_tether_mesh.clear_surfaces()
-	_tether_mesh.surface_begin(Mesh.PRIMITIVE_LINES)
-	_tether_mesh.surface_add_vertex(global_transform * _suit_local_anchor)
-	_tether_mesh.surface_add_vertex(_held_object.global_transform * _object_local_anchor)
+	_tether_mesh.surface_begin(Mesh.PRIMITIVE_LINE_STRIP)
+	for span_index: int in range(path.size() - 1):
+		_add_tether_span(path[span_index], path[span_index + 1], bow)
+	_tether_mesh.surface_add_vertex(path[path.size() - 1])
 	_tether_mesh.surface_end()
+
+
+## Adds one span of the rope, up to but not including its far end, so that
+## consecutive spans join without doubling a vertex. The bow is shared out by
+## length, each span taking the share of the slack it accounts for.
+func _add_tether_span(span_start: Vector3, span_end: Vector3, bow: Vector3) -> void:
+	if bow.is_zero_approx() or _link_distance <= 0.0:
+		_tether_mesh.surface_add_vertex(span_start)
+		return
+
+	var span_bow := bow * (span_start.distance_to(span_end) / _link_distance)
+	for step: int in range(CarryKnobs.TETHER_LINE_SEGMENTS):
+		var along := float(step) / float(CarryKnobs.TETHER_LINE_SEGMENTS)
+		# Peaks at 1.0 halfway along and vanishes at both ends, so the rope
+		# stays pinned where it is actually anchored or bent.
+		var bow_profile := 4.0 * along * (1.0 - along)
+		_tether_mesh.surface_add_vertex(span_start.lerp(span_end, along) + span_bow * bow_profile)
 
 
 # --- Movement --------------------------------------------------------------
