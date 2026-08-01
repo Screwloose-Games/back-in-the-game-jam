@@ -8,7 +8,7 @@ extends RefCounted
 ## over whatever is saved in the .tscn files - there is nothing to tweak in the
 ## inspector, and no exported copy of these that could drift out of sync.
 
-# --- Movement --------------------------------------------------------------
+#region Movement
 
 enum RotationMode {
 	## Mouse and roll input map straight onto this frame's rotation. Snappy and
@@ -48,7 +48,7 @@ const MAX_ANGULAR_SPEED := 10.0
 ## stop moving the mouse, approaching DIRECT. Spin decays to roughly 5% of its
 ## peak after 3 / ANGULAR_DRAG seconds, so 3.0 settles in about a second.
 ## INERTIAL only.
-const ANGULAR_DRAG := 2.0
+const ANGULAR_DRAG := 1.0
 
 ## Fraction of drift speed shed per second while stabilizers (Shift) are held.
 const LINEAR_STABILIZER_RATE := 4.0
@@ -62,8 +62,9 @@ const COLLISION_ENERGY_RETAINED := 0.6
 
 ## Fraction of speed shed per second while scraping along a surface.
 const SCRAPE_FRICTION := 1.5
+#endregion
 
-# --- Draw distance ---------------------------------------------------------
+#region Draw Distance
 
 ## Metres at which fog starts to thicken. Below this you see clearly.
 const FOG_DEPTH_BEGIN := 2.0
@@ -83,7 +84,9 @@ const CAMERA_FAR := 20.0
 
 ## How far the helmet lamp throws, in metres.
 const HELMET_LAMP_RANGE := 14.0
+#endregion
 
+#region Map Geometry
 # --- Corridor dimensions ---------------------------------------------------
 
 ## Interior width and height of the tunnel, in metres.
@@ -92,12 +95,45 @@ const CORRIDOR_WIDTH := 2.4
 ## How thick the hull around the tunnel is, in metres.
 const WALL_THICKNESS := 0.4
 
-const SPAWN_OBSTACLES := true
+# --- Spikes ----------------------------------------------------------------
+#
+# Boxes jutting inward off the tunnel walls at assorted lengths and angles.
+# They are terrain only - nothing about them hurts you, they just make a
+# corridor awkward to thread. A spike at SPIKE_MIN_LENGTH reads as a small
+# stub cube; one at SPIKE_MAX_LENGTH is a proper spar to steer around.
 
-## Metres of corridor between protruding wall cubes.
-const METRES_BETWEEN_OBSTACLES := 9.0
+const SPAWN_SPIKES := true
 
-const OBSTACLE_SIZE := 0.45
+## Fixed so the same map comes back every run. Change it to roll a new field
+## of spikes; the corridor layout itself does not move.
+const SPIKE_RANDOM_SEED := 20260731
+
+## How often along a corridor a spike is considered, in metres. Smaller means
+## denser clusters are possible and generation costs more.
+const SPIKE_SAMPLE_STEP := 0.6
+
+## Chance of placing a spike at a sample point in the emptiest stretches.
+const SPIKE_SPARSE_CHANCE := 0.04
+
+## Chance of placing one in the thickest clusters.
+const SPIKE_DENSE_CHANCE := 0.7
+
+## How quickly density swings between sparse and dense along the corridor.
+## Lower spreads the clusters out into long stretches, higher chops the map
+## into short alternating patches.
+const SPIKE_CLUSTER_FREQUENCY := 0.06
+
+const SPIKE_MIN_LENGTH := 0.4
+const SPIKE_MAX_LENGTH := 1.5
+
+const SPIKE_MIN_THICKNESS := 0.18
+const SPIKE_MAX_THICKNESS := 0.5
+
+## Maximum lean away from straight-out-of-the-wall, in degrees.
+const SPIKE_MAX_TILT_DEGREES := 45.0
+
+## How far a spike's base is buried in the wall so it never floats free of it.
+const SPIKE_EMBED_DEPTH := 0.15
 
 # --- Corridor layout -------------------------------------------------------
 #
@@ -144,3 +180,4 @@ const CORRIDOR_PATHS := [
 	# does not read as part of the 45/90 grammar. The end marker sits here.
 	[JUNCTION_LOOP_RETURN, Vector3(24, 0, -10), Vector3(32, 0, -4)],
 ]
+#endregion

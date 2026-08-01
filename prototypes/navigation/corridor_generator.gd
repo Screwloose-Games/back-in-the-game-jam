@@ -24,18 +24,47 @@ var _tunnel_overrun: float
 
 var _hull_brushes: Array[CSGBox3D] = []
 var _tunnel_brushes: Array[CSGBox3D] = []
-var _obstacle_brushes: Array[CSGBox3D] = []
+
+## Spikes are plain geometry rather than CSG brushes. They only ever stick out
+## into open tunnel, so there is no boolean to compute, and unioning a hundred
+## of them into the combiner would cost far more than it bought.
+var _spike_body: StaticBody3D
+var _spike_mesh := BoxMesh.new()
+var _spike_randomizer := RandomNumberGenerator.new()
+var _spike_density_noise := FastNoiseLite.new()
+var _spike_count := 0
 
 
 func _ready() -> void:
 	_hull_overrun = PrototypeKnobs.CORRIDOR_WIDTH * 0.5 + PrototypeKnobs.WALL_THICKNESS
 	_tunnel_overrun = PrototypeKnobs.CORRIDOR_WIDTH * 0.5
+	_prepare_spikes()
 
 	for path: Array in PrototypeKnobs.CORRIDOR_PATHS:
 		_collect_path_brushes(path)
 
 	_assemble_combiner()
 	_build_end_marker()
+
+
+func _prepare_spikes() -> void:
+	_spike_mesh.size = Vector3.ONE
+	_spike_mesh.material = HULL_MATERIAL
+
+	_spike_randomizer.seed = PrototypeKnobs.SPIKE_RANDOM_SEED
+	_spike_density_noise.seed = PrototypeKnobs.SPIKE_RANDOM_SEED
+	_spike_density_noise.frequency = PrototypeKnobs.SPIKE_CLUSTER_FREQUENCY
+
+	_spike_body = StaticBody3D.new()
+	_spike_body.name = "SpikeBody"
+	_spike_body.collision_layer = 1
+	_spike_body.collision_mask = 0
+	add_child(_spike_body)
+
+
+## Returns how many spikes were placed. Read by the corridor probe.
+func get_spike_count() -> int:
+	return _spike_count
 
 
 func _collect_path_brushes(waypoints: Array) -> void:
@@ -76,45 +105,90 @@ func _collect_span_brushes(span_start: Vector3, span_end: Vector3) -> void:
 		)
 	)
 
-	if PrototypeKnobs.SPAWN_OBSTACLES:
-		_collect_span_obstacles(span_start, span_end, span_length, span_transform)
+	if PrototypeKnobs.SPAWN_SPIKES:
+		_scatter_span_spikes(span_start, span_end, span_length, span_transform)
 
 
-## Protruding cubes give the eye something to read parallax against, and punish
-## drifting through a junction without slowing down.
-func _collect_span_obstacles(
+## Walks the span placing spikes against its four walls. Density comes from
+## noise sampled in world space, so clusters read as continuous thickets across
+## a stretch of corridor rather than restarting at every waypoint.
+func _scatter_span_spikes(
 	span_start: Vector3, span_end: Vector3, span_length: float, span_transform: Transform3D
 ) -> void:
-	var spacing := PrototypeKnobs.METRES_BETWEEN_OBSTACLES
-	# Keep obstacles clear of the junctions at either end, where they would sit
-	# in the middle of an opening rather than against a wall.
-	var distance := spacing
 	var span_direction := (span_end - span_start).normalized()
-	var lateral := span_transform.basis.x
-	var wall_offset := (
-		PrototypeKnobs.CORRIDOR_WIDTH * 0.5 - PrototypeKnobs.OBSTACLE_SIZE * 0.5
+	var wall_axes: Array[Vector3] = [
+		span_transform.basis.x, -span_transform.basis.x,
+		span_transform.basis.y, -span_transform.basis.y,
+	]
+	# Hold spikes back from the ends so they do not grow across a junction
+	# opening, where they would block a turn rather than complicate a corridor.
+	var margin := PrototypeKnobs.CORRIDOR_WIDTH * 0.5
+	var distance := margin
+
+	while distance < span_length - margin:
+		var axis_position := span_start + span_direction * distance
+		var density := (_spike_density_noise.get_noise_3dv(axis_position) + 1.0) * 0.5
+		var spawn_chance := lerpf(
+			PrototypeKnobs.SPIKE_SPARSE_CHANCE, PrototypeKnobs.SPIKE_DENSE_CHANCE, density
+		)
+		if _spike_randomizer.randf() < spawn_chance:
+			_build_spike(axis_position, wall_axes[_spike_randomizer.randi() % 4])
+		distance += PrototypeKnobs.SPIKE_SAMPLE_STEP
+
+
+func _build_spike(axis_position: Vector3, wall_outward: Vector3) -> void:
+	var length := _spike_randomizer.randf_range(
+		PrototypeKnobs.SPIKE_MIN_LENGTH, PrototypeKnobs.SPIKE_MAX_LENGTH
 	)
-	var alternate := false
+	var thickness := _spike_randomizer.randf_range(
+		PrototypeKnobs.SPIKE_MIN_THICKNESS, PrototypeKnobs.SPIKE_MAX_THICKNESS
+	)
 
-	while distance < span_length - spacing * 0.5:
-		var mount_position := (
-			span_start
-			+ span_direction * distance
-			+ lateral * (wall_offset if alternate else -wall_offset)
-		)
-		_obstacle_brushes.append(
-			_make_brush(
-				Transform3D(span_transform.basis, mount_position),
-				Vector3.ONE * PrototypeKnobs.OBSTACLE_SIZE,
-				CSGShape3D.OPERATION_UNION
-			)
-		)
-		distance += spacing
-		alternate = not alternate
+	# Slide the base around on the wall face it is mounted to.
+	var along_wall := wall_outward.cross(Vector3.UP)
+	if along_wall.length_squared() < 0.01:
+		along_wall = wall_outward.cross(Vector3.BACK)
+	along_wall = along_wall.normalized()
+	var slide := PrototypeKnobs.CORRIDOR_WIDTH * 0.5 - thickness
+	var base_position := (
+		axis_position
+		+ wall_outward * PrototypeKnobs.CORRIDOR_WIDTH * 0.5
+		+ along_wall * _spike_randomizer.randf_range(-slide, slide)
+	)
+
+	# Lean the spike off the wall normal by a random amount, in a random
+	# direction around it, so no two read as parallel.
+	var tilt_axis := along_wall.rotated(wall_outward, _spike_randomizer.randf_range(0.0, TAU))
+	var spike_direction := (-wall_outward).rotated(
+		tilt_axis,
+		deg_to_rad(_spike_randomizer.randf_range(0.0, PrototypeKnobs.SPIKE_MAX_TILT_DEGREES))
+	)
+
+	var spike_basis := Basis.looking_at(spike_direction, _pick_reference_up(spike_direction))
+	var spike_center := (
+		base_position + spike_direction * (length * 0.5 - PrototypeKnobs.SPIKE_EMBED_DEPTH)
+	)
+
+	var spike_mesh_instance := MeshInstance3D.new()
+	spike_mesh_instance.mesh = _spike_mesh
+	spike_mesh_instance.transform = Transform3D(
+		spike_basis.scaled(Vector3(thickness, thickness, length)), spike_center
+	)
+	add_child(spike_mesh_instance)
+
+	# The collider carries its size on the shape rather than as node scale,
+	# which physics does not handle reliably.
+	var spike_shape := BoxShape3D.new()
+	spike_shape.size = Vector3(thickness, thickness, length)
+	var spike_collider := CollisionShape3D.new()
+	spike_collider.shape = spike_shape
+	spike_collider.transform = Transform3D(spike_basis, spike_center)
+	_spike_body.add_child(spike_collider)
+
+	_spike_count += 1
 
 
-## Order matters: hulls union into one solid, tunnels then subtract from it,
-## and obstacles union back in afterwards so they are not carved away.
+## Order matters: hulls union into one solid, then tunnels subtract from it.
 func _assemble_combiner() -> void:
 	var combiner := CSGCombiner3D.new()
 	combiner.name = "HullCombiner"
@@ -127,8 +201,6 @@ func _assemble_combiner() -> void:
 	for brush in _hull_brushes:
 		combiner.add_child(brush)
 	for brush in _tunnel_brushes:
-		combiner.add_child(brush)
-	for brush in _obstacle_brushes:
 		combiner.add_child(brush)
 
 
@@ -145,12 +217,18 @@ func _make_brush(
 ## Builds a basis whose local Z runs along the span, centred on its midpoint.
 func _make_span_transform(span_start: Vector3, span_end: Vector3) -> Transform3D:
 	var span_direction := (span_end - span_start).normalized()
-	var reference_up := Vector3.UP
-	if absf(span_direction.dot(reference_up)) > 0.99:
-		reference_up = Vector3.BACK
 	return Transform3D(
-		Basis.looking_at(span_direction, reference_up), (span_start + span_end) * 0.5
+		Basis.looking_at(span_direction, _pick_reference_up(span_direction)),
+		(span_start + span_end) * 0.5
 	)
+
+
+## Basis.looking_at fails when its up vector is parallel to the direction, so
+## vertical spans and straight-down spikes need a different reference.
+func _pick_reference_up(direction: Vector3) -> Vector3:
+	if absf(direction.dot(Vector3.UP)) > 0.99:
+		return Vector3.BACK
+	return Vector3.UP
 
 
 ## Caps the last waypoint of the last path with an emissive panel, so the run
@@ -169,11 +247,8 @@ func _build_end_marker() -> void:
 	marker.mesh = marker_mesh
 	marker.material_override = MARKER_MATERIAL
 
-	var reference_up := Vector3.UP
-	if absf(approach_direction.dot(reference_up)) > 0.99:
-		reference_up = Vector3.BACK
 	marker.transform = Transform3D(
-		Basis.looking_at(approach_direction, reference_up),
+		Basis.looking_at(approach_direction, _pick_reference_up(approach_direction)),
 		marker_position + approach_direction * (_tunnel_overrun - 0.1)
 	)
 	add_child(marker)
