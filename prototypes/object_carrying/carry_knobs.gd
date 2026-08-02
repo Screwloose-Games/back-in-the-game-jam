@@ -177,7 +177,7 @@ const CARRY_SPIN_TRANSFER := 1.5
 
 ## Length of the line in metres. Below this the tether is limp and exerts
 ## nothing whatsoever; this is how far back the object settles under tow.
-const TETHER_LENGTH := 8.0
+const TETHER_LENGTH := 12
 
 ## Where the line is anchored on the suit, in suit-local metres: behind and
 ## a little below the eye, so the load trails rather than crowds the view.
@@ -209,57 +209,60 @@ const TETHER_SPIN_TRANSFER := 0.6
 
 # --- Rope -------------------------------------------------------------------
 #
-# The line is not a straight segment between its two ends. It catches on hull
-# geometry and bends around it, and each end is hauled along the last span of
-# the line rather than toward the far end, so a tether wrapped around a pillar
-# pulls you toward the pillar. Bends are dropped again the moment the span they
-# stood in for comes clear, which is what lets the line pay back out when you
-# come around the way you went in.
+# The line is a chain of points with segments between them that refuse to
+# stretch, simulated in tether_rope.gd. It goes round a pillar because its
+# points cannot get inside the pillar, and it comes back off when they are free
+# to move again - there is no list of bends and nothing that reasons about
+# corners.
 #
-# Wrapping eats into the same TETHER_LENGTH the straight run does: every bend
-# is more line spent, so a load that had metres of slack can go taut from
-# rounding one pillar. If it parts too readily once wrapped, TETHER_BREAK_
-# STRETCH is the knob, not these.
+# Going the long way round costs length out of the same TETHER_LENGTH the
+# straight run spends, so a load with metres of slack can pull taut from
+# rounding one pillar. If the line parts too readily once draped over
+# something, TETHER_BREAK_STRETCH is the knob, not these.
 
-## Which physics layers the line can catch on. Hull only: a rope that could
-## snag on the load it is tied to would fight itself.
-const TETHER_WRAP_LAYERS := 1
+## How far apart the rope's simulated points sit, in metres. This is what the
+## rope can wrap: it only bends where it has a point, so the spacing wants to
+## be well under the size of the things it should catch on, and it is what a
+## corner gets shaved by when the rope goes round one. Halving it doubles the
+## work every step, and the count follows TETHER_LENGTH so a longer rope stays
+## just as detailed.
+const TETHER_ROPE_SEGMENT := 0.2
 
-## How far off a surface a new bend is placed, in metres. Bends sit clear of
-## the face they were found on so that the next span cast along the rope does
-## not immediately rediscover the same face and bend again in place.
-const TETHER_WRAP_OFFSET := 0.06
+## Passes of the length constraint per step. A rope under real tension needs
+## several to pass the pull all the way down the chain; too few and it stretches
+## visibly under a heavy load.
+const TETHER_ROPE_ITERATIONS := 12
 
-## Most bends the line will hold at once. A ceiling rather than a budget:
-## reaching it means the rope stops hugging new corners and starts cutting
-## them, which is far better than an unbounded list.
-const TETHER_MAX_WRAPS := 12
+## Fraction of a rope point's speed shed per second. Nothing damps a rope in
+## vacuum, so this is here only to stop the chain ringing after a hard yank.
+## At 0.0 the rope keeps every wobble it is ever given.
+const TETHER_ROPE_DAMPING := 2.0
 
-## Closest two bends may sit, in metres. A blockage nearer than this to an
-## existing bend is not something new to bend around, it is the same edge the
-## rope is already caught on, and it gets slid past rather than bent at.
-const TETHER_MIN_WRAP_SPACING := 0.12
+## How far a segment may close up, as a fraction of its rest length, before it
+## pushes back. Real rope has thickness and will not gather into a point;
+## without this the slack all piles into one corner of the chain and a single
+## segment is left holding metres of rope in one straight run, which reads as
+## the rope ignoring everything it is lying across. 0.0 lets it collapse.
+const TETHER_ROPE_SPREAD := 0.85
 
-## How far a caught bend slides along a face per step, in metres, working its
-## way round the edge it is snagged on. Small enough that the rope does not
-## visibly jump, large enough to clear an edge in a handful of steps.
-const TETHER_CORNER_SLIDE := 0.08
+## How far off a surface a rope point rests, in metres.
+##
+## This is the margin the rope keeps for itself, and it is what stops the rope
+## being drawn inside anything. Lifting a point out of the hull and solving the
+## segment lengths pull against each other, and whatever the lengths win back
+## comes straight out of this margin: at 0.05 a hand's length of rope ends up
+## inside a pillar on a tight turn, at 0.16 it is a few centimetres at worst.
+## The cost is that the rope visibly hovers off surfaces rather than lying on
+## them, so this is a trade between a rope that floats and a rope that clips.
+const TETHER_ROPE_RADIUS := 0.16
 
-## Most casts one end of the line will spend per frame finding its way round
-## geometry. A rope coming round a corner spends several of these getting
-## there, so this wants to be comfortably above TETHER_MAX_WRAPS.
-const TETHER_WRAP_ITERATIONS := 24
+## Fraction of the along-the-wall speed a rope point loses when it scrapes.
+## 0.0 slides freely round corners, 1.0 sticks where it first touched.
+const TETHER_ROPE_FRICTION := 0.4
 
-## How far a slack line bows away from a straight run, as a fraction of the
-## slack in it. Drawing only: there is no down to hang toward in zero g, so
-## slack is shown by letting the line trail the way you came. 0.0 draws the
-## rope dead straight and slack becomes invisible.
-const TETHER_SAG_SCALE := 0.35
-
-## How many pieces each span of the line is drawn in. Only matters when
-## TETHER_SAG_SCALE is above zero, since a straight span looks the same at any
-## resolution.
-const TETHER_LINE_SEGMENTS := 8
+## Which physics layers the rope collides with. Hull only: a rope that could
+## catch on the load it is tied to, or on you, would fight itself.
+const TETHER_ROPE_LAYERS := 1
 #endregion
 
 #region Chamber
@@ -283,6 +286,20 @@ const PILLARS := [
 	{"center": Vector3(2.0, 0.0, 8.0), "size": Vector3(2.2, 14.0, 2.2)},
 	{"center": Vector3(-9.0, 0.0, 6.0), "size": Vector3(1.2, 14.0, 1.2)},
 ]
+
+## Round pillars, as centre and radius, floor to ceiling like the square ones.
+## Placed opposite a square pillar of about the same width so the two can be
+## wrapped back to back: a rope behaves differently against an edge than
+## against a curve, and this is how you tell which one you are looking at.
+const ROUND_PILLARS := [
+	{"center": Vector3(7.0, 0.0, 12.0), "radius": 0.9},
+]
+
+## How many flat faces a round pillar is built from. Its collision is those
+## same faces, so this is really the size of the corners it still has: keep the
+## chord between faces under TETHER_ROPE_SEGMENT or a rope has coarser
+## geometry to catch on here than on the square pillars.
+const ROUND_PILLAR_SIDES := 32
 
 ## How far down the room the divider wall sits, on the z axis.
 const DIVIDER_DEPTH := -13.0

@@ -74,6 +74,11 @@ func _assemble_combiner() -> void:
 			_make_brush(pillar_center, pillar_size, CSGShape3D.OPERATION_UNION)
 		)
 
+	for pillar: Dictionary in CarryKnobs.ROUND_PILLARS:
+		var pillar_center: Vector3 = pillar["center"]
+		var pillar_radius: float = pillar["radius"]
+		combiner.add_child(_make_round_brush(pillar_center, pillar_radius))
+
 	_add_divider(combiner)
 
 
@@ -104,6 +109,20 @@ func _add_divider(combiner: CSGCombiner3D) -> void:
 			CSGShape3D.OPERATION_SUBTRACTION
 		)
 	)
+
+
+## A round pillar running the full height of the room. Its collision comes from
+## the same faces it is drawn with, so ROUND_PILLAR_SIDES decides how round it
+## is to a rope as well as to the eye.
+func _make_round_brush(brush_center: Vector3, brush_radius: float) -> CSGCylinder3D:
+	var brush := CSGCylinder3D.new()
+	brush.radius = brush_radius
+	brush.height = CarryKnobs.CHAMBER_SIZE.y
+	brush.sides = CarryKnobs.ROUND_PILLAR_SIDES
+	brush.smooth_faces = true
+	brush.operation = CSGShape3D.OPERATION_UNION
+	brush.position = brush_center
+	return brush
 
 
 func _make_brush(
