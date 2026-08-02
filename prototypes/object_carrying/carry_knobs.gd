@@ -197,9 +197,26 @@ const GRIP_TWIST_DAMPING_RATIO := 0.9
 ## GRIP_MAX_FORCE.
 const GRIP_TWIST_MAX_TORQUE := 8000.0
 
+## How much of your thrust is spent moving you and the module as one body while
+## it is in your hands, from 0.0 to 1.0.
+##
+## At 0.0 thrust goes into the suit alone and the module comes along only
+## because your hands drag it after you. That is honest, and it is why a burst
+## straight up or down pitches you over: the module rides out in front of your
+## centre of mass, so the pull that gets it moving arrives on a long lever.
+##
+## At 1.0 the module gets its own share of the force directly, at its centre, so
+## the two of you set off together and thrusting does not turn you. What still
+## does is the module swinging, settling into your hands, or fetching up against
+## something, which is the part worth feeling.
+##
+## Either way a burst costs the same. The force has both masses to shift
+## whichever way it is routed.
+const GRIP_BRACED_THRUST := 1.0
+
 ## How strongly grip force applied off your centre of mass twists you. This is
-## the main tell that you are loaded - thrust with the module out to one side
-## and it slews your aim around. 0.0 makes the load purely linear.
+## the main tell that you are loaded - let the module swing out to one side and
+## hauling it back slews your aim around. 0.0 makes the load purely linear.
 const GRIP_SPIN_TRANSFER := 0.5
 
 ## The same, for the wrist spring's torque. Well under GRIP_SPIN_TRANSFER: the
@@ -220,7 +237,7 @@ const GRIP_TWIST_SPIN_TRANSFER := 0.2
 
 ## Length of the line in metres. Below this the tether is limp and exerts
 ## nothing whatsoever; this is how far back the object settles under tow.
-const TETHER_LENGTH := 12
+const TETHER_LENGTH := 10.0
 
 ## Where the line is anchored on the suit, in suit-local metres: behind and
 ## a little below the eye, so the load trails rather than crowds the view.
@@ -235,7 +252,7 @@ const TETHER_SPRING_FREQUENCY := 1.0
 ## Damping as a fraction of critical, along the line only. High enough that
 ## reaching the end of the line arrests you and leaves you there; drop it and
 ## you yo-yo on the end of the rope, which reads as elastic rather than moored.
-const TETHER_SPRING_DAMPING_RATIO := 0.7
+const TETHER_SPRING_DAMPING_RATIO := 0.1
 
 ## Ceiling on tether force in newtons, for the same reason as GRIP_MAX_FORCE.
 const TETHER_MAX_FORCE := 8000.0
@@ -299,6 +316,27 @@ const TETHER_ROPE_SPREAD := 0.85
 ## The cost is that the rope visibly hovers off surfaces rather than lying on
 ## them, so this is a trade between a rope that floats and a rope that clips.
 const TETHER_ROPE_RADIUS := 0.16
+
+## Radius the rope is drawn at, in metres. Purely how it looks; the simulation
+## knows nothing about it.
+##
+## Deliberately under TETHER_ROPE_RADIUS, which is the radius the rope actually
+## behaves as. Drawing it that thick would make it lie exactly on the surfaces
+## its points are held off, but it would also be a third of a metre across -
+## wider than the module is by a third, and thicker than its own links are long,
+## so it would pinch through itself at every bend and knot outright where a
+## slack rope doubles back. Half a hand's width reads as a heavy tether and
+## takes a bend of well over a right angle before it starts to pinch.
+##
+## What it costs is that the rope floats off surfaces by the difference. That is
+## the honest trade here: the drawn rope can lie on things or it can be a rope
+## rather than a pipe.
+const TETHER_ROPE_DRAW_RADIUS := 0.05
+
+## How many flat faces the drawn rope is built from around its circumference.
+## Six is enough for something this thin; the whole rope is rebuilt every frame,
+## so this is the one number here with a running cost.
+const TETHER_ROPE_DRAW_SIDES := 6
 
 ## Fraction of the along-the-wall speed a rope point loses when it scrapes.
 ## 0.0 slides freely round corners, 1.0 sticks where it first touched.
@@ -366,7 +404,7 @@ const CARRY_OBJECT_SIZE := 1.0
 ## a taut line moves you about seven times as far as it moves the module, and
 ## shouldering into the module barely shifts it. This is the number that makes
 ## the tether an anchor rather than a leash.
-const CARRY_OBJECT_MASS := 600.0
+const CARRY_OBJECT_MASS := 1000.0
 
 ## Mass of the module in kg while it is in your hands, swapped in on grab and
 ## back out on release.

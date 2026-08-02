@@ -23,6 +23,11 @@ extends CharacterBody3D
 ## each end is hauled along its own first length of it, so a tether taken
 ## around a pillar hauls you toward the pillar.
 ##
+## Thrusting with the module held does not go through either of them. The suit
+## and the module are given their shares of the burst directly, so they set off
+## together and the hands are left holding only the module's own wandering; see
+## _apply_thrust for why.
+##
 ## Both end at _push_link_force, which is where the two bodies actually get
 ## moved: the module gets an impulse, the suit gets the equal and opposite one.
 ## Which of them noticeably moves is decided entirely by the mass ratio, and
@@ -92,7 +97,14 @@ var _tether_strain := 0.0
 @onready var _grab_ray: RayCast3D = $HeadCamera/GrabRay
 @onready var _tether_line: MeshInstance3D = $TetherLine
 
-var _tether_mesh := ImmediateMesh.new()
+## The drawn rope: a ring of vertices around every point the rope is simulated
+## at, rebuilt every frame from wherever those points ended up.
+var _tether_mesh := ArrayMesh.new()
+var _tether_tube_vertices := PackedVector3Array()
+var _tether_tube_normals := PackedVector3Array()
+## Which vertices make which faces. The rope's point count is fixed from the
+## moment it is laid out, so this is worked out once rather than every frame.
+var _tether_tube_indices := PackedInt32Array()
 
 
 func _ready() -> void:
@@ -564,9 +576,9 @@ func _hold_anchor_clear(
 ## force with opposite signs; a rope bent around the hull does not, because
 ## whatever it is bent around absorbs the difference.
 ##
-## Both ends are pushed off centre, which is why thrusting with the module out
-## to one side slews your heading instead of just slowing you down, and why the
-## same pull that tows the module also tumbles it.
+## Both ends are pushed off centre, which is why a module swinging out to one
+## side slews your heading as the hands haul it back, and why the same pull that
+## tows the module also tumbles it.
 func _push_link_force(
 	delta: float,
 	object: RigidBody3D,
@@ -671,15 +683,125 @@ static func _find_nearest_cardinal(direction: Vector3, claimed_axis: Vector3) ->
 ## Slack needs no drawing trick now. The rope trails where its own momentum
 ## left it, which in vacuum is the honest answer to what a slack line does.
 func _update_tether_line() -> void:
-	_tether_line.visible = _tethered_object != null
-	if _tethered_object == null:
+	var rope_points := _tether_rope.read_points()
+	_tether_line.visible = _tethered_object != null and rope_points.size() >= 2
+	if not _tether_line.visible:
 		return
 
+	_build_rope_tube(rope_points)
+
+	var surface_arrays := []
+	surface_arrays.resize(Mesh.ARRAY_MAX)
+	surface_arrays[Mesh.ARRAY_VERTEX] = _tether_tube_vertices
+	surface_arrays[Mesh.ARRAY_NORMAL] = _tether_tube_normals
+	surface_arrays[Mesh.ARRAY_INDEX] = _tether_tube_indices
 	_tether_mesh.clear_surfaces()
-	_tether_mesh.surface_begin(Mesh.PRIMITIVE_LINE_STRIP)
-	for rope_point: Vector3 in _tether_rope.read_points():
-		_tether_mesh.surface_add_vertex(rope_point)
-	_tether_mesh.surface_end()
+	_tether_mesh.add_surface_from_arrays(Mesh.PRIMITIVE_TRIANGLES, surface_arrays)
+
+
+## Lays a ring of vertices across the rope at each of its points, which is what
+## gives the drawn rope a thickness the simulated chain of points does not have.
+##
+## Each ring needs a pair of axes across the rope, and nothing picks which way
+## round they go - a tube is the same shape whichever you choose. What matters
+## is that neighbouring rings agree, or the tube creases along its length, so
+## each ring leans the previous ring's axes onto its own cross-section rather
+## than choosing afresh.
+##
+## Both end rings are drawn in to nothing. That closes the tube off where it
+## meets its anchors without any geometry beyond what is already here, and the
+## taper is hidden in the module and the harness it runs into.
+func _build_rope_tube(rope_points: PackedVector3Array) -> void:
+	var point_count := rope_points.size()
+	var sides := maxi(3, CarryKnobs.TETHER_ROPE_DRAW_SIDES)
+	_resize_rope_tube(point_count, sides)
+
+	var across := Vector3.ZERO
+	for point_index: int in range(point_count):
+		var along := _measure_rope_direction(rope_points, point_index)
+		across -= along * across.dot(along)
+		# Only reachable on the first ring, which has nothing to lean, and on a
+		# rope that has doubled back hard enough to leave nothing to lean on.
+		if across.length_squared() < 0.0001:
+			across = _find_any_perpendicular(along)
+		across = across.normalized()
+		var other_across := along.cross(across)
+
+		var radius := CarryKnobs.TETHER_ROPE_DRAW_RADIUS
+		if point_index == 0 or point_index == point_count - 1:
+			radius = 0.0
+
+		var ring_center := rope_points[point_index]
+		var ring_start := point_index * sides
+		for side_index: int in range(sides):
+			var angle := TAU * float(side_index) / float(sides)
+			var outward := across * cos(angle) + other_across * sin(angle)
+			_tether_tube_vertices[ring_start + side_index] = ring_center + outward * radius
+			_tether_tube_normals[ring_start + side_index] = outward
+
+
+## Sizes the tube's arrays to the rope and works out its faces. Both only ever
+## change when the rope's point count does, which is when a line is clipped on.
+func _resize_rope_tube(point_count: int, sides: int) -> void:
+	var vertex_count := point_count * sides
+	if _tether_tube_vertices.size() == vertex_count:
+		return
+	_tether_tube_vertices.resize(vertex_count)
+	_tether_tube_normals.resize(vertex_count)
+	_tether_tube_indices.resize((point_count - 1) * sides * 6)
+
+	# Each pair of neighbouring rings is joined by a quad per side, wound the way
+	# round that leaves it facing out of the rope.
+	var index := 0
+	for ring_index: int in range(point_count - 1):
+		for side_index: int in range(sides):
+			var next_side := (side_index + 1) % sides
+			var near_first := ring_index * sides + side_index
+			var near_second := ring_index * sides + next_side
+			var far_first := near_first + sides
+			var far_second := near_second + sides
+			_tether_tube_indices[index] = near_first
+			_tether_tube_indices[index + 1] = far_first
+			_tether_tube_indices[index + 2] = far_second
+			_tether_tube_indices[index + 3] = near_first
+			_tether_tube_indices[index + 4] = far_second
+			_tether_tube_indices[index + 5] = near_second
+			index += 6
+
+
+## Which way the rope runs at one of its points, averaged from the runs either
+## side of it so the tube bends through a link rather than kinking at it.
+##
+## Averaged rather than simply taken across the point, because the two
+## neighbours of a point where the rope has folded back on itself are in nearly
+## the same place, and the line between them is noise. A ring built on a tangent
+## that has come out pointing back down the rope is wound the opposite way to
+## its neighbours, and the tube turns inside out between them.
+##
+## Where the average cancels the rope really has doubled right back, and the run
+## out of the point is the honest answer. A tube through a fold that sharp
+## pinches through itself whatever tangent it is given.
+static func _measure_rope_direction(rope_points: PackedVector3Array, point_index: int) -> Vector3:
+	var ahead := Vector3.ZERO
+	if point_index < rope_points.size() - 1:
+		ahead = (rope_points[point_index + 1] - rope_points[point_index]).normalized()
+	var behind := Vector3.ZERO
+	if point_index > 0:
+		behind = (rope_points[point_index] - rope_points[point_index - 1]).normalized()
+
+	var along := ahead + behind
+	if along.length_squared() < 0.0001:
+		along = behind if ahead.is_zero_approx() else ahead
+	if along.is_zero_approx():
+		return Vector3.BACK
+	return along.normalized()
+
+
+## Any unit vector across the direction given. Which one is immaterial: it only
+## ever seeds the first ring, and a tube has no preferred way round.
+static func _find_any_perpendicular(direction: Vector3) -> Vector3:
+	var off_axis := Vector3.UP if absf(direction.y) < 0.9 else Vector3.RIGHT
+	return direction.cross(off_axis).normalized()
 
 
 # --- Movement --------------------------------------------------------------
@@ -749,10 +871,7 @@ func _update_velocity(delta: float) -> void:
 		Input.get_axis("thrust_down", "thrust_up"),
 		Input.get_axis("thrust_forward", "thrust_back")
 	).limit_length(1.0)
-
-	velocity += (
-		global_transform.basis * thrust_input * CarryKnobs.THRUST_ACCELERATION * delta
-	)
+	_apply_thrust(delta, thrust_input)
 
 	if stabilizers_engaged:
 		velocity = velocity.lerp(
@@ -760,6 +879,47 @@ func _update_velocity(delta: float) -> void:
 		)
 
 	velocity = velocity.limit_length(CarryKnobs.MAX_SPEED)
+
+
+## Spends one frame of thruster force, braced against the module when it is in
+## your hands.
+##
+## Thrusting with a load is one force and two bodies. Put all of it into the
+## suit and the module hears about it only through your hands, which are out in
+## front of your centre of mass: the pull that gets the module moving arrives on
+## a lever arm and turns you, worst on the axes furthest from the line through
+## your hands. That is realistic and it is miserable to fly - a burst straight
+## up or down pitches you over every time.
+##
+## Bracing hands the module its own share of the force directly, at its centre,
+## so both bodies set off together and the hands are left holding only what the
+## module does on its own. That still turns you, and it is the part worth
+## feeling.
+##
+## Thrust costs the same either way. The force has both masses to shift whether
+## it reaches the module through your hands or on its own, so a braced burst
+## accelerates you at exactly what an unbraced one settles at.
+func _apply_thrust(delta: float, thrust_input: Vector3) -> void:
+	var thrust_force := (
+		global_transform.basis
+		* thrust_input
+		* CarryKnobs.THRUST_ACCELERATION
+		* CarryKnobs.PLAYER_MASS
+	)
+
+	# At full brace this is the share that leaves both bodies at the same
+	# acceleration, so the grip is left holding nothing. The rest is yours.
+	var object_share := 0.0
+	if _held_object != null:
+		object_share = (
+			CarryKnobs.GRIP_BRACED_THRUST
+			* _held_object.mass
+			/ (CarryKnobs.PLAYER_MASS + _held_object.mass)
+		)
+	if not is_zero_approx(object_share):
+		_held_object.apply_central_impulse(thrust_force * object_share * delta)
+
+	velocity += thrust_force * (1.0 - object_share) * delta / CarryKnobs.PLAYER_MASS
 
 
 # --- Collision -------------------------------------------------------------
