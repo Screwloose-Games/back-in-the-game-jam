@@ -356,17 +356,79 @@ def require_gh() -> None:
 # subcommand can set one -- hence the raw mutation. The ids are discovered by
 # name every time rather than pinned: the field is renameable from org settings,
 # and a hardcoded id would fail with something unreadable when it changed.
+#
+# The same fields can be asked for two ways, and which one is available depends
+# on the token. `organization.issueFields` needs to see the organization;
+# `repository.issueFields` returns the same fields with the same ids to anything
+# that can read the repository, which is what a workflow's GITHUB_TOKEN has.
+#
+# That is not a contradiction of the note in validate-pipeline-doc.yml about a
+# repo-scoped token being unable to see an org project. Both are true, because
+# they are about different things: the board column named filepath is a
+# *projection* of this issue field, and reading the column does need the project.
+# Reading and writing the field itself does not.
 
-ISSUE_FIELDS_QUERY = """
-query($org: String!) {
-  organization(login: $org) {
-    issueFields(first: 50) {
+# One fragment, two roots, spliced rather than f-string interpolated: GraphQL is
+# full of braces, and doubling every one of them to satisfy format() would make
+# the queries unreadable. board.py splices __CLOSED_BY__ for the same reason.
+_ISSUE_FIELD_NODES = """
       nodes {
         __typename
         ... on IssueFieldText { id name }
         ... on IssueFieldNumber { id name }
         ... on IssueFieldDate { id name }
         ... on IssueFieldSingleSelect { id name options { id name } }
+      }"""
+
+_ISSUE_FIELDS_ORG_TEMPLATE = """
+query($org: String!) {
+  organization(login: $org) {
+    issueFields(first: 50) {__NODES__
+    }
+  }
+}
+""".strip()
+
+_ISSUE_FIELDS_REPO_TEMPLATE = """
+query($owner: String!, $name: String!) {
+  repository(owner: $owner, name: $name) {
+    viewerCanSeeIssueFields
+    issueFields(first: 50) {__NODES__
+    }
+  }
+}
+""".strip()
+
+ISSUE_FIELDS_QUERY = _ISSUE_FIELDS_ORG_TEMPLATE.replace("__NODES__", _ISSUE_FIELD_NODES)
+REPO_ISSUE_FIELDS_QUERY = _ISSUE_FIELDS_REPO_TEMPLATE.replace("__NODES__", _ISSUE_FIELD_NODES)
+
+# Reading an issue is a read, so it goes through the client rather than through
+# `gh issue view` on the runner. That is not a style preference: canned_stdout
+# answers every `issue view` with DRY_RUN_NODE_ID, so a command that reads a body
+# through the runner reads "I_DRY-RUN" during a dry run and reports nonsense.
+ISSUE_BY_NUMBER_QUERY = """
+query($owner: String!, $name: String!, $number: Int!) {
+  repository(owner: $owner, name: $name) {
+    issue(number: $number) {
+      id
+      number
+      url
+      title
+      body
+      issueFieldValues(first: 20) {
+        nodes {
+          __typename
+          ... on IssueFieldTextValue {
+            value field { ... on IssueFieldText { name } } }
+          ... on IssueFieldNumberValue {
+            value field { ... on IssueFieldNumber { name } } }
+          ... on IssueFieldDateValue {
+            value field { ... on IssueFieldDate { name } } }
+          ... on IssueFieldSingleSelectValue {
+            name field { ... on IssueFieldSingleSelect { name } } }
+          ... on IssueFieldMultiSelectValue {
+            options { name } field { ... on IssueFieldMultiSelect { name } } }
+        }
       }
     }
   }
@@ -431,13 +493,12 @@ _FIELD_KINDS = {
 }
 
 
-def issue_field_ids(client: GraphQLClient, org: str) -> dict[str, IssueField]:
-    """Map organization issue-field name -> its id, kind and options."""
-    data = client.execute(ISSUE_FIELDS_QUERY, {"org": org})
-    nodes = (((data.get("organization") or {}).get("issueFields") or {}).get("nodes")) or []
-
+def _fields_from_nodes(nodes: list[dict]) -> dict[str, IssueField]:
+    """Both queries return the same node shape, so both are read the same way."""
     fields: dict[str, IssueField] = {}
     for node in nodes:
+        if not isinstance(node, dict):
+            continue
         kind = _FIELD_KINDS.get(node.get("__typename", ""))
         if not kind or not node.get("id"):
             continue
@@ -448,6 +509,123 @@ def issue_field_ids(client: GraphQLClient, org: str) -> dict[str, IssueField]:
         }
         fields[node["name"]] = IssueField(node["id"], node["name"], kind, options)
     return fields
+
+
+def issue_field_ids(client: GraphQLClient, org: str) -> dict[str, IssueField]:
+    """Map organization issue-field name -> its id, kind and options."""
+    data = client.execute(ISSUE_FIELDS_QUERY, {"org": org})
+    nodes = (((data.get("organization") or {}).get("issueFields") or {}).get("nodes")) or []
+    return _fields_from_nodes(nodes)
+
+
+def repo_issue_field_ids(client: GraphQLClient, repo: str) -> dict[str, IssueField]:
+    """The same mapping, asked for through a repository rather than the org.
+
+    `repo` is OWNER/NAME. The ids that come back are identical -- an issue field
+    belongs to the organization either way -- but this question can be answered
+    with nothing more than read access to the repository.
+    """
+    owner, _, name = repo.partition("/")
+    if not owner or not name:
+        raise TransportError(f"expected a repository as OWNER/NAME, got {repo!r}")
+    data = client.execute(REPO_ISSUE_FIELDS_QUERY, {"owner": owner, "name": name})
+    nodes = (((data.get("repository") or {}).get("issueFields") or {}).get("nodes")) or []
+    return _fields_from_nodes(nodes)
+
+
+def resolve_issue_fields(
+    client: GraphQLClient, *, repo: str = "", org: str = ""
+) -> dict[str, IssueField]:
+    """The organization's issue fields, asked for through the repository first.
+
+    Repository-first so the same code works under a workflow's GITHUB_TOKEN,
+    which can read the repository and not the organization. The org query stays
+    as the fallback so a developer's gh token behaves exactly as it did before,
+    including on a GitHub old enough not to have repository.issueFields at all.
+
+    An empty result counts as a failure worth falling back from: a token that
+    cannot see issue fields gets an empty list rather than an error.
+    """
+    first: TransportError | None = None
+
+    if repo:
+        try:
+            fields = repo_issue_field_ids(client, repo)
+            if fields:
+                return fields
+        except TransportError as exc:
+            first = exc
+
+    if org:
+        try:
+            return issue_field_ids(client, org)
+        except TransportError as exc:
+            raise first or exc from exc
+
+    if first is not None:
+        raise first
+    return {}
+
+
+def issue_field_values(issue: dict) -> dict[str, Any]:
+    """Flatten an issue's own custom fields (Priority, Effort, filepath, ...).
+
+    Lives here rather than in board.py because two queries now return this shape
+    -- the project board's, and ISSUE_BY_NUMBER_QUERY -- and one interpretation
+    of it is the point. board.py re-exports it.
+    """
+    values: dict[str, Any] = {}
+    for entry in (issue.get("issueFieldValues") or {}).get("nodes") or []:
+        if not isinstance(entry, dict):
+            continue
+        name = ((entry.get("field") or {}).get("name")) or ""
+        if not name:
+            continue
+        if entry.get("options"):
+            values[name] = ", ".join(
+                option.get("name", "") for option in entry["options"] if isinstance(option, dict)
+            )
+            continue
+        for key in ("value", "name"):
+            if entry.get(key) is not None:
+                values[name] = entry[key]
+                break
+    return values
+
+
+@dataclass(frozen=True)
+class IssueSnapshot:
+    """One issue as read, before anything is decided about it."""
+
+    id: str
+    number: int
+    url: str
+    title: str
+    body: str
+    fields: dict[str, Any] = field(default_factory=dict)
+
+
+def fetch_issue(client: GraphQLClient, repo: str, number: int) -> IssueSnapshot:
+    """Read one issue's id, body and current field values in a single request."""
+    owner, _, name = repo.partition("/")
+    if not owner or not name:
+        raise TransportError(f"expected a repository as OWNER/NAME, got {repo!r}")
+
+    data = client.execute(
+        ISSUE_BY_NUMBER_QUERY, {"owner": owner, "name": name, "number": int(number)}
+    )
+    issue = (data.get("repository") or {}).get("issue")
+    if not issue:
+        raise TransportError(f"{repo}#{number} does not exist, or the token cannot see it")
+
+    return IssueSnapshot(
+        id=str(issue.get("id") or ""),
+        number=int(issue.get("number") or number),
+        url=str(issue.get("url") or ""),
+        title=str(issue.get("title") or ""),
+        body=str(issue.get("body") or ""),
+        fields=issue_field_values(issue),
+    )
 
 
 def find_field(fields: dict[str, IssueField], name: str) -> IssueField | None:

@@ -24,6 +24,7 @@ never set the variable resolves to an empty string, producing the image tag
 |---|---|---|
 | `BUTLER_CREDENTIALS` | publish-to-itchio | itch.io butler API key. |
 | `GITHUB_TOKEN` | most | Provided automatically; no setup needed. |
+| `PIPELINE_ISSUE_FIELD_TOKEN` | sync-issue-filepath | **Optional.** Only needed if the built-in `GITHUB_TOKEN` turns out not to be allowed to write organization issue fields — the workflow falls back to it automatically. A GitHub App installation token or fine-grained PAT with organization **Issue fields: read and write** plus repository **Issues: read and write**. If the org enforces SAML SSO, authorize it for the organization. |
 
 ## Workflows
 
@@ -99,6 +100,7 @@ Blender export kept verbatim because it is the case that motivated the check.
 | Workflow | Trigger | Enforces | Blocks? |
 |---|---|---|---|
 | `validate-pipeline-doc.yml` | PR touching `documentation/pipeline/**`, `tools/pipeline/**`, `schemas/asset-pipeline.schema.json`, `.github/ISSUE_TEMPLATE/**`, or the aseprite/audio validators; manual | The asset pipeline document validates against its schema, its cross-references resolve, its screenshots still match the source diagram, `PIPELINE.md` is freshly rendered, and the conventions it declares still match the constants hardcoded in the validator scripts | Yes |
+| `sync-issue-filepath.yml` | Issue opened or edited; manual | Copies the issue body's **Save File Path** / **File Location** answer into the organization `filepath` issue field the board projects as its filepath column | Only if the token cannot write the field. An unusable or missing path is a comment, not a failure |
 
 That last clause is the useful one: `documentation/pipeline/pipeline.yaml` declares a
 `code_mirrors` list naming each constant it quotes (`FILENAME_PATTERN`,
@@ -136,6 +138,22 @@ PRs into a jam or feature branch, which is when the feedback matters most.
 **`validate-gltf-files.yml` needs an orphan `assets` branch** to store rendered previews. It creates
 one automatically on first run if missing, using `git commit-tree` plumbing so the working tree is
 never disturbed.
+
+**GitHub cannot map an issue form field onto an issue field.** A form can set the title and labels
+and nothing else — the docs say issue fields "cannot currently be pre-filled via URL query parameters
+or set through issue templates". So the **Save File Path** an artist types into
+`create_model.yaml` reaches the issue body and stops there, and the board's filepath column stays
+blank. `sync-issue-filepath.yml` is what carries it the last step, by reading the body back and
+calling `setIssueFieldValue`. Issues filed with `pipeline.py issue create` never needed it; issues
+filed in the browser are the reason it exists.
+
+**A repo-scoped token *can* read organization issue fields**, even though it cannot see an org
+project. These look like the same question and are not: `organization.issueFields` needs to see the
+organization, but `repository.issueFields` returns the same fields with the same ids to anything that
+can read the repository. The board column named `filepath` is a *projection* of an organization issue
+field — reading the column needs the project, reading and writing the field does not. That is why
+`sync-issue-filepath.yml` can run on the built-in `GITHUB_TOKEN` while
+`pipeline.py asset list --check` remains a local-only command.
 
 **Two Aseprite rules ship disabled.** `ENFORCE_TAGS_REQUIRED` and `ENFORCE_ONE_SHOT_REPEAT` in
 `.github/scripts/validate-aseprite-files.py` encode what

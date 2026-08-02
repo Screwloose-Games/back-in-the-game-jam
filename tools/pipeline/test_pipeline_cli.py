@@ -28,6 +28,7 @@ TOOLS_DIR = Path(__file__).resolve().parent
 REQUIRED_ARGS = {
     ("issue", "create"): ["--template", "create_model"],
     ("issue", "update"): ["1"],
+    ("issue", "sync-filepath"): ["1"],
     ("backlog", "new"): ["--template", "create_model"],
 }
 
@@ -58,6 +59,7 @@ def test_the_command_surface_is_exactly_this():
     assert set(cli.leaves()) == {
         ("issue", "create"),
         ("issue", "update"),
+        ("issue", "sync-filepath"),
         ("backlog", "new"),
         ("backlog", "file"),
         ("asset", "list"),

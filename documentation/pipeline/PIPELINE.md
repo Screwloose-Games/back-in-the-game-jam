@@ -205,6 +205,9 @@ Pick an unclaimed asset from the asset list and open or assign its issue.
 2. Assign yourself its "Create 3D model" issue, or open one if none exists.
 3. Note the required dimensions in metres and the destination directory.
 
+- **Recommended** — The issue's Save File Path answer is copied into the filepath issue field, which is what the board's filepath column shows.
+  - *Why:* GitHub cannot map a form field onto an issue field, so an issue opened in the browser reaches the board with a blank filepath column unless something copies the answer across. A blank column is indistinguishable from "not delivered" on the asset list. The body is the source of truth; the field is derived from it, so a wrong path is fixed by editing the issue, not the field.
+
 <sub>For agents: partly automatable. Done when: The issue is assigned and names a destination directory.</sub>
 
 ### Save a placeholder

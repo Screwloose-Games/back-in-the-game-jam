@@ -18,6 +18,7 @@ from .. import board, github, issue_forms
 from ..command import BOARD_FLAGS, DOC_FLAGS, REPO_FLAGS, WRITE_FLAGS
 from ..common import (
     EXIT_CANNOT_RUN,
+    EXIT_CHECK_FAILED,
     EXIT_OK,
     DocumentError,
     fail,
@@ -191,11 +192,25 @@ def file_issue(
         client = board.choose_client(token)
         if plan.file_path:
             set_issue_text_field(
-                runner, client, org, issue_id, PATH_FIELD_NAME, plan.file_path, warnings
+                runner,
+                client,
+                org,
+                issue_id,
+                PATH_FIELD_NAME,
+                plan.file_path,
+                warnings,
+                repo=plan.repo,
             )
         if plan.priority:
             set_issue_select_field(
-                runner, client, org, issue_id, "Priority", plan.priority, warnings
+                runner,
+                client,
+                org,
+                issue_id,
+                "Priority",
+                plan.priority,
+                warnings,
+                repo=plan.repo,
             )
 
     return url
@@ -209,6 +224,7 @@ def set_issue_select_field(
     field_name: str,
     value: str,
     warnings: list[str],
+    repo: str = "",
 ) -> None:
     """Set a single-select organization issue field, e.g. Priority.
 
@@ -217,7 +233,7 @@ def set_issue_select_field(
     reason to fail an issue that has already been created.
     """
     try:
-        fields = github.issue_field_ids(client, org)
+        fields = github.resolve_issue_fields(client, repo=repo, org=org)
         target = github.find_field(fields, field_name)
         option = target.option_id(value) if target else None
         if option is None:
@@ -251,6 +267,7 @@ def set_issue_text_field(
     field_name: str,
     value: str,
     warnings: list[str],
+    repo: str = "",
 ) -> None:
     """Set an organization issue field, degrading to a warning if it cannot.
 
@@ -259,7 +276,7 @@ def set_issue_text_field(
     board column and nothing else -- not a reason to fail a created issue.
     """
     try:
-        fields = github.issue_field_ids(client, org)
+        fields = github.resolve_issue_fields(client, repo=repo, org=org)
         target = github.find_field(fields, field_name)
         if target is None:
             available = ", ".join(sorted(fields)) or "none"
@@ -509,10 +526,17 @@ class IssueUpdateCommand:
             client = board.choose_client(args.token)
             if file_path:
                 set_issue_text_field(
-                    runner, client, args.org, issue_id, PATH_FIELD_NAME, file_path, warnings
+                    runner,
+                    client,
+                    args.org,
+                    issue_id,
+                    PATH_FIELD_NAME,
+                    file_path,
+                    warnings,
+                    repo=repo,
                 )
             if args.priority:
-                self._set_priority(runner, client, args, issue_id, warnings)
+                self._set_priority(runner, client, args, issue_id, warnings, repo=repo)
 
         if args.status:
             self._set_status(runner, args, repo, warnings)
@@ -609,9 +633,10 @@ class IssueUpdateCommand:
         args: argparse.Namespace,
         issue_id: str,
         warnings: list[str],
+        repo: str = "",
     ) -> None:
         set_issue_select_field(
-            runner, client, args.org, issue_id, "Priority", args.priority, warnings
+            runner, client, args.org, issue_id, "Priority", args.priority, warnings, repo=repo
         )
 
     def _set_status(
@@ -670,3 +695,234 @@ class IssueUpdateCommand:
             ],
             stdin=github.SET_PROJECT_SELECT_FIELD,
         )
+
+
+# -- issue sync-filepath ---------------------------------------------------
+
+# The marker exists so the comment stays findable if --edit-last ever has to go.
+COMMENT_MARKER = "<!-- pipeline:filepath-sync -->"
+
+TOKEN_REMEDIATION = (
+    "The token could not write the filepath issue field. Inside a workflow, set the\n"
+    "PIPELINE_ISSUE_FIELD_TOKEN secret to a token with organization issue-field write\n"
+    "(see .github/workflows/README.md). Locally, run:\n"
+    "    gh auth refresh -h github.com -s project"
+)
+
+
+class IssueSyncFilepathCommand:
+    """Copy the filepath an issue's body asks for into its filepath issue field.
+
+    GitHub will not do this itself. An issue form can set a title and labels, but
+    issue fields "cannot currently be pre-filled via URL query parameters or set
+    through issue templates" -- so an issue opened in the browser reaches the
+    board with a blank filepath column, while one opened by `issue create` does
+    not. This is what closes that gap, and it is the only thing that makes the
+    browser a usable way to file an asset issue.
+
+    Which template an issue came from is not recorded on it, so the answer is
+    found by its heading rather than passed in -- unlike --resync-subtasks, which
+    needs --template because splicing the wrong checklist in is worse than
+    splicing none. A body with no path heading is not an error: hand-written
+    issues and bug reports simply have nothing to sync, and say so.
+
+    Unlike `issue update --filepath`, an unusable value is reported and skipped
+    rather than refused. By the time this runs the issue exists and the reader is
+    not the person who typed the path, which is `asset list`'s reasoning rather
+    than `issue create`'s. A path that is merely nonstandard is still recorded:
+    a populated column an artist can correct beats a blank one nobody can read.
+
+    Dry run by default. The reads happen either way -- only the writes are held
+    back -- so a dry run shows the real decision, not a rehearsal of one.
+    """
+
+    name = "sync-filepath"
+    help = "copy an issue body's filepath answer into its filepath issue field"
+    parents = (BOARD_FLAGS, DOC_FLAGS, REPO_FLAGS, WRITE_FLAGS)
+
+    def add_arguments(self, parser: argparse.ArgumentParser) -> None:
+        parser.add_argument("number", type=int, help="issue number")
+        parser.add_argument("--repo", help="OWNER/NAME (default: this checkout's origin)")
+        parser.add_argument(
+            "--only-if-empty",
+            action="store_true",
+            help="leave a filepath field that already holds something",
+        )
+        parser.add_argument(
+            "--no-comment",
+            action="store_true",
+            help="do not comment on the issue when the path is unusable or nonstandard",
+        )
+
+    def run(self, args: argparse.Namespace) -> int:
+        repo = resolve_repo(args)
+        client = board.choose_client(args.token)
+
+        print(f"issue sync-filepath #{args.number}{'' if args.apply else ' (dry run)'}")
+        print_status("repo", repo)
+
+        issue = github.fetch_issue(client, repo, args.number)
+        label, raw = issue_forms.path_answer(issue.body)
+        if not raw:
+            print_status(
+                "skip",
+                f"#{args.number}",
+                f"no answer under a filepath heading{f' ({label})' if label else ''}",
+            )
+            return EXIT_OK
+
+        print_status("from", f"### {label}")
+        path, stage, status, detail = inspect_path(raw, args.doc)
+
+        runner = pick_runner(args.apply)
+        warnings: list[str] = []
+
+        if stage == "unusable" or (status == "unchecked" and "directory" in detail):
+            # A blank column reads as "nobody has filled this in yet". The
+            # template's own {placeholder} default written to the board reads as
+            # done, and is exactly what `asset list` exists to report.
+            print_status("skip", raw.strip(), detail)
+            self._comment(runner, args, repo, self._unusable_comment(raw, detail), warnings)
+            self._report(warnings)
+            return EXIT_OK
+
+        current = board.board_path_value(issue.fields, path_field=PATH_FIELD_NAME)
+        if current is not None and board.clean_path_value(current)[0].path == path:
+            print_status("ok", path, "filepath field already matches the body")
+            return EXIT_OK
+        if current and args.only_if_empty:
+            print_status("skip", path, f"filepath already set to {current}; --only-if-empty")
+            return EXIT_OK
+
+        if status in ("nonstandard", "deprecated"):
+            print_status("WARN", path, f"{status}: {detail}")
+            self._comment(runner, args, repo, self._nonstandard_comment(path, detail), warnings)
+        else:
+            # An earlier run may have complained about this issue. Now that the
+            # path is good, that complaint is worse than no comment at all -- it
+            # describes a body that no longer exists.
+            self._clear_comment(runner, args, repo, path)
+
+        print_status("set", path)
+        before = len(warnings)
+        set_issue_text_field(
+            runner, client, args.org, issue.id, PATH_FIELD_NAME, path, warnings, repo=repo
+        )
+
+        self._report(warnings)
+        if len(warnings) > before:
+            # set_issue_text_field degrades a failed write to a warning, which is
+            # right for `issue create` -- the issue exists and its body carries
+            # the path either way. It is wrong here: this command exists only to
+            # do that write, and a workflow that reports success while never
+            # setting anything is worse than one that fails loudly.
+            fail(f"could not set {PATH_FIELD_NAME} on #{args.number}", TOKEN_REMEDIATION)
+            return EXIT_CHECK_FAILED
+
+        if args.apply:
+            print(f"\nUpdated {issue.url or f'https://github.com/{repo}/issues/{args.number}'}")
+        else:
+            print("\nNothing was changed. Re-run with --apply.")
+        return EXIT_OK
+
+    # -- the pieces --------------------------------------------------------
+
+    @staticmethod
+    def _report(warnings: list[str]) -> None:
+        for warning in warnings:
+            print_status("WARN", warning)
+
+    def _unusable_comment(self, raw: str, detail: str) -> str:
+        return (
+            f"{COMMENT_MARKER}\n"
+            f"The **Save File Path** on this issue is not usable as a path, so the "
+            f"`filepath` field was left empty and this issue will show a blank "
+            f"filepath column on the board.\n\n"
+            f"> {raw.strip()}\n\n"
+            f"{detail.capitalize()}. Edit the issue body with the path the asset will "
+            f"actually live at, and this will fill itself in.\n"
+        )
+
+    def _nonstandard_comment(self, path: str, detail: str) -> str:
+        return (
+            f"{COMMENT_MARKER}\n"
+            f"The `filepath` field was set to `{path}`, but it does not match the "
+            f"naming conventions in `documentation/pipeline/pipeline.yaml`:\n\n"
+            f"> {detail}\n\n"
+            f"The value was recorded anyway so the board is not blank. Editing the "
+            f"issue body re-runs this check.\n"
+        )
+
+    def _comment(
+        self,
+        runner: github.CommandRunner,
+        args: argparse.Namespace,
+        repo: str,
+        body: str,
+        warnings: list[str],
+    ) -> None:
+        """Leave one comment, rewriting our own rather than adding another.
+
+        The workflow re-runs on every edit, so appending would turn a corrected
+        path into a thread of near-identical complaints. --edit-last rewrites the
+        current user's last comment, which under Actions is github-actions[bot],
+        and --create-if-none makes the first run still say something.
+        """
+        if args.no_comment:
+            return
+        try:
+            runner.run(
+                [
+                    "issue",
+                    "comment",
+                    str(args.number),
+                    "--repo",
+                    repo,
+                    "--edit-last",
+                    "--create-if-none",
+                    "--body-file",
+                    "-",
+                ],
+                stdin=body,
+            )
+        except github.TransportError as exc:
+            # A comment is the courtesy, not the job. Failing to leave one must
+            # not fail a run that set the field.
+            warnings.append(f"could not comment on #{args.number} ({exc})")
+
+    def _clear_comment(
+        self,
+        runner: github.CommandRunner,
+        args: argparse.Namespace,
+        repo: str,
+        path: str,
+    ) -> None:
+        """Replace a previous complaint with a one-line resolution, if there is one.
+
+        --edit-last without --create-if-none is the whole trick: it fails when
+        this user has never commented, which is the common case and not worth a
+        word. So the failure is swallowed rather than warned about, and an issue
+        that was always fine never acquires a comment at all.
+        """
+        if args.no_comment:
+            return
+        body = (
+            f"{COMMENT_MARKER}\n"
+            f"Resolved -- the `filepath` field is now set to `{path}` from the issue body.\n"
+        )
+        try:
+            runner.run(
+                [
+                    "issue",
+                    "comment",
+                    str(args.number),
+                    "--repo",
+                    repo,
+                    "--edit-last",
+                    "--body-file",
+                    "-",
+                ],
+                stdin=body,
+            )
+        except github.TransportError:
+            pass

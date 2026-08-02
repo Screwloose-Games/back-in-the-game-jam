@@ -690,6 +690,23 @@ pipelines:
               - Assign yourself its "Create 3D model" issue, or open one if none exists.
               - Note the required dimensions in metres and the destination directory.
             opened_by_issue_template: .github/ISSUE_TEMPLATE/create_model.yaml
+            rules:
+              - id: issue_records_destination
+                statement: >-
+                  The issue's Save File Path answer is copied into the filepath
+                  issue field, which is what the board's filepath column shows.
+                why: >-
+                  GitHub cannot map a form field onto an issue field, so an issue
+                  opened in the browser reaches the board with a blank filepath
+                  column unless something copies the answer across. A blank column
+                  is indistinguishable from "not delivered" on the asset list. The
+                  body is the source of truth; the field is derived from it, so a
+                  wrong path is fixed by editing the issue, not the field.
+                severity: warning
+                enforced_by:
+                  - kind: workflow
+                    path: .github/workflows/sync-issue-filepath.yml
+                    blocking: false
             outputs:
               - artifact_kind: model_spec
                 optional: true

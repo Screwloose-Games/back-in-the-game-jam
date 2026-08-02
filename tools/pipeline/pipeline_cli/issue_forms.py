@@ -23,6 +23,7 @@ from __future__ import annotations
 import re
 from dataclasses import dataclass
 from pathlib import Path
+from typing import Iterable
 
 from .common import ISSUE_TEMPLATE_DIR, DocumentError, load_doc, relative
 
@@ -231,3 +232,98 @@ def render_body(form: IssueForm, values: dict[str, str]) -> str:
         answer = (values.get(entry.id) or entry.value).strip() or NO_RESPONSE
         blocks.append(f"### {entry.label or entry.id}\n\n{answer}")
     return "\n\n".join(blocks) + "\n"
+
+
+# -- Reading a rendered body back ------------------------------------------
+
+# The inverse of render_body, for the issues this CLI did not create. An issue
+# opened in the browser carries its answers in exactly the same shape, and
+# nothing on the issue records which template produced it -- so the way back to
+# a field's answer is its heading, not its id.
+
+_HEADING_RE = re.compile(r"^### (?!#)(.*)$")
+_FENCE_RE = re.compile(r"^\s*(?:```|~~~)")
+
+
+@dataclass(frozen=True)
+class BodySection:
+    label: str  # the heading text, without the "### "
+    answer: str  # everything below it, stripped; "" for _No response_
+
+
+def split_body(body: str) -> list[BodySection]:
+    """Split a rendered issue body back into its headings and their answers.
+
+    Scanned line by line rather than matched with one MULTILINE regex, because
+    two things in a real body look like headings and are not. Fenced blocks can
+    contain anything, and create_implementation.yaml's own Subtasks default
+    contains `### Static Mesh (sm_)` -- so a regex sweep would find headings the
+    form never had. `####` is excluded for the same reason.
+    """
+    sections: list[BodySection] = []
+    label = ""
+    answer: list[str] = []
+    fenced = False
+
+    def flush() -> None:
+        if not label:
+            return
+        text = "\n".join(answer).strip()
+        sections.append(BodySection(label, "" if text == NO_RESPONSE else text))
+
+    for line in body.replace("\r\n", "\n").replace("\r", "\n").split("\n"):
+        if _FENCE_RE.match(line):
+            fenced = not fenced
+        heading = None if fenced else _HEADING_RE.match(line)
+        if heading:
+            flush()
+            label = heading.group(1).strip()
+            answer = []
+            continue
+        if label:
+            answer.append(line)
+
+    flush()
+    return sections
+
+
+def known_path_labels(directory: Path = ISSUE_TEMPLATE_DIR) -> tuple[str, ...]:
+    """Every label the templates currently use for their path field.
+
+    "Save File Path" and "File Location" today. Read off the templates rather
+    than listed here, so renaming one is not a two-file change with a silent
+    failure if you only do half of it. A template that will not parse is skipped
+    rather than fatal: one broken form must not stop a good one syncing.
+    """
+    labels: list[str] = []
+    for slug in available_slugs(directory):
+        try:
+            found = load_form(slug, directory).path_field()
+        except DocumentError:
+            continue
+        if found and found.label and found.label not in labels:
+            labels.append(found.label)
+    return tuple(labels)
+
+
+def path_answer(body: str, *, labels: Iterable[str] | None = None) -> tuple[str, str]:
+    """(heading, answer) for the body's filepath field, or ("", "") if it has none.
+
+    Known labels first, then PATH_FIELD_LABEL_RE. Exact-match-first is what keeps
+    a heading like `### Static Mesh (sm_)` from ever being considered, and the
+    regex pass is what lets a template added tomorrow with new wording still work
+    without a change here.
+    """
+    sections = split_body(body)
+    wanted = [label.casefold() for label in (labels if labels is not None else known_path_labels())]
+
+    for label in wanted:
+        for section in sections:
+            if section.label.casefold() == label:
+                return section.label, section.answer
+
+    for section in sections:
+        if PATH_FIELD_LABEL_RE.search(section.label):
+            return section.label, section.answer
+
+    return "", ""

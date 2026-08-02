@@ -191,6 +191,110 @@ def test_a_form_with_no_path_field_reports_none():
 
 
 # --------------------------------------------------------------------------
+# Reading a rendered body back
+
+GOOD_PATH = "assets/art/3d/props/rain_barrel/sm_rain_barrel.gltf"
+
+
+def rendered(slug: str, path: str = GOOD_PATH) -> str:
+    """A body for `slug` as the CLI would render it.
+
+    Checklist defaults are left alone rather than answered, because that is what
+    `issue create` does -- a list of boxes is content, not an example to replace.
+    It also matters here: those defaults are where the stray `###` headings live.
+    """
+    form = issue_forms.load_form(slug)
+    found = form.path_field()
+    assert found is not None, f"{slug} has no path field"
+    values = {
+        entry.id: (path if entry.id == found.id else "x")
+        for entry in form.fields
+        if entry.collects_input and not issue_forms.is_checklist(entry.value)
+    }
+    return issue_forms.render_body(form, values)
+
+
+def test_the_known_path_labels_are_read_off_the_templates():
+    # Two spellings across eight forms. Listed here so a third one showing up is
+    # a visible change rather than a silent one.
+    assert issue_forms.known_path_labels() == ("Save File Path", "File Location")
+
+
+def test_every_template_with_a_path_field_round_trips():
+    # The drift guard. A template edited into a shape path_answer cannot read
+    # would otherwise fail silently -- the sync would no-op and the board column
+    # would just stay blank.
+    for slug in issue_forms.available_slugs():
+        if issue_forms.load_form(slug).path_field() is None:
+            continue
+        assert issue_forms.path_answer(rendered(slug))[1] == GOOD_PATH, slug
+
+
+def test_split_body_recovers_every_field_label_in_order():
+    form = issue_forms.load_form("create_model")
+    labels = [s.label for s in issue_forms.split_body(rendered("create_model"))]
+    wanted = [e.label for e in form.fields if e.collects_input]
+    assert [label for label in labels if label in wanted] == wanted
+
+
+def test_the_path_answer_is_found_when_the_label_is_file_location():
+    # create_implementation.yaml calls it `context`, labelled "File Location".
+    label, answer = issue_forms.path_answer(rendered("create_implementation"))
+    assert label == "File Location"
+    assert answer == GOOD_PATH
+
+
+def test_a_heading_inside_a_subtasks_answer_is_not_a_field():
+    # create_implementation.yaml's Subtasks default contains "### Static Mesh
+    # (sm_)". A regex sweep for ^### would return it as a form field.
+    body = rendered("create_implementation")
+    assert "### Static Mesh (sm_)" in body, "fixture assumption changed"
+    assert issue_forms.path_answer(body)[0] == "File Location"
+
+
+def test_no_response_reads_as_no_answer():
+    body = "### Save File Path\n\n_No response_\n"
+    assert issue_forms.path_answer(body) == ("Save File Path", "")
+
+
+def test_a_multiline_answer_comes_back_whole():
+    body = "### File Location\n\nfirst/line.gltf\nsecond/line.gltf\n\n### Subtasks\n\n- [ ] a\n"
+    assert issue_forms.path_answer(body)[1] == "first/line.gltf\nsecond/line.gltf"
+
+
+def test_a_crlf_body_parses():
+    body = "### Save File Path\r\n\r\n" + GOOD_PATH + "\r\n"
+    assert issue_forms.path_answer(body)[1] == GOOD_PATH
+
+
+def test_a_heading_inside_a_fenced_block_is_not_a_field():
+    body = (
+        "### Description\n\n```\n### Save File Path\n\nnot/an/answer.gltf\n```\n\n"
+        "### Save File Path\n\n" + GOOD_PATH + "\n"
+    )
+    assert issue_forms.path_answer(body)[1] == GOOD_PATH
+
+
+def test_four_hashes_is_not_a_field_heading():
+    body = "#### Save File Path\n\nnot/an/answer.gltf\n"
+    assert issue_forms.path_answer(body) == ("", "")
+
+
+def test_a_body_with_no_path_heading_returns_nothing():
+    # bug_report.yml has no path field, and a hand-typed issue has no headings
+    # at all. Neither is an error -- there is simply nothing to sync.
+    form = issue_forms.load_form("bug_report")
+    values = {entry.id: "x" for entry in form.fields if entry.collects_input}
+    assert issue_forms.path_answer(issue_forms.render_body(form, values)) == ("", "")
+    assert issue_forms.path_answer("## Description\n\nhand written\n") == ("", "")
+
+
+def test_an_unknown_label_still_matches_by_regex():
+    # The fallback that lets a template added tomorrow work without a change here.
+    assert issue_forms.path_answer("### Destination Path\n\na/b/sm_c.gltf\n")[1] == "a/b/sm_c.gltf"
+
+
+# --------------------------------------------------------------------------
 
 
 def run_standalone() -> int:

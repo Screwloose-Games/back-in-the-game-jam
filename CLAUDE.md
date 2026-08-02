@@ -83,6 +83,10 @@ gdformat <file> && gdlint <file>                          # GDScript
   `.claude/rules/gdscript-style.md`.
 - **Commit `.import` sidecars** alongside every asset. Godot hides them in its own
   dock; check the OS file explorer.
+- **An issue's `filepath` field is derived from its body.**
+  `.github/workflows/sync-issue-filepath.yml` copies the Save File Path answer into
+  the org issue field the board shows as its filepath column, on every edit. Fix a
+  wrong path by editing the issue body — editing the field by hand gets overwritten.
 
 ## Working here
 

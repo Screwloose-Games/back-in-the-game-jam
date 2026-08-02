@@ -46,6 +46,7 @@ from .github import (  # noqa: F401 -- re-exported so board is the one import fo
     UrllibClient,
     choose_client,
     explain_transport_error,
+    issue_field_values,
 )
 
 DEFAULT_ORG = "Screwloose-Games"
@@ -479,27 +480,6 @@ def _field_values(node: dict) -> dict[str, Any]:
     return values
 
 
-def _issue_field_values(issue: dict) -> dict[str, Any]:
-    """Flatten the issue's own custom fields (Priority, Effort, filepath, ...)."""
-    values: dict[str, Any] = {}
-    for entry in (issue.get("issueFieldValues") or {}).get("nodes") or []:
-        if not isinstance(entry, dict):
-            continue
-        name = ((entry.get("field") or {}).get("name")) or ""
-        if not name:
-            continue
-        if entry.get("options"):
-            values[name] = ", ".join(
-                option.get("name", "") for option in entry["options"] if isinstance(option, dict)
-            )
-            continue
-        for key in ("value", "name"):
-            if entry.get(key) is not None:
-                values[name] = entry[key]
-                break
-    return values
-
-
 def _linked_prs(issue: dict) -> list[LinkedPR]:
     found: dict[tuple[str, int], LinkedPR] = {}
 
@@ -572,7 +552,7 @@ def build_items(pages: list[dict], path_field: str = DEFAULT_PATH_FIELD) -> list
                 ]
             if typename == "Issue":
                 item.linked_prs = _linked_prs(content)
-                item.issue_fields = _issue_field_values(content)
+                item.issue_fields = issue_field_values(content)
 
             raw = board_path_value(item.issue_fields, item.fields, path_field=path_field)
             item.paths = clean_path_value(raw)

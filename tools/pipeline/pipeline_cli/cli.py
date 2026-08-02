@@ -23,7 +23,7 @@ from .command import Group
 from .commands.asset import AssetListCommand
 from .commands.backlog import BacklogFileCommand, BacklogNewCommand
 from .commands.extract import ExtractImagesCommand
-from .commands.issue import IssueCreateCommand, IssueUpdateCommand
+from .commands.issue import IssueCreateCommand, IssueSyncFilepathCommand, IssueUpdateCommand
 from .commands.render import RenderIssueTemplatesCommand, RenderPipelineCommand
 from .common import EXIT_CANNOT_RUN, DocumentError, fail
 
@@ -37,7 +37,7 @@ GROUPS: tuple[Group, ...] = (
     Group(
         "issue",
         "open and amend the issues that track assets",
-        (IssueCreateCommand(), IssueUpdateCommand()),
+        (IssueCreateCommand(), IssueUpdateCommand(), IssueSyncFilepathCommand()),
     ),
     Group(
         "backlog",

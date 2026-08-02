@@ -12,6 +12,9 @@ on:
       - '.github/scripts/validate-aseprite-files.py'
       - '.github/scripts/validate-audio-files.py'
       - '.github/ISSUE_TEMPLATE/**'
+      # pipeline.yaml names this workflow in an enforced_by, and the validator
+      # checks that the path exists -- so renaming or removing it must re-run.
+      - '.github/workflows/sync-issue-filepath.yml'
       # Re-run (and re-test) the check itself whenever its own code changes.
       - '.github/scripts/validate-pipeline-doc.py'
       - '.github/scripts/test_validate_pipeline_doc.py'
