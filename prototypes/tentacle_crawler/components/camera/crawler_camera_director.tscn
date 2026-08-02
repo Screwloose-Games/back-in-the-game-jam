@@ -1,0 +1,14 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="./crawler_camera_director.gd" id="1_director"]
+[ext_resource type="PackedScene" path="./crawler_chase_rig.tscn" id="2_chase"]
+[ext_resource type="PackedScene" path="./crawler_orbit_rig.tscn" id="3_orbit"]
+
+[node name="CrawlerCameraDirector" type="Node3D"]
+script = ExtResource("1_director")
+
+[node name="ChaseRig" parent="." instance=ExtResource("2_chase")]
+unique_name_in_owner = true
+
+[node name="OrbitRig" parent="." instance=ExtResource("3_orbit")]
+unique_name_in_owner = true

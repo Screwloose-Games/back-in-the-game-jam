@@ -1,0 +1,12 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="./tentacle_bones.gd" id="1_bones"]
+[ext_resource type="Material" path="../../materials/anchor_pad.tres" id="2_pad"]
+
+[node name="TentacleBones" type="Node3D"]
+script = ExtResource("1_bones")
+
+[node name="AnchorPads" type="MultiMeshInstance3D" parent="."]
+unique_name_in_owner = true
+material_override = ExtResource("2_pad")
+cast_shadow = 0
