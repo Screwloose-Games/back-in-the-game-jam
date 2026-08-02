@@ -434,6 +434,46 @@ const CARRY_OBJECT_SPAWN := Vector3(0.0, 0.0, 0.0)
 const CARRY_OBJECT_LINEAR_DAMP := 0.05
 const CARRY_OBJECT_ANGULAR_DAMP := 0.05
 
+# --- Module lamp ------------------------------------------------------------
+#
+# The module carries its own light. Held, it sits a metre and a half in front of
+# your visor, which is squarely between the helmet lamp and everything you are
+# trying to steer around - carrying it unlit means hauling a shadow ahead of you
+# down the very corridor you are trying to see. Lit, the load is the reason you
+# can see rather than the reason you cannot.
+#
+# It stays lit whether or not anyone has hold of it, which also makes it
+# something you can spot across a dark chamber instead of hunting for.
+
+## Colour of the module's lamp, and of the glow on the module's own faces. One
+## value feeds both, so the thing you are carrying always looks like the source
+## of the light it is throwing. Cool against the helmet lamp's warm white, so
+## the two are told apart at a glance.
+const CARRY_OBJECT_LIGHT_COLOR := Color(0.55, 0.72, 0.95)
+
+## How far the module's lamp reaches, in metres. Kept under FOG_DEPTH_END, so
+## carrying it lights the room out to about where the fog closes in anyway.
+const CARRY_OBJECT_LIGHT_RANGE := 14.0
+
+## Brightness of the module's lamp. Held, this is most of what you see by, so it
+## is a bigger lever on how the prototype reads than anything else here.
+const CARRY_OBJECT_LIGHT_ENERGY := 2.0
+
+## How sharply the lamp falls off across its range. Higher keeps the light
+## gathered close around the module; 1.0 spreads it evenly to the edge.
+const CARRY_OBJECT_LIGHT_ATTENUATION := 1.0
+
+## How brightly the module's own faces glow. This throws no light on anything -
+## the lamp does that - it is only what keeps the module from reading as a dark
+## box sitting in the middle of a room it is supposed to be lighting.
+const CARRY_OBJECT_GLOW := 1.6
+
+## Whether the module's lamp casts shadows. Shadows are most of what makes the
+## lamp worth having, since a pillar you are about to swing the load into is
+## something you see by its shadow long before you see the pillar. They are also
+## the expensive half of it, so here is the switch.
+const CARRY_OBJECT_LIGHT_SHADOWS := true
+
 ## Where the player starts, far enough back that the object has to be found
 ## before it can be grabbed.
 const PLAYER_SPAWN := Vector3(0.0, 0.0, 6.0)

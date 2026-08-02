@@ -22,6 +22,12 @@ const HULL_LAYER := 1
 const PLAYER_LAYER := 2
 const CARRYABLE_LAYER := 8
 
+## The render layer the module's mesh is given, to itself, so the module's own
+## lamp can be told to ignore it. Nothing else uses render layers, and every
+## camera draws all of them, so this changes nothing about how it is drawn.
+const MODULE_RENDER_LAYER := 2
+const ALL_RENDER_LAYERS := 0xFFFFFFFF
+
 var _carry_object: RigidBody3D
 
 
@@ -160,8 +166,11 @@ func _spawn_carry_object() -> void:
 	object_mesh.size = object_size
 	var mesh_instance := MeshInstance3D.new()
 	mesh_instance.mesh = object_mesh
-	mesh_instance.material_override = CARRY_OBJECT_MATERIAL
+	mesh_instance.material_override = _make_glowing_material()
+	mesh_instance.layers = MODULE_RENDER_LAYER
 	_carry_object.add_child(mesh_instance)
+
+	_carry_object.add_child(_make_module_lamp())
 
 	var object_shape := BoxShape3D.new()
 	object_shape.size = object_size
@@ -170,3 +179,38 @@ func _spawn_carry_object() -> void:
 	_carry_object.add_child(collider)
 
 	add_child(_carry_object)
+
+
+## The module's lamp, sitting at its centre.
+##
+## Which means the module is wrapped right around its own light, and a lamp shut
+## inside a solid box lights nothing at all: the shadow map is rendered from in
+## there, so the six faces enclosing it put the entire room in shadow. Dropping
+## the module's mesh from this lamp's shadow casters is what opens it up, and it
+## is better than the alternatives - the mesh still casts a proper shadow under
+## the helmet lamp and anything else in the scene, and the lamp still shows you
+## every pillar between you and the walls.
+func _make_module_lamp() -> OmniLight3D:
+	var lamp := OmniLight3D.new()
+	lamp.name = "ModuleLamp"
+	lamp.light_color = CarryKnobs.CARRY_OBJECT_LIGHT_COLOR
+	lamp.light_energy = CarryKnobs.CARRY_OBJECT_LIGHT_ENERGY
+	lamp.omni_range = CarryKnobs.CARRY_OBJECT_LIGHT_RANGE
+	lamp.omni_attenuation = CarryKnobs.CARRY_OBJECT_LIGHT_ATTENUATION
+	lamp.shadow_enabled = CarryKnobs.CARRY_OBJECT_LIGHT_SHADOWS
+	lamp.shadow_caster_mask = ALL_RENDER_LAYERS & ~MODULE_RENDER_LAYER
+	return lamp
+
+
+## The module's surface, glowing in the same colour its lamp throws.
+##
+## Taken from a copy rather than set on the shared material, because the colour
+## and the strength of the glow belong with the lamp's own values in
+## carry_knobs.gd: a module that glows a different colour to the light coming
+## off it reads as lit by something else in the room.
+func _make_glowing_material() -> StandardMaterial3D:
+	var material: StandardMaterial3D = CARRY_OBJECT_MATERIAL.duplicate()
+	material.emission_enabled = true
+	material.emission = CarryKnobs.CARRY_OBJECT_LIGHT_COLOR
+	material.emission_energy_multiplier = CarryKnobs.CARRY_OBJECT_GLOW
+	return material
