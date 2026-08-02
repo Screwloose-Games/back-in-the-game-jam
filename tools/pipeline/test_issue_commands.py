@@ -245,6 +245,32 @@ def test_the_filepath_field_id_is_discovered_by_name_not_hardcoded():
     assert "setIssueFieldValue" in (mutation[1] or "")
 
 
+def test_every_graphql_write_passes_its_query_with_capital_f():
+    """gh only expands the @- stdin placeholder for -F, never for -f.
+
+    With -f the literal two characters "@-" are sent as the query and GitHub
+    rejects them at character one. Every write site got this wrong at once while
+    GhCliClient got it right, and set_issue_text_field turns the resulting
+    TransportError into a warning -- so `issue create --filepath --apply` printed
+    a warning and exited 0 while never setting anything. Asserted across all the
+    commands rather than at one call site, because that is how it went wrong.
+    """
+    for argv in (
+        [*CREATE_ARGS, "--filepath", GOOD_PATH],
+        ["issue", "update", "7", "--repo", REPO, "--filepath", GOOD_PATH],
+        ["issue", "update", "7", "--repo", REPO, "--priority", "high"],
+    ):
+        harness = Harness()
+        with harness:
+            run(argv)
+        for args in harness.runner.argv():
+            if args[:2] != ["api", "graphql"]:
+                continue
+            assert "query=@-" in args, args
+            flag = args[args.index("query=@-") - 1]
+            assert flag == "-F", f"{argv[1]} passes the query with {flag}, not -F"
+
+
 def test_no_filepath_means_no_field_mutation():
     harness = Harness()
     with harness:

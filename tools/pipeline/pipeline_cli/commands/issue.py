@@ -244,7 +244,11 @@ def set_issue_select_field(
             [
                 "api",
                 "graphql",
-                "-f",
+                # -F, not -f: gh only expands the @- placeholder for a typed
+                # field. With -f the literal string "@-" is sent as the query and
+                # the server rejects it at character one. The value fields below
+                # stay -f so nothing in them is expanded or coerced.
+                "-F",
                 "query=@-",
                 "-f",
                 f"issueId={issue_id}",
@@ -289,7 +293,11 @@ def set_issue_text_field(
             [
                 "api",
                 "graphql",
-                "-f",
+                # -F, not -f: gh only expands the @- placeholder for a typed
+                # field. With -f the literal string "@-" is sent as the query and
+                # the server rejects it at character one. The value fields below
+                # stay -f so nothing in them is expanded or coerced.
+                "-F",
                 "query=@-",
                 "-f",
                 f"issueId={issue_id}",
@@ -682,7 +690,11 @@ class IssueUpdateCommand:
             [
                 "api",
                 "graphql",
-                "-f",
+                # -F, not -f: gh only expands the @- placeholder for a typed
+                # field. With -f the literal string "@-" is sent as the query and
+                # the server rejects it at character one. The value fields below
+                # stay -f so nothing in them is expanded or coerced.
+                "-F",
                 "query=@-",
                 "-f",
                 f"projectId={meta['id']}",
