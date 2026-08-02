@@ -14,8 +14,11 @@ extends CharacterBody3D
 var angular_velocity := Vector3.ZERO
 ## True while the stabilizers are held. Read by the debug HUD.
 var stabilizers_engaged := false
+## True while sprint is held. Read by the debug HUD.
+var sprint_engaged := false
 
 var _spawn_transform: Transform3D
+var _current_speed_cap := PrototypeKnobs.MAX_SPEED
 var _accumulated_mouse_motion := Vector2.ZERO
 var _was_touching_surface := false
 var _is_mouse_captured := false
@@ -49,6 +52,7 @@ func _input(event: InputEvent) -> void:
 
 func _physics_process(delta: float) -> void:
 	stabilizers_engaged = Input.is_action_pressed("stabilize")
+	sprint_engaged = Input.is_action_pressed("sprint")
 	_update_orientation(delta)
 	_update_velocity(delta)
 	# move_and_slide reports what was hit but resolves contact its own way, so
@@ -68,6 +72,7 @@ func respawn() -> void:
 	velocity = Vector3.ZERO
 	angular_velocity = Vector3.ZERO
 	_accumulated_mouse_motion = Vector2.ZERO
+	_current_speed_cap = PrototypeKnobs.MAX_SPEED
 	_was_touching_surface = false
 	global_transform = _spawn_transform
 
@@ -152,16 +157,38 @@ func _update_velocity(delta: float) -> void:
 		Input.get_axis("thrust_forward", "thrust_back")
 	).limit_length(1.0)
 
-	velocity += (
-		global_transform.basis * thrust_input * PrototypeKnobs.THRUST_ACCELERATION * delta
-	)
+	var thrust_acceleration := PrototypeKnobs.THRUST_ACCELERATION
+	if sprint_engaged:
+		thrust_acceleration *= PrototypeKnobs.SPRINT_ACCELERATION_MULTIPLIER
+
+	velocity += global_transform.basis * thrust_input * thrust_acceleration * delta
 
 	if stabilizers_engaged:
 		velocity = velocity.lerp(
 			Vector3.ZERO, minf(PrototypeKnobs.LINEAR_STABILIZER_RATE * delta, 1.0)
 		)
 
-	velocity = velocity.limit_length(PrototypeKnobs.MAX_SPEED)
+	_update_speed_cap(delta)
+	velocity = velocity.limit_length(_current_speed_cap)
+
+
+## Tracks the ceiling the speed is clamped to. Sprint raises it immediately, so
+## the boost is there the moment Shift goes down, and lowers it gradually, so
+## releasing sprint coasts back down to MAX_SPEED instead of snapping.
+##
+## The cap stays a hard clamp throughout - easing the clamp itself rather than
+## the speed is what keeps thrust from outrunning the ceiling on the way down.
+func _update_speed_cap(delta: float) -> void:
+	var target_speed_cap := PrototypeKnobs.MAX_SPEED
+	if sprint_engaged:
+		target_speed_cap *= PrototypeKnobs.SPRINT_SPEED_MULTIPLIER
+
+	if target_speed_cap >= _current_speed_cap:
+		_current_speed_cap = target_speed_cap
+	else:
+		_current_speed_cap = move_toward(
+			_current_speed_cap, target_speed_cap, PrototypeKnobs.SPRINT_FALLOFF_RATE * delta
+		)
 
 
 ## Resolves a hull contact as an impulse rather than a flat speed penalty.

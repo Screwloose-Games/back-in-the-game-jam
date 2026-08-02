@@ -4,8 +4,8 @@ extends CanvasLayer
 ## values in prototype_knobs.gd without guessing, plus the control legend.
 
 const CONTROL_LEGEND := """WASD thrust  SPACE/CTRL up-down
-Q/E roll  SHIFT stabilizers
-R respawn  ESC free mouse"""
+Q/E roll  SHIFT sprint  R stabilizers
+TAB respawn  ESC free mouse"""
 
 @export var player_path: NodePath
 
@@ -36,6 +36,7 @@ func _process(_delta: float) -> void:
 	readout_lines.append("%5.2f m/s" % _player.get_drift_speed())
 	if _shows_tumble:
 		readout_lines.append("tumble %5.2f rad/s" % _player.angular_velocity.length())
+	readout_lines.append("sprint %s" % ("ON" if _player.sprint_engaged else "off"))
 	readout_lines.append("stabilizers %s" % ("ON" if _player.stabilizers_engaged else "off"))
 	readout_lines.append("rotation %s" % _rotation_mode_name)
 	readout_lines.append("")

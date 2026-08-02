@@ -23,10 +23,23 @@ enum RotationMode {
 const ROTATION_MODE := RotationMode.INERTIAL
 
 ## Thruster strength in metres per second squared, per axis.
-const THRUST_ACCELERATION := 10
+const THRUST_ACCELERATION := 8.0
 
 ## Ceiling on drift speed, in metres per second.
-const MAX_SPEED := 4.0
+const MAX_SPEED := 2.0
+
+## Multiplier on THRUST_ACCELERATION while sprint (Shift) is held.
+const SPRINT_ACCELERATION_MULTIPLIER := 2.0
+
+## Multiplier on MAX_SPEED while sprint is held.
+const SPRINT_SPEED_MULTIPLIER := 2.5
+
+## How fast the speed ceiling falls back to MAX_SPEED after sprint is released,
+## in metres per second squared. The ceiling rises the instant sprint is held,
+## so this only governs the way back down: without it, letting go of Shift at
+## full sprint would snap you to MAX_SPEED in a single frame. Raise it far above
+## THRUST_ACCELERATION for that hard snap.
+const SPRINT_FALLOFF_RATE := 2.0
 
 ## Radians of rotation per pixel of mouse movement.
 const MOUSE_SENSITIVITY := 0.0022
@@ -53,7 +66,7 @@ const MAX_ANGULAR_SPEED := 10.0
 ## stabilizers, in either mode.
 const ANGULAR_DRAG := 1.0
 
-## Fraction of drift speed shed per second while stabilizers (Shift) are held.
+## Fraction of drift speed shed per second while stabilizers (R) are held.
 const LINEAR_STABILIZER_RATE := 4.0
 
 ## Fraction of tumble rate shed per second while stabilizers are held.
