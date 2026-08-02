@@ -10,14 +10,35 @@ config_version=5
 
 [application]
 
-config/name="HorrorSpaceMiner"
-config/features=PackedStringArray("4.7", "Forward Plus")
+config/name="Godot Jam Template"
+config/version="0.1.0"
+run/main_scene="res://common/ui/main_menu/main_menu.tscn"
+config/features=PackedStringArray("4.7", "GL Compatibility")
 config/icon="res://icon.svg"
+
+[autoload]
+
+GlobalSignalBus="*res://globals/global_signal_bus.gd"
+SceneManager="*res://globals/scene_manager.gd"
+SceneTransitionManager="*res://globals/scene_transition_manager.gd"
+GameSettings="*res://globals/game_settings.tscn"
+SoundManager="*res://globals/sound_manager/SoundManager.tscn"
+_mcp_game_helper="*res://addons/godot_ai/runtime/game_helper.gd"
 
 [display]
 
+window/size/viewport_width=1280
+window/size/viewport_height=720
 window/stretch/mode="canvas_items"
 window/stretch/aspect="expand"
+
+[editor_plugins]
+
+enabled=PackedStringArray("res://addons/godot_ai/plugin.cfg")
+
+[gui]
+
+theme/custom_font="res://common/fonts/futura medium bt.ttf"
 
 [input]
 
@@ -90,3 +111,6 @@ reset_player={
 [rendering]
 
 rendering_device/driver.windows="d3d12"
+renderer/rendering_method="gl_compatibility"
+renderer/rendering_method.mobile="gl_compatibility"
+textures/vram_compression/import_etc2_astc=true

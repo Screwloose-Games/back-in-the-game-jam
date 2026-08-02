@@ -1,0 +1,64 @@
+name: Build and Push Validate GLTF Container
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+    paths:
+      - 'tools/gltf-validator/**'
+      - '.github/workflows/build-and-push-gltf-validator.yml'
+
+permissions:
+  contents: read
+  packages: write
+
+jobs:
+  build-push-validate-gltf:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # GHCR rejects uppercase characters in image names, but the repo slug is
+      # mixed case (Screwloose-Games/...), so lowercase it.
+      #
+      # Derived from GITHUB_REPOSITORY, not GITHUB_REPOSITORY_OWNER. Owner alone
+      # is not unique: every repo in the org resolves to the same
+      # ghcr.io/<org>/gltf-validator, and a GHCR package belongs to whichever
+      # repo first created it. A second repo in the same org then gets
+      # 403 Forbidden pushing to a package it does not own -- with `packages:
+      # write` set and the login step reporting success, because the token is
+      # fine and the authorisation is per-package.
+      #
+      # Including the repo gives every repo and fork its own package, linked to
+      # itself automatically on first push. That is what the previous comment
+      # here claimed to do; scoping by owner only ever achieved it for forks in
+      # a *different* account.
+      #
+      # Must stay in step with the same expression in validate-gltf-files.yml --
+      # if they disagree, the PR pulls an image this job never pushed.
+      - name: Resolve image name
+        id: image
+        run: echo "name=ghcr.io/${GITHUB_REPOSITORY,,}/gltf-validator" >> "$GITHUB_OUTPUT"
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and cache Docker image
+        uses: docker/build-push-action@v6
+        with:
+          context: ./tools/gltf-validator
+          push: true
+          tags: |
+            ${{ steps.image.outputs.name }}:latest
+            ${{ steps.image.outputs.name }}:${{ github.sha }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
