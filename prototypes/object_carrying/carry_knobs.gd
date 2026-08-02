@@ -78,9 +78,10 @@ const COLLISION_SPIN_TRANSFER := 1.5
 ## after the initial impact has been resolved.
 const SCRAPE_FRICTION := 1.5
 
-## The player's mass in kg. It weighs collisions against loose bodies, and it
-## is half of the mass ratio that decides whether you move the carried object
-## or it moves you - compare it against CARRY_OBJECT_MASS.
+## The player's mass in kg. It weighs collisions against loose bodies, and it is
+## half of the mass ratio that decides whether you move the module or it moves
+## you - compare it against CARRY_OBJECT_HELD_MASS for hauling and against
+## CARRY_OBJECT_MASS for being reeled in on the tether.
 const PLAYER_MASS := 90.0
 #endregion
 
@@ -107,73 +108,115 @@ const HELMET_LAMP_RANGE := 40
 
 #region Carrying
 #
-# You do not carry anything in zero g, you hold onto it. Both carry modes are
-# a spring between a point on your suit and the point on the object you
-# grabbed, and both pull on each end: the object gets an impulse, you get the
-# equal and opposite one. Everything about how a load feels comes out of that
-# spring and the mass on the far end of it.
+# You do not carry anything in zero g, you hold onto it. Two things can hold
+# onto the module at once and they are independent: your hands (the grip) and
+# the line clipped to your harness (the tether). Both are springs between the
+# suit and the module, and both pull on each end - the module gets an impulse,
+# you get the equal and opposite one.
 #
-# Every spring here is specified as a frequency and a damping ratio rather
-# than raw stiffness, and the actual stiffness is derived per object from the
-# two masses. That keeps these numbers meaningful on their own - "a 2.5 Hz
-# wobble, slightly underdamped" - and means changing CARRY_OBJECT_MASS does
-# not force a retune.
-
-enum CarryMode {
-	## Held at arm's length, right where you grabbed it. The spring has no
-	## slack, so the object answers your every move immediately and sits in
-	## the middle of your view the whole time.
-	GRIP,
-	## Roped to a harness point behind you. The line does nothing until it
-	## pulls taut, so the object trails well back and stays out of your way,
-	## and every correction arrives late and through one axis. It also catches
-	## on the hull and bends around it, so where the pull comes from depends on
-	## what you have taken the rope past.
-	TETHER,
-}
-
-## Which mode a fresh run starts in. Either way T switches live, so this is
-## only about which one you want to be holding when the scene opens.
-const CARRY_MODE := CarryMode.GRIP
+# Every spring here is specified as a frequency and a damping ratio rather than
+# raw stiffness, and the actual stiffness is derived per link from the two
+# masses. That keeps these numbers meaningful on their own - "a 2.2 Hz wobble,
+# nearly critically damped" - and means changing either mass does not force a
+# retune. What the masses do change is who moves, and that is the whole
+# difference between hauling the module and being anchored to it.
 
 ## How far the grab ray reaches, in metres. Measured from the eye, so it wants
-## to stay short: this is arm's reach, not a tractor beam. Shared by both
-## modes - a tether is thrown by hand here, not fired.
+## to stay short: this is arm's reach, not a tractor beam. Shared by the hands
+## and the tether clip - the line is clipped on by hand here, not fired.
 const GRAB_RANGE := 2.0
 
-## Natural frequency of the grip spring in hertz. Low is a slack, rubbery hold
-## that lets the object trail well behind you; high is a firm clamp that turns
-## you and the object into something close to one rigid mass.
-const CARRY_SPRING_FREQUENCY := 2.5
+# --- Grip -------------------------------------------------------------------
+#
+# Two hands, not one. Each takes its own point on the module and gets its own
+# spring, and two springs a shoulder's width apart hold the module square:
+# every way the module could turn out of your hands except one shows up as the
+# two springs disagreeing, and a pair of opposed pulls is a couple that unwinds
+# it. A single anchor can only haul the module's centre about and let it pivot
+# freely on the grab point, which is what made a one-handed hold swing.
+#
+# The one turn two hands cannot hold is a roll about the line running through
+# them. GRIP_TWIST_* is the wrist stiffness that holds that one.
 
-## Damping as a fraction of critical. 1.0 pulls the object into place without
+## Distance between the hands in metres, straddling the point you aimed at.
+## This is the lever the pair of springs works through, so it sets how hard the
+## grip resists the module turning in your hands: halve it and the module is
+## four times easier to twist. Too wide and a small module ends up held by two
+## points hanging in space either side of it.
+const GRIP_HAND_SEPARATION := 0.7
+
+## Where the module's centre ends up once it is settled in your hands, in
+## suit-local metres. Negative z is forward, so this is out in front and a
+## little below the eye. Push it further out and the module stops filling the
+## view but gains leverage over your heading.
+const GRIP_CARRY_OFFSET := Vector3(0.0, -0.5, -1.5)
+
+## Seconds spent easing from the pose you caught the module in to the carry
+## pose. The hands take hold with no tension whatever angle you came in at, and
+## this is how long they take to bring it square and in front of you. Short
+## enough and taking hold reads as a snatch; at 0.0 the module jumps into place
+## the instant you press grab.
+const GRIP_SETTLE_TIME := 0.55
+
+## Natural frequency of each hand's spring in hertz. Low is a slack, rubbery
+## hold that lets the module trail and wallow; high is a firm clamp that turns
+## you and the module into something close to one rigid body. The pair is
+## derated so this stays the frequency of the grip as a whole rather than of
+## one hand.
+const GRIP_SPRING_FREQUENCY := 2.2
+
+## Damping as a fraction of critical. 1.0 brings the module into place without
 ## overshooting, below that it swings past and settles, and near 0.0 it
-## oscillates on the end of the grip more or less forever.
-const CARRY_SPRING_DAMPING_RATIO := 0.6
+## oscillates in your hands more or less forever. Kept high: a heavy module
+## that visibly bounces on the way to the carry pose reads as light.
+const GRIP_SPRING_DAMPING_RATIO := 0.9
 
-## Ceiling on grip force in newtons. Nothing should reach it in normal play;
-## it is here so a single bad frame - a deep collision, a stall - cannot
-## launch either body across the chamber.
-const CARRY_MAX_FORCE := 4000.0
+## Ceiling on grip force in newtons, across both hands. Nothing should reach it
+## in normal play; it is here so a single bad frame - a deep collision, a stall
+## - cannot launch either body across the chamber. Keep it above what the
+## springs make at GRIP_BREAK_DISTANCE, or the grip saturates instead of
+## letting go.
+const GRIP_MAX_FORCE := 20000.0
 
-## How far the grip can stretch, in metres, before it slips and lets go. This
-## is what stops the link reading as a rubber band: yank hard enough, or drive
-## the object into something solid hard enough, and you simply lose it.
-const CARRY_BREAK_DISTANCE := 1.2
+## How far a hand can be pulled off its hold, in metres, before the grip slips
+## and both let go. This is what stops the link reading as a rubber band: yank
+## hard enough, or drive the module into something solid hard enough, and you
+## simply lose it.
+const GRIP_BREAK_DISTANCE := 1.2
+
+## Natural frequency of the wrist spring in hertz, resisting a roll about the
+## line through your hands. Below GRIP_SPRING_FREQUENCY because wrists are the
+## weakest part of a two-handed hold. 0.0 lets the module spin freely on that
+## one axis while staying held on every other.
+const GRIP_TWIST_FREQUENCY := 2.0
+
+## Damping as a fraction of critical for the wrist spring.
+const GRIP_TWIST_DAMPING_RATIO := 0.9
+
+## Ceiling on wrist torque in newton-metres, for the same reason as
+## GRIP_MAX_FORCE.
+const GRIP_TWIST_MAX_TORQUE := 8000.0
 
 ## How strongly grip force applied off your centre of mass twists you. This is
-## the main tell that you are loaded - thrust while the object is off to one
-## side and it slews your aim around. 0.0 makes the load purely linear.
-const CARRY_SPIN_TRANSFER := 1.5
+## the main tell that you are loaded - thrust with the module out to one side
+## and it slews your aim around. 0.0 makes the load purely linear.
+const GRIP_SPIN_TRANSFER := 0.5
+
+## The same, for the wrist spring's torque. Well under GRIP_SPIN_TRANSFER: the
+## reaction to squaring the module up should be felt, not fought.
+const GRIP_TWIST_SPIN_TRANSFER := 0.2
 
 # --- Tether ----------------------------------------------------------------
 #
-# The same two-body spring, with two changes that account for the whole
-# difference in feel. It anchors to a harness point behind you rather than at
-# your hands, and it goes completely slack below its length, so it only ever
-# pulls and only ever along its own line. The object ends up trailing you at
-# TETHER_LENGTH, out of your view until you turn to look for it, and it stops
-# answering small corrections at all.
+# The same two-body spring, anchored to a harness point behind you rather than
+# at your hands, and completely slack below its length, so it only ever pulls
+# and only ever along its own line.
+#
+# Which end of it moves is not set here - it comes out of the mass ratio. The
+# module is CARRY_OBJECT_MASS while nobody is holding it, several times what
+# the suit weighs, so a taut line reels you in toward the module rather than
+# dragging the module after you. That is what makes it an anchor: to get past
+# the length of the line you have to unclip, not out-thrust it.
 
 ## Length of the line in metres. Below this the tether is limp and exerts
 ## nothing whatsoever; this is how far back the object settles under tow.
@@ -185,16 +228,17 @@ const TETHER_LENGTH := 12
 const TETHER_ANCHOR_OFFSET := Vector3(0.0, -0.25, 0.45)
 
 ## Natural frequency of the tether spring in hertz, applied only to the
-## stretch past TETHER_LENGTH. Deliberately below CARRY_SPRING_FREQUENCY: a
+## stretch past TETHER_LENGTH. Deliberately below GRIP_SPRING_FREQUENCY: a
 ## rope that snaps taut as hard as a hand grip would defeat the point.
-const TETHER_SPRING_FREQUENCY := 1.2
+const TETHER_SPRING_FREQUENCY := 1.0
 
-## Damping as a fraction of critical, along the line only. Low leaves the
-## object bouncing on the end of the tether after every stop.
-const TETHER_SPRING_DAMPING_RATIO := 0.4
+## Damping as a fraction of critical, along the line only. High enough that
+## reaching the end of the line arrests you and leaves you there; drop it and
+## you yo-yo on the end of the rope, which reads as elastic rather than moored.
+const TETHER_SPRING_DAMPING_RATIO := 0.7
 
-## Ceiling on tether force in newtons, for the same reason as CARRY_MAX_FORCE.
-const TETHER_MAX_FORCE := 4000.0
+## Ceiling on tether force in newtons, for the same reason as GRIP_MAX_FORCE.
+const TETHER_MAX_FORCE := 8000.0
 
 ## How far past TETHER_LENGTH the line can stretch before it parts, in metres.
 ## Measured as stretch rather than absolute distance, so it stays meaningful
@@ -203,9 +247,9 @@ const TETHER_BREAK_STRETCH := 1.5
 
 ## How strongly tether force twists you. The anchor sits behind your centre of
 ## mass, so a taut line already tends to swing you around to face away from
-## the load; keep this well under CARRY_SPIN_TRANSFER or towing turns into
-## fighting your own heading.
-const TETHER_SPIN_TRANSFER := 0.6
+## the load; keep this well under GRIP_SPIN_TRANSFER or being reeled in turns
+## into fighting your own heading.
+const TETHER_SPIN_TRANSFER := 0.25
 
 # --- Rope -------------------------------------------------------------------
 #
@@ -312,13 +356,32 @@ const DIVIDER_THICKNESS := 0.8
 ## momentum rather than of clearance.
 const DIVIDER_GAP := Vector2(5.0, 5.0)
 
-## Edge length of the carried object in metres. Big enough that the grab point
-## is well off its centre of mass, which is what makes it swing.
+## Edge length of the module in metres. It wants to stay comfortably wider than
+## GRIP_HAND_SEPARATION, so both hands land on the module rather than out in
+## space either side of it.
 const CARRY_OBJECT_SIZE := 1.0
 
-## Mass of the carried object in kg. Against PLAYER_MASS of 90 this is roughly
-## four suits: you can move it, but every correction costs you.
-const CARRY_OBJECT_MASS := 45.0
+## Mass of the module in kg while nobody has hold of it - drifting, or on the
+## end of the tether. Against PLAYER_MASS of 90 this is most of seven suits, so
+## a taut line moves you about seven times as far as it moves the module, and
+## shouldering into the module barely shifts it. This is the number that makes
+## the tether an anchor rather than a leash.
+const CARRY_OBJECT_MASS := 600.0
+
+## Mass of the module in kg while it is in your hands, swapped in on grab and
+## back out on release.
+##
+## Physically a cheat, and the reason for it is that one mass cannot serve both
+## jobs: heavy enough to be an anchor is heavy enough that you can barely haul
+## it, and light enough to haul is light enough to tow around on a string. Read
+## it as bracing against the module and using it as a reaction mass rather than
+## fighting it at arm's length.
+##
+## What it buys, against a 90 kg suit thrusting at THRUST_ACCELERATION: your
+## thrusters make 900 N, and 900 N into the 290 kg of you and the module comes
+## out at about 3.1 m/s^2, so hauling it costs you two thirds of your
+## acceleration. Raise it and the module wins more of that argument.
+const CARRY_OBJECT_HELD_MASS := 200.0
 
 ## Where the object starts, and where R returns it to. Sits just inside
 ## FOG_DEPTH_END from PLAYER_SPAWN, so it is dimly visible on the first frame

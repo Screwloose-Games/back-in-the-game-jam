@@ -9,7 +9,7 @@ extends CanvasLayer
 
 const CONTROL_LEGEND := """WASD thrust  SPACE/CTRL up-down
 Q/E roll  SHIFT stabilizers
-F grab-release  T carry mode (drops load)
+F grab-release  T clip-unclip tether
 R respawn  ESC free mouse"""
 
 ## Nothing within reach.
@@ -46,7 +46,8 @@ func _process(_delta: float) -> void:
 	readout_lines.append("tumble %5.2f rad/s" % _player.angular_velocity.length())
 	readout_lines.append("stabilizers %s" % ("ON" if _player.stabilizers_engaged else "off"))
 	readout_lines.append("rotation %s" % _rotation_mode_name)
-	readout_lines.append(_describe_carry_link())
+	readout_lines.append(_describe_grip())
+	readout_lines.append(_describe_tether())
 	readout_lines.append("")
 	readout_lines.append(CONTROL_LEGEND)
 	_readout.text = "\n".join(readout_lines)
@@ -54,39 +55,38 @@ func _process(_delta: float) -> void:
 	_crosshair.color = _pick_crosshair_color()
 
 
-## Strain is shown against the distance the active mode gives out at, so a
-## number closing on its limit is a warning that the load is about to be lost.
-## A tether also reports the length of its whole shape and how much longer that
-## is than the straight line between its ends: whether the rope has gone taut,
-## and how much of it is going the long way round, are the two things you are
-## watching for.
-func _describe_carry_link() -> String:
-	var mode_key: String = CarryKnobs.CarryMode.keys()[_player.get_carry_mode()]
-	var mode_name := mode_key.to_lower()
+## The mass shown is the module's live mass, which is the point: it drops when
+## the hands take hold and goes back up when they let go, and that swap is what
+## decides whether the module is something you haul or something you are moored
+## to. Strain is shown against the distance the grip gives out at, so a number
+## closing on its limit is a warning that the module is about to be lost.
+func _describe_grip() -> String:
 	var held_object := _player.get_held_object()
 	if held_object == null:
-		return "%s %s" % [mode_name, "READY" if _player.get_targeted_object() != null else "empty"]
-
-	if _player.get_carry_mode() == CarryKnobs.CarryMode.TETHER:
-		return (
-			"%s HELD %.0f kg  %4.2f / %4.2f m  taut %4.2f / %4.2f  drape %4.2f"
-			% [
-				mode_name,
-				held_object.mass,
-				_player.get_link_distance(),
-				CarryKnobs.TETHER_LENGTH,
-				_player.get_link_strain(),
-				_player.get_link_break_distance(),
-				_player.get_tether_drape(),
-			]
-		)
+		return "grip %s" % ("READY" if _player.get_targeted_object() != null else "empty")
 	return (
-		"%s HELD %.0f kg  strain %4.2f / %4.2f m"
+		"grip HELD %.0f kg  strain %4.2f / %4.2f m"
+		% [held_object.mass, _player.get_grip_strain(), CarryKnobs.GRIP_BREAK_DISTANCE]
+	)
+
+
+## Whether the rope has gone taut, and how much of it is going the long way
+## round, are the two things you are watching for, so the tether reports the
+## length of its whole shape and how much longer that is than the straight line
+## between its ends.
+func _describe_tether() -> String:
+	var tethered_object := _player.get_tethered_object()
+	if tethered_object == null:
+		return "tether %s" % ("READY" if _player.get_targeted_object() != null else "unclipped")
+	return (
+		"tether CLIPPED %.0f kg  %4.2f / %4.2f m  taut %4.2f / %4.2f  drape %4.2f"
 		% [
-			mode_name,
-			held_object.mass,
-			_player.get_link_strain(),
-			_player.get_link_break_distance(),
+			tethered_object.mass,
+			_player.get_tether_distance(),
+			CarryKnobs.TETHER_LENGTH,
+			_player.get_tether_strain(),
+			CarryKnobs.TETHER_BREAK_STRETCH,
+			_player.get_tether_drape(),
 		]
 	)
 

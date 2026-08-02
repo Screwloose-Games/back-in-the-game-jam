@@ -2,25 +2,33 @@ class_name CarrierPlayer
 extends CharacterBody3D
 
 ## Six-degrees-of-freedom suit-thruster controller that can take hold of a
-## heavy object and haul it around.
+## heavy module and haul it around.
 ##
 ## The suit itself behaves exactly as it does in the navigation prototype:
 ## thrust along the body's own axes, momentum that persists, no world "up".
-## What is new is the carry link. Aim at a carryable, press grab, and a spring
-## is strung between a point on your suit and the point you grabbed. That
-## spring pulls on both ends every frame, so hauling something is a genuine
-## two-body problem - you tow it, it tows you, and the mass ratio decides who
-## wins.
+## What is new is the two ways of being attached to the module, which are
+## independent - either, both, or neither can be live at once.
 ##
-## There are two ways to be attached, switchable live so they can be compared
-## back to back. GRIP anchors at the hands with no slack, so the load answers
-## instantly and rides in the middle of your view. TETHER anchors behind you
-## on a rope that does nothing until it pulls taut, so the load trails out of
-## sight and only ever pulls along the line. That rope is simulated as a chain
-## of points that collide with the hull (see tether_rope.gd), and each end is
-## hauled along its own first length of it, so a tether taken around a pillar
-## hauls you toward the pillar. Both modes end at _push_link_force, which is
-## where the two bodies actually get moved.
+## The GRIP is two hands. Each takes its own point on the module and gets its
+## own spring, and because the two pull toward two points fixed to the suit,
+## every way the module could turn out of your hands shows up as the springs
+## disagreeing and unwinds itself. That is what one anchor could not do: it can
+## only haul the module's centre about while it pivots freely on the grab
+## point. The one turn a pair of hands cannot hold is a roll about the line
+## running through them, and _apply_grip_twist holds that.
+##
+## The TETHER is a rope clipped to a harness point behind you. It does nothing
+## until it pulls taut, and then only pulls along its own line. It is simulated
+## as a chain of points that collide with the hull (see tether_rope.gd), and
+## each end is hauled along its own first length of it, so a tether taken
+## around a pillar hauls you toward the pillar.
+##
+## Both end at _push_link_force, which is where the two bodies actually get
+## moved: the module gets an impulse, the suit gets the equal and opposite one.
+## Which of them noticeably moves is decided entirely by the mass ratio, and
+## the module has two masses. Held, it is heavy enough that hauling it costs
+## most of your thrust. Let go of, it is heavier still, which is what makes a
+## taut tether reel you in toward the module rather than towing it after you.
 ##
 ## Every tunable value lives in carry_knobs.gd.
 
@@ -35,36 +43,49 @@ var _accumulated_mouse_motion := Vector2.ZERO
 var _was_touching_surface := false
 var _is_mouse_captured := false
 
-## The object currently on the end of the link, or null.
+## The module currently in your hands, or null.
 var _held_object: RigidBody3D
-## A carryable the grab ray is on right now, held or not. Read by the HUD so
-## the crosshair can say "this is grabbable" before you commit.
+## The module currently on the end of the tether, or null. Nothing ties this to
+## _held_object: you can be holding what you are clipped to, clipped to
+## something you have set down, or neither.
+var _tethered_object: RigidBody3D
+## A carryable the grab ray is on right now, attached or not. Read by the HUD
+## so the crosshair can say "this is grabbable" before you commit.
 var _targeted_object: RigidBody3D
-## Where the link meets the object, in the object's local space. Fixed at the
-## moment of grabbing, so the object keeps being held by the corner you
-## actually reached for.
-var _object_local_anchor := Vector3.ZERO
-## Where the link meets the suit, in the suit's local space. In GRIP this is
-## the point the ray hit, recorded as it stood, which is what makes attaching
-## jolt-free - the spring opens with no tension and only builds it once you
-## move. In TETHER it is the fixed harness point behind you instead.
-var _suit_local_anchor := Vector3.ZERO
-## Which of the two ways of being attached is active. Switchable at runtime.
-var _carry_mode := CarryKnobs.CarryMode.GRIP
-## The simulated rope, used by TETHER only. GRIP is a straight spring between
-## two points and has no shape to keep.
+
+## Where each hand has hold of the module, in the module's local space. Fixed
+## at the moment of grabbing and empty whenever nothing is held.
+var _hand_object_anchors: Array[Vector3] = []
+## The module's pose in suit-local space at the moment it was caught, and the
+## pose it is being eased toward. The hands pull toward a blend of the two, so
+## taking hold opens at zero tension whatever angle you came in at.
+var _grip_start_pose := Transform3D.IDENTITY
+var _grip_carry_pose := Transform3D.IDENTITY
+## How far along the ease from one to the other, 0 to 1.
+var _grip_settle := 0.0
+## What the module weighed before it was picked up, restored when it is let go.
+var _held_object_free_mass := 0.0
+## The furthest either hand has been pulled off its hold, in metres. Reaches
+## GRIP_BREAK_DISTANCE at the instant the grip slips. Read by the HUD.
+var _grip_strain := 0.0
+
+## Where the tether is clipped to the module, in the module's local space, and
+## to the suit, in the suit's.
+var _tether_object_anchor := Vector3.ZERO
+var _tether_suit_anchor := Vector3.ZERO
+## The simulated rope. The grip is a pair of straight springs and has no shape
+## to keep, so this belongs to the tether alone.
 var _tether_rope := TetherRope.new()
-## Length of the link right now, in metres: straight between the anchors in
-## GRIP, measured along the rope's whole shape in TETHER. Read by the HUD.
-var _link_distance := 0.0
+## Length of the rope along its whole shape, in metres. Read by the HUD.
+var _tether_distance := 0.0
 ## How much longer the rope is than the straight line between its anchors, in
-## metres. Zero in GRIP. It is the readable sign that the rope has gone the
-## long way round something. Read by the HUD.
-var _link_drape := 0.0
-## How far the link is stretched past what it holds for free, in metres: the
-## whole distance in GRIP, only the part past TETHER_LENGTH in TETHER. It is
-## what is measured against get_link_break_distance().
-var _link_strain := 0.0
+## metres. It is the readable sign that the rope has gone the long way round
+## something. Read by the HUD.
+var _tether_drape := 0.0
+## How far the rope is stretched past TETHER_LENGTH, in metres. Zero while it
+## is slack, and reaches TETHER_BREAK_STRETCH as the line parts. Read by the
+## HUD.
+var _tether_strain := 0.0
 
 @onready var _head_camera: Camera3D = $HeadCamera
 @onready var _helmet_lamp: SpotLight3D = $HeadCamera/HelmetLamp
@@ -79,7 +100,6 @@ func _ready() -> void:
 	# CarryKnobs.PLAYER_SPAWN before it enters the tree; the pose it arrives
 	# with is the one R returns to.
 	_spawn_transform = global_transform
-	_carry_mode = CarryKnobs.CARRY_MODE
 	_head_camera.far = CarryKnobs.CAMERA_FAR
 	_helmet_lamp.spot_range = CarryKnobs.HELMET_LAMP_RANGE
 	_grab_ray.target_position = Vector3(0.0, 0.0, -CarryKnobs.GRAB_RANGE)
@@ -113,12 +133,12 @@ func _physics_process(delta: float) -> void:
 	_update_orientation(delta)
 	# Aim has already moved this frame, so the ray reports what the crosshair
 	# is actually on. Grabbing is polled here rather than handled in _input for
-	# the same reason - the ray has to be current before the link is decided.
+	# the same reason - the ray has to be current before a link is decided.
 	_update_grab_target()
-	if Input.is_action_just_pressed("toggle_carry_mode"):
-		_toggle_carry_mode()
 	if Input.is_action_just_pressed("grab"):
-		_toggle_hold()
+		_toggle_grip()
+	if Input.is_action_just_pressed("toggle_tether"):
+		_toggle_tether()
 
 	_update_velocity(delta)
 	_apply_carry_force(delta)
@@ -136,9 +156,14 @@ func get_drift_speed() -> float:
 	return velocity.length()
 
 
-## The object on the end of the link, or null if empty-handed.
+## The module in your hands, or null if empty-handed.
 func get_held_object() -> RigidBody3D:
 	return _held_object
+
+
+## The module on the end of the tether, or null if unclipped.
+func get_tethered_object() -> RigidBody3D:
+	return _tethered_object
 
 
 ## The carryable under the crosshair and within reach, or null.
@@ -146,41 +171,35 @@ func get_targeted_object() -> RigidBody3D:
 	return _targeted_object
 
 
-## Which of the two ways of being attached is active right now.
-func get_carry_mode() -> CarryKnobs.CarryMode:
-	return _carry_mode
+## The furthest either hand has been pulled off its hold, in metres. Zero when
+## empty-handed, and it reaches GRIP_BREAK_DISTANCE as the grip slips.
+func get_grip_strain() -> float:
+	return _grip_strain
 
 
-## Length of the link, in metres, measured the way the active mode measures it.
-## Zero when nothing is held.
-func get_link_distance() -> float:
-	return _link_distance
+## Length of the rope along its whole shape, in metres. Zero when unclipped.
+func get_tether_distance() -> float:
+	return _tether_distance
 
 
 ## How much longer the rope is than the straight line between its anchors, in
-## metres. Zero in GRIP, near zero on a taut clear run, and climbing as the
-## rope drapes over things or gathers slack behind you.
+## metres. Near zero on a taut clear run, and climbing as the rope drapes over
+## things or gathers slack behind you.
 func get_tether_drape() -> float:
-	return _link_drape
+	return _tether_drape
 
 
-## How far the link is stretched past what it holds for free, in metres. Zero
-## when nothing is held, and zero on a slack tether. It reaches
-## get_link_break_distance() at the instant the link parts.
-func get_link_strain() -> float:
-	return _link_strain
+## How far the rope is stretched past TETHER_LENGTH, in metres. Zero while it
+## is slack, and it reaches TETHER_BREAK_STRETCH as the line parts.
+func get_tether_strain() -> float:
+	return _tether_strain
 
 
-## The strain the active mode gives out at, in metres.
-func get_link_break_distance() -> float:
-	if _carry_mode == CarryKnobs.CarryMode.TETHER:
-		return CarryKnobs.TETHER_BREAK_STRETCH
-	return CarryKnobs.CARRY_BREAK_DISTANCE
-
-
-## Returns the player to their starting pose, fully at rest and empty-handed.
+## Returns the player to their starting pose, fully at rest, empty-handed and
+## unclipped.
 func respawn() -> void:
-	release_object()
+	release_grip()
+	unclip_tether()
 	velocity = Vector3.ZERO
 	angular_velocity = Vector3.ZERO
 	_accumulated_mouse_motion = Vector2.ZERO
@@ -188,13 +207,26 @@ func respawn() -> void:
 	global_transform = _spawn_transform
 
 
-## Lets go. The object keeps whatever momentum it had - nothing is zeroed, so
-## releasing mid-haul leaves it coasting away on its own.
-func release_object() -> void:
+## Lets go with the hands. The module keeps whatever momentum it had - nothing
+## is zeroed, so releasing mid-haul leaves it coasting away on its own - but it
+## gets its free mass back, so what drifts off is heavier than what you were
+## holding. Any tether stays clipped on.
+func release_grip() -> void:
+	if _held_object != null:
+		_held_object.mass = _held_object_free_mass
 	_held_object = null
-	_link_distance = 0.0
-	_link_strain = 0.0
-	_link_drape = 0.0
+	_hand_object_anchors = []
+	_grip_settle = 0.0
+	_grip_strain = 0.0
+
+
+## Unclips the line. What you were moored to keeps drifting wherever it was
+## going; you keep whatever the line had already done to you.
+func unclip_tether() -> void:
+	_tethered_object = null
+	_tether_distance = 0.0
+	_tether_strain = 0.0
+	_tether_drape = 0.0
 
 
 func capture_mouse() -> void:
@@ -222,132 +254,251 @@ func _update_grab_target() -> void:
 	_targeted_object = _grab_ray.get_collider() as RigidBody3D
 
 
-func _toggle_hold() -> void:
+func _toggle_grip() -> void:
 	if _held_object != null:
-		release_object()
+		release_grip()
 	elif _targeted_object != null:
-		_attach_to(_targeted_object, _grab_ray.get_collision_point())
+		_take_hold_of(_targeted_object, _grab_ray.get_collision_point())
 
 
-## Switching drops whatever is held. The two modes anchor to different points
-## on the suit, so carrying across a switch would jump the load from your
-## hands to your back or the reverse, under whatever tension it was already
-## under.
-func _toggle_carry_mode() -> void:
-	release_object()
-	if _carry_mode == CarryKnobs.CarryMode.GRIP:
-		_carry_mode = CarryKnobs.CarryMode.TETHER
-	else:
-		_carry_mode = CarryKnobs.CarryMode.GRIP
+func _toggle_tether() -> void:
+	if _tethered_object != null:
+		unclip_tether()
+	elif _targeted_object != null:
+		_clip_tether_to(_targeted_object, _grab_ray.get_collision_point())
 
 
-## Anchors the object end at the point the ray hit, in the object's own frame,
-## so it keeps being held by the corner you actually reached for.
+## Puts both hands on the module, straddling the point the ray hit along your
+## own right axis, and records where the module was so it can be brought square
+## from there.
 ##
-## The suit end depends on the mode. GRIP records the same world point in the
-## suit's frame, so both ends start coincident and the spring opens with no
-## tension - taking hold reads as latching on rather than the object snapping
-## to a carry pose. TETHER ignores the hit point and clips the line to the
-## harness, where it will hang slack until you pull away.
-func _attach_to(object: RigidBody3D, grab_point: Vector3) -> void:
+## The hands hold fixed points on the module, so where they land is what the
+## grip is working with from then on. What moves is the pose they pull those
+## points toward: it starts as the pose the module is already in, which is what
+## makes taking hold jolt-free, and eases to the carry pose over
+## GRIP_SETTLE_TIME.
+##
+## The carry pose is squared up to the nearest axis rather than to a nominal
+## upright, because on a roughly cubic module every face is as good as any
+## other and rotating one most of a turn to reach a particular one would read
+## as the module being wrestled rather than caught.
+func _take_hold_of(object: RigidBody3D, grab_point: Vector3) -> void:
 	_held_object = object
-	_object_local_anchor = object.global_transform.affine_inverse() * grab_point
-	if _carry_mode == CarryKnobs.CarryMode.TETHER:
-		_suit_local_anchor = CarryKnobs.TETHER_ANCHOR_OFFSET
-		_tether_rope.reset(grab_point, global_transform * _suit_local_anchor)
-	else:
-		_suit_local_anchor = global_transform.affine_inverse() * grab_point
-	_link_distance = 0.0
-	_link_strain = 0.0
-	_link_drape = 0.0
+	_held_object_free_mass = object.mass
+	object.mass = CarryKnobs.CARRY_OBJECT_HELD_MASS
+
+	var object_inverse := object.global_transform.affine_inverse()
+	var half_span := global_transform.basis.x * CarryKnobs.GRIP_HAND_SEPARATION * 0.5
+	_hand_object_anchors = [
+		object_inverse * (grab_point - half_span),
+		object_inverse * (grab_point + half_span),
+	]
+
+	_grip_start_pose = global_transform.affine_inverse() * object.global_transform
+	_grip_carry_pose = Transform3D(
+		_snap_basis_to_axes(_grip_start_pose.basis), CarryKnobs.GRIP_CARRY_OFFSET
+	)
+	_grip_settle = 0.0
+	_grip_strain = 0.0
 
 
-## Measures the link and hands the active mode the two points it runs between.
+## Clips the line to the point the ray hit, in the module's own frame, and to
+## the harness at the other end, where it hangs slack until you pull away.
+func _clip_tether_to(object: RigidBody3D, clip_point: Vector3) -> void:
+	_tethered_object = object
+	_tether_object_anchor = object.global_transform.affine_inverse() * clip_point
+	_tether_suit_anchor = CarryKnobs.TETHER_ANCHOR_OFFSET
+	_tether_rope.reset(clip_point, global_transform * _tether_suit_anchor)
+	_tether_distance = 0.0
+	_tether_strain = 0.0
+	_tether_drape = 0.0
+
+
+## Runs whichever links are live. They are independent and both push the same
+## two bodies, so hauling the module on a leash is simply both of them at once.
 func _apply_carry_force(delta: float) -> void:
+	_apply_grip_force(delta)
+	_apply_tether_force(delta)
+
+
+## Two springs with no slack, one per hand, each pulling its hold back onto the
+## point of the suit it belongs to. Together they fight sideways drift as hard
+## as they fight the module trailing behind, and any twist between the two
+## holds comes out as a couple that squares the module back up.
+func _apply_grip_force(delta: float) -> void:
 	if _held_object == null:
 		return
 
-	var suit_point := global_transform * _suit_local_anchor
-	var object_point := _held_object.global_transform * _object_local_anchor
-	var object_lever_arm := object_point - _held_object.global_position
-	# The link is anchored to a point on the object's surface, so the object's
-	# spin contributes to how fast that point is moving.
-	var object_point_velocity := (
-		_held_object.linear_velocity + _held_object.angular_velocity.cross(object_lever_arm)
+	_grip_settle = minf(
+		_grip_settle + delta / maxf(CarryKnobs.GRIP_SETTLE_TIME, 0.0001), 1.0
 	)
+	var target_pose := global_transform * _blend_toward_carry_pose()
 
-	if _carry_mode == CarryKnobs.CarryMode.TETHER:
-		_apply_tether_force(
-			delta, suit_point, object_point, object_lever_arm, object_point_velocity
-		)
-	else:
-		_apply_grip_force(delta, suit_point, object_point, object_lever_arm, object_point_velocity)
+	# Two springs in parallel between the same pair of bodies are twice the
+	# spring one of them is, so each hand gets its share of the pair's reduced
+	# mass. That keeps GRIP_SPRING_FREQUENCY the frequency of the grip as a
+	# whole rather than of one hand, and holds it there if the hand count ever
+	# changes.
+	var hand_count := _hand_object_anchors.size()
+	var reduced_mass := _measure_reduced_mass(_held_object) / float(hand_count)
+	var angular_frequency := TAU * CarryKnobs.GRIP_SPRING_FREQUENCY
+	var stiffness := reduced_mass * angular_frequency * angular_frequency
+	var damping := 2.0 * CarryKnobs.GRIP_SPRING_DAMPING_RATIO * angular_frequency * reduced_mass
+	var force_ceiling := CarryKnobs.GRIP_MAX_FORCE / float(hand_count)
 
+	# Both hands are measured before either is pushed, because the grip slips as
+	# a unit: one hand torn off its hold means the module is gone, and letting
+	# the other spend a frame hauling on its own would fling it as it went.
+	var hand_points := PackedVector3Array()
+	var suit_points := PackedVector3Array()
+	_grip_strain = 0.0
+	for anchor: Vector3 in _hand_object_anchors:
+		var hand_point := _held_object.global_transform * anchor
+		var suit_point := target_pose * anchor
+		hand_points.append(hand_point)
+		suit_points.append(suit_point)
+		_grip_strain = maxf(_grip_strain, hand_point.distance_to(suit_point))
 
-## A spring with no slack, pulling the two anchors back together in every
-## direction at once. That is what makes GRIP feel like a hand: it fights
-## sideways drift as hard as it fights the object trailing behind.
-func _apply_grip_force(
-	delta: float,
-	suit_point: Vector3,
-	object_point: Vector3,
-	object_lever_arm: Vector3,
-	object_point_velocity: Vector3
-) -> void:
-	var separation := suit_point - object_point
-	_link_distance = separation.length()
-	_link_strain = _link_distance
-	if _link_strain > CarryKnobs.CARRY_BREAK_DISTANCE:
-		# Stretched past what the grip can hold. Giving out is what keeps it
-		# from reading as a rubber band on a hard yank.
-		release_object()
+	if _grip_strain > CarryKnobs.GRIP_BREAK_DISTANCE:
+		# Pulled further than the grip can hold. Giving out is what keeps it from
+		# reading as a rubber band on a hard yank.
+		release_grip()
 		return
 
-	var relative_velocity := object_point_velocity - velocity
-	var angular_frequency := TAU * CarryKnobs.CARRY_SPRING_FREQUENCY
-	var reduced_mass := _measure_reduced_mass()
-	var stiffness := reduced_mass * angular_frequency * angular_frequency
-	var damping := 2.0 * CarryKnobs.CARRY_SPRING_DAMPING_RATIO * angular_frequency * reduced_mass
-	var grip_force := (separation * stiffness - relative_velocity * damping).limit_length(
-		CarryKnobs.CARRY_MAX_FORCE
+	for index: int in range(hand_points.size()):
+		var hand_point := hand_points[index]
+		var suit_point := suit_points[index]
+		var object_lever_arm := hand_point - _held_object.global_position
+		# Both ends of a hand are points on a spinning body rather than centres
+		# of mass, so both spins feed how fast the gap is opening. Damping
+		# against the suit's own tumble as well as its drift is most of what
+		# stops the module wallowing when you turn.
+		var hand_velocity := (
+			_held_object.linear_velocity + _held_object.angular_velocity.cross(object_lever_arm)
+		)
+		var suit_point_velocity := (
+			velocity + _read_world_spin().cross(suit_point - global_position)
+		)
+		var relative_velocity := hand_velocity - suit_point_velocity
+		var grip_force := (
+			(suit_point - hand_point) * stiffness - relative_velocity * damping
+		).limit_length(force_ceiling)
+		_push_link_force(
+			delta,
+			_held_object,
+			grip_force,
+			object_lever_arm,
+			-grip_force,
+			suit_point,
+			CarryKnobs.GRIP_SPIN_TRANSFER
+		)
+
+	_apply_grip_twist(delta, target_pose.basis)
+
+
+## Holds the one turn a pair of hands cannot: a roll about the line running
+## through them. The hands are two points, and a rigid body is free to spin
+## about the axis joining any two of its points no matter how hard they are
+## held, so without this the module rolls between your palms while staying
+## perfectly held on every other axis.
+##
+## Read it as wrist stiffness. It is deliberately the weakest part of the grip.
+func _apply_grip_twist(delta: float, target_basis: Basis) -> void:
+	if is_zero_approx(CarryKnobs.GRIP_TWIST_FREQUENCY) or _hand_object_anchors.size() < 2:
+		return
+
+	var object_pose := _held_object.global_transform
+	var hand_span := (
+		object_pose * _hand_object_anchors[1] - object_pose * _hand_object_anchors[0]
 	)
-	_push_link_force(
-		delta, grip_force, object_lever_arm, -grip_force, suit_point, CarryKnobs.CARRY_SPIN_TRANSFER
+	if hand_span.is_zero_approx():
+		return
+	var twist_axis := hand_span.normalized()
+
+	# Only the part of the orientation error that runs along the hand axis is
+	# this spring's business. Everything else is already the two hands' job, and
+	# answering it here as well would double the stiffness they were tuned at.
+	var orientation_error := _measure_rotation(
+		target_basis * object_pose.basis.orthonormalized().inverse()
+	)
+	var twist_error := orientation_error.dot(twist_axis)
+	var twist_rate := (_held_object.angular_velocity - _read_world_spin()).dot(twist_axis)
+
+	var moment_of_inertia := _measure_inertia_about(twist_axis)
+	var angular_frequency := TAU * CarryKnobs.GRIP_TWIST_FREQUENCY
+	var stiffness := moment_of_inertia * angular_frequency * angular_frequency
+	var damping := (
+		2.0 * CarryKnobs.GRIP_TWIST_DAMPING_RATIO * angular_frequency * moment_of_inertia
+	)
+	var torque := clampf(
+		twist_error * stiffness - twist_rate * damping,
+		-CarryKnobs.GRIP_TWIST_MAX_TORQUE,
+		CarryKnobs.GRIP_TWIST_MAX_TORQUE
+	)
+
+	var angular_impulse := twist_axis * torque * delta
+	_held_object.apply_torque_impulse(angular_impulse)
+	_add_spin_from_angular_impulse(-angular_impulse, CarryKnobs.GRIP_TWIST_SPIN_TRANSFER)
+
+
+## The suit-local pose the hands are pulling the module toward this frame,
+## eased from where it was caught to where it is carried.
+func _blend_toward_carry_pose() -> Transform3D:
+	var eased := smoothstep(0.0, 1.0, _grip_settle)
+	var blended_rotation := _grip_start_pose.basis.get_rotation_quaternion().slerp(
+		_grip_carry_pose.basis.get_rotation_quaternion(), eased
+	)
+	return Transform3D(
+		Basis(blended_rotation), _grip_start_pose.origin.lerp(_grip_carry_pose.origin, eased)
 	)
 
 
 ## A rope: nothing at all below its length, and past that a pull along its own
-## line and no other. The object is free to drift sideways, swing, and fall
+## line and no other. The module is free to drift sideways, swing, and fall
 ## behind, and only ever gets hauled back along the line - which is the whole
 ## reason it stays out of your view.
 ##
+## Which end the haul actually moves is not decided here. It falls out of the
+## mass ratio at _push_link_force, and a module nobody is holding weighs several
+## times what the suit does, so going taut reels you back toward the module. To
+## get past the end of the line you have to unclip.
+##
 ## The line is measured along the rope's whole shape, not end to end, so a rope
 ## that has gone the long way round something has already spent that length.
-func _apply_tether_force(
-	delta: float,
-	suit_point: Vector3,
-	object_point: Vector3,
-	object_lever_arm: Vector3,
-	object_point_velocity: Vector3
-) -> void:
+func _apply_tether_force(delta: float) -> void:
+	if _tethered_object == null:
+		return
+
+	var suit_point := global_transform * _tether_suit_anchor
+	var object_point := _tethered_object.global_transform * _tether_object_anchor
+	var object_lever_arm := object_point - _tethered_object.global_position
+	# The line is clipped to a point on the module's surface, so the module's
+	# spin contributes to how fast that point is moving.
+	var object_point_velocity := (
+		_tethered_object.linear_velocity
+		+ _tethered_object.angular_velocity.cross(object_lever_arm)
+	)
+
 	# Both ends have to sit outside the hull before the rope is asked to hang
 	# off them. The harness point rides behind you, further out than the suit's
 	# own collider reaches, so hugging a pillar to get the rope round it puts
 	# the anchor inside the pillar - and the rope, which has no choice but to
-	# start where it is tied, goes in after it. The load's grab point does the
+	# start where it is tied, goes in after it. The module's clip point does the
 	# same when it is dragged up against something.
 	var space_state := get_world_3d().direct_space_state
 	suit_point = _hold_anchor_clear(space_state, global_position, suit_point)
-	object_point = _hold_anchor_clear(space_state, _held_object.global_position, object_point)
+	object_point = _hold_anchor_clear(
+		space_state, _tethered_object.global_position, object_point
+	)
 
 	_tether_rope.step(delta, space_state, object_point, suit_point)
-	_link_distance = _tether_rope.measure_length()
-	_link_drape = _link_distance - _tether_rope.measure_span()
-	_link_strain = maxf(_link_distance - CarryKnobs.TETHER_LENGTH, 0.0)
-	if _link_strain > CarryKnobs.TETHER_BREAK_STRETCH:
-		release_object()
+	_tether_distance = _tether_rope.measure_length()
+	_tether_drape = _tether_distance - _tether_rope.measure_span()
+	_tether_strain = maxf(_tether_distance - CarryKnobs.TETHER_LENGTH, 0.0)
+	if _tether_strain > CarryKnobs.TETHER_BREAK_STRETCH:
+		unclip_tether()
 		return
-	if is_zero_approx(_link_strain):
+	if is_zero_approx(_tether_strain):
 		return
 
 	# Each end is hauled along its own first length of rope rather than toward
@@ -367,17 +518,18 @@ func _apply_tether_force(
 	var stretch_rate := velocity.dot(suit_direction) + object_point_velocity.dot(object_direction)
 
 	var angular_frequency := TAU * CarryKnobs.TETHER_SPRING_FREQUENCY
-	var reduced_mass := _measure_reduced_mass()
+	var reduced_mass := _measure_reduced_mass(_tethered_object)
 	var stiffness := reduced_mass * angular_frequency * angular_frequency
 	var damping := 2.0 * CarryKnobs.TETHER_SPRING_DAMPING_RATIO * angular_frequency * reduced_mass
 
 	# A rope pulls and never pushes, so damping can soften the haul but must
 	# not be allowed to invert it into a shove.
-	var tension := maxf(_link_strain * stiffness + stretch_rate * damping, 0.0)
+	var tension := maxf(_tether_strain * stiffness + stretch_rate * damping, 0.0)
 	tension = minf(tension, CarryKnobs.TETHER_MAX_FORCE)
 
 	_push_link_force(
 		delta,
+		_tethered_object,
 		-object_direction * tension,
 		object_lever_arm,
 		-suit_direction * tension,
@@ -412,18 +564,19 @@ func _hold_anchor_clear(
 ## force with opposite signs; a rope bent around the hull does not, because
 ## whatever it is bent around absorbs the difference.
 ##
-## Both ends are pushed off centre, which is why thrusting with the load out to
-## one side slews your heading instead of just slowing you down, and why the
-## same pull that tows the object also tumbles it.
+## Both ends are pushed off centre, which is why thrusting with the module out
+## to one side slews your heading instead of just slowing you down, and why the
+## same pull that tows the module also tumbles it.
 func _push_link_force(
 	delta: float,
+	object: RigidBody3D,
 	object_force: Vector3,
 	object_lever_arm: Vector3,
 	suit_force: Vector3,
 	suit_point: Vector3,
 	spin_transfer: float
 ) -> void:
-	_held_object.apply_impulse(object_force * delta, object_lever_arm)
+	object.apply_impulse(object_force * delta, object_lever_arm)
 
 	var suit_velocity_change := suit_force * delta / CarryKnobs.PLAYER_MASS
 	velocity = (velocity + suit_velocity_change).limit_length(CarryKnobs.MAX_SPEED)
@@ -431,25 +584,95 @@ func _push_link_force(
 		_add_spin_from_impulse(suit_velocity_change, suit_point, spin_transfer)
 
 
-## The effective mass of the two-body pair. Deriving stiffness from this keeps
-## a spring's frequency meaningful on its own whatever the object weighs. What
-## does change with mass is who moves: the same force divided by 350 kg barely
-## shifts the object, divided by 90 kg it throws the player around.
-func _measure_reduced_mass() -> float:
-	return 1.0 / (1.0 / CarryKnobs.PLAYER_MASS + 1.0 / _held_object.mass)
+## The effective mass of the two-body pair. Deriving stiffness from this keeps a
+## spring's frequency meaningful on its own whatever the module weighs. What
+## does change with mass is who moves: the same force divided by 600 kg barely
+## shifts the module, divided by 90 kg it throws the player around.
+func _measure_reduced_mass(object: RigidBody3D) -> float:
+	return 1.0 / (1.0 / CarryKnobs.PLAYER_MASS + 1.0 / object.mass)
+
+
+## The held module's moment of inertia about a world-space axis, in kg m^2.
+##
+## Taken from the physics server rather than assumed, so the wrist spring's
+## frequency stays honest for a module of any shape and does not have to be
+## retuned every time its mass is changed.
+func _measure_inertia_about(world_axis: Vector3) -> float:
+	var body_state := PhysicsServer3D.body_get_direct_state(_held_object.get_rid())
+	# Falls back on treating the module as its mass a metre out. Only reachable
+	# if the body has left the physics world mid-frame.
+	if body_state == null:
+		return _held_object.mass
+	var inverse_inertia := world_axis.dot(body_state.inverse_inertia_tensor * world_axis)
+	if inverse_inertia <= 0.0:
+		return _held_object.mass
+	return 1.0 / inverse_inertia
+
+
+## The suit's tumble in world space. angular_velocity is kept in body-local
+## axes, which is the wrong frame for anything comparing it against a rigid
+## body's own spin.
+func _read_world_spin() -> Vector3:
+	return global_transform.basis * angular_velocity
+
+
+## A rotation expressed as the axis it turns about scaled by how far it turns,
+## in radians. This is what makes an orientation error something a spring can
+## work on: it is a vector, so it can be projected onto one axis and the rest
+## left to whatever else is holding the module.
+static func _measure_rotation(rotation_basis: Basis) -> Vector3:
+	var rotation := Quaternion(rotation_basis.orthonormalized())
+	# Every rotation has a second representation turning the long way round the
+	# other direction, and it is the one that reads as most of a turn of error
+	# where there is almost none. Negating picks the short way.
+	if rotation.w < 0.0:
+		rotation = -rotation
+	var angle := rotation.get_angle()
+	if is_zero_approx(angle):
+		return Vector3.ZERO
+	return rotation.get_axis() * angle
+
+
+## The axis-aligned orientation nearest the one given.
+##
+## Squaring a roughly cubic module up to a nominal upright would mean rotating
+## it up to half a turn to reach a face indistinguishable from the one already
+## facing you. This takes the short way instead: pick the cardinal each of the
+## module's own axes is closest to already.
+static func _snap_basis_to_axes(source: Basis) -> Basis:
+	var snapped_z := _find_nearest_cardinal(source.z, Vector3.ZERO)
+	var snapped_y := _find_nearest_cardinal(source.y, snapped_z)
+	return Basis(snapped_y.cross(snapped_z), snapped_y, snapped_z)
+
+
+## The signed cardinal axis a direction points most nearly along, skipping the
+## one line already spoken for so the result can be part of a valid basis.
+static func _find_nearest_cardinal(direction: Vector3, claimed_axis: Vector3) -> Vector3:
+	var cardinals := [
+		Vector3.RIGHT, Vector3.LEFT, Vector3.UP, Vector3.DOWN, Vector3.BACK, Vector3.FORWARD
+	]
+	var nearest := Vector3.RIGHT
+	var best_alignment := -INF
+	for candidate: Vector3 in cardinals:
+		if not is_zero_approx(candidate.dot(claimed_axis)):
+			continue
+		var alignment := candidate.dot(direction)
+		if alignment > best_alignment:
+			best_alignment = alignment
+			nearest = candidate
+	return nearest
 
 
 ## Draws the rope through the points it is actually simulated at. Worth having
-## even though nothing about it is physical: on a tether the load spends most
-## of its time behind you and out of the lamp, and this is the only thing
+## even though nothing about it is physical: the module you are moored to spends
+## most of its time behind you and out of the lamp, and this is the only thing
 ## telling you where it is, what it is caught on, and whether it has gone taut.
 ##
 ## Slack needs no drawing trick now. The rope trails where its own momentum
 ## left it, which in vacuum is the honest answer to what a slack line does.
 func _update_tether_line() -> void:
-	var shows_tether := _held_object != null and _carry_mode == CarryKnobs.CarryMode.TETHER
-	_tether_line.visible = shows_tether
-	if not shows_tether:
+	_tether_line.visible = _tethered_object != null
+	if _tethered_object == null:
 		return
 
 	_tether_mesh.clear_surfaces()
@@ -684,15 +907,26 @@ func _apply_impact_spin(along_surface: Vector3, contact_point: Vector3) -> void:
 
 
 ## Turns a velocity change applied somewhere other than the centre of mass into
-## body spin. The transfer factor stands in for a moment of inertia the suit
-## does not model, so it is a feel dial rather than a physical quantity.
+## body spin.
 func _add_spin_from_impulse(
 	velocity_change: Vector3, application_point: Vector3, transfer: float
 ) -> void:
 	var lever_arm := application_point - global_position
-	var world_torque := lever_arm.cross(velocity_change)
+	_add_spin_from_angular_impulse(
+		lever_arm.cross(velocity_change * CarryKnobs.PLAYER_MASS), transfer
+	)
 
-	# angular_velocity is held in body-local axes, so the torque has to come
+
+## Adds a world-space angular impulse to the suit's own tumble. The transfer
+## factor, divided through by a mass standing in for a moment of inertia the
+## suit does not model, is a feel dial rather than a physical quantity.
+func _add_spin_from_angular_impulse(world_angular_impulse: Vector3, transfer: float) -> void:
+	# angular_velocity is held in body-local axes, so the impulse has to come
 	# back out of world space before it can be added.
-	angular_velocity += global_transform.basis.inverse() * world_torque * transfer
+	angular_velocity += (
+		global_transform.basis.inverse()
+		* world_angular_impulse
+		* transfer
+		/ CarryKnobs.PLAYER_MASS
+	)
 	angular_velocity = angular_velocity.limit_length(CarryKnobs.MAX_ANGULAR_SPEED)
