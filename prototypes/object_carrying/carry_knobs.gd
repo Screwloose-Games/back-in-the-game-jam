@@ -197,22 +197,25 @@ const GRIP_TWIST_DAMPING_RATIO := 0.9
 ## GRIP_MAX_FORCE.
 const GRIP_TWIST_MAX_TORQUE := 8000.0
 
-## How much of your thrust is spent moving you and the module as one body while
-## it is in your hands, from 0.0 to 1.0.
+## How much of the suit's own manoeuvring - thrust, and the stabilizers braking
+## - moves you and the module as one body while it is in your hands, from 0.0 to
+## 1.0.
 ##
-## At 0.0 thrust goes into the suit alone and the module comes along only
-## because your hands drag it after you. That is honest, and it is why a burst
-## straight up or down pitches you over: the module rides out in front of your
-## centre of mass, so the pull that gets it moving arrives on a long lever.
+## At 0.0 it all goes into the suit alone and the module comes along only because
+## your hands drag it after you. That is honest, and it is why a burst straight
+## up or down pitches you over, and why braking out of one pitches you back: the
+## module rides out in front of your centre of mass, so the pull that gets it
+## moving, or stops it, arrives on a long lever.
 ##
 ## At 1.0 the module gets its own share of the force directly, at its centre, so
-## the two of you set off together and thrusting does not turn you. What still
-## does is the module swinging, settling into your hands, or fetching up against
-## something, which is the part worth feeling.
+## the two of you set off and pull up together and manoeuvring does not turn you.
+## What still does is the module swinging, settling into your hands, or fetching
+## up against something, which is the part worth feeling.
 ##
-## Either way a burst costs the same. The force has both masses to shift
-## whichever way it is routed.
-const GRIP_BRACED_THRUST := 1.0
+## Either way it costs the same. The force has both masses to shift whichever way
+## it is routed, so a load has always made you slower to get going and slower to
+## stop - bracing only stops it throwing your aim around while it does.
+const GRIP_BRACING := 1.0
 
 ## How strongly grip force applied off your centre of mass twists you. This is
 ## the main tell that you are loaded - let the module swing out to one side and

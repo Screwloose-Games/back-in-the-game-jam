@@ -23,10 +23,10 @@ extends CharacterBody3D
 ## each end is hauled along its own first length of it, so a tether taken
 ## around a pillar hauls you toward the pillar.
 ##
-## Thrusting with the module held does not go through either of them. The suit
-## and the module are given their shares of the burst directly, so they set off
-## together and the hands are left holding only the module's own wandering; see
-## _apply_thrust for why.
+## Manoeuvring with the module held does not go through either of them. The suit
+## and the module are given their shares of every burst and every brake directly,
+## so they set off and pull up together and the hands are left holding only the
+## module's own wandering; see _apply_braced_velocity_change for why.
 ##
 ## Both end at _push_link_force, which is where the two bodies actually get
 ## moved: the module gets an impulse, the suit gets the equal and opposite one.
@@ -871,55 +871,59 @@ func _update_velocity(delta: float) -> void:
 		Input.get_axis("thrust_down", "thrust_up"),
 		Input.get_axis("thrust_forward", "thrust_back")
 	).limit_length(1.0)
-	_apply_thrust(delta, thrust_input)
+	_apply_braced_velocity_change(
+		global_transform.basis * thrust_input * CarryKnobs.THRUST_ACCELERATION * delta
+	)
 
+	# Braking is thrust pointed backwards as far as the module is concerned, and
+	# it goes the same way round: shed the speed off the suit alone and the
+	# module sails on until your hands stop it, which is a pull off your centre
+	# of mass and pitches you over exactly as an unbraced burst did.
 	if stabilizers_engaged:
-		velocity = velocity.lerp(
-			Vector3.ZERO, minf(CarryKnobs.LINEAR_STABILIZER_RATE * delta, 1.0)
+		_apply_braced_velocity_change(
+			-velocity * minf(CarryKnobs.LINEAR_STABILIZER_RATE * delta, 1.0)
 		)
 
 	velocity = velocity.limit_length(CarryKnobs.MAX_SPEED)
 
 
-## Spends one frame of thruster force, braced against the module when it is in
-## your hands.
+## Spends one frame of the suit manoeuvring under its own power - a burst of
+## thrust, or the stabilizers hauling speed off - braced against the module when
+## it is in your hands. The argument is the velocity the suit would have gained
+## on its own, with nothing held.
 ##
-## Thrusting with a load is one force and two bodies. Put all of it into the
+## Manoeuvring with a load is one force and two bodies. Put all of it into the
 ## suit and the module hears about it only through your hands, which are out in
-## front of your centre of mass: the pull that gets the module moving arrives on
+## front of your centre of mass: the pull that drags the module along arrives on
 ## a lever arm and turns you, worst on the axes furthest from the line through
-## your hands. That is realistic and it is miserable to fly - a burst straight
-## up or down pitches you over every time.
+## your hands. That is realistic and it is miserable to fly - a burst straight up
+## or down pitches you over every time, and so does braking out of one.
 ##
 ## Bracing hands the module its own share of the force directly, at its centre,
-## so both bodies set off together and the hands are left holding only what the
-## module does on its own. That still turns you, and it is the part worth
-## feeling.
+## so both bodies set off, or pull up, together and the hands are left holding
+## only what the module does on its own. That still turns you, and it is the part
+## worth feeling.
 ##
-## Thrust costs the same either way. The force has both masses to shift whether
-## it reaches the module through your hands or on its own, so a braced burst
-## accelerates you at exactly what an unbraced one settles at.
-func _apply_thrust(delta: float, thrust_input: Vector3) -> void:
-	var thrust_force := (
-		global_transform.basis
-		* thrust_input
-		* CarryKnobs.THRUST_ACCELERATION
-		* CarryKnobs.PLAYER_MASS
-	)
-
+## Manoeuvring costs the same either way. The force has both masses to shift
+## whether it reaches the module through your hands or on its own, so a braced
+## burst moves you at what an unbraced one settles at once the module has caught
+## up - the difference is that it never spends a moment out of square first.
+func _apply_braced_velocity_change(unloaded_velocity_change: Vector3) -> void:
 	# At full brace this is the share that leaves both bodies at the same
 	# acceleration, so the grip is left holding nothing. The rest is yours.
 	var object_share := 0.0
 	if _held_object != null:
 		object_share = (
-			CarryKnobs.GRIP_BRACED_THRUST
+			CarryKnobs.GRIP_BRACING
 			* _held_object.mass
 			/ (CarryKnobs.PLAYER_MASS + _held_object.mass)
 		)
 	if not is_zero_approx(object_share):
-		_held_object.apply_central_impulse(thrust_force * object_share * delta)
+		_held_object.apply_central_impulse(
+			unloaded_velocity_change * CarryKnobs.PLAYER_MASS * object_share
+		)
 
-	velocity += thrust_force * (1.0 - object_share) * delta / CarryKnobs.PLAYER_MASS
+	velocity += unloaded_velocity_change * (1.0 - object_share)
 
 
 # --- Collision -------------------------------------------------------------
