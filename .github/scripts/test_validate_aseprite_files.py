@@ -236,28 +236,38 @@ def test_oversized_canvas_and_png():
 
 def test_path_convention():
     with tempfile.TemporaryDirectory() as d:
-        root = os.path.join(d, "assets", "art", "2d")
-        good = os.path.join(root, "spider", "animations")
+        root = os.path.join(d, "assets", "art")
+        # The convention: assets/art/{category}/{object}/{object}.aseprite
+        good = os.path.join(root, "characters", "spider")
         os.makedirs(good)
         p = os.path.join(good, "spider.aseprite")
         build_aseprite(p, [("attack", 0, 1, 0, 1)])
         touch_import(p)
         assert errors_for(p) == [], errors_for(p)
 
-        # The shallower form is accepted too: stem matches its parent.
-        shallow = os.path.join(root, "beetle")
-        os.makedirs(shallow)
-        p_shallow = os.path.join(shallow, "beetle.aseprite")
-        build_aseprite(p_shallow, [("attack", 0, 1, 0, 1)])
-        touch_import(p_shallow)
-        assert errors_for(p_shallow) == [], errors_for(p_shallow)
+        # The old animations/ nesting level is gone: exactly one directory per
+        # object, so the stem must match its immediate parent.
+        nested = os.path.join(good, "animations")
+        os.makedirs(nested)
+        p_nested = os.path.join(nested, "spider.aseprite")
+        build_aseprite(p_nested, [("attack", 0, 1, 0, 1)])
+        touch_import(p_nested)
+        assert any("does not follow the convention" in e for e in errors_for(p_nested))
 
         p2 = os.path.join(good, "wrong_name.aseprite")
         build_aseprite(p2, [("attack", 0, 1, 0, 1)])
         touch_import(p2)
         assert any("does not follow the convention" in e for e in errors_for(p2))
 
-        # Outside assets/art/2d/ the convention does not apply.
+        # A 3D texture sits in the same object directory as its .gltf now that
+        # art is grouped by category rather than by media type. It must not be
+        # judged by the .aseprite stem rule -- t_spider_basecolor does not, and
+        # should not, match its object directory.
+        texture = build_png(os.path.join(good, "t_spider_basecolor.png"), 64, 64)
+        touch_import(texture)
+        assert errors_for(texture) == [], errors_for(texture)
+
+        # Outside assets/art/ the convention does not apply.
         outside = os.path.join(d, "prototypes")
         os.makedirs(outside)
         p3 = os.path.join(outside, "whatever.aseprite")
@@ -266,13 +276,21 @@ def test_path_convention():
         assert errors_for(p3) == [], errors_for(p3)
 
         # The root is multi-segment, so a lookalike sibling must stay exempt --
-        # a plain substring test would sweep assets/art/2d_wip/ in.
-        lookalike = os.path.join(d, "assets", "art", "2d_wip")
+        # a plain substring test would sweep assets/art_wip/ in.
+        lookalike = os.path.join(d, "assets", "art_wip")
         os.makedirs(lookalike)
         p4 = os.path.join(lookalike, "whatever.aseprite")
         build_aseprite(p4, [("attack", 0, 1, 0, 1)])
         touch_import(p4)
         assert errors_for(p4) == [], errors_for(p4)
+
+        # Fixtures that exist in order to fail are never judged.
+        fixture = os.path.join(root, "examples", "test-fixtures")
+        os.makedirs(fixture)
+        p5 = os.path.join(fixture, "whatever.aseprite")
+        build_aseprite(p5, [("attack", 0, 1, 0, 1)])
+        touch_import(p5)
+        assert errors_for(p5) == [], errors_for(p5)
     print("PASS test_path_convention")
 
 

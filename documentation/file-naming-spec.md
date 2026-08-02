@@ -122,16 +122,17 @@ next re-export, not by renaming.
 
 | Path | What goes there |
 | --- | --- |
-| `assets/art/3d/{category}/{object}/` | Everything for one 3D object: mesh, `.bin`, textures, every `.import` sidecar, the container scene, the spec |
-| `prefabs/{category}/` | Prefab scenes, using the same category names as `assets/art/3d/` |
+| `assets/art/{category}/{object}/` | Everything for one object: mesh, `.bin`, textures, every `.import` sidecar, the container scene, the spec — and that object's `.aseprite` sources |
+| `prefabs/{category}/` | Prefab scenes, using the same category names as `assets/art/` |
 | `levels/` | Shipping level scenes |
 | `test/levels/` | Scratch levels for trying assets out. Not shipped |
-| `assets/art/2d/{game_object}/` | 2D art. Optionally nested one level deeper as `assets/art/2d/{game_object}/animations/` |
+| `assets/art/examples/` | Reference and deliberately-broken fixtures. Exempt from every naming rule |
 | `addons/` | Third-party plugins |
 
-3D lives under `assets/art/3d/`, 2D lives under `assets/art/2d/`. The roots are deliberately
-different, not a mistake to reconcile — the aseprite validator hard-codes `game`. Some
-older issue templates still ask for 3D assets under `game/`; that root no longer exists.
+2D and 3D art share one root and are grouped by **category**, not by media type, so an
+object that has both a model and sprites keeps them in one directory. Categories are
+free-form `lowercase_with_underscores`; nothing enforces a fixed list. Some older issue
+templates still ask for assets under `game/`; that root no longer exists.
 
 One directory per object, so a re-export touches nothing else.
 

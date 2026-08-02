@@ -17,4 +17,4 @@ issues:
   # - name: example_asset
   #   animation_name: walk_right
   #   animation_description: Walks right - smooth 8-frame cycle.
-  #   filepath: assets/art/2d/{sub_directory}/{game_object}/{game_object}.aseprite
+  #   filepath: assets/art/{category}/{object_name}/{object_name}.aseprite

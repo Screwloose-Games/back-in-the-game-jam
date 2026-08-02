@@ -105,7 +105,7 @@ def validated_path(raw: str, args: argparse.Namespace) -> str:
     if stage == "unusable":
         raise DocumentError(
             f"--filepath {raw!r} {detail}. Give a repository-relative path, "
-            "e.g. assets/art/3d/props/rain_barrel/sm_rain_barrel.gltf"
+            "e.g. assets/art/props/rain_barrel/sm_rain_barrel.gltf"
         )
 
     if status in ("nonstandard", "deprecated") and not args.force:

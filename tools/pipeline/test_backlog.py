@@ -42,8 +42,8 @@ from pipeline_cli.common import (
 )
 
 REPO = "Screwloose-Games/test-repo"
-LANTERN = "assets/art/3d/props/lantern/sm_lantern.gltf"
-BARREL = "assets/art/3d/props/rain_barrel/sm_rain_barrel.gltf"
+LANTERN = "assets/art/props/lantern/sm_lantern.gltf"
+BARREL = "assets/art/props/rain_barrel/sm_rain_barrel.gltf"
 
 # A file exercising everything the splice has to survive: a leading comment, a
 # comment between entries, a blank line, a block scalar, a flow list, and an
@@ -411,7 +411,7 @@ def test_two_entries_claiming_one_filepath_are_refused():
 def test_a_placeholder_filepath_is_refused():
     body = SAMPLE.replace(
         f"    filepath: {LANTERN}\n",
-        "    filepath: assets/art/3d/{category}/{object_name}/sm_{object_name}.gltf\n",
+        "    filepath: assets/art/{category}/{object_name}/sm_{object_name}.gltf\n",
     )
     with tempfile.TemporaryDirectory() as tmp:
         code, out, _ = run(file_argv(written(tmp, body)))
@@ -424,7 +424,7 @@ def test_a_nonstandard_filepath_is_refused_without_force():
     # rejects. A path outside those directories is "unchecked", not an error.
     body = SAMPLE.replace(
         f"    filepath: {LANTERN}\n",
-        "    filepath: assets/art/3d/props/lantern/Lantern.gltf\n",
+        "    filepath: assets/art/props/lantern/Lantern.gltf\n",
     )
     with tempfile.TemporaryDirectory() as tmp:
         path = written(tmp, body)
@@ -625,11 +625,11 @@ def test_the_file_is_written_after_each_issue_not_at_the_end():
         "template: create_model\n"
         "issues:\n"
         "  - name: a\n    description: a\n    dimentions: 1m\n"
-        "    filepath: assets/art/3d/props/a/sm_a.gltf\n"
+        "    filepath: assets/art/props/a/sm_a.gltf\n"
         "  - name: b\n    description: b\n    dimentions: 1m\n"
-        "    filepath: assets/art/3d/props/b/sm_b.gltf\n"
+        "    filepath: assets/art/props/b/sm_b.gltf\n"
         "  - name: c\n    description: c\n    dimentions: 1m\n"
-        "    filepath: assets/art/3d/props/c/sm_c.gltf\n"
+        "    filepath: assets/art/props/c/sm_c.gltf\n"
     )
     with tempfile.TemporaryDirectory() as tmp:
         path = written(tmp, body)
@@ -648,11 +648,11 @@ def test_a_resumed_run_files_only_what_is_left():
         "template: create_model\n"
         "issues:\n"
         "  - name: a\n    description: a\n    dimentions: 1m\n"
-        "    filepath: assets/art/3d/props/a/sm_a.gltf\n"
+        "    filepath: assets/art/props/a/sm_a.gltf\n"
         "  - name: b\n    description: b\n    dimentions: 1m\n"
-        "    filepath: assets/art/3d/props/b/sm_b.gltf\n"
+        "    filepath: assets/art/props/b/sm_b.gltf\n"
         "  - name: c\n    description: c\n    dimentions: 1m\n"
-        "    filepath: assets/art/3d/props/c/sm_c.gltf\n"
+        "    filepath: assets/art/props/c/sm_c.gltf\n"
     )
     with tempfile.TemporaryDirectory() as tmp:
         path = written(tmp, body)

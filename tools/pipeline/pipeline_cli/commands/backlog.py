@@ -121,7 +121,7 @@ def plan_for(
             problem(
                 f"filepath {str(raw_path)!r} {detail}",
                 "Give a repository-relative path, e.g. "
-                "assets/art/3d/props/rain_barrel/sm_rain_barrel.gltf",
+                "assets/art/props/rain_barrel/sm_rain_barrel.gltf",
             )
         elif status in ("nonstandard", "deprecated") and not args.force:
             problem(

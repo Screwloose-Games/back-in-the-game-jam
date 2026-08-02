@@ -1,6 +1,6 @@
 ---
 paths:
-    - "assets/art/3d/**"
+    - "assets/art/**"
     - "tools/blender-vehicle/**"
     - "tools/gltf-validator/**"
     - "**/*.gltf"

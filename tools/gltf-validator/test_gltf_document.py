@@ -32,7 +32,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 import gltf_document  # noqa: E402
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
-EXAMPLE_GLTF = REPO_ROOT / "assets/art/3d/example_cubes_facing/sm_example_cubes_facing.gltf"
+EXAMPLE_GLTF = REPO_ROOT / "assets/art/examples/example_cubes_facing/sm_example_cubes_facing.gltf"
 ROTATED_FIXTURE = Path(__file__).resolve().parent / "test-fixtures/unapplied_rotation_90z.gltf"
 WOLF_GLB = (
     REPO_ROOT
@@ -271,7 +271,7 @@ def test_loads_the_wolf_glb():
 
 
 def test_matches_pygltflib():
-    """The two loaders must agree. Skipped unless pygltflib is installed.
+    """The two loaders must agree. Skipped unless a real pygltflib is installed.
 
     This is the divergence guard for dropping pygltflib from validate_gltf.py.
     It only runs inside the Docker image, which is the only place pygltflib
@@ -280,6 +280,13 @@ def test_matches_pygltflib():
     try:
         from pygltflib import GLTF2
     except ImportError:
+        return
+
+    # test_validate_gltf_spec.py stubs pygltflib into sys.modules so validate_gltf.py
+    # can be imported outside the Docker image, and pytest runs both files in one
+    # process. That stub sets GLTF2 = object -- it imports fine and only fails on
+    # .load -- so importability alone cannot tell the real library apart.
+    if not callable(getattr(GLTF2, "load", None)):
         return
 
     import model_spec

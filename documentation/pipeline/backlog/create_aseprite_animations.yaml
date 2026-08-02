@@ -16,4 +16,4 @@ defaults:
 issues:
   # - name: example_asset
   #   animations: Walk right - walks right
-  #   filepath: assets/art/2d/{game_object}/animations/
+  #   filepath: assets/art/{category}/{object_name}/

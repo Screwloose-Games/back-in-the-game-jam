@@ -17,4 +17,4 @@ defaults:
 
 issues:
   # - name: example_asset
-  #   filepath: Enter the full file path... assets/art/3d/{category}/{object_name}/sk_{object_name}.gltf
+  #   filepath: Enter the full file path... assets/art/{category}/{object_name}/sk_{object_name}.gltf

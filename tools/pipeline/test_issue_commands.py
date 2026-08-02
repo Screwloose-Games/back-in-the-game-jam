@@ -29,7 +29,7 @@ TOOLS_DIR = Path(__file__).resolve().parent
 REPO_ROOT = TOOLS_DIR.parents[1]
 
 REPO = "Screwloose-Games/test-repo"
-GOOD_PATH = "assets/art/3d/props/rain_barrel/sm_rain_barrel.gltf"
+GOOD_PATH = "assets/art/props/rain_barrel/sm_rain_barrel.gltf"
 
 CREATE_ARGS = [
     "issue",
@@ -285,7 +285,7 @@ def test_no_filepath_means_no_field_mutation():
 def test_a_placeholder_filepath_refuses_and_writes_nothing():
     harness = Harness()
     with harness:
-        code, _, err = run([*CREATE_ARGS, "--filepath", "assets/art/3d/{cat}/sm_{obj}.gltf"])
+        code, _, err = run([*CREATE_ARGS, "--filepath", "assets/art/{cat}/sm_{obj}.gltf"])
     assert code == EXIT_CANNOT_RUN
     assert harness.runner.calls == []
     assert "placeholder" in err
@@ -295,7 +295,7 @@ def test_a_nonstandard_filename_refuses_without_force():
     harness = Harness()
     with harness:
         code, _, err = run(
-            [*CREATE_ARGS, "--filepath", "assets/art/3d/props/rain_barrel/sm_RainBarrel.gltf"]
+            [*CREATE_ARGS, "--filepath", "assets/art/props/rain_barrel/sm_RainBarrel.gltf"]
         )
     assert code == EXIT_CANNOT_RUN
     assert harness.runner.calls == []
@@ -309,7 +309,7 @@ def test_force_lets_a_nonstandard_filename_through_with_a_warning():
             [
                 *CREATE_ARGS,
                 "--filepath",
-                "assets/art/3d/props/rain_barrel/sm_RainBarrel.gltf",
+                "assets/art/props/rain_barrel/sm_RainBarrel.gltf",
                 "--force",
             ]
         )
@@ -568,7 +568,7 @@ def test_sync_filepath_skips_the_template_placeholder_without_failing():
     # create_model.yaml ships this as the field's default, so an artist who does
     # not edit it is the common case -- not an error, and not something to write
     # to the board, where it would read as delivered.
-    default = "assets/art/3d/{category}/{object_name}/sm_{object_name}.gltf"
+    default = "assets/art/{category}/{object_name}/sm_{object_name}.gltf"
     harness, _, code, out, _ = synced(default)
     assert code == EXIT_OK
     assert "placeholder" in out
@@ -585,7 +585,7 @@ def test_sync_filepath_skips_a_directory_and_says_so():
 
 
 def test_sync_filepath_comments_once_when_the_path_is_unusable():
-    harness, _, _, _, _ = synced("assets/art/3d/{category}/sm_{object_name}.gltf")
+    harness, _, _, _, _ = synced("assets/art/{category}/sm_{object_name}.gltf")
     comments = [call for call in harness.runner.calls if call[0][:2] == ["issue", "comment"]]
     assert len(comments) == 1
     args, stdin = comments[0]
@@ -623,7 +623,7 @@ def test_sync_filepath_can_be_told_not_to_comment():
 
 def test_sync_filepath_still_sets_a_nonstandard_path():
     # A column an artist can see and correct beats a blank one nobody can read.
-    odd = "assets/art/3d/props/rain_barrel/barrel.gltf"
+    odd = "assets/art/props/rain_barrel/barrel.gltf"
     harness, _, code, out, _ = synced(odd)
     assert code == EXIT_OK
     assert "WARN" in out
@@ -649,7 +649,7 @@ def test_sync_filepath_does_nothing_when_the_field_already_matches():
 
 def test_only_if_empty_leaves_a_populated_field_alone():
     harness, _, code, out, _ = synced(
-        GOOD_PATH, fields={"filepath": "assets/art/3d/old/sm_old.gltf"}, extra=["--only-if-empty"]
+        GOOD_PATH, fields={"filepath": "assets/art/old/sm_old.gltf"}, extra=["--only-if-empty"]
     )
     assert code == EXIT_OK
     assert harness.runner.calls == []
@@ -672,7 +672,7 @@ def test_sync_filepath_fails_when_the_mutation_is_refused():
 
 
 def test_a_failed_comment_does_not_fail_a_run_that_set_the_field():
-    odd = "assets/art/3d/props/rain_barrel/barrel.gltf"
+    odd = "assets/art/props/rain_barrel/barrel.gltf"
     harness, _, code, out, _ = synced(
         odd, responses=[github.RunResult(1, "", "comment API is having a day")]
     )

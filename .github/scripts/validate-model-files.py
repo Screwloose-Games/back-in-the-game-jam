@@ -2,7 +2,7 @@
 #
 # Run this with: python .github/scripts/validate-model-files.py --all
 # (positional args also work, and are how pre-commit and the Claude Code hook
-# call it: ... validate-model-files.py assets/art/3d/barrel/sm_barrel.gltf)
+# call it: ... validate-model-files.py assets/art/props/barrel/sm_barrel.gltf)
 #
 # This is the pass/fail authority for 3D models. The Docker image in
 # tools/gltf-validator/ still renders the nine-view preview that goes in the PR
@@ -35,14 +35,25 @@ SPEC_EXTENSION = ".spec.yaml"
 MODEL_FILENAME_PATTERN = re.compile(r"^sm_[a-z0-9]+(_[a-z0-9]+)*\.gltf$")
 SKELETAL_FILENAME_PATTERN = re.compile(r"^sk_[a-z0-9]+(_[a-z0-9]+)*\.gltf$")
 
-# Where the naming rules apply. Everything outside this root is exempt, which
-# mirrors PATH_CONVENTION_ROOT in validate-aseprite-files.py.
+# Where the naming rules apply. Everything outside this root is exempt.
 #
-# examples/ is deliberately not covered: it holds self-contained prototypes whose
-# whole point is to answer "is this loop fun?" without adopting shared
-# conventions, and its third-party art (grey-wolf-gaits-and-jump.glb) would fail
-# every naming rule here.
-MODEL_ROOT = "assets/art/3d"
+# This is the same value as PATH_CONVENTION_ROOT in validate-aseprite-files.py,
+# and that is deliberate: art is organised by category rather than by media
+# type, so a single object's directory holds its .gltf, its textures and its
+# .aseprite together. The two validators divide the root by file extension --
+# this one only ever sees .gltf/.glb/.spec.yaml -- not by directory.
+#
+# The top-level examples/ directory is outside this root and so is exempt: it
+# holds self-contained prototypes whose whole point is to answer "is this loop
+# fun?" without adopting shared conventions, and its third-party art
+# (grey-wolf-gaits-and-jump.glb) would fail every naming rule here.
+#
+# assets/art/examples/ is a different thing and is NOT exempt -- it sits inside
+# this root, so the reference model there is validated like any other. The
+# deliberately-broken fixtures beside it (test_wrong_size/, test_zup_export/)
+# therefore fail on purpose; anything meant to fail belongs under a
+# test-fixtures/ segment, which EXCLUDED_PATH_PARTS does skip.
+MODEL_ROOT = "assets/art"
 
 # Directories that never get validated, in any mode.
 # test-fixtures holds a deliberately broken model -- unapplied_rotation_90z.gltf
@@ -244,7 +255,7 @@ def sweep_repository():
 
 
 def check_filename(report, path):
-    """Names under assets/art/3d/ follow the sm_/sk_ convention."""
+    """Names under assets/art/ follow the sm_/sk_ convention."""
     if not ENFORCE_FILENAME_CONVENTION:
         return
     name = os.path.basename(path)

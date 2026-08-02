@@ -133,10 +133,10 @@ def test_the_body_uses_github_s_own_submitted_form_shape():
         "create_model",
         description="A crate.",
         dimentions="1m",
-        file_path="assets/art/3d/props/crate/sm_crate.gltf",
+        file_path="assets/art/props/crate/sm_crate.gltf",
     )
     assert "### Description\n\nA crate." in text
-    assert "### Save File Path\n\nassets/art/3d/props/crate/sm_crate.gltf" in text
+    assert "### Save File Path\n\nassets/art/props/crate/sm_crate.gltf" in text
 
 
 def test_an_optional_field_with_no_answer_reads_as_no_response():
@@ -193,7 +193,7 @@ def test_a_form_with_no_path_field_reports_none():
 # --------------------------------------------------------------------------
 # Reading a rendered body back
 
-GOOD_PATH = "assets/art/3d/props/rain_barrel/sm_rain_barrel.gltf"
+GOOD_PATH = "assets/art/props/rain_barrel/sm_rain_barrel.gltf"
 
 
 def rendered(slug: str, path: str = GOOD_PATH) -> str:

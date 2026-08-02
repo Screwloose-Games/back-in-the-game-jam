@@ -19,4 +19,4 @@ issues:
   # - name: example_asset
   #   description: This hamster is a cheerfull, cartoonish... Huge cheeks and wide eyes...
   #   dimentions: 1.8 meters tall x .3 meters deep, .5 meters wide
-  #   filepath: assets/art/3d/{category}/{object_name}/sm_{object_name}.gltf
+  #   filepath: assets/art/{category}/{object_name}/sm_{object_name}.gltf

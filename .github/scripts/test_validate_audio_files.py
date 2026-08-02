@@ -3,8 +3,9 @@ Tests for validate-audio-files.py -- run the EXACT logic CI runs, locally.
 
     python .github/scripts/test_validate_audio_files.py
 
-No third-party dependencies (CI and most dev machines only have bare `python`),
-so this is a plain-assert runner rather than pytest.
+Runs standalone -- which is what CI does, on a bare interpreter -- and is also
+collected by pytest, like every other validator test here. Plain asserts and
+stdlib only either way: pytest is a local convenience, never a requirement.
 
 The two fixtures under test-fixtures/ are real payloads captured from CI:
   - changed_files_escaped.txt : what tj-actions/changed-files emits with the
@@ -45,22 +46,12 @@ EXPECTED_PATHS = [
     "common/audio/sfx/cheerwhitenoise.ogg",  # the only compliant name in the set
 ]
 
-_tests = []
-
-
-def test(fn):
-    _tests.append(fn)
-    return fn
-
-
-@test
-def clean_json_parses_and_keeps_every_path():
+def test_clean_json_parses_and_keeps_every_path():
     got = vaf.load_changed_files_json(os.path.join(FIXTURES, "changed_files_clean.json"))
     assert got == EXPECTED_PATHS, got
 
 
-@test
-def escaped_json_fails_with_actionable_message():
+def test_escaped_json_fails_with_actionable_message():
     # This is the exact regression: safe_output:true output must not silently
     # crash -- it must raise SystemExit mentioning safe_output.
     try:
@@ -71,8 +62,7 @@ def escaped_json_fails_with_actionable_message():
         raise AssertionError("escaped JSON should have raised SystemExit")
 
 
-@test
-def json_loader_filters_non_audio():
+def test_json_loader_filters_non_audio():
     with tempfile.TemporaryDirectory() as d:
         payload = os.path.join(d, "p.json")
         with open(payload, "w", encoding="utf-8") as f:
@@ -81,8 +71,7 @@ def json_loader_filters_non_audio():
         assert got == ["a/sound.ogg", "d/loop.WAV"], got  # case-insensitive ext
 
 
-@test
-def bad_names_are_flagged_good_names_pass():
+def test_bad_names_are_flagged_good_names_pass():
     checks = {
         "Ive Got Your Back (intro)!.wav": False,   # spaces, parens, !
         "i've_got_your_back.mp3": False,           # apostrophe
@@ -100,8 +89,7 @@ def bad_names_are_flagged_good_names_pass():
         assert ok == should_pass, f"{name}: expected pass={should_pass}, got {ok}"
 
 
-@test
-def main_returns_true_when_a_file_is_bad_and_false_when_all_good():
+def test_main_returns_true_when_a_file_is_bad_and_false_when_all_good():
     with tempfile.TemporaryDirectory() as d:
         bad = os.path.join(d, "Bad Name!.ogg")
         good = os.path.join(d, "good_name.ogg")
@@ -112,8 +100,7 @@ def main_returns_true_when_a_file_is_bad_and_false_when_all_good():
         assert vaf.main([good]) is False
 
 
-@test
-def ogg_and_mp3_do_not_crash_and_skip_wav_checks():
+def test_ogg_and_mp3_do_not_crash_and_skip_wav_checks():
     # A .ogg that is not a WAV container must not raise (the original bug).
     with tempfile.TemporaryDirectory() as d:
         p = os.path.join(d, "not_a_wav.ogg")
@@ -124,8 +111,7 @@ def ogg_and_mp3_do_not_crash_and_skip_wav_checks():
         assert report.errors == []  # compliant name, no WAV checks applied
 
 
-@test
-def real_wav_technical_checks_still_run():
+def test_real_wav_technical_checks_still_run():
     with tempfile.TemporaryDirectory() as d:
         p = os.path.join(d, "tone.wav")
         with wave.open(p, "wb") as w:
@@ -138,21 +124,26 @@ def real_wav_technical_checks_still_run():
         assert any("Channel count mismatch" in e for e in v.errors), v.errors
 
 
-def run():
+def run_standalone():
+    tests = [
+        (name, obj)
+        for name, obj in sorted(globals().items())
+        if name.startswith("test_") and callable(obj)
+    ]
     failures = 0
-    for fn in _tests:
+    for name, fn in tests:
         try:
             # Suppress the validator's own report output so PASS/FAIL stays readable.
             with contextlib.redirect_stdout(io.StringIO()):
                 fn()
-            print(f"PASS {fn.__name__}")
-        except Exception as e:
+            print(f"PASS {name}")
+        except Exception as e:  # noqa: BLE001
             failures += 1
-            print(f"FAIL {fn.__name__}: {e}")
+            print(f"FAIL {name}: {e}")
     print()
-    print(f"{len(_tests) - failures}/{len(_tests)} passed")
-    return failures
+    print(f"{len(tests) - failures}/{len(tests)} passed")
+    return 1 if failures else 0
 
 
 if __name__ == "__main__":
-    raise SystemExit(1 if run() else 0)
+    raise SystemExit(run_standalone())

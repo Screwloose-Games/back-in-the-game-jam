@@ -69,12 +69,28 @@ ENFORCE_ONE_SHOT_REPEAT = False
 LOOP_TAG_SUFFIX = "_loop"
 
 # "An .aseprite file is created and saved in the correct directory:
-#  assets/art/2d/{game_object}/animations/{game_object}.aseprite"
-# Enforced as: the file's stem must match its parent or grandparent directory,
-# which accepts both assets/art/2d/spider/spider.aseprite and
-# assets/art/2d/spider/animations/spider.aseprite.
+#  assets/art/{category}/{object}/{object}.aseprite"
+# Enforced as: the file's stem must match its parent directory. Art is grouped
+# by category rather than by media type, so one object's directory holds its
+# .aseprite alongside its .gltf and textures, and there is exactly one place a
+# file for that object can live.
+#
+# This root is the same value as MODEL_ROOT in validate-model-files.py, and that
+# is deliberate -- the two validators divide the root by file extension, not by
+# directory. Only the checks below that reach _validate_aseprite() are scoped to
+# this root; the PNG size and .import sidecar checks apply everywhere, so a 3D
+# texture sitting beside its .gltf is judged on size and sidecar but never on
+# the .aseprite stem rule.
 ENFORCE_PATH_CONVENTION = True
-PATH_CONVENTION_ROOT = "assets/art/2d"
+PATH_CONVENTION_ROOT = "assets/art"
+
+# Mirrors EXCLUDED_PATH_PARTS in validate-model-files.py: directories that hold
+# files which exist in order to fail, and so are never judged.
+EXCLUDED_PATH_PARTS = (
+    ".godot",
+    "addons",
+    "test-fixtures",
+)
 
 # "Submit a pull request with the .aseprite file, `.import` file, and all changes."
 REQUIRE_IMPORT_SIDECAR = True
@@ -284,23 +300,23 @@ class ArtFileValidator:
         normalized = self.file_path.replace("\\", "/")
         parts = normalized.split("/")
         # Prefix match, not segment membership: the root is a multi-segment path
-        # ("assets/art/2d"), so `root in parts` would never be true and would
+        # ("assets/art"), so `root in parts` would never be true and would
         # silently exempt every file. Anchored to a path boundary so a sibling
-        # directory like assets/art/2d_wip/ is not swept in.
+        # directory like assets/art_wip/ is not swept in.
         root = PATH_CONVENTION_ROOT.strip("/")
         if f"/{root}/" not in f"/{normalized}/":
-            # Assets outside the 2D art tree (fixtures, tooling samples) are exempt.
+            # Art outside the shared root (fixtures, tooling samples) is exempt.
+            return
+        if any(part in EXCLUDED_PATH_PARTS for part in parts):
             return
 
         stem = os.path.splitext(os.path.basename(normalized))[0]
         parent = parts[-2] if len(parts) >= 2 else ""
-        grandparent = parts[-3] if len(parts) >= 3 else ""
-        if stem not in (parent, grandparent):
+        if stem != parent:
             self.errors.append(
                 f"Path does not follow the convention: '{normalized}' should live at "
-                f"{PATH_CONVENTION_ROOT}/{stem}/{stem}.aseprite or "
-                f"{PATH_CONVENTION_ROOT}/{stem}/animations/{stem}.aseprite -- the filename "
-                f"must match its game object directory (found '{parent}')"
+                f"{PATH_CONVENTION_ROOT}/{{category}}/{stem}/{stem}.aseprite -- the "
+                f"filename must match its object directory (found '{parent}')"
             )
 
     def _validate_aseprite(self):

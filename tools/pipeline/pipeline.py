@@ -22,7 +22,7 @@ Usage:
     python tools/pipeline/pipeline.py issue create --template create_model \\
         --name "rain barrel" --description "A wooden rain barrel." \\
         --field "dimentions=1m x 1m x 1m" \\
-        --filepath assets/art/3d/props/rain_barrel/sm_rain_barrel.gltf
+        --filepath assets/art/props/rain_barrel/sm_rain_barrel.gltf
     python tools/pipeline/pipeline.py issue update 42 --filepath a/b/sm_c.gltf --apply
 
     python tools/pipeline/pipeline.py backlog new --template create_model

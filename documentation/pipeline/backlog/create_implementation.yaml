@@ -16,4 +16,4 @@ defaults:
 issues:
   # - name: example_asset
   #   description: Enter the implementation description...
-  #   filepath: assets/art/3d/{folder_name}/sk_{file_name}.gltf
+  #   filepath: assets/art/{folder_name}/sk_{file_name}.gltf

@@ -217,7 +217,7 @@ def clean_path_value(raw: str | None) -> list[AssetPath]:
             continue
         if "{" in value or "}" in value:
             # The issue templates ship defaults like
-            # assets/art/3d/{category}/{object_name}/sm_{object_name}.gltf, and those
+            # assets/art/{category}/{object_name}/sm_{object_name}.gltf, and those
             # get pasted into the column verbatim. They must not read as a path.
             results.append(
                 AssetPath(original, "", "placeholder", "still a {placeholder} template")
@@ -657,7 +657,7 @@ def check_on_disk(path: str, repo_root: Path) -> str:
 def pr_delivers(path: str, files: list[str]) -> bool:
     """A PR delivers an asset when it touches the file or its directory.
 
-    Directory-level matching is the honest test: assets/art/3d/{category}/{object}/
+    Directory-level matching is the honest test: assets/art/{category}/{object}/
     means the .bin, the textures and the .import sidecars all land together, so
     a PR that adds the whole directory has delivered the asset named in it.
     """

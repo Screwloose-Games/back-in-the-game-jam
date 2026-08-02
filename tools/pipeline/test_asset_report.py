@@ -68,7 +68,7 @@ BASE_ARGS = ["--from-json", str(RECORDING), "--repo-root", str(REPO_ROOT)]
 
 def test_filepath_column_is_read():
     item = item_by_number(load_items(), 5)
-    assert item.paths[0].path == "assets/art/3d/props/rain_barrel/sm_rain_barrel.gltf"
+    assert item.paths[0].path == "assets/art/props/rain_barrel/sm_rain_barrel.gltf"
     assert item.paths[0].status == "ok"
 
 
@@ -101,15 +101,15 @@ def test_column_may_hold_several_paths():
 
 
 def test_backticked_and_res_prefixed_paths_normalise():
-    assert report.clean_path_value("  `res://assets/art/3d/a/b/sm_b.gltf`  ")[0].path == (
-        "assets/art/3d/a/b/sm_b.gltf"
+    assert report.clean_path_value("  `res://assets/art/a/b/sm_b.gltf`  ")[0].path == (
+        "assets/art/a/b/sm_b.gltf"
     )
     assert report.clean_path_value("./game/a/b.png")[0].path == "game/a/b.png"
 
 
 def test_windows_backslashes_normalise():
-    cleaned = report.clean_path_value("assets\\art\\3d\\props\\barrel\\sm_barrel.gltf")[0]
-    assert cleaned.path == "assets/art/3d/props/barrel/sm_barrel.gltf"
+    cleaned = report.clean_path_value("assets\\art\\props\\barrel\\sm_barrel.gltf")[0]
+    assert cleaned.path == "assets/art/props/barrel/sm_barrel.gltf"
     assert cleaned.status == "ok"
 
 
@@ -122,17 +122,17 @@ def test_field_name_is_matched_case_insensitively():
 
 def test_issue_field_wins_over_a_project_column_of_the_same_name():
     """filepath is an org issue field; the board column is a projection of it."""
-    issue_fields = {"filepath": "assets/art/3d/a/b/sm_b.gltf"}
+    issue_fields = {"filepath": "assets/art/a/b/sm_b.gltf"}
     project_fields = {"filepath": "stale/project/column.gltf"}
     assert report.board_path_value(
         issue_fields, project_fields, path_field="filepath"
-    ) == "assets/art/3d/a/b/sm_b.gltf"
+    ) == "assets/art/a/b/sm_b.gltf"
 
 
 def test_project_column_is_used_when_the_issue_field_is_absent():
     """Boards configured the other way round still work."""
     item = item_by_number(load_items(), 3)
-    assert item.paths[0].path == "assets/art/3d/structures/market_stall/sm_MarketStall.gltf"
+    assert item.paths[0].path == "assets/art/structures/market_stall/sm_MarketStall.gltf"
 
 
 def test_blank_value_falls_through_to_the_next_source():
@@ -153,14 +153,14 @@ def test_only_title_set_means_no_path():
 
 def test_conforming_path_is_ok():
     status, detail = report.check_path(
-        "assets/art/3d/props/rain_barrel/sm_rain_barrel.gltf", load_conventions()
+        "assets/art/props/rain_barrel/sm_rain_barrel.gltf", load_conventions()
     )
     assert status == "ok", detail
 
 
 def test_naming_violation_is_reported_against_pipeline_yaml_pattern():
     status, detail = report.check_path(
-        "assets/art/3d/props/rain_barrel/sm_RainBarrel.gltf", load_conventions()
+        "assets/art/props/rain_barrel/sm_RainBarrel.gltf", load_conventions()
     )
     assert status == "nonstandard"
     assert "static_mesh_gltf" in detail
@@ -175,13 +175,13 @@ def test_deprecated_alias_does_not_swallow_a_real_violation():
     """
     conventions = load_conventions()
     assert report.check_path("game/hamster/hamster.gltf", conventions)[0] == "deprecated"
-    assert report.check_path("assets/art/3d/a/b/sm_RainBarrel.gltf", conventions)[0] == "nonstandard"
+    assert report.check_path("assets/art/a/b/sm_RainBarrel.gltf", conventions)[0] == "nonstandard"
 
 
 def test_right_name_in_the_wrong_directory_is_reported():
     status, detail = report.check_path("wrong/place/sm_rain_barrel.gltf", load_conventions())
     assert status == "nonstandard"
-    assert "assets/art/3d" in detail
+    assert "assets/art" in detail
 
 
 def test_extension_with_no_pattern_is_not_warned_about():
@@ -195,7 +195,7 @@ def test_extension_with_no_pattern_is_not_warned_about():
 def test_path_outside_the_governed_directories_is_not_warned_about():
     """A .tscn under game/ is application code, not a model container scene.
 
-    .tscn maps to three 3D naming patterns, all of which live under assets/art/3d,
+    .tscn maps to three 3D naming patterns, all of which live under assets/art/,
     prefabs/ or levels/. Telling the author of game/hamster/hamster.tscn that it
     should have been called sm_hamster.tscn is worse than saying nothing.
     """
@@ -211,7 +211,7 @@ def test_loose_2d_pattern_does_not_accept_a_bad_model_name():
     Without scoping candidates by extension those would accept any lowercase
     filename, including a .gltf that is missing its sm_ prefix.
     """
-    assert report.check_path("assets/art/3d/a/b/rainbarrel.gltf", load_conventions())[0] != "ok"
+    assert report.check_path("assets/art/a/b/rainbarrel.gltf", load_conventions())[0] != "ok"
 
 
 # --------------------------------------------------------------------------
@@ -230,7 +230,7 @@ def test_draft_with_a_filepath_is_a_tracked_asset():
     items = load_items()
     draft = next(item for item in items if item.title == "Hanging lantern")
     assert not draft.skip_reason
-    assert draft.paths[0].path == "assets/art/3d/props/lantern/sm_lantern.gltf"
+    assert draft.paths[0].path == "assets/art/props/lantern/sm_lantern.gltf"
 
 
 def test_draft_without_a_filepath_reports_no_path():
@@ -249,7 +249,7 @@ def test_pull_request_board_item_does_not_crash():
 def test_board_and_issue_field_values_are_flattened_separately():
     item = item_by_number(load_items(), 5)
     assert item.fields["Status"] == "Done"
-    assert item.issue_fields["filepath"] == "assets/art/3d/props/rain_barrel/sm_rain_barrel.gltf"
+    assert item.issue_fields["filepath"] == "assets/art/props/rain_barrel/sm_rain_barrel.gltf"
     assert item.issue_fields["Priority"] == "High"
 
 
@@ -266,21 +266,21 @@ def test_linked_prs_keep_their_provenance():
 def test_pr_delivers_matches_the_parent_directory():
     """A PR that adds the whole asset directory delivered the asset in it."""
     files = [
-        "assets/art/3d/props/rain_barrel/sm_rain_barrel.bin",
-        "assets/art/3d/props/rain_barrel/t_rain_barrel_basecolor.png",
+        "assets/art/props/rain_barrel/sm_rain_barrel.bin",
+        "assets/art/props/rain_barrel/t_rain_barrel_basecolor.png",
     ]
-    assert report.pr_delivers("assets/art/3d/props/rain_barrel/sm_rain_barrel.gltf", files)
+    assert report.pr_delivers("assets/art/props/rain_barrel/sm_rain_barrel.gltf", files)
 
 
 def test_pr_that_touches_nothing_relevant_does_not_deliver():
-    assert not report.pr_delivers("assets/art/3d/props/barrel/sm_barrel.gltf", ["README.md"])
+    assert not report.pr_delivers("assets/art/props/barrel/sm_barrel.gltf", ["README.md"])
     assert not report.pr_delivers("", ["README.md"])
 
 
 def test_sibling_directory_does_not_count_as_delivery():
     assert not report.pr_delivers(
-        "assets/art/3d/props/barrel/sm_barrel.gltf",
-        ["assets/art/3d/props/barrel_lid/sm_barrel_lid.gltf"],
+        "assets/art/props/barrel/sm_barrel.gltf",
+        ["assets/art/props/barrel_lid/sm_barrel_lid.gltf"],
     )
 
 
@@ -306,7 +306,7 @@ def test_recorded_client_serves_pr_files_by_number():
         {"owner": "Screwloose-Games", "name": "back-in-the-game-jam"},
     )
     paths = [node["path"] for node in data["repository"]["pr0"]["files"]["nodes"]]
-    assert "assets/art/3d/props/rain_barrel/sm_rain_barrel.gltf" in paths
+    assert "assets/art/props/rain_barrel/sm_rain_barrel.gltf" in paths
 
 
 def test_delivered_by_is_populated_from_the_linked_pr():
@@ -390,7 +390,7 @@ def test_render_is_deterministic_from_recorded_json():
 def test_json_output_exposes_file_path_for_jq():
     payload = json.loads(run_cli(BASE_ARGS + ["--format", "json"]))
     paths = [item["file_path"] for item in payload["items"] if item["file_path"]]
-    assert "assets/art/3d/props/rain_barrel/sm_rain_barrel.gltf" in paths
+    assert "assets/art/props/rain_barrel/sm_rain_barrel.gltf" in paths
     assert payload["context"]["path_field"] == "filepath"
 
 

@@ -102,7 +102,7 @@
                     "nodes": [
                       {
                         "__typename": "IssueFieldTextValue",
-                        "value": "assets/art/3d/props/rain_barrel/sm_rain_barrel.gltf",
+                        "value": "assets/art/props/rain_barrel/sm_rain_barrel.gltf",
                         "field": {
                           "name": "filepath"
                         }
@@ -201,7 +201,7 @@
                     "nodes": [
                       {
                         "__typename": "IssueFieldTextValue",
-                        "value": "assets/art/3d/{category}/{object_name}/sm_{object_name}.gltf",
+                        "value": "assets/art/{category}/{object_name}/sm_{object_name}.gltf",
                         "field": {
                           "name": "filepath"
                         }
@@ -396,7 +396,7 @@
                   "nodes": [
                     {
                       "__typename": "ProjectV2ItemFieldTextValue",
-                      "text": "assets/art/3d/props/lantern/sm_lantern.gltf",
+                      "text": "assets/art/props/lantern/sm_lantern.gltf",
                       "field": {
                         "name": "filepath"
                       }
@@ -415,7 +415,7 @@
                   "nodes": [
                     {
                       "__typename": "ProjectV2ItemFieldTextValue",
-                      "text": "assets/art/3d/structures/market_stall/sm_MarketStall.gltf",
+                      "text": "assets/art/structures/market_stall/sm_MarketStall.gltf",
                       "field": {
                         "name": "filepath"
                       }
@@ -461,10 +461,10 @@
   "pr_files": {
     "Screwloose-Games/back-in-the-game-jam": {
       "14": [
-        "assets/art/3d/props/rain_barrel/sm_rain_barrel.gltf",
-        "assets/art/3d/props/rain_barrel/sm_rain_barrel.bin",
-        "assets/art/3d/props/rain_barrel/t_rain_barrel_basecolor.png",
-        "assets/art/3d/props/rain_barrel/sm_rain_barrel.gltf.import"
+        "assets/art/props/rain_barrel/sm_rain_barrel.gltf",
+        "assets/art/props/rain_barrel/sm_rain_barrel.bin",
+        "assets/art/props/rain_barrel/t_rain_barrel_basecolor.png",
+        "assets/art/props/rain_barrel/sm_rain_barrel.gltf.import"
       ],
       "21": [
         "game/hamster/hamster.gd"

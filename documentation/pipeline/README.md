@@ -99,7 +99,7 @@ python tools/pipeline/pipeline.py issue create \
     --name "rain barrel" \
     --description "A wooden rain barrel." \
     --field "dimentions=1m x 1m x 1m" \
-    --filepath assets/art/3d/props/rain_barrel/sm_rain_barrel.gltf
+    --filepath assets/art/props/rain_barrel/sm_rain_barrel.gltf
 ```
 
 That prints the three `gh` commands it would run and the body it would post.
@@ -156,7 +156,7 @@ issues:
       Hanging lantern for the tavern.
       Must still read at 10 m in the GL Compatibility renderer.
     dimentions: 0.3 m tall x 0.15 m wide
-    filepath: assets/art/3d/props/lantern/sm_lantern.gltf
+    filepath: assets/art/props/lantern/sm_lantern.gltf
 ```
 
 `filepath` means the same thing in every backlog, whatever the template happens
@@ -213,13 +213,13 @@ bottom of `PIPELINE.md`. They are recorded rather than silently resolved because
 guessing would bake a wrong answer into CI.
 
 The asset root, the facing-direction axis and the three competing texture naming
-conventions have all since been decided — `assets/art/3d/` for 3D with `assets/art/2d/` kept
-as the 2D root, +Y forward in Blender becoming **−Z** in the exported glTF, and
+conventions have all since been decided — `assets/art/{category}/{object}/` for all art,
+2D and 3D alike, +Y forward in Blender becoming **−Z** in the exported glTF, and
 `t_{asset_name}_{descriptor}` for textures. What remains open is only when
 existing exporter-named textures migrate.
 
 The +Y→−Z mapping was measured against a real export rather than reasoned about:
-`assets/art/3d/example_cubes_facing` is a cube with a nub, the nub sits on Blender
+`assets/art/examples/example_cubes_facing` is a cube with a nub, the nub sits on Blender
 +Y, and it lands on −Z in `sm_example_cubes_facing.gltf`. −Z is also Godot's
 forward (`Vector3.FORWARD`), so the artist habit and the engine agree and
 neither had to change. This deliberately does not match the glTF spec's own

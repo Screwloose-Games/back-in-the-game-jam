@@ -29,13 +29,13 @@ BASE_ARGS = ["--from-json", str(RECORDING), "--repo-root", str(REPO_ROOT)]
 
 GOLDEN = (
     "priority\tstatus\tname\tdescription\tfile_location\n"
-    "\t\tlantern\tHanging lantern\tassets/art/3d/props/lantern/sm_lantern.gltf\n"
+    "\t\tlantern\tHanging lantern\tassets/art/props/lantern/sm_lantern.gltf\n"
     "high\tdone\train_barrel\tCreate 3D model for rain_barrel\t"
-    "assets/art/3d/props/rain_barrel/sm_rain_barrel.gltf\n"
+    "assets/art/props/rain_barrel/sm_rain_barrel.gltf\n"
     "\t\thamster\tImplement the hamster controller\tgame/hamster/hamster.gd\n"
     "\t\thamster\tImplement the hamster controller\tgame/hamster/hamster.tscn\n"
     "\t\tMarketStall\tCreate 3D model for market_stall\t"
-    "assets/art/3d/structures/market_stall/sm_MarketStall.gltf\n"
+    "assets/art/structures/market_stall/sm_MarketStall.gltf\n"
 )
 
 

@@ -18,4 +18,4 @@ defaults:
 issues:
   # - name: example_asset
   #   description: Enter the texture description... Grungy, dirty, bright...Character description...
-  #   filepath: Enter the full file path... assets/art/3d/{category}/{object_name}/t_{object_name}_basecolor.png
+  #   filepath: Enter the full file path... assets/art/{category}/{object_name}/t_{object_name}_basecolor.png
