@@ -18,20 +18,20 @@ A `.gd` edit is not finished when it is written. It is finished when it parses a
 - **The hook cannot see any of the traps below.** Those need a real run.
 - Both suites, and the output pasted — do not infer success from "the file saved":
   ```
-  godot --headless --path <root> --script res://examples/3d/tentacle_crawler/tools/verify_tentacle_crawler_static.gd
-  godot --headless --path <root>         res://examples/3d/tentacle_crawler/tools/verify_tentacle_crawler_runtime.tscn
+  godot --headless --path <root> --script res://prototypes/tentacle_crawler/tools/verify_tentacle_crawler_static.gd
+  godot --headless --path <root>         res://prototypes/tentacle_crawler/tools/verify_tentacle_crawler_runtime.tscn
   ```
 - Anything touching the leash, the anchor gains, the drag or the tuning constants must ALSO
   re-run the measurement harness and paste the numbers — the README quotes them, so they are
   not allowed to drift silently:
   ```
-  godot --headless --path <root> res://examples/3d/tentacle_crawler/tools/measure_crawl_response.tscn
+  godot --headless --path <root> res://prototypes/tentacle_crawler/tools/measure_crawl_response.tscn
   ```
 - Anything touching the bone poser, the model, the materials, the lighting or the corridor
   generator must re-run the capture tool **and actually look at the PNGs**. Every physics
   assertion in this folder passes against a creature that renders as nothing at all.
   ```
-  godot --path <root> res://examples/3d/tentacle_crawler/tools/capture_crawler.tscn
+  godot --path <root> res://prototypes/tentacle_crawler/tools/capture_crawler.tscn
   ```
 - Use the **`_console.exe`** build on Windows. `C:\godot\godot.cmd` wraps the non-console binary
   and ends with `pause > nul`, so it hangs headless runs and detaches stdout.

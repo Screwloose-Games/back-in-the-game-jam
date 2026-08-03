@@ -1,0 +1,24 @@
+[remap]
+
+importer="wav"
+type="AudioStreamWAV"
+uid="uid://brjqufiag47ji"
+path="res://.godot/imported/Piano One-Shot.wav-c5cd822024ed8ac5c2d9980b91b24033.sample"
+
+[deps]
+
+source_file="res://prototypes/tentacle_crawler/assets/audio/Piano One-Shot.wav"
+dest_files=["res://.godot/imported/Piano One-Shot.wav-c5cd822024ed8ac5c2d9980b91b24033.sample"]
+
+[params]
+
+force/8_bit=false
+force/mono=false
+force/max_rate=false
+force/max_rate_hz=44100
+edit/trim=false
+edit/normalize=false
+edit/loop_mode=0
+edit/loop_begin=0
+edit/loop_end=-1
+compress/mode=2

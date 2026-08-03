@@ -7,7 +7,7 @@ extends Node
 ## or delete the numbers from it. A quoted number that no longer holds is worse than
 ## no number.
 ##
-##   godot --headless --path <root> res://examples/3d/tentacle_crawler/tools/measure_crawl_response.tscn
+##   godot --headless --path <root> res://prototypes/tentacle_crawler/tools/measure_crawl_response.tscn
 ##
 ## Pass `--` then `trace` to get the per-sample time series instead of the summary,
 ## which is what you want when the creature is doing something and you do not yet

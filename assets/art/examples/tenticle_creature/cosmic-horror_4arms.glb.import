@@ -4,12 +4,12 @@ importer="scene"
 importer_version=1
 type="PackedScene"
 uid="uid://bjcq3nregeqh4"
-path="res://.godot/imported/cosmic-horror_4arms.glb-f23bb73c66f319e8b6ac8d6b85909ab2.scn"
+path="res://.godot/imported/cosmic-horror_4arms.glb-d352db48d77b0f662e5c5faab3e76f2b.scn"
 
 [deps]
 
-source_file="res://assets/art/3d/tenticle_creature/cosmic-horror_4arms.glb"
-dest_files=["res://.godot/imported/cosmic-horror_4arms.glb-f23bb73c66f319e8b6ac8d6b85909ab2.scn"]
+source_file="res://assets/art/examples/tenticle_creature/cosmic-horror_4arms.glb"
+dest_files=["res://.godot/imported/cosmic-horror_4arms.glb-d352db48d77b0f662e5c5faab3e76f2b.scn"]
 
 [params]
 

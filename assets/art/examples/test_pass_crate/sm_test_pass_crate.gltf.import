@@ -4,12 +4,12 @@ importer="scene"
 importer_version=1
 type="PackedScene"
 uid="uid://bu3tgbls6yo4t"
-path="res://.godot/imported/sm_test_pass_crate.gltf-c3cdcd4fa2a1c237f3497c7f85f035c2.scn"
+path="res://.godot/imported/sm_test_pass_crate.gltf-836ef8b043c637ddcd6e37a2d4234d23.scn"
 
 [deps]
 
-source_file="res://assets/art/3d/test_pass_crate/sm_test_pass_crate.gltf"
-dest_files=["res://.godot/imported/sm_test_pass_crate.gltf-c3cdcd4fa2a1c237f3497c7f85f035c2.scn"]
+source_file="res://assets/art/examples/test_pass_crate/sm_test_pass_crate.gltf"
+dest_files=["res://.godot/imported/sm_test_pass_crate.gltf-836ef8b043c637ddcd6e37a2d4234d23.scn"]
 
 [params]
 

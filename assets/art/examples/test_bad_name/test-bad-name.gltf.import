@@ -4,12 +4,12 @@ importer="scene"
 importer_version=1
 type="PackedScene"
 uid="uid://byvodtfker6wb"
-path="res://.godot/imported/test-bad-name.gltf-7dd9d041a7a599a78657f2e88c257e50.scn"
+path="res://.godot/imported/test-bad-name.gltf-87eb5f05c544c26f3c72623c542b4aa5.scn"
 
 [deps]
 
-source_file="res://assets/art/3d/test_bad_name/test-bad-name.gltf"
-dest_files=["res://.godot/imported/test-bad-name.gltf-7dd9d041a7a599a78657f2e88c257e50.scn"]
+source_file="res://assets/art/examples/test_bad_name/test-bad-name.gltf"
+dest_files=["res://.godot/imported/test-bad-name.gltf-87eb5f05c544c26f3c72623c542b4aa5.scn"]
 
 [params]
 

@@ -4,7 +4,7 @@ extends SceneTree
 ## source actually say.
 ##
 ##   godot --headless --path <root> \
-##     --script res://examples/3d/tentacle_crawler/tools/verify_tentacle_crawler_static.gd
+##     --script res://prototypes/tentacle_crawler/tools/verify_tentacle_crawler_static.gd
 ##
 ## Everything runs on the first _process() tick rather than in _initialize(). Nodes
 ## added during SceneTree._initialize() never receive _ready(), so a check written
@@ -15,7 +15,6 @@ extends SceneTree
 ## walls, the creature getting round a bend) lives in the runtime suite instead. A
 ## check that cannot raycast should not pretend to measure geometry.
 
-const EXAMPLE_ROOT: String = "res://examples/3d/tentacle_crawler"
 const SANDBOX: String = "../scenes/crawl_sandbox.tscn"
 const CORRIDOR: String = "../scenes/corridor_run.tscn"
 
@@ -391,7 +390,7 @@ func _check_paths_are_relative() -> void:
 		for path: String in _files_under("", extension):
 			var text: String = FileAccess.get_file_as_string(path)
 			for line: String in text.split("\n"):
-				if line.begins_with("[ext_resource") and line.contains(EXAMPLE_ROOT):
+				if line.begins_with("[ext_resource") and line.contains(_root()):
 					_fail(
 						"paths",
 						"%s has an absolute path: %s" % [path.get_file(), line.strip_edges()]
@@ -473,7 +472,7 @@ func _read_code(path: String) -> String:
 
 func _files_under(folder: String, extension: String) -> PackedStringArray:
 	var found: PackedStringArray = PackedStringArray()
-	var base: String = EXAMPLE_ROOT if folder.is_empty() else EXAMPLE_ROOT.path_join(folder)
+	var base: String = _root() if folder.is_empty() else _root().path_join(folder)
 	_walk(base, extension, found)
 	return found
 
@@ -505,6 +504,20 @@ func _descendants(node: Node) -> Array[Node]:
 func _res(relative_path: String) -> String:
 	var dir: String = (get_script() as Script).resource_path.get_base_dir()
 	return dir.path_join(relative_path).simplify_path()
+
+
+## This folder's own res:// path, DERIVED rather than written down.
+##
+## It used to be a const reading "res://prototypes/tentacle_crawler". The folder
+## moved to prototypes/ and the const did not, and nothing said so: every check
+## that walks the tree simply enumerated an empty directory and passed vacuously
+## on nothing, while `[scenes]` and `[input]` failed with counts of zero. A suite
+## that silently stops looking is worse than no suite.
+##
+## `_res` next door was always derived and never went stale, which is the whole
+## argument for this being a function.
+func _root() -> String:
+	return _res("..")
 
 
 func _fail(tag: String, message: String) -> void:

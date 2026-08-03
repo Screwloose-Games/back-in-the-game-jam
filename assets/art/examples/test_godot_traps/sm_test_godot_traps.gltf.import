@@ -4,12 +4,12 @@ importer="scene"
 importer_version=1
 type="PackedScene"
 uid="uid://drggwdpsl64w"
-path="res://.godot/imported/sm_test_godot_traps.gltf-5e081e082fd8d614bbd62162306bf60d.scn"
+path="res://.godot/imported/sm_test_godot_traps.gltf-7560fe7bb43fd80a7434cbcd9bf83fc0.scn"
 
 [deps]
 
-source_file="res://assets/art/3d/test_godot_traps/sm_test_godot_traps.gltf"
-dest_files=["res://.godot/imported/sm_test_godot_traps.gltf-5e081e082fd8d614bbd62162306bf60d.scn"]
+source_file="res://assets/art/examples/test_godot_traps/sm_test_godot_traps.gltf"
+dest_files=["res://.godot/imported/sm_test_godot_traps.gltf-7560fe7bb43fd80a7434cbcd9bf83fc0.scn"]
 
 [params]
 

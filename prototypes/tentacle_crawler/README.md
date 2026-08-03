@@ -24,8 +24,8 @@ tube by throwing grappling limbs at it feels good to drive.
 Open either scene and press **F6**, or from the command line:
 
 ```
-godot --path <godot project root> res://examples/3d/tentacle_crawler/scenes/crawl_sandbox.tscn
-godot --path <godot project root> res://examples/3d/tentacle_crawler/scenes/corridor_run.tscn
+godot --path <godot project root> res://prototypes/tentacle_crawler/scenes/crawl_sandbox.tscn
+godot --path <godot project root> res://prototypes/tentacle_crawler/scenes/corridor_run.tscn
 ```
 
 `crawl_sandbox.tscn` is a hand-authored 60 m straight box with a pinch in the
@@ -187,20 +187,20 @@ This folder is a guest in a larger project and must not need anything from it.
 
 ```
 # regenerate the course (edit the generator, never the output)
-godot --headless --path <root> --script res://examples/3d/tentacle_crawler/tools/build_corridor_run.gd
+godot --headless --path <root> --script res://prototypes/tentacle_crawler/tools/build_corridor_run.gd
 
 # structure: wiring, layers, boundaries, paths, uids, tuning invariants
-godot --headless --path <root> --script res://examples/3d/tentacle_crawler/tools/verify_tentacle_crawler_static.gd
+godot --headless --path <root> --script res://prototypes/tentacle_crawler/tools/verify_tentacle_crawler_static.gd
 
 # behaviour: lag, ratchet, anchors, stagger, corridor traversal, bone pose
-godot --headless --path <root> res://examples/3d/tentacle_crawler/tools/verify_tentacle_crawler_runtime.tscn
+godot --headless --path <root> res://prototypes/tentacle_crawler/tools/verify_tentacle_crawler_runtime.tscn
 
 # the numbers in the table above
-godot --headless --path <root> res://examples/3d/tentacle_crawler/tools/measure_crawl_response.tscn
+godot --headless --path <root> res://prototypes/tentacle_crawler/tools/measure_crawl_response.tscn
 
 # screenshots -- NOT headless, and you have to actually look at them
-godot --path <root> res://examples/3d/tentacle_crawler/tools/capture_crawler.tscn
-godot --path <root> res://examples/3d/tentacle_crawler/tools/capture_crawler.tscn -- res://examples/3d/tentacle_crawler/scenes/corridor_run.tscn
+godot --path <root> res://prototypes/tentacle_crawler/tools/capture_crawler.tscn
+godot --path <root> res://prototypes/tentacle_crawler/tools/capture_crawler.tscn -- res://prototypes/tentacle_crawler/scenes/corridor_run.tscn
 ```
 
 ## Gotchas

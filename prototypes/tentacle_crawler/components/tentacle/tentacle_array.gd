@@ -41,6 +41,23 @@ extends Node3D
 ##     |                                            (both planted, glide spent)
 ##     +---------------(handoff, 35% into the stroke)------ HAUL
 
+## A tip has just hit a wall and taken hold.
+##
+## Emitted on the REACHING -> PLANTED edge and nowhere else, so it fires exactly
+## once per grip: not while the strand keeps holding, and not when the gait later
+## tells it to pull. It is the moment of contact, which makes it the thing to hang
+## an impact sound or a hit effect on.
+##
+## `impact` is how much of its own reach the strand spent getting there, 0 to 1. A
+## strand that threw itself the full length of its chain hit harder than one that
+## found a wall a metre away, and the two should not sound alike. Normalised per
+## strand because the chains run from 14 links to 23 -- a raw distance would just
+## report which tentacle it was.
+##
+## This node applies no force and plays no sound. It says what happened; whoever
+## cares connects.
+signal tentacle_planted(strand: int, position: Vector3, impact: float)
+
 ## Phase of one strand. See the diagram above.
 enum Phase { SEARCHING, REACHING, PLANTED, PULLING, RELEASING }
 
@@ -893,6 +910,11 @@ func _update_tips(delta: float) -> void:
 					_tip[i] = _anchor[i]
 					_extend[i] = 1.0
 					_grip_age[i] = 0.0
+					# The only REACHING -> PLANTED edge in the file, so one emission
+					# per grip comes free rather than needing a guard. `span` is the
+					# throw this strand just completed; measured against its own
+					# reach, that is how hard it landed.
+					tentacle_planted.emit(i, _anchor[i], clampf(span / _reach[i], 0.0, 1.0))
 			Phase.PLANTED, Phase.PULLING:
 				_tip[i] = _anchor[i]
 				_extend[i] = 1.0

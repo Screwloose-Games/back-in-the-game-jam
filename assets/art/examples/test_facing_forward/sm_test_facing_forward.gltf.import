@@ -4,12 +4,12 @@ importer="scene"
 importer_version=1
 type="PackedScene"
 uid="uid://bbxe750lb46fx"
-path="res://.godot/imported/sm_test_facing_forward.gltf-d3182b8d30c8a3f24b06e77061f7cdac.scn"
+path="res://.godot/imported/sm_test_facing_forward.gltf-c2ff116633f8e3b48855cb51f2345dd2.scn"
 
 [deps]
 
-source_file="res://assets/art/3d/test_facing_forward/sm_test_facing_forward.gltf"
-dest_files=["res://.godot/imported/sm_test_facing_forward.gltf-d3182b8d30c8a3f24b06e77061f7cdac.scn"]
+source_file="res://assets/art/examples/test_facing_forward/sm_test_facing_forward.gltf"
+dest_files=["res://.godot/imported/sm_test_facing_forward.gltf-c2ff116633f8e3b48855cb51f2345dd2.scn"]
 
 [params]
 

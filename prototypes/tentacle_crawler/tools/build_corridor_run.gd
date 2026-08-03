@@ -2,7 +2,7 @@ extends SceneTree
 
 ## Generates scenes/corridor_run.tscn. EDIT THIS, NEVER THE OUTPUT.
 ##
-##   godot --headless --path <root> --script res://examples/3d/tentacle_crawler/tools/build_corridor_run.gd
+##   godot --headless --path <root> --script res://prototypes/tentacle_crawler/tools/build_corridor_run.gd
 ##
 ## RINGS, NOT BOXES. The corridor is built by walking a frame along a polyline and
 ## emitting a four-corner cross-section every RING_STEP metres, then filling the four
@@ -520,7 +520,12 @@ func _relativise(path: String) -> void:
 	file.close()
 	# One replacement covers materials/, components/ and actors/ alike: the scene is
 	# saved into scenes/, so every sibling folder is exactly one level up.
-	text = text.replace("res://examples/3d/tentacle_crawler/", "../")
+	#
+	# DERIVED, not written down. This line used to spell the folder's old path out
+	# and quietly became a no-op when the folder moved, so every regeneration wrote
+	# absolute paths straight back into the scene and the self-containment rule was
+	# enforced by a check that could no longer see the files.
+	text = text.replace(_res("..") + "/", "../")
 	var out: FileAccess = FileAccess.open(path, FileAccess.WRITE)
 	out.store_string(text)
 	out.close()

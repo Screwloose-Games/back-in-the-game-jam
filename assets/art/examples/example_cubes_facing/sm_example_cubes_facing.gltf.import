@@ -4,12 +4,12 @@ importer="scene"
 importer_version=1
 type="PackedScene"
 uid="uid://bfdsvitkc0shx"
-path="res://.godot/imported/sm_example_cubes_facing.gltf-298738fe6a1f274d6a7a3abfe384c133.scn"
+path="res://.godot/imported/sm_example_cubes_facing.gltf-cb069f836a6977cb718b14dd4e8d1f41.scn"
 
 [deps]
 
-source_file="res://assets/art/3d/example_cubes_facing/sm_example_cubes_facing.gltf"
-dest_files=["res://.godot/imported/sm_example_cubes_facing.gltf-298738fe6a1f274d6a7a3abfe384c133.scn"]
+source_file="res://assets/art/examples/example_cubes_facing/sm_example_cubes_facing.gltf"
+dest_files=["res://.godot/imported/sm_example_cubes_facing.gltf-cb069f836a6977cb718b14dd4e8d1f41.scn"]
 
 [params]
 

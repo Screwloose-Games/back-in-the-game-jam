@@ -4,12 +4,12 @@ importer="scene"
 importer_version=1
 type="PackedScene"
 uid="uid://s54qhdepdins"
-path="res://.godot/imported/cosmic-horror_purple.glb-09c9b79e612c7941f20b5fbd3fd28f27.scn"
+path="res://.godot/imported/cosmic-horror_purple.glb-2eac2e337808247f2d8f0d69226399ba.scn"
 
 [deps]
 
-source_file="res://assets/art/3d/tenticle_creature/cosmic-horror_purple.glb"
-dest_files=["res://.godot/imported/cosmic-horror_purple.glb-09c9b79e612c7941f20b5fbd3fd28f27.scn"]
+source_file="res://assets/art/examples/tenticle_creature/cosmic-horror_purple.glb"
+dest_files=["res://.godot/imported/cosmic-horror_purple.glb-2eac2e337808247f2d8f0d69226399ba.scn"]
 
 [params]
 

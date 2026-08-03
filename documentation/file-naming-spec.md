@@ -64,6 +64,7 @@ names still follow Godot's convention — `PascalCase`, matching built-in node c
 | Audio | `{lowercase_with_underscores}.wav`, `.ogg` | `door_open.wav` | CI (blocking) |
 | Script | `{lowercase_with_underscores}.gd` | `player_controller.gd` | review |
 | Resource | `{lowercase_with_underscores}.tres` | `theme.tres` | review |
+| UI | `{lowercase_with_underscores}.png` | `ui_button_quit.png` | review |
 
 **"CI (blocking)"** means a workflow fails the PR. **"review"** means it is caught by a
 human — the 3D naming patterns are documented and regex'd in `pipeline.yaml`, but nothing

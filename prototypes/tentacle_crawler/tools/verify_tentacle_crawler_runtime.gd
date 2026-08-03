@@ -8,7 +8,7 @@ extends Node
 ## Run it (a .tscn wrapper, not --script: a node added during
 ## SceneTree._initialize() never receives _ready(), so a bare script would run
 ## nothing, print nothing and exit 0 -- indistinguishable from a pass):
-##   godot --headless --path <root> res://examples/3d/tentacle_crawler/tools/verify_tentacle_crawler_runtime.tscn
+##   godot --headless --path <root> res://prototypes/tentacle_crawler/tools/verify_tentacle_crawler_runtime.tscn
 
 ## How fast the marker is dragged along the generated corridor's centreline, m/s.
 ## Close to the creature's own measured crawl speed on purpose: rail it much faster

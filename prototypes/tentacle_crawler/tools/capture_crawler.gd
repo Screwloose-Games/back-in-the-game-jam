@@ -11,18 +11,15 @@ extends Node
 ##
 ## MUST RUN WITH A REAL RENDERER. --headless uses the dummy driver and every shot
 ## comes back blank, which looks exactly like a bug in the thing being photographed:
-##   godot --path <project root> res://examples/3d/tentacle_crawler/tools/capture_crawler.tscn
+##   godot --path <project root> res://prototypes/tentacle_crawler/tools/capture_crawler.tscn
 ##
 ## Pass another scene after `--` to photograph that instead:
-##   ... capture_crawler.tscn -- res://examples/3d/tentacle_crawler/scenes/corridor_run.tscn
+##   ... capture_crawler.tscn -- res://prototypes/tentacle_crawler/scenes/corridor_run.tscn
 ##
 ## Shots are skipped, with a printed reason, when the thing they photograph does
 ## not exist yet. This tool is written to be usable from the FIRST step of the build
 ## (an empty corridor) rather than only once everything works -- "run it and look at
 ## it" is worth nothing as advice if the tool only starts working at the end.
-
-## Where the shots go. Gitignored -- these are for looking at, not for keeping.
-const OUT_DIR: String = "res://examples/3d/tentacle_crawler/tools/_shots"
 
 var _world: Node
 var _crawler: Node3D
@@ -53,7 +50,7 @@ func _ready() -> void:
 		_marker.set("capture_mouse", false)
 	print("present: crawler %s  marker %s" % [_crawler != null, _marker != null])
 
-	DirAccess.make_dir_recursive_absolute(ProjectSettings.globalize_path(OUT_DIR))
+	DirAccess.make_dir_recursive_absolute(ProjectSettings.globalize_path(_out_dir()))
 	await _run_shots()
 	get_tree().quit(0)
 
@@ -169,7 +166,7 @@ func _shoot(label: String) -> void:
 	await RenderingServer.frame_post_draw
 	var image: Image = get_viewport().get_texture().get_image()
 	_shot += 1
-	var path: String = "%s/%02d_%s.png" % [OUT_DIR, _shot, label]
+	var path: String = "%s/%02d_%s.png" % [_out_dir(), _shot, label]
 	var err: Error = image.save_png(path)
 	if err != OK:
 		printerr("save_png(%s) failed: %d" % [path, err])
@@ -267,6 +264,16 @@ func _wait(seconds: float) -> void:
 
 ## load() and ResourceSaver need real res:// paths, so relative paths in a tool
 ## script are resolved against the script's own location.
+## Where the shots go. Gitignored -- these are for looking at, not for keeping.
+##
+## Derived rather than written down, and a function rather than a const because a
+## const cannot call `_res`. As a hardcoded path this went stale the moment the
+## folder moved out of examples/, and the tool then wrote its shots into a
+## directory that did not exist, silently.
+func _out_dir() -> String:
+	return _res("_shots")
+
+
 func _res(relative_path: String) -> String:
 	var dir: String = (get_script() as Script).resource_path.get_base_dir()
 	return dir.path_join(relative_path).simplify_path()

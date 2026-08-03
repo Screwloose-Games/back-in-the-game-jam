@@ -4,12 +4,12 @@ importer="scene"
 importer_version=1
 type="PackedScene"
 uid="uid://di3pdi4icdocr"
-path="res://.godot/imported/sm_test_poly_budget.gltf-078f062b9ddfe8f416f6592c4d5a8d97.scn"
+path="res://.godot/imported/sm_test_poly_budget.gltf-dcc9ea46e88f24f4fac8694419551af6.scn"
 
 [deps]
 
-source_file="res://assets/art/3d/test_poly_budget/sm_test_poly_budget.gltf"
-dest_files=["res://.godot/imported/sm_test_poly_budget.gltf-078f062b9ddfe8f416f6592c4d5a8d97.scn"]
+source_file="res://assets/art/examples/test_poly_budget/sm_test_poly_budget.gltf"
+dest_files=["res://.godot/imported/sm_test_poly_budget.gltf-dcc9ea46e88f24f4fac8694419551af6.scn"]
 
 [params]
 

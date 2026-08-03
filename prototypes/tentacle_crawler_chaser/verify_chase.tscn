@@ -1,0 +1,11 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://prototypes/tentacle_crawler_chaser/verify_chase.gd" id="0_verify"]
+
+; A wrapper whose only job is to be nameable on the command line. The project's
+; main scene is the main menu, so a headless run that does not name a scene boots
+; that and the checks never run:
+;
+;   godot --headless --path . res://prototypes/tentacle_crawler_chaser/verify_chase.tscn
+[node name="VerifyChase" type="Node"]
+script = ExtResource("0_verify")

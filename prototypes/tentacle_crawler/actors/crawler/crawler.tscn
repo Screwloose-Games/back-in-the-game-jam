@@ -5,6 +5,7 @@
 [ext_resource type="PackedScene" path="../../assets/models/cosmic-horror.glb" id="3_model"]
 [ext_resource type="Script" path="../../components/tentacle/tentacle_array.gd" id="4_tentacles"]
 [ext_resource type="PackedScene" path="../../components/tentacle/tentacle_bones.tscn" id="5_bones"]
+[ext_resource type="Script" path="../../components/tentacle/tentacle_impact_audio.gd" id="6_impact_audio"]
 
 ; node_paths= on the ROOT node wires the body to its own tentacles. The instancing
 ; scene adds its own node_paths for `target_marker`; the two lists are independent,
@@ -78,3 +79,10 @@ rig = NodePath("../Rig")
 [node name="Bones" parent="." node_paths=PackedStringArray("tentacles", "rig") instance=ExtResource("5_bones")]
 tentacles = NodePath("../Tentacles")
 rig = NodePath("../Rig")
+
+; Listens to Tentacles.tentacle_planted and thuds. Reads that one signal and
+; nothing else, applies nothing, and decides nothing -- delete it and the creature
+; moves exactly as before, which is the same bargain TentacleBones takes.
+[node name="ImpactAudio" type="Node3D" parent="." node_paths=PackedStringArray("tentacles")]
+script = ExtResource("6_impact_audio")
+tentacles = NodePath("../Tentacles")

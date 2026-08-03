@@ -4,12 +4,12 @@ importer="scene"
 importer_version=1
 type="PackedScene"
 uid="uid://ch5wshr2x8p0f"
-path="res://.godot/imported/cosmic-horror_open-front.glb-b9a56d19374cc34b22b16020a8e83ed1.scn"
+path="res://.godot/imported/cosmic-horror_open-front.glb-b6dcec1afd6523688fe7fb56f22c4877.scn"
 
 [deps]
 
-source_file="res://assets/art/3d/tenticle_creature/cosmic-horror_open-front.glb"
-dest_files=["res://.godot/imported/cosmic-horror_open-front.glb-b9a56d19374cc34b22b16020a8e83ed1.scn"]
+source_file="res://assets/art/examples/tenticle_creature/cosmic-horror_open-front.glb"
+dest_files=["res://.godot/imported/cosmic-horror_open-front.glb-b6dcec1afd6523688fe7fb56f22c4877.scn"]
 
 [params]
 
