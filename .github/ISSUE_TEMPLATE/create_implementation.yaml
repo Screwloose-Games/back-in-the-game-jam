@@ -1,0 +1,96 @@
+name: Implementation
+description: Template for implementation acceptance criteria for deliverables.
+title: "Implementation {file_name}"
+labels:
+  - implementation
+body:
+  - type: textarea
+    id: description
+    attributes:
+      label: Description
+      description: Provide a description of what your implementing.
+      placeholder: "Enter the implementation description..."
+    validations:
+      required: true
+
+  - type: textarea
+    id: context
+    attributes:
+      label: File Location
+      description: Provide the .gltf Location of what your implementing.
+      placeholder: "assets/art/{category}/{object_name}/sk_{file_name}.gltf"
+    validations:
+      required: true
+
+  - type: markdown
+    attributes:
+      value: |
+        ## Acceptance Criteria Guidelines:
+        - [ ] Delete any filetype not needed for implementation in Subtasks.
+        - [ ] Provide .gltf Location: assets/art/{category}/{object_name}/{prefix}_{file_name}.gltf
+        - [ ] Verify that the file is in the correct spot.
+
+        ## File Path Standards
+        See documentation/file-naming-spec.md for the full convention.
+        - {prefix}: sk_ || sm_
+        - {category}: The grouping directory, e.g. structures. Make one if nothing fits.
+        - {object_name}: The object's own directory, matching the file name.
+        - {file_name}: Enter the name of the file.
+        - {Same Directory}: Same directory.
+        - [Under Construction]: Developing SOP.
+
+        All art lives under `assets/art/{category}/{object}/`, 2D and 3D together;
+        older templates asked for assets under `game/` and that form is deprecated.
+
+        ## Texture Reminders
+        Textures are named `t_{asset_name}_{descriptor}.png` and sit beside the
+        .gltf that references them.
+        - Albedo — `t_{asset_name}_basecolor.png` (base color for the material)
+        - Roughness — `t_{asset_name}_roughness.png` (affects the way reflection happens)
+        - Normal Map — `t_{asset_name}_normal.png` (finer shapes)
+        - Packed — `t_{asset_name}_orm.png` (AO in R, roughness in G, metallic in B)
+
+  - type: textarea
+    validations:
+      required: true
+    attributes:
+      id: subtasks
+      label: Subtasks
+      value: |
+        ## Acceptance Criteria:
+        
+        ### Skeletal Mesh (sk_)
+        - [ ] .gltf Location: assets/art/{category}/{object_name}/sk_{file_name}.gltf
+        #### Configure Inherited Scene
+        - [ ] Open location in Godot > Right click gltf file > New Inherited Scene
+        - [ ] Under Scene > Click on a MeshInstance3D. (Repeat for each MeshInstance3D)
+        - [ ] Under Inspector > Click Surface Material Override dropdown.
+        - [ ] Click <empty> > New StandardMaterial3D > Click on material to bring up property settings.
+        - [ ] Fill out Albedo || (Sometimes Roughness or/and Normal Map)
+        - [ ] Under FileSystem > find the related t_ texture file in {Same Directory}.
+        - [ ] Drag to Texture property of Albedo.
+        - [ ] Right click on the Inherited Scene > Save Scene As... in {Same Directory} as .gltf file.
+        - [ ] File will save as tscn: sk_{file_name}.tscn
+        - [ ] GitHub Pull Request Created > Assign Reviewer.   
+        
+        ### Static Mesh (sm_)
+        - [ ] .gltf Location: assets/art/{category}/{object_name}/sm_{file_name}.gltf
+        #### Configure Advanced Import Settings
+        - [ ] Under FileSystem > Double click the .gltf file to open Advanced Import Settings for Scene.
+        - [ ] Under Scene > Click on a MeshInstance3D. (Repeat for each MeshInstance3D)
+        - [ ] Under Generate > Turn Physics On > Physics > Shape Type > Simple Convex (Normally will work) 
+        - [ ] Click Reimport
+        #### Configure Inherited Scene
+        - [ ] Open location in Godot > Right click gltf file > New Inherited Scene
+        - [ ] Under Scene > Click on a MeshInstance3D. (Repeat for each MeshInstance3D)
+        - [ ] Under Inspector > Click Surface Material Override dropdown.
+        - [ ] Click <empty> > New StandardMaterial3D > Click on material to bring up property settings.
+        - [ ] Fill out Albedo || (Sometimes Roughness or/and Normal Map)
+        - [ ] Under FileSystem > find the related t_ texture file in {Same Directory}.
+        - [ ] Drag to Texture property of Albedo.
+        - [ ] Right click on the Inherited Scene > Save Scene As... in {Same Directory} as .gltf file.
+        - [ ] File will save as tscn: sm_{file_name}.tscn
+        - [ ] GitHub Pull Request Created > Assign Reviewer.
+
+        ### Sound (aud_)
+        - [ ] FIND CHRIS!

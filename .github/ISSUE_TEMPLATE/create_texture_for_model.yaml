@@ -1,0 +1,73 @@
+name: Create Texture for 3D Model
+description: Template for creating a Texture for a 3D model.
+title: "Create texture for {3D model name}"
+labels: [art, texture]
+
+body:
+  - type: textarea
+    id: description
+    attributes:
+      label: Description
+      description: Provide a description of the texture to be created.
+      placeholder: "Enter the texture description... Grungy, dirty, bright...Character description..."
+    validations:
+      required: true
+
+  - type: textarea
+    id: reference-images
+    attributes:
+      label: Reference Images
+      description: Provide reference images for this texture
+      placeholder: "Attach reference images..."
+
+  - type: input
+    id: file_path
+    attributes:
+      label: Save File Path
+      description: >-
+        Provide the full filepath where the texture should be saved. Textures sit
+        beside the .gltf that references them, not in a separate textures/ folder.
+      placeholder: "Enter the full file path... assets/art/{category}/{object_name}/t_{object_name}_basecolor.png"
+    validations:
+      required: true
+
+  - type: markdown
+    attributes:
+      value: |
+        ## Acceptance Criteria:
+
+        - [ ] The texture is saved in `.png` file format.
+        - [ ] The texture is saved to the specified filepath: `{file_path}`.
+        - [ ] The texture is opened in Godot to generate the `.import` file.
+        - [ ] The texture has been imported in godot (Godot opened) and has the accompanying `.import` file.
+        - [ ] A pull request (PR) is created with the changes.
+
+        [Pull Request Guide: Github]("https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/proposing-changes-to-your-work-with-pull-requests/creating-a-pull-request")
+  
+  - type: textarea
+    validations:
+      required: true
+    attributes:
+      id: subtasks
+      label: Subtasks
+      value: |
+        - [ ] The texture is saved in `.png` file format.
+        - [ ] The texture is saved to the specified filepath: `{file_path}`.
+        - [ ] The texture is opened in Godot to generate the `.import` file.
+        - [ ] The texture has been imported in godot (Godot opened) and has the accompanying `.import` file.
+        - [ ] A pull request (PR) is created with the changes.
+
+        <!-- pipeline:subtasks:start -->
+        <!-- Generated from documentation/pipeline/pipeline.yaml. Edit that file, then run tools/pipeline/pipeline.py render issue-templates --write. -->
+        - [ ] Textures export as t_{asset_name}_{descriptor}.png, lowercase.
+        - [ ] Textures were exported with the glTF PBR Metal Roughness template.
+        - [ ] Filenames follow [prefix]_[asset_name]_[descriptor]_[variant].
+        - [ ] All authored filenames are lowercase with underscore separators.
+        - [ ] No .fbx files are included.
+        - [ ] The .import sidecar for every added asset is committed.
+        <!-- pipeline:subtasks:end -->
+
+        [Pull Request Guide: Github]("https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/proposing-changes-to-your-work-with-pull-requests/creating-a-pull-request")
+
+        ## Blocking
+        - Implementation tasks

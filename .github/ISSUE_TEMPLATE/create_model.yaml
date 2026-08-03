@@ -1,0 +1,104 @@
+
+name: Create 3D Model for Game Object
+description: Template for creating a new 3D model for a game object.
+title: "Create 3D model for {game object name}"
+labels:
+  - 3d model
+body:
+  - type: textarea
+    id: description
+    attributes:
+      label: Description
+      description: Provide a description of the game object model to be created.
+      placeholder: "Enter the model description..."
+      value: "This hamster is a cheerfull, cartoonish... Huge cheeks and wide eyes..."
+    validations:
+      required: true
+    
+  - type: textarea
+    id: reference-images
+    attributes:
+      label: Reference Images
+      description: Provide reference images.
+      placeholder: "Upload reference images..."
+    validations:
+      required: false
+  
+  - type: input
+    id: dimentions
+    attributes:
+      label: Dimentions
+      description: What are the approximate dimentions of the object?
+      placeholder: "Enter the approximate dimentions in meters..."
+      value: "1.8 meters tall x .3 meters deep, .5 meters wide"
+    validations:
+      required: true
+  
+  - type: input
+    id: file_path
+    attributes:
+      label: Save File Path
+      description: >-
+        Provide the full filepath where the model should be saved. The exported
+        .gltf, its .bin, and its textures all live in this one directory.
+      placeholder: "Enter the full file path..."
+      # This key was previously duplicated (.blend then .gltf), which is invalid
+      # YAML and silently resolved to the .gltf line.
+      # The root is assets/art/, shared by 2D and 3D and grouped by category.
+      # See documentation/pipeline/pipeline.yaml.
+      value: "assets/art/{category}/{object_name}/sm_{object_name}.gltf"
+    validations:
+      required: true
+
+  - type: markdown
+    attributes:
+      value: |
+        ## Acceptance Criteria:
+
+        Complete the acceptance criteria in the field below.
+
+    
+  - type: textarea
+    validations:
+      required: true
+    attributes:
+      id: subtasks
+      label: Subtasks
+      value: |
+        - [ ] Poly count optimized.
+        - [ ] Model normals correct.
+        - [ ] The model contains UV mapping.
+        - [ ] UV islands created as needed.
+        - [ ] Model is the correct __dimentions__ as defined above.
+        - [ ] The model is saved in `.blend` file format.
+        - [ ] A pull request (PR) is created with the changes.
+
+        <!-- pipeline:subtasks:start -->
+        <!-- Generated from documentation/pipeline/pipeline.yaml. Edit that file, then run tools/pipeline/pipeline.py render issue-templates --write. -->
+        - [ ] The placeholder matches the dimensions on the issue.
+        - [ ] The placeholder uses the asset's final filename.
+        - [ ] No mesh has a child mesh.
+        - [ ] No object name ends in a Godot node-type suffix by accident.
+        - [ ] Collision proxies do not stick out past the visual mesh.
+        - [ ] The pivot is at the world origin and in the correct spot on the model.
+        - [ ] The model faces +Y in Blender.
+        - [ ] Poly count is within budget.
+        - [ ] The model is exported as .gltf (separate), not .glb.
+        - [ ] The filename is prefixed sm_ or sk_.
+        - [ ] The exported .gltf faces -Z (from +Y in Blender).
+        - [ ] The exported .gltf is +Y up.
+        - [ ] No texture was renamed by hand; wrong names were fixed at the exporter.
+        - [ ] All files for the object are in assets/art/{category}/{object}/.
+        - [ ] The files were imported through the Godot editor.
+        - [ ] The .import sidecars were confirmed in the OS file explorer.
+        - [ ] The mesh, buffer, textures and every .import sidecar are in the same commit.
+        - [ ] Filenames follow [prefix]_[asset_name]_[descriptor]_[variant].
+        - [ ] All authored filenames are lowercase with underscore separators.
+        - [ ] No .fbx files are included.
+        - [ ] The .import sidecar for every added asset is committed.
+        <!-- pipeline:subtasks:end -->
+
+        [Pull Request Guide: Github](https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/proposing-changes-to-your-work-with-pull-requests/creating-a-pull-request)
+
+        ## Implementation Criteria
+        - Go to [Implementation Mega Thread](https://github.com/Screwloose-Games/godot-wild-jam-77/issues/120) and add your new issue # as a comment

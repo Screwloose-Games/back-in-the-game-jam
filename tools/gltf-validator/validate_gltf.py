@@ -1,0 +1,741 @@
+import json
+import os
+import re
+import sys
+from urllib.parse import unquote, quote
+import numpy as np
+import trimesh
+import pyrender
+import sys
+from PIL import Image, ImageDraw
+from pyrender.constants import RenderFlags
+from trimesh.transformations import euler_matrix, translation_matrix
+import yaml
+from spec_image_tools import draw_facing_direction
+from gltf_axes import get_model_facing_direction, get_model_up_direction
+from gltf_transforms import find_unapplied_transforms, format_report
+import logging
+
+# This script renders. It no longer judges.
+#
+# The spec checks used to live here, which meant the only way to find out whether
+# a model passed was to push a branch and wait for this container to boot an X
+# server. They now live in model_spec, which needs neither, so the same verdicts
+# are available from a laptop, a git hook and a CI step that runs in seconds --
+# see .github/scripts/validate-model-files.py.
+#
+# pygltflib is gone with them. Nothing here needed its decoded buffers: trimesh
+# loads from the path, the preview URL reads only uri strings, and the one
+# function that did decode buffers (get_bounding_box) was dead code. Reading the
+# document through gltf_document instead means the checks see byte-identical
+# input in Docker and on a laptop as a matter of structure rather than intent.
+import gltf_document
+import gltf_measure
+import model_spec
+from model_spec import (  # noqa: F401 -- re-exported; callers and tests import these from here
+    SPEC_EXTENSION,
+    evaluate_model_against_spec,
+    get_gltf_scale,
+    list_animations,
+    list_bones,
+    list_images,
+    list_materials,
+    list_textures,
+    read_spec_file,
+    verdicts_failed,
+)
+
+logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+logger = logging.getLogger(__name__)
+
+GITHUB_REPOSITORY = os.getenv("GITHUB_REPOSITORY")
+GITHUB_COMMIT_SHA = os.getenv("GITHUB_COMMIT_SHA")
+THICK_GRID_COLOR = (100, 100, 100, 255)
+THIN_GRID_COLOR = (200, 200, 200, 255)
+THICK_GRID_THICKNESS = 2
+THIN_GRID_THICKNESS = 1
+CAMERA_DISTANCE_PADDING = 1.0
+image_width, image_height = 256, 256
+
+def get_raw_url(repo, branch, filepath):
+    # Construct the raw URL for the file in the GitHub repository
+    # Example raw URL: https://github.com/Screwloose-Games/tiny-pet/blob/assets/uploaded-assets/example_character_front_4404.png?raw=true
+    print(f"get_raw_url: repo={repo}, branch={branch}, filepath={filepath}")
+    return f"https://github.com/{repo}/blob/{branch}/{filepath}?raw=true"
+
+def create_3d_preview_url(gltf_filepth: str, gltf) -> str:
+    """
+    Create a 3D preview URL for the assets.
+    """
+    assets: list[str] = []
+    gltf_filepth_uri = quote(gltf_filepth)
+    assets.append(gltf_filepth_uri)
+    if gltf_filepth_uri.endswith(".gltf"):
+        # Add buffer file if it exists
+        for filepath in gltf.buffers:
+            if hasattr(filepath, 'uri') and filepath.uri:
+                bin_file = os.path.join(os.path.dirname(gltf_filepth_uri), filepath.uri)
+                if os.path.exists(bin_file):
+                    assets.append(bin_file)
+                else:
+                    print(f"Warning: {bin_file} not found.")
+        gltf_basepath = os.path.dirname(gltf_filepth_uri)
+        for image in gltf.images:
+            if hasattr(image, 'uri') and image.uri:
+                assets.append(os.path.join(gltf_basepath, image.uri))
+
+    comma_separated_assets = ",".join([get_raw_url(GITHUB_REPOSITORY, GITHUB_COMMIT_SHA, asset) for asset in assets])
+    complete_url = f"https://3dviewer.net/#model={comma_separated_assets}"
+    print(f"3D preview URL: {complete_url}")
+    return complete_url
+
+def load_gltf_with_trimesh(filepath: str) -> trimesh.Scene:
+    """Load a model as a trimesh Scene, on whichever trimesh is installed.
+
+    trimesh.load_scene() only exists from trimesh 4.6. The image pins 4.4.9, where
+    the attribute is simply absent, so every model came back "Failed to load GLTF
+    file: module 'trimesh' has no attribute 'load_scene'" -- caught per-model, so
+    the step still exited 0 and the PR comment rendered ten ❌ rows with no
+    picture and no preview link.
+
+    load(force="scene") is the spelling that works on both, and the force matters
+    independently of the version: plain load() returns a Trimesh for a
+    single-mesh file, and pyrender.Scene.from_trimesh_scene() only takes a Scene.
+    """
+    loader = getattr(trimesh, "load_scene", None)
+    if loader is not None:
+        return loader(filepath)
+    return trimesh.load(filepath, force="scene")
+
+
+
+def get_front_camera_pose(scene: trimesh.Scene) -> np.ndarray:
+    """Camera on -Z looking towards +Z, so this view shows the model's FRONT.
+
+    It used to sit on +Z with an identity rotation. A pyrender camera looks along
+    its own -Z, so that rendered the +Z face -- the model's BACK, by this
+    project's convention that forward is -Z.
+
+    An untextured cube looks the same from either side, so the mislabel was
+    invisible until the fixtures grew a face. Then "front" was the one view with
+    no eyes in it.
+    """
+    bounds = scene.bounds
+    centre = (bounds[0] + bounds[1]) / 2
+    near_z = bounds[0][2] - CAMERA_DISTANCE_PADDING
+    # Turn to face +Z. Rotating about Y leaves screen-up as +Y, which the ground
+    # line depends on.
+    rotation = euler_matrix(0, np.pi, 0)
+    translation = translation_matrix([centre[0], centre[1], near_z])
+    return translation @ rotation
+
+def get_top_down_camera_pose(scene: trimesh.Scene) -> np.ndarray:
+    """
+    Returns a camera pose for a top-down view of the scene.
+    The camera looks down the -Z axis from above the model.
+    """
+
+    bounds = scene.bounds
+    center = (bounds[0] + bounds[1]) / 2
+    center_x = center[0]
+    center_y = center[2]
+    ending_bound = bounds[1]
+    ending_bound_z = ending_bound[1]
+    rotation = euler_matrix(-np.pi/2, 0, 0)  
+    translation = translation_matrix([center_x, ending_bound_z + CAMERA_DISTANCE_PADDING, center_y])
+    camera_pose = translation @ rotation
+    return camera_pose
+
+def get_right_side_camera_pose(scene: trimesh.Scene) -> np.ndarray:
+    """Camera on +X looking towards -X, so this view shows the model's RIGHT side.
+
+    It used to sit on -X and render the left side under a "right" label -- the
+    same class of mistake as the front view, and equally invisible on a cube with
+    no markings.
+
+    Moving the camera to +X puts -Z (forward) on the screen's right, where it used
+    to be on the left. spec_image_tools.FORWARD_ON_SCREEN has to move with this;
+    the two are a pair.
+    """
+    bounds = scene.bounds
+    centre = (bounds[0] + bounds[1]) / 2
+    far_x = bounds[1][0] + CAMERA_DISTANCE_PADDING
+    rotation = euler_matrix(0, np.pi / 2, 0)
+    translation = translation_matrix([far_x, centre[1], centre[2]])
+    return translation @ rotation
+
+
+def generate_orthographic_image(scene: trimesh.Scene, camera: pyrender.OrthographicCamera, camera_pose = np.eye(4), render_flags = RenderFlags.RGBA, ) -> Image:
+    """
+    Renders an orthographic top view (looking down -Z axis) of the scene with transparent background.
+    No grid is drawn.
+    """
+    pyrender_scene = pyrender.Scene.from_trimesh_scene(scene)
+    print("Rendering scene")
+    pyrender_scene.bg_color = [0, 0, 0, 0]
+
+    pyrender_scene.add(camera, pose=camera_pose)
+    light = pyrender.DirectionalLight(color=np.ones(3), intensity=2.0)
+    pyrender_scene.add(light, pose=camera_pose)
+
+    print("preparing renderer")
+    r = pyrender.OffscreenRenderer(viewport_width=image_width, viewport_height=image_height)
+    print("Rendering image")
+    color, _ = r.render(pyrender_scene, flags=render_flags)
+    print("Generating image from data")
+    model_img = Image.fromarray(color, mode="RGBA")
+    print("Image generated")
+    return model_img
+
+def generate_grid_image(height: int = 1024, width: int = 1024, largest_dist:  float = 2.0) -> Image:
+    print(f"Generating grid image with height={height}, width={width}, largest_dist={largest_dist}")
+    grid_img = Image.new("RGBA", (width, height), color=(255, 255, 255, 255))
+    draw = ImageDraw.Draw(grid_img)
+
+    width_world = largest_dist
+    if width_world == 0:
+        width_world = 1e-6  # Prevent division by zero
+    width_px = width 
+    px_per_unit = width_px / width_world
+    dm_size_px = int(px_per_unit * 0.1)
+    dm_size_px = max(dm_size_px, 1)  # Ensure at least 1px
+
+    meter_size_px = int(px_per_unit * 1.0)
+    meter_size_px = max(meter_size_px, 1)  # Ensure at least 1px
+
+    # Draw vertical grid lines: center and every dm to left/right'
+    logger.debug(f"Drawing vertical grid lines with dm_size_px={dm_size_px}, meter_size_px={meter_size_px}")
+    center_x = width // 2
+
+    is_space_between_thick_lines = dm_size_px > THICK_GRID_THICKNESS * 2
+
+    for x in range(center_x, width, dm_size_px):
+        logger.debug(f"Drawing vertical line at x={x}")
+        if (x - center_x) % (meter_size_px) == 0:
+            # Thicker line each meter
+
+            draw.line([(x, 0), (x, height)], fill=THICK_GRID_COLOR, width=THICK_GRID_THICKNESS)
+        elif is_space_between_thick_lines:
+            draw.line([(x, 0), (x, height)], fill=(200, 200, 200, 255), width=THIN_GRID_THICKNESS)
+    for x in range(center_x, -1, -dm_size_px):
+        logger.debug(f"Drawing vertical line at x={x}")
+        if (x - center_x) % (meter_size_px) == 0:
+            # Thicker line each meter
+
+            draw.line([(x, 0), (x, height)], fill=THICK_GRID_COLOR, width=THICK_GRID_THICKNESS)
+        elif is_space_between_thick_lines:
+            draw.line([(x, 0), (x, height)], fill=(200, 200, 200, 255), width=THIN_GRID_THICKNESS)
+
+    # Draw horizontal grid lines: start at bottom and go up every dm
+    for y in range(height - 1, -1, -dm_size_px):
+        logger.debug(f"Drawing horizontal line at y={y}")
+        if (height - y -1) % (meter_size_px) == 0:
+            # Thicker line each meter
+            draw.line([(0, y), (width, y)], fill=THICK_GRID_COLOR, width=THICK_GRID_THICKNESS)
+        elif is_space_between_thick_lines:
+            draw.line([(0, y), (width, y)], fill=(200, 200, 200, 255), width=THIN_GRID_THICKNESS)
+    return grid_img
+
+
+GROUND_LINE_COLOR = (0, 140, 0, 255)
+GROUND_LINE_THICKNESS = 2
+
+
+def ground_line_row(centre_y: float, world_height: float, image_height: int):
+    """Which pixel row world Y=0 falls on, or None when it is off-frame.
+
+    The cameras centre on the model's own bounds, so a model authored a metre off
+    the origin is framed exactly like one sitting on the floor. Without this the
+    grid conveys scale and nothing about position -- and rests_on_ground's failure
+    text ("dropped into a level this model floats over every surface") describes
+    something no render showed.
+    """
+    if world_height <= 0 or image_height <= 0:
+        return None
+    top_y = centre_y + world_height / 2.0
+    fraction = (top_y - 0.0) / world_height
+    if not 0.0 <= fraction <= 1.0:
+        return None
+    # Clamped to a real row: a model resting exactly on the floor puts Y=0 on the
+    # bottom edge, and a line drawn at `image_height` lands outside the image and
+    # silently draws nothing -- the one case where the mark matters most.
+    row = int(round(fraction * image_height))
+    return max(0, min(image_height - 1, row))
+
+
+def ground_offscreen(centre_y: float, world_height: float):
+    """(side, metres) when Y=0 lies outside the frame, else None.
+
+    Needed because "no line" is too quiet a signal. A model floating a metre up is
+    framed exactly like a grounded one, so without saying which edge the floor is
+    beyond and by how much, the fix only marks the models that were already fine.
+    """
+    if world_height <= 0:
+        return None
+    bottom_y = centre_y - world_height / 2.0
+    top_y = centre_y + world_height / 2.0
+    if bottom_y > 0:
+        return ("below", bottom_y)
+    if top_y < 0:
+        return ("above", -top_y)
+    return None
+
+
+def _dashed_line(draw, row, width, colour, thickness, dash=8, gap=6):
+    x = 0
+    while x < width:
+        draw.line([(x, row), (min(x + dash, width), row)], fill=colour, width=thickness)
+        x += dash + gap
+
+
+def with_ground_line(grid_img, centre_y: float, world_height: float):
+    """A copy of the grid with world Y=0 marked, for views where up is +Y.
+
+    Solid when the floor is in frame; dashed against the edge it lies beyond, with
+    the distance, when it is not.
+    """
+    marked = grid_img.copy()
+    draw = ImageDraw.Draw(marked)
+    font_size = max(8, marked.width // 20)
+
+    def label(text, row, above):
+        y = row - font_size - 2 if above else row + 2
+        y = max(0, min(y, marked.height - font_size - 1))
+        draw.text((4, y), text, fill=GROUND_LINE_COLOR, font_size=font_size)
+
+    row = ground_line_row(centre_y, world_height, marked.height)
+    if row is not None:
+        draw.line([(0, row), (marked.width, row)], fill=GROUND_LINE_COLOR,
+                  width=GROUND_LINE_THICKNESS)
+        # Label above the line unless that would fall off the top.
+        label("Y=0", row, above=row > font_size + 2)
+        return marked
+
+    offscreen = ground_offscreen(centre_y, world_height)
+    if offscreen is None:
+        return marked
+    side, metres = offscreen
+    edge_row = (marked.height - 1 - GROUND_LINE_THICKNESS) if side == "below" \
+        else GROUND_LINE_THICKNESS
+    _dashed_line(draw, edge_row, marked.width, GROUND_LINE_COLOR, GROUND_LINE_THICKNESS)
+    label(f"Y=0 is {metres:.2f}m {side}", edge_row, above=(side == "below"))
+    return marked
+
+
+def render_and_save_view(scene, camera, camera_pose, grid_img, output_path, render_flags=RenderFlags.RGBA, facing_view: str = None) -> str:
+    """
+    Renders a view of the scene with the given camera pose, overlays the grid, and saves the image.
+
+    `facing_view` names the view ("top"/"right") rather than a screen direction --
+    which way forward points on screen is a property of the camera pose, so it is
+    decided in spec_image_tools next to the table that records it.
+    """
+    print(f"Generating image for {output_path}")
+    model_img = generate_orthographic_image(scene, camera, camera_pose, render_flags)
+    print(f"Rendering image for {output_path}")
+    final_img = Image.alpha_composite(grid_img, model_img)
+    print(f"Overlaying grid on image for {output_path}")
+    draw = ImageDraw.Draw(final_img)
+    if facing_view:
+        draw_facing_direction(draw, facing_view)
+    print(f"Saving image to {output_path}")
+    final_img.convert("RGB").save(output_path)
+    return output_path
+
+def create_markdown_report(poly_count: int, width: float, depth: float, height: float, animations: list[str], textures: list[str], images: list[str], materials: list[str], bones: list[str], scale: float, rendered_images: dict, preview_3d_url: str = None) -> str:
+    """
+    Creates a markdown report of the model.
+    """
+    report = f"""
+# [*Preview Model in 3D Viewer*]({preview_3d_url})
+
+#### Model Statistics
+- **Total Polygons**: {poly_count}
+
+#### Size
+- **Width (X)**: {width:.4f}
+- **Height (Y)**: {height:.4f}
+- **Depth (Z)**: {depth:.4f}
+- **Scale**: {scale}
+- **Animations**: {animations}
+- **Textures**: {textures}
+- **Images**: {images}
+- **Materials**: {materials}
+- **Total Bones found**: {len(bones)}
+"""
+
+    if len(bones) > 0:
+        report += f"- **Bones**: {bones}\n"
+
+    recommended_poly_max = 20000
+    has_too_many_polys = poly_count > recommended_poly_max
+    is_scaled = scale != 1.0
+
+    has_issues = has_too_many_polys or is_scaled
+    if has_issues:
+        report += "\n# Warnings\n"
+
+    if is_scaled:
+        report += f"\nThe model is not at 1:1 scale. scale is: {scale}\nPlease check the model.\n"
+    if has_too_many_polys:
+        report += f"\nThe model has a high polygon count. This may affect performance. Max recommended poly count: {recommended_poly_max}\n"
+
+    report += "#### Images\n\n"
+
+    for image_name, image_path in rendered_images.items():
+        report += f"![{image_name}]({image_path})"
+
+    return report
+
+def create_png_filename(gltf_file: str, view: str) -> str:
+    """
+    Create a PNG filename based on the GLTF file name and view.
+    """
+    base_name = os.path.splitext(os.path.basename(gltf_file))[0]
+    return f"{base_name}_{view}.png"
+
+
+def process_gltf_file(gltf_file: str, output_dir: str) -> dict:
+    """
+    Process a single GLTF file and return results.
+    """
+    print(f"Processing GLTF file: {gltf_file}")
+    try:
+        # First check if the file exists
+        if not os.path.exists(gltf_file):
+            print(f"File not found: {gltf_file}")
+            return {
+                "file": gltf_file,
+                "error": f"File not found: {gltf_file}",
+                "success": False
+            }
+
+        # Check if the file is a GLTF file
+        if not gltf_file.lower().endswith(('.gltf', '.glb')):
+            print(f"Not a GLTF file: {gltf_file}")
+            return {
+                "file": gltf_file,
+                "error": f"Not a GLTF file: {gltf_file}",
+                "success": False
+            }
+        
+        
+
+
+        # Read the document once, through the same loader the local CLI and the
+        # git hooks use, so a verdict computed here and a verdict computed on a
+        # laptop are computed from identical input.
+        document = gltf_document.load_document(gltf_file)
+        gltf = gltf_document.as_gltf(document)
+
+        # Check for missing resources
+        print(f"Checking for missing resources in {gltf_file}")
+        missing_resources = model_spec.check_external_resources(gltf, gltf_file)
+
+        # A .gltf is expected to sit beside a .bin of the same name. Reported,
+        # never failed: the export is still loadable, and renaming the pair is a
+        # judgement call about which of the two names is the right one.
+        if gltf_file.lower().endswith('.gltf'):
+            expected_bin = os.path.splitext(os.path.basename(gltf_file))[0] + ".bin"
+            buffer_names = [
+                os.path.basename(unquote(buffer.uri))
+                for buffer in gltf.buffers or []
+                if getattr(buffer, "uri", None)
+            ]
+            if buffer_names and expected_bin not in buffer_names:
+                logger.warning(
+                    f"Expected buffer file {expected_bin} beside {gltf_file}; "
+                    f"found {buffer_names} instead."
+                )
+
+        if missing_resources:
+            print(f"Missing resources:\n" + "\n".join(f"- {r}" for r in missing_resources))
+            return {
+                "file": gltf_file,
+                "error": f"Missing resources:\n" + "\n".join(f"- {r}" for r in missing_resources),
+                "success": False
+            }
+
+        try:
+            scene = load_gltf_with_trimesh(gltf_file)
+        except Exception as e:
+            print(f"Failed to load GLTF file: {str(e)}")
+            return {
+                "file": gltf_file,
+                "error": f"Failed to load GLTF file: {str(e)}",
+                "success": False
+            }
+
+        # The spec verdicts are measured from the glTF JSON, not from trimesh, so
+        # that the numbers in this comment are the same numbers a contributor
+        # sees locally. trimesh's own bounds still frame the camera below --
+        # that is cosmetic, and only ever needs to be approximately right.
+        measurement = gltf_measure.measure(document)
+        scene_bounds_size = measurement.size
+        poly_count = measurement.triangles
+        for problem in measurement.problems:
+            logger.warning(problem)
+        print(f"Scene bounds size: {scene_bounds_size}")
+        print(
+            f"Triangles: {poly_count} across {measurement.instances} instance(s) "
+            f"of {measurement.unique_meshes} mesh(es)"
+        )
+
+        camera_bounds_size = scene.bounds[1] - scene.bounds[0]
+        SCENE_BOUNDS_PADDING_PERCENTAGE = 0.1
+        padded_scene_bounds_size = camera_bounds_size * (1 + SCENE_BOUNDS_PADDING_PERCENTAGE)  # add some padding to the bounds in all directions
+
+        largest_dim = max(padded_scene_bounds_size)
+        camera = pyrender.OrthographicCamera(xmag=largest_dim / 2, ymag=largest_dim / 2)
+        grid_img = generate_grid_image(height=image_height, width=image_width, largest_dist=largest_dim)
+        wireframe_render_flags = RenderFlags.RGBA + RenderFlags.ALL_WIREFRAME
+
+        logger.debug(f"Loading spec file for {gltf_file}")
+        spec_file = model_spec.spec_path_for(gltf_file)
+        spec = read_spec_file(spec_file)
+
+        # A spec key with a typo in it used to be ignored in silence, so the
+        # check the artist asked for simply never ran. Surface it here too, not
+        # only in the local CLI, so the PR comment says what went unchecked.
+        spec_problems = model_spec.validate_spec_schema(spec, spec_file)
+        for problem in spec_problems:
+            logger.warning(problem)
+
+        logger.debug(f"Evaluating model against spec for {gltf_file}")
+        report = model_spec.transform_report(gltf)
+        if report:
+            print("Unapplied transform check:")
+            print(report)
+        validation_results = evaluate_model_against_spec(
+            gltf=gltf,
+            spec=spec,
+            scene_bounds_size=scene_bounds_size,
+            poly_count=poly_count
+        )
+        if spec_problems:
+            validation_results["spec_schema"] = "FAIL - " + "; ".join(spec_problems)
+
+        # Create output directory for this file
+        file_output_dir = os.path.join(output_dir, os.path.splitext(os.path.basename(gltf_file))[0])
+        os.makedirs(file_output_dir, exist_ok=True)
+
+        # Render and save views
+        print(f"Rendering and saving views for {gltf_file}")
+        print(f"Output directory: {file_output_dir}")
+
+        # Front and right look along a horizontal axis, so screen-up is +Y and the
+        # floor is a real line on screen -- mark it there. The top view looks down
+        # Y, where Y=0 is the whole image and a ground line would be meaningless.
+        centre_y = float((scene.bounds[0][1] + scene.bounds[1][1]) / 2.0)
+        ground_grid = with_ground_line(grid_img, centre_y, float(largest_dim))
+
+        rendered_images = {
+            "front": render_and_save_view(scene, camera, get_front_camera_pose(scene), ground_grid, create_png_filename(gltf_file, "front")),
+            "top": render_and_save_view(scene, camera, get_top_down_camera_pose(scene), grid_img, create_png_filename(gltf_file, "top"), facing_view="top"),
+            "right": render_and_save_view(scene, camera, get_right_side_camera_pose(scene), ground_grid, create_png_filename(gltf_file, "right"), facing_view="right"),
+            "front_wireframe": render_and_save_view(scene, camera, get_front_camera_pose(scene), ground_grid, create_png_filename(gltf_file, "front_wireframe"), render_flags=wireframe_render_flags),
+            "top_wireframe": render_and_save_view(scene, camera, get_top_down_camera_pose(scene), grid_img, create_png_filename(gltf_file, "top_wireframe"), render_flags=wireframe_render_flags),
+            "right_wireframe": render_and_save_view(scene, camera, get_right_side_camera_pose(scene), ground_grid, create_png_filename(gltf_file, "right_wireframe"), render_flags=wireframe_render_flags),
+            "front_normals": render_and_save_view(scene, camera, get_front_camera_pose(scene), ground_grid, create_png_filename(gltf_file, "front_normals"), render_flags=RenderFlags.RGBA + RenderFlags.OFFSCREEN + RenderFlags.FACE_NORMALS),
+            "top_normals": render_and_save_view(scene, camera, get_top_down_camera_pose(scene), grid_img, create_png_filename(gltf_file, "top_normals"), render_flags=RenderFlags.RGBA + RenderFlags.OFFSCREEN + RenderFlags.FACE_NORMALS),
+            "right_normals": render_and_save_view(scene, camera, get_right_side_camera_pose(scene), ground_grid, create_png_filename(gltf_file, "right_normals"), render_flags=RenderFlags.RGBA + RenderFlags.OFFSCREEN + RenderFlags.FACE_NORMALS),
+        }
+
+        # Create 3D preview URL
+
+        preview_3d_url = create_3d_preview_url(gltf_file, gltf)
+        
+        # Create markdown report
+        print(f"Creating markdown report for {gltf_file}")
+        # A model whose POSITION accessors declare no min/max cannot be measured;
+        # fall back to trimesh's numbers for the report rather than crashing, and
+        # let the spec verdicts say UNKNOWN.
+        reported_size = scene_bounds_size if scene_bounds_size is not None else camera_bounds_size
+        report = create_markdown_report(
+            poly_count=poly_count,
+            width=reported_size[0],
+            depth=reported_size[2],
+            height=reported_size[1],
+            animations=list_animations(gltf),
+            textures=list_textures(gltf),
+            images=list_images(gltf),
+            materials=list_materials(gltf),
+            bones=list_bones(gltf),
+            scale=get_gltf_scale(gltf),
+            rendered_images=rendered_images,
+            preview_3d_url=preview_3d_url,
+        )
+
+        REPORT_FILEPATH = os.path.join(file_output_dir, "report.md")
+        with open(REPORT_FILEPATH, "w") as f:
+            f.write(report)
+
+        print(f"Report saved to: {REPORT_FILEPATH}")
+
+        return {
+            "file": gltf_file,
+            "report": report,
+            "validation_results": validation_results,
+            "report_filepath": REPORT_FILEPATH,
+            "file_output_dir": file_output_dir,
+            "success": True
+        }
+    except Exception as e:
+        print(f"Error processing file: {str(e)}")
+        return {
+            "file": gltf_file,
+            "error": f"Error processing file: {str(e)}",
+            "success": False
+        }
+
+def create_github_comment(results: list[dict]) -> str:
+    """
+    Create a GitHub comment from the validation results.
+    """
+    comment = ""
+
+    # Result:
+    # {
+    #     "file": gltf_file,
+    #     "report": report,
+    #     "validation_results": validation_results,
+    #     "report_filepath": REPORT_FILEPATH,
+    #     "images_dir": file_output_dir,
+    #     "success": True
+    # }
+
+    
+    for result in results:
+
+        if not result["success"]:
+            comment += f"## ❌ {os.path.basename(result['file'])}\n"
+            comment += f"Error: {result['error']}\n\n"
+            continue
+
+        # The marker reflects the verdicts, not merely "did this file render".
+        # It used to be ✅ for anything that produced images, so a model failing
+        # its spec was headed with a green tick -- the same conflation that once
+        # let a failing model turn the whole job green, still live in the one
+        # surface an artist actually reads.
+        #
+        # Not every check can be shown here: filename_convention,
+        # godot_node_suffixes, collision_within_visual, rests_on_ground and
+        # orphan_spec run only in the gate, which is the authority. The note below
+        # says so rather than letting a tick imply more than it means.
+        failed = verdicts_failed(result["validation_results"])
+        marker = "❌" if failed else "✅"
+        comment += f"## {marker} {os.path.basename(result['file'])}\n"
+        if failed:
+            comment += f"Failed: {', '.join(failed)}\n\n"
+
+        # Add validation results
+        comment += "### Validation Results:\n"
+        for key, value in result["validation_results"].items():
+            # INFO keys are declarations the validator cannot verify, so they
+            # get their own marker rather than a red cross that reads as a
+            # failure nobody can act on.
+            if value == "OK":
+                status = "✅"
+            elif isinstance(value, str) and value.startswith("INFO"):
+                status = "ℹ️"
+            else:
+                status = "❌"
+            comment += f"- {key}: {status} {value}\n"
+        
+        # Add report content
+        # with open(result["report_filepath"], "r") as f:
+        #     report_content = f.read()
+        #     comment += f"\n#### Model Report:\n{report_content}\n"
+
+        report = result.get("report", None)
+        if report:
+            comment += f"### Model Report:\n{report}\n\n"
+        
+        # # Add images
+        # comment += "\n#### Model Views:\n"
+        # for view in ["front", "top", "right"]:
+        #     image_path = os.path.join(result["images_dir"], f"{view}.png")
+        #     if os.path.exists(image_path):
+        #         comment += f"![{view} view]({image_path})\n"
+        
+        comment += "\n---\n\n"
+
+    if results:
+        comment += (
+            "_Markers above cover the checks this renderer can see. The "
+            "authoritative pass/fail is the **Validate models against their "
+            "specs** step, which also runs `filename_convention`, "
+            "`godot_node_suffixes`, `collision_within_visual`, `rests_on_ground` "
+            "and `orphan_spec` -- see its verdicts at the top of this comment._\n"
+        )
+
+    return comment
+
+if __name__ == "__main__":
+    if len(sys.argv) < 2:
+        print("Usage: python validate_gltf.py <output_dir> [gltf_file1] [gltf_file2] ...")
+        sys.exit(1)
+    
+    output_dir = sys.argv[1]
+    gltf_files = sys.argv[2:]
+
+    print(f"Output directory: {output_dir}")
+    print(f"GLTF files: {gltf_files}")
+    
+    if not gltf_files:
+        print("No GLTF files provided")
+        sys.exit(1)
+    
+    os.makedirs(output_dir, exist_ok=True)
+    
+    results = []
+    for gltf_file in gltf_files:
+        result = process_gltf_file(gltf_file, output_dir)
+        results.append(result)
+    
+    # Create GitHub comment
+    comment = create_github_comment(results)
+    
+    # Save comment to file for GitHub Action to use
+    with open(os.path.join(output_dir, "github_comment.md"), "w") as f:
+        f.write(comment)
+    
+    # Print summary
+    success_count = sum(1 for r in results if r["success"])
+    all_succeeded = all(r["success"] for r in results)
+    if not all_succeeded:
+        print("Some files failed validation. Check the output directory for details.")
+    else:
+        print("All files passed validation successfully.")
+    print(f"Processed {len(results)} files: {success_count} successful, {len(results) - success_count} failed")
+
+    # if there is a github file, output to the github file: results, comment
+    out_path = os.environ.get("GITHUB_OUTPUT", None)
+    print(f"GITHUB_OUTPUT: {out_path}")
+    if out_path:
+        print(f"Writing results to {out_path}")
+        with open(out_path, "a") as fh:
+            print(f"comment<<EOF\n{comment}\nEOF", file=fh)
+            print(f"results={json.dumps(results)}", file=fh)
+            print(f"success={json.dumps(all_succeeded)}", file=fh)
+
+    # Rendering nothing at all is a validator failure, and this step used to
+    # report success either way -- process_gltf_file catches per-model errors, so
+    # "0 successful, 10 failed" exited 0 and went green. That is how a dead import
+    # (model_spec's schema lookup) and a wrong API call (trimesh.load_scene) each
+    # stayed invisible for a whole run.
+    #
+    # Individual failures stay non-fatal on purpose: a .gltf committed without its
+    # .bin genuinely cannot be rendered, and the gate already fails it. Zero
+    # successes out of one or more files is different in kind -- it means the
+    # renderer is broken, not the art.
+    #
+    # This runs last so the comment and the outputs above are written first: the
+    # steps that publish them are guarded with !cancelled(), so they still run.
+    if results and success_count == 0:
+        print(
+            f"ERROR: rendered 0 of {len(results)} models. That is a validator "
+            "failure rather than a model failure -- look above for an import "
+            "error, a missing dependency or an API that moved."
+        )
+        sys.exit(1)

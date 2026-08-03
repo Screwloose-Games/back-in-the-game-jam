@@ -1,0 +1,73 @@
+name: Sync Issue Filepath
+
+# GitHub will not do this itself. An issue form can set a title and labels, but
+# the docs are explicit that issue fields "cannot currently be pre-filled via URL
+# query parameters or set through issue templates". `pipeline.py issue create`
+# sets the organization `filepath` field on the path it controls; an issue opened
+# in the browser has nothing doing it, and reaches the board with a blank
+# filepath column that is indistinguishable from "not delivered".
+on:
+  workflow_dispatch:
+    inputs:
+      issue:
+        description: Issue number to sync.
+        required: true
+        type: number
+      apply:
+        description: Actually write. Off runs the CLI's dry run, which still does the reads.
+        type: boolean
+        default: false
+  issues:
+    types: [opened, edited]
+
+# `issues: write` is what setIssueFieldValue and the explanatory comment need;
+# `contents: read` is for the checkout that supplies the CLI, the templates and
+# pipeline.yaml. Nothing here touches Projects.
+#
+# validate-pipeline-doc.yml notes that this token cannot see an org project. That
+# is true and it is a different question: the board column named filepath is a
+# *projection* of an organization issue field, and repository.issueFields returns
+# that field, with the same id, to anything that can read this repository.
+permissions:
+  contents: read
+  issues: write
+
+# Rapid edits produce one run each. The write is idempotent and last-one-wins is
+# the right answer, so cancel the older run rather than queue it. A cancel
+# between the read and the single mutation is safe: the newer run redoes both.
+concurrency:
+  group: sync-issue-filepath-${{ github.event.issue.number || inputs.issue }}
+  cancel-in-progress: true
+
+jobs:
+  sync-issue-filepath:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+
+      # No jsonschema: this validates a filepath against pipeline.yaml, it does
+      # not validate pipeline.yaml itself.
+      - name: Install dependencies
+        run: pip install pyyaml
+
+      # Every ${{ }} lands in an env var, never in the script body. The issue
+      # body is not passed at all -- the CLI reads it over GraphQL from the
+      # number -- because interpolating it into a `run:` block would be a shell
+      # injection sink on text anyone with a GitHub account can author.
+      #
+      # $APPLY is deliberately unquoted so an empty value expands to no argument.
+      - name: Sync the filepath issue field
+        env:
+          GH_TOKEN: ${{ secrets.PIPELINE_ISSUE_FIELD_TOKEN || secrets.GITHUB_TOKEN }}
+          ISSUE: ${{ github.event.issue.number || inputs.issue }}
+          REPO: ${{ github.repository }}
+          APPLY: ${{ (github.event_name == 'issues' || inputs.apply) && '--apply' || '' }}
+        run: |
+          python tools/pipeline/pipeline.py issue sync-filepath "$ISSUE" --repo "$REPO" $APPLY
