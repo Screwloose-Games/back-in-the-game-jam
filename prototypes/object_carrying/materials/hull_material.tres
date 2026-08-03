@@ -1,0 +1,8 @@
+[gd_resource type="StandardMaterial3D" format=3]
+
+[resource]
+resource_name = "HullMaterial"
+albedo_color = Color(0.34, 0.35, 0.37, 1)
+metallic = 0.1
+metallic_specular = 0.3
+roughness = 0.85
