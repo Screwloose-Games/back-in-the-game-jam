@@ -1,0 +1,17 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="./crawler_chase_rig.gd" id="1_rig"]
+
+[node name="CrawlerChaseRig" type="Node3D"]
+script = ExtResource("1_rig")
+
+[node name="SpringArm" type="SpringArm3D" parent="."]
+unique_name_in_owner = true
+collision_mask = 1
+spring_length = 12.0
+margin = 0.3
+
+[node name="Camera" type="Camera3D" parent="SpringArm"]
+unique_name_in_owner = true
+fov = 70.0
+far = 400.0

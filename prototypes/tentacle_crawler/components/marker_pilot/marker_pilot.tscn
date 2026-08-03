@@ -1,0 +1,10 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="./marker_pilot.gd" id="1_pilot"]
+[ext_resource type="Script" path="./crawler_input_actions.gd" id="2_actions"]
+
+[node name="MarkerPilot" type="Marker3D"]
+script = ExtResource("1_pilot")
+
+[node name="InputActions" type="Node" parent="."]
+script = ExtResource("2_actions")
