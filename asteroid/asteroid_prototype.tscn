@@ -1,0 +1,83 @@
+[gd_scene load_steps=16 format=3 uid="uid://civvx8vc3kvww"]
+
+[ext_resource type="Script" uid="uid://calltqe7i7rxe" path="res://asteroid/asteroid_controller.gd" id="1_1f1cy"]
+[ext_resource type="Script" path="res://asteroid/debug/asteroid_layout_debugger.gd" id="2_layout_debugger"]
+[ext_resource type="Script" path="res://asteroid/debug/asteroid_inspection_camera.gd" id="3_inspection_camera"]
+[ext_resource type="Script" path="res://asteroid/debug/asteroid_zone_lighting.gd" id="4_zone_lighting"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_mjepr"]
+vertex_color_use_as_albedo = true
+
+[sub_resource type="VoxelBlockyModelEmpty" id="VoxelBlockyModelEmpty_l5a2c"]
+
+[sub_resource type="VoxelBlockyModelCube" id="VoxelBlockyModelCube_o11kg"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_blue_ore"]
+albedo_color = Color(0.02, 0.25, 1, 1)
+roughness = 0.35
+
+[sub_resource type="VoxelBlockyModelCube" id="VoxelBlockyModelCube_blue_ore"]
+color = Color(0.02, 0.25, 1, 1)
+material_override_0 = SubResource("StandardMaterial3D_blue_ore")
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_purple_ore"]
+albedo_color = Color(0.55, 0.04, 0.95, 1)
+roughness = 0.28
+
+[sub_resource type="VoxelBlockyModelCube" id="VoxelBlockyModelCube_purple_ore"]
+color = Color(0.55, 0.04, 0.95, 1)
+material_override_0 = SubResource("StandardMaterial3D_purple_ore")
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_yellow_ore"]
+albedo_color = Color(1, 0.65, 0.01, 1)
+emission_enabled = true
+emission = Color(1, 0.48, 0.01, 1)
+emission_energy_multiplier = 4.0
+roughness = 0.18
+
+[sub_resource type="VoxelBlockyModelCube" id="VoxelBlockyModelCube_yellow_ore"]
+color = Color(1, 0.65, 0.01, 1)
+material_override_0 = SubResource("StandardMaterial3D_yellow_ore")
+
+[sub_resource type="VoxelBlockyLibrary" id="VoxelBlockyLibrary_6mmvn"]
+models = Array[VoxelBlockyModel]([SubResource("VoxelBlockyModelEmpty_l5a2c"), SubResource("VoxelBlockyModelCube_o11kg"), SubResource("VoxelBlockyModelCube_blue_ore"), SubResource("VoxelBlockyModelCube_purple_ore"), SubResource("VoxelBlockyModelCube_yellow_ore")])
+
+[sub_resource type="VoxelMesherBlocky" id="VoxelMesherBlocky_5imyc"]
+library = SubResource("VoxelBlockyLibrary_6mmvn")
+
+[node name="AsteroidPrototype" type="Node3D" unique_id=284139115]
+
+[node name="Asteroid" type="Node3D" parent="." unique_id=124123291]
+script = ExtResource("1_1f1cy")
+
+[node name="VoxelTerrain" type="VoxelTerrain" parent="Asteroid" unique_id=1874301041]
+material_override = SubResource("StandardMaterial3D_mjepr")
+mesher = SubResource("VoxelMesherBlocky_5imyc")
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="." unique_id=1515459309]
+transform = Transform3D(0.8660254, 0.38302222, -0.32139382, 0, 0.64278764, 0.76604444, 0.5, -0.66341394, 0.5566704, 0, 0, 0)
+
+[node name="InspectionCamera" type="Node3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 5, 45)
+script = ExtResource("3_inspection_camera")
+
+[node name="Camera3D" type="Camera3D" parent="InspectionCamera" unique_id=651761844]
+current = true
+near = 0.05
+far = 128.0
+
+[node name="VoxelViewer" type="VoxelViewer" parent="InspectionCamera/Camera3D" unique_id=1946053599]
+
+[node name="HelmetLight" type="SpotLight3D" parent="InspectionCamera/Camera3D"]
+light_color = Color(0.92, 0.96, 1, 1)
+light_energy = 2.0
+shadow_enabled = true
+spot_range = 12.0
+spot_angle = 38.0
+spot_attenuation = 1.2
+
+[node name="LayoutDebugger" type="Node3D" parent="."]
+script = ExtResource("2_layout_debugger")
+
+[node name="ZoneLighting" type="Node3D" parent="."]
+script = ExtResource("4_zone_lighting")
