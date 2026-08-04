@@ -1,0 +1,24 @@
+[gd_scene format=3 uid="uid://ctf8dvax0mch"]
+
+[sub_resource type="Curve3D" id="Curve3D_d1nst"]
+_data = {
+"points": PackedVector3Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1.892968, -0.32442975, -0.74954605, 0, 0, 0, 0, 0, 0, 7.163202, -1.2125478, -2.490265, 0, 0, 0, 0, 0, 0, 30.99957, -7.88268, -18.362095, 0, 0, 0, 0, 0, 0, 47.728073, -5.69569, -29.42303, 0, 0, 0, 0, 0, 0, 21.30667, -33.91078, -82.46053),
+"tilts": PackedFloat32Array(0, 0, 0, 0, 0, 0)
+}
+point_count = 6
+
+[sub_resource type="Curve3D" id="Curve3D_hmsil"]
+_data = {
+"points": PackedVector3Array(0, 0, 0, 0, 0, 0, -12.370888, -5.3455276, 83.774635, 0, 0, 0, 0, 0, 0, 9.72464, -36.54213, 132.93028, 0, 0, 0, 0, 0, 0, 103.66802, -27.114098, 105.17742, 0, 0, 0, 0, 0, 0, 195.22961, -31.029, 84.39365),
+"tilts": PackedFloat32Array(0, 0, 0, 0)
+}
+point_count = 4
+
+[node name="TunnelSystem" type="Node3D" unique_id=956302871]
+
+[node name="Tunnel001" type="Path3D" parent="." unique_id=1919430456]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.12990034, 0, 0)
+curve = SubResource("Curve3D_d1nst")
+
+[node name="Tunnel002" type="Path3D" parent="." unique_id=108785764]
+curve = SubResource("Curve3D_hmsil")

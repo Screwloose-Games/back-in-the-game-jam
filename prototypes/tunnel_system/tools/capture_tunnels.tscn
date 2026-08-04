@@ -1,0 +1,8 @@
+[gd_scene load_steps=2 format=3]
+
+; Run WITHOUT --headless - this one renders.
+
+[ext_resource type="Script" path="res://prototypes/tunnel_system/tools/capture_tunnels.gd" id="0_capture"]
+
+[node name="CaptureTunnels" type="Node"]
+script = ExtResource("0_capture")
