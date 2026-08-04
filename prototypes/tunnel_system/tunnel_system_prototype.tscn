@@ -1,0 +1,97 @@
+[gd_scene load_steps=8 format=3]
+
+; The runnable scene. Both instanced children are GENERATED - Paths by
+; tools/build_tunnel_paths.gd, Geometry by tools/bake_tunnel_mesh.gd - and the
+; player is added from script rather than placed here, so the spawn stays a
+; single value in tunnel_knobs.gd. See tunnel_system_prototype.gd.
+;
+; There is no DirectionalLight3D and there must not be one: the cave shell is
+; sealed, so a light outside it is fully occluded and renders the whole interior
+; at flat ambient, which looks exactly like a broken material. The helmet lamp on
+; the player is the only light down here.
+
+[ext_resource type="Script" path="res://prototypes/tunnel_system/tunnel_system_prototype.gd" id="0_root"]
+[ext_resource type="PackedScene" path="res://prototypes/tunnel_system/paths/tunnel_paths.tscn" id="1_paths"]
+[ext_resource type="PackedScene" path="res://prototypes/tunnel_system/baked/tunnel_geometry.tscn" id="2_geometry"]
+[ext_resource type="Script" path="res://prototypes/tunnel_system/tunnel_hud.gd" id="3_hud"]
+[ext_resource type="Script" path="res://prototypes/tunnel_system/tunnel_map_overlay.gd" id="4_map"]
+[ext_resource type="Script" path="res://prototypes/tunnel_system/tunnel_tuning_panel.gd" id="5_tuning"]
+
+[sub_resource type="Environment" id="Environment_deep"]
+background_mode = 1
+ambient_light_source = 2
+ambient_light_color = Color(0.4, 0.44, 0.5, 1)
+ambient_light_energy = 0.05
+tonemap_mode = 4
+glow_enabled = true
+glow_intensity = 0.45
+glow_bloom = 0.05
+fog_enabled = true
+fog_mode = 1
+fog_light_color = Color(0.02, 0.022, 0.026, 1)
+fog_light_energy = 0.6
+fog_density = 1.0
+fog_depth_begin = 2.0
+fog_depth_end = 22.0
+
+[node name="TunnelSystemPrototype" type="Node3D"]
+script = ExtResource("0_root")
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = SubResource("Environment_deep")
+
+[node name="Paths" parent="." instance=ExtResource("1_paths")]
+
+[node name="Geometry" parent="." instance=ExtResource("2_geometry")]
+
+[node name="Hud" type="CanvasLayer" parent="."]
+script = ExtResource("3_hud")
+
+[node name="Crosshair" type="ColorRect" parent="Hud"]
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -2.0
+offset_top = -2.0
+offset_right = 2.0
+offset_bottom = 2.0
+mouse_filter = 2
+color = Color(0.78, 0.88, 1, 0.55)
+
+[node name="Readout" type="Label" parent="Hud"]
+offset_left = 16.0
+offset_top = 12.0
+offset_right = 480.0
+offset_bottom = 200.0
+mouse_filter = 2
+theme_override_colors/font_color = Color(0.62, 0.74, 0.86, 0.85)
+theme_override_font_sizes/font_size = 14
+
+[node name="Map" type="Control" parent="Hud"]
+anchors_preset = 3
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -206.0
+offset_top = -404.0
+offset_right = -16.0
+offset_bottom = -16.0
+grow_horizontal = 0
+grow_vertical = 0
+mouse_filter = 2
+script = ExtResource("4_map")
+
+; Bottom left, sized to its own content: zero width/height offsets plus the
+; bottom-left grow directions make it expand right and upward from the corner,
+; so adding a teleport stop does not need the box resized by hand.
+[node name="Tuning" type="PanelContainer" parent="Hud"]
+anchors_preset = 2
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_left = 16.0
+offset_bottom = -16.0
+grow_vertical = 0
+script = ExtResource("5_tuning")

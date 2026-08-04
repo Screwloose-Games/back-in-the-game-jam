@@ -1,0 +1,1006 @@
+[gd_scene format=3]
+
+[ext_resource type="Material" path="../materials/tunnel_rock.tres" id="1_0ledg"]
+[ext_resource type="ArrayMesh" path="../baked/tunnel_chunk_m1_m1_m1.res" id="2_mtivn"]
+[ext_resource type="Shape3D" path="../baked/tunnel_chunk_m1_m1_m1_shape.res" id="3_40bgb"]
+[ext_resource type="ArrayMesh" path="../baked/tunnel_chunk_m1_m1_p0.res" id="4_wv0ba"]
+[ext_resource type="Shape3D" path="../baked/tunnel_chunk_m1_m1_p0_shape.res" id="5_8qaaj"]
+[ext_resource type="ArrayMesh" path="../baked/tunnel_chunk_p0_m1_p0.res" id="6_kjn23"]
+[ext_resource type="Shape3D" path="../baked/tunnel_chunk_p0_m1_p0_shape.res" id="7_0m6a7"]
+[ext_resource type="ArrayMesh" path="../baked/tunnel_chunk_p0_m1_m1.res" id="8_lglpn"]
+[ext_resource type="Shape3D" path="../baked/tunnel_chunk_p0_m1_m1_shape.res" id="9_h4bn1"]
+[ext_resource type="ArrayMesh" path="../baked/tunnel_chunk_m1_m2_p0.res" id="10_8fcad"]
+[ext_resource type="Shape3D" path="../baked/tunnel_chunk_m1_m2_p0_shape.res" id="11_m8giv"]
+[ext_resource type="ArrayMesh" path="../baked/tunnel_chunk_m1_m2_m1.res" id="12_bhnjr"]
+[ext_resource type="Shape3D" path="../baked/tunnel_chunk_m1_m2_m1_shape.res" id="13_m21dh"]
+[ext_resource type="ArrayMesh" path="../baked/tunnel_chunk_p0_m2_p0.res" id="14_87y78"]
+[ext_resource type="Shape3D" path="../baked/tunnel_chunk_p0_m2_p0_shape.res" id="15_vklyc"]
+[ext_resource type="ArrayMesh" path="../baked/tunnel_chunk_p0_m2_m1.res" id="16_mcvlf"]
+[ext_resource type="Shape3D" path="../baked/tunnel_chunk_p0_m2_m1_shape.res" id="17_snrn0"]
+[ext_resource type="ArrayMesh" path="../baked/tunnel_chunk_p1_m2_m1.res" id="18_3q8f3"]
+[ext_resource type="Shape3D" path="../baked/tunnel_chunk_p1_m2_m1_shape.res" id="19_okmd1"]
+[ext_resource type="ArrayMesh" path="../baked/tunnel_chunk_p1_m2_m2.res" id="20_exep4"]
+[ext_resource type="Shape3D" path="../baked/tunnel_chunk_p1_m2_m2_shape.res" id="21_x3ahi"]
+[ext_resource type="ArrayMesh" path="../baked/tunnel_chunk_p2_m2_m1.res" id="22_l0t2u"]
+[ext_resource type="Shape3D" path="../baked/tunnel_chunk_p2_m2_m1_shape.res" id="23_mldlx"]
+[ext_resource type="ArrayMesh" path="../baked/tunnel_chunk_p2_m2_m2.res" id="24_2p2gr"]
+[ext_resource type="Shape3D" path="../baked/tunnel_chunk_p2_m2_m2_shape.res" id="25_2xlfm"]
+[ext_resource type="ArrayMesh" path="../baked/tunnel_chunk_p2_m3_m1.res" id="26_lwix8"]
+[ext_resource type="Shape3D" path="../baked/tunnel_chunk_p2_m3_m1_shape.res" id="27_gbyqv"]
+[ext_resource type="ArrayMesh" path="../baked/tunnel_chunk_p2_m3_m2.res" id="28_ot6hb"]
+[ext_resource type="Shape3D" path="../baked/tunnel_chunk_p2_m3_m2_shape.res" id="29_hkdwb"]
+[ext_resource type="ArrayMesh" path="../baked/tunnel_chunk_m2_m2_p0.res" id="30_jiwtl"]
+[ext_resource type="Shape3D" path="../baked/tunnel_chunk_m2_m2_p0_shape.res" id="31_c2lfd"]
+[ext_resource type="ArrayMesh" path="../baked/tunnel_chunk_m2_m2_p1.res" id="32_n0juh"]
+[ext_resource type="Shape3D" path="../baked/tunnel_chunk_m2_m2_p1_shape.res" id="33_6d03l"]
+[ext_resource type="ArrayMesh" path="../baked/tunnel_chunk_m3_m2_p0.res" id="34_a4y8x"]
+[ext_resource type="Shape3D" path="../baked/tunnel_chunk_m3_m2_p0_shape.res" id="35_p3r5p"]
+[ext_resource type="ArrayMesh" path="../baked/tunnel_chunk_m3_m2_p1.res" id="36_fuo58"]
+[ext_resource type="Shape3D" path="../baked/tunnel_chunk_m3_m2_p1_shape.res" id="37_y6h5g"]
+[ext_resource type="ArrayMesh" path="../baked/tunnel_chunk_p3_m3_m1.res" id="38_xhxaj"]
+[ext_resource type="Shape3D" path="../baked/tunnel_chunk_p3_m3_m1_shape.res" id="39_difmg"]
+[ext_resource type="ArrayMesh" path="../baked/tunnel_chunk_p3_m3_m2.res" id="40_2mto5"]
+[ext_resource type="Shape3D" path="../baked/tunnel_chunk_p3_m3_m2_shape.res" id="41_qwk6c"]
+[ext_resource type="ArrayMesh" path="../baked/tunnel_chunk_p2_m4_m2.res" id="42_oib8v"]
+[ext_resource type="Shape3D" path="../baked/tunnel_chunk_p2_m4_m2_shape.res" id="43_dqqw4"]
+[ext_resource type="ArrayMesh" path="../baked/tunnel_chunk_p3_m4_m2.res" id="44_85ncw"]
+[ext_resource type="Shape3D" path="../baked/tunnel_chunk_p3_m4_m2_shape.res" id="45_3pcoc"]
+[ext_resource type="ArrayMesh" path="../baked/tunnel_chunk_p3_m5_m2.res" id="46_ddkpx"]
+[ext_resource type="Shape3D" path="../baked/tunnel_chunk_p3_m5_m2_shape.res" id="47_ir0b4"]
+[ext_resource type="ArrayMesh" path="../baked/tunnel_chunk_p3_m6_m2.res" id="48_pfh4b"]
+[ext_resource type="Shape3D" path="../baked/tunnel_chunk_p3_m6_m2_shape.res" id="49_3mpgt"]
+[ext_resource type="ArrayMesh" path="../baked/tunnel_chunk_p2_m6_m2.res" id="50_ojr81"]
+[ext_resource type="Shape3D" path="../baked/tunnel_chunk_p2_m6_m2_shape.res" id="51_ywytw"]
+[ext_resource type="ArrayMesh" path="../baked/tunnel_chunk_p2_m7_m2.res" id="52_hkng1"]
+[ext_resource type="Shape3D" path="../baked/tunnel_chunk_p2_m7_m2_shape.res" id="53_wmw8s"]
+[ext_resource type="ArrayMesh" path="../baked/tunnel_chunk_p2_m7_m1.res" id="54_nmqcm"]
+[ext_resource type="Shape3D" path="../baked/tunnel_chunk_p2_m7_m1_shape.res" id="55_ptto4"]
+[ext_resource type="ArrayMesh" path="../baked/tunnel_chunk_p2_m8_m1.res" id="56_yl8wx"]
+[ext_resource type="Shape3D" path="../baked/tunnel_chunk_p2_m8_m1_shape.res" id="57_u151d"]
+[ext_resource type="ArrayMesh" path="../baked/tunnel_chunk_p1_m7_m1.res" id="58_omfsp"]
+[ext_resource type="Shape3D" path="../baked/tunnel_chunk_p1_m7_m1_shape.res" id="59_6c6wj"]
+[ext_resource type="ArrayMesh" path="../baked/tunnel_chunk_p1_m8_m1.res" id="60_nrfbn"]
+[ext_resource type="Shape3D" path="../baked/tunnel_chunk_p1_m8_m1_shape.res" id="61_vr03t"]
+[ext_resource type="ArrayMesh" path="../baked/tunnel_chunk_p1_m7_p0.res" id="62_un5ph"]
+[ext_resource type="Shape3D" path="../baked/tunnel_chunk_p1_m7_p0_shape.res" id="63_edgh1"]
+[ext_resource type="ArrayMesh" path="../baked/tunnel_chunk_p2_m7_p0.res" id="64_j81fx"]
+[ext_resource type="Shape3D" path="../baked/tunnel_chunk_p2_m7_p0_shape.res" id="65_r5cag"]
+[ext_resource type="ArrayMesh" path="../baked/tunnel_chunk_p2_m8_p0.res" id="66_v722j"]
+[ext_resource type="Shape3D" path="../baked/tunnel_chunk_p2_m8_p0_shape.res" id="67_fs7ir"]
+[ext_resource type="ArrayMesh" path="../baked/tunnel_chunk_p1_m8_p0.res" id="68_vr8i8"]
+[ext_resource type="Shape3D" path="../baked/tunnel_chunk_p1_m8_p0_shape.res" id="69_ajgn0"]
+[ext_resource type="ArrayMesh" path="../baked/tunnel_chunk_m3_m3_p1.res" id="70_5iasg"]
+[ext_resource type="Shape3D" path="../baked/tunnel_chunk_m3_m3_p1_shape.res" id="71_kcwgx"]
+[ext_resource type="ArrayMesh" path="../baked/tunnel_chunk_m2_m3_p1.res" id="72_ex3xu"]
+[ext_resource type="Shape3D" path="../baked/tunnel_chunk_m2_m3_p1_shape.res" id="73_i7wt8"]
+[ext_resource type="ArrayMesh" path="../baked/tunnel_chunk_m2_m4_p1.res" id="74_3oijn"]
+[ext_resource type="Shape3D" path="../baked/tunnel_chunk_m2_m4_p1_shape.res" id="75_44gqg"]
+[ext_resource type="ArrayMesh" path="../baked/tunnel_chunk_m1_m3_p1.res" id="76_mb0wj"]
+[ext_resource type="Shape3D" path="../baked/tunnel_chunk_m1_m3_p1_shape.res" id="77_mjgvk"]
+[ext_resource type="ArrayMesh" path="../baked/tunnel_chunk_m1_m4_p1.res" id="78_ul5hh"]
+[ext_resource type="Shape3D" path="../baked/tunnel_chunk_m1_m4_p1_shape.res" id="79_cdru6"]
+[ext_resource type="ArrayMesh" path="../baked/tunnel_chunk_m1_m4_p0.res" id="80_wrcnj"]
+[ext_resource type="Shape3D" path="../baked/tunnel_chunk_m1_m4_p0_shape.res" id="81_7y2nk"]
+[ext_resource type="ArrayMesh" path="../baked/tunnel_chunk_p0_m4_p0.res" id="82_ic48q"]
+[ext_resource type="Shape3D" path="../baked/tunnel_chunk_p0_m4_p0_shape.res" id="83_174u0"]
+[ext_resource type="ArrayMesh" path="../baked/tunnel_chunk_p0_m5_p0.res" id="84_ygjx1"]
+[ext_resource type="Shape3D" path="../baked/tunnel_chunk_p0_m5_p0_shape.res" id="85_a8t7g"]
+[ext_resource type="ArrayMesh" path="../baked/tunnel_chunk_p0_m5_m1.res" id="86_xtyoa"]
+[ext_resource type="Shape3D" path="../baked/tunnel_chunk_p0_m5_m1_shape.res" id="87_eaitc"]
+[ext_resource type="ArrayMesh" path="../baked/tunnel_chunk_p1_m5_p0.res" id="88_wjlxa"]
+[ext_resource type="Shape3D" path="../baked/tunnel_chunk_p1_m5_p0_shape.res" id="89_fskwu"]
+[ext_resource type="ArrayMesh" path="../baked/tunnel_chunk_p1_m5_m1.res" id="90_h5wv6"]
+[ext_resource type="Shape3D" path="../baked/tunnel_chunk_p1_m5_m1_shape.res" id="91_ucp12"]
+[ext_resource type="ArrayMesh" path="../baked/tunnel_chunk_p2_m5_m1.res" id="92_8nh1m"]
+[ext_resource type="Shape3D" path="../baked/tunnel_chunk_p2_m5_m1_shape.res" id="93_ia6l6"]
+[ext_resource type="ArrayMesh" path="../baked/tunnel_chunk_p2_m5_m2.res" id="94_ruk33"]
+[ext_resource type="Shape3D" path="../baked/tunnel_chunk_p2_m5_m2_shape.res" id="95_0qif7"]
+[ext_resource type="ArrayMesh" path="../baked/tunnel_chunk_p1_m1_m1.res" id="96_bnm6k"]
+[ext_resource type="Shape3D" path="../baked/tunnel_chunk_p1_m1_m1_shape.res" id="97_enjn4"]
+[ext_resource type="ArrayMesh" path="../baked/tunnel_chunk_p1_m1_p0.res" id="98_m3h8x"]
+[ext_resource type="Shape3D" path="../baked/tunnel_chunk_p1_m1_p0_shape.res" id="99_as8d2"]
+[ext_resource type="ArrayMesh" path="../baked/tunnel_chunk_p0_m1_p1.res" id="100_k22mw"]
+[ext_resource type="Shape3D" path="../baked/tunnel_chunk_p0_m1_p1_shape.res" id="101_224dp"]
+[ext_resource type="ArrayMesh" path="../baked/tunnel_chunk_m1_m1_p1.res" id="102_726e7"]
+[ext_resource type="Shape3D" path="../baked/tunnel_chunk_m1_m1_p1_shape.res" id="103_q56vw"]
+[ext_resource type="ArrayMesh" path="../baked/tunnel_chunk_m1_m2_p1.res" id="104_ettw0"]
+[ext_resource type="Shape3D" path="../baked/tunnel_chunk_m1_m2_p1_shape.res" id="105_0j5m1"]
+[ext_resource type="ArrayMesh" path="../baked/tunnel_chunk_m1_m2_m2.res" id="106_y52nb"]
+[ext_resource type="Shape3D" path="../baked/tunnel_chunk_m1_m2_m2_shape.res" id="107_dac0w"]
+[ext_resource type="ArrayMesh" path="../baked/tunnel_chunk_p0_m2_p1.res" id="108_721bs"]
+[ext_resource type="Shape3D" path="../baked/tunnel_chunk_p0_m2_p1_shape.res" id="109_qacx5"]
+[ext_resource type="ArrayMesh" path="../baked/tunnel_chunk_p3_m3_p0.res" id="110_btmp1"]
+[ext_resource type="Shape3D" path="../baked/tunnel_chunk_p3_m3_p0_shape.res" id="111_pv3b6"]
+[ext_resource type="ArrayMesh" path="../baked/tunnel_chunk_p2_m3_m3.res" id="112_nonx2"]
+[ext_resource type="Shape3D" path="../baked/tunnel_chunk_p2_m3_m3_shape.res" id="113_pnjcu"]
+[ext_resource type="ArrayMesh" path="../baked/tunnel_chunk_p2_m4_m3.res" id="114_wuep3"]
+[ext_resource type="Shape3D" path="../baked/tunnel_chunk_p2_m4_m3_shape.res" id="115_36u4e"]
+[ext_resource type="ArrayMesh" path="../baked/tunnel_chunk_m4_m2_p1.res" id="116_4avyo"]
+[ext_resource type="Shape3D" path="../baked/tunnel_chunk_m4_m2_p1_shape.res" id="117_3fm2f"]
+[ext_resource type="ArrayMesh" path="../baked/tunnel_chunk_m4_m2_p2.res" id="118_h84am"]
+[ext_resource type="Shape3D" path="../baked/tunnel_chunk_m4_m2_p2_shape.res" id="119_3vvjh"]
+[ext_resource type="ArrayMesh" path="../baked/tunnel_chunk_m3_m3_p0.res" id="120_s040p"]
+[ext_resource type="Shape3D" path="../baked/tunnel_chunk_m3_m3_p0_shape.res" id="121_v0818"]
+[ext_resource type="ArrayMesh" path="../baked/tunnel_chunk_p3_m6_m3.res" id="122_t7dlf"]
+[ext_resource type="Shape3D" path="../baked/tunnel_chunk_p3_m6_m3_shape.res" id="123_30m88"]
+[ext_resource type="ArrayMesh" path="../baked/tunnel_chunk_p3_m7_m3.res" id="124_deo4w"]
+[ext_resource type="Shape3D" path="../baked/tunnel_chunk_p3_m7_m3_shape.res" id="125_ns7xw"]
+[ext_resource type="ArrayMesh" path="../baked/tunnel_chunk_p2_m6_m3.res" id="126_08oml"]
+[ext_resource type="Shape3D" path="../baked/tunnel_chunk_p2_m6_m3_shape.res" id="127_xfpas"]
+[ext_resource type="ArrayMesh" path="../baked/tunnel_chunk_p2_m5_m3.res" id="128_5xuwv"]
+[ext_resource type="Shape3D" path="../baked/tunnel_chunk_p2_m5_m3_shape.res" id="129_eq13j"]
+[ext_resource type="ArrayMesh" path="../baked/tunnel_chunk_p2_m5_m4.res" id="130_b4i7j"]
+[ext_resource type="Shape3D" path="../baked/tunnel_chunk_p2_m5_m4_shape.res" id="131_o7rji"]
+[ext_resource type="ArrayMesh" path="../baked/tunnel_chunk_p1_m5_m4.res" id="132_pngao"]
+[ext_resource type="Shape3D" path="../baked/tunnel_chunk_p1_m5_m4_shape.res" id="133_eya1x"]
+[ext_resource type="ArrayMesh" path="../baked/tunnel_chunk_p1_m5_m3.res" id="134_ckjtk"]
+[ext_resource type="Shape3D" path="../baked/tunnel_chunk_p1_m5_m3_shape.res" id="135_5y34d"]
+[ext_resource type="ArrayMesh" path="../baked/tunnel_chunk_p1_m8_p1.res" id="136_p8var"]
+[ext_resource type="Shape3D" path="../baked/tunnel_chunk_p1_m8_p1_shape.res" id="137_nxr5f"]
+[ext_resource type="ArrayMesh" path="../baked/tunnel_chunk_p0_m8_p1.res" id="138_woqfq"]
+[ext_resource type="Shape3D" path="../baked/tunnel_chunk_p0_m8_p1_shape.res" id="139_mxhir"]
+[ext_resource type="ArrayMesh" path="../baked/tunnel_chunk_p0_m9_p1.res" id="140_eemxu"]
+[ext_resource type="Shape3D" path="../baked/tunnel_chunk_p0_m9_p1_shape.res" id="141_hd10m"]
+[ext_resource type="ArrayMesh" path="../baked/tunnel_chunk_p0_m8_p0.res" id="142_hpje1"]
+[ext_resource type="Shape3D" path="../baked/tunnel_chunk_p0_m8_p0_shape.res" id="143_0tskj"]
+[ext_resource type="ArrayMesh" path="../baked/tunnel_chunk_p0_m2_m2.res" id="144_o6adu"]
+[ext_resource type="Shape3D" path="../baked/tunnel_chunk_p0_m2_m2_shape.res" id="145_rg2je"]
+[ext_resource type="ArrayMesh" path="../baked/tunnel_chunk_p3_m2_p0.res" id="146_0eq5a"]
+[ext_resource type="Shape3D" path="../baked/tunnel_chunk_p3_m2_p0_shape.res" id="147_86p6i"]
+[ext_resource type="ArrayMesh" path="../baked/tunnel_chunk_p1_m4_m3.res" id="148_bnq14"]
+[ext_resource type="Shape3D" path="../baked/tunnel_chunk_p1_m4_m3_shape.res" id="149_hngnc"]
+[ext_resource type="ArrayMesh" path="../baked/tunnel_chunk_p1_m4_m2.res" id="150_sqcg5"]
+[ext_resource type="Shape3D" path="../baked/tunnel_chunk_p1_m4_m2_shape.res" id="151_cs2vs"]
+[ext_resource type="ArrayMesh" path="../baked/tunnel_chunk_m3_m3_m1.res" id="152_5sl07"]
+[ext_resource type="Shape3D" path="../baked/tunnel_chunk_m3_m3_m1_shape.res" id="153_j62bf"]
+[ext_resource type="ArrayMesh" path="../baked/tunnel_chunk_m1_m9_p1.res" id="154_t70g7"]
+[ext_resource type="Shape3D" path="../baked/tunnel_chunk_m1_m9_p1_shape.res" id="155_7gk7p"]
+
+[node name="TunnelGeometry" type="Node3D" unique_id=621691931]
+
+[node name="chunk_m1_m1_m1" type="StaticBody3D" parent="." unique_id=208367024]
+collision_mask = 0
+
+[node name="Mesh" type="MeshInstance3D" parent="chunk_m1_m1_m1" unique_id=336417197]
+material_override = ExtResource("1_0ledg")
+gi_mode = 0
+mesh = ExtResource("2_mtivn")
+
+[node name="Collision" type="CollisionShape3D" parent="chunk_m1_m1_m1" unique_id=1731637199]
+shape = ExtResource("3_40bgb")
+
+[node name="chunk_m1_m1_p0" type="StaticBody3D" parent="." unique_id=1941798176]
+collision_mask = 0
+
+[node name="Mesh" type="MeshInstance3D" parent="chunk_m1_m1_p0" unique_id=505714987]
+material_override = ExtResource("1_0ledg")
+gi_mode = 0
+mesh = ExtResource("4_wv0ba")
+
+[node name="Collision" type="CollisionShape3D" parent="chunk_m1_m1_p0" unique_id=2084373992]
+shape = ExtResource("5_8qaaj")
+
+[node name="chunk_p0_m1_p0" type="StaticBody3D" parent="." unique_id=125090105]
+collision_mask = 0
+
+[node name="Mesh" type="MeshInstance3D" parent="chunk_p0_m1_p0" unique_id=2025352385]
+material_override = ExtResource("1_0ledg")
+gi_mode = 0
+mesh = ExtResource("6_kjn23")
+
+[node name="Collision" type="CollisionShape3D" parent="chunk_p0_m1_p0" unique_id=1236083069]
+shape = ExtResource("7_0m6a7")
+
+[node name="chunk_p0_m1_m1" type="StaticBody3D" parent="." unique_id=553581445]
+collision_mask = 0
+
+[node name="Mesh" type="MeshInstance3D" parent="chunk_p0_m1_m1" unique_id=1453291867]
+material_override = ExtResource("1_0ledg")
+gi_mode = 0
+mesh = ExtResource("8_lglpn")
+
+[node name="Collision" type="CollisionShape3D" parent="chunk_p0_m1_m1" unique_id=677557129]
+shape = ExtResource("9_h4bn1")
+
+[node name="chunk_m1_m2_p0" type="StaticBody3D" parent="." unique_id=1663086905]
+collision_mask = 0
+
+[node name="Mesh" type="MeshInstance3D" parent="chunk_m1_m2_p0" unique_id=1015464241]
+material_override = ExtResource("1_0ledg")
+gi_mode = 0
+mesh = ExtResource("10_8fcad")
+
+[node name="Collision" type="CollisionShape3D" parent="chunk_m1_m2_p0" unique_id=2061275804]
+shape = ExtResource("11_m8giv")
+
+[node name="chunk_m1_m2_m1" type="StaticBody3D" parent="." unique_id=1131568850]
+collision_mask = 0
+
+[node name="Mesh" type="MeshInstance3D" parent="chunk_m1_m2_m1" unique_id=1854160820]
+material_override = ExtResource("1_0ledg")
+gi_mode = 0
+mesh = ExtResource("12_bhnjr")
+
+[node name="Collision" type="CollisionShape3D" parent="chunk_m1_m2_m1" unique_id=1808636212]
+shape = ExtResource("13_m21dh")
+
+[node name="chunk_p0_m2_p0" type="StaticBody3D" parent="." unique_id=794287743]
+collision_mask = 0
+
+[node name="Mesh" type="MeshInstance3D" parent="chunk_p0_m2_p0" unique_id=508630308]
+material_override = ExtResource("1_0ledg")
+gi_mode = 0
+mesh = ExtResource("14_87y78")
+
+[node name="Collision" type="CollisionShape3D" parent="chunk_p0_m2_p0" unique_id=1300943567]
+shape = ExtResource("15_vklyc")
+
+[node name="chunk_p0_m2_m1" type="StaticBody3D" parent="." unique_id=68193083]
+collision_mask = 0
+
+[node name="Mesh" type="MeshInstance3D" parent="chunk_p0_m2_m1" unique_id=354559134]
+material_override = ExtResource("1_0ledg")
+gi_mode = 0
+mesh = ExtResource("16_mcvlf")
+
+[node name="Collision" type="CollisionShape3D" parent="chunk_p0_m2_m1" unique_id=590448313]
+shape = ExtResource("17_snrn0")
+
+[node name="chunk_p1_m2_m1" type="StaticBody3D" parent="." unique_id=2123544599]
+collision_mask = 0
+
+[node name="Mesh" type="MeshInstance3D" parent="chunk_p1_m2_m1" unique_id=871117733]
+material_override = ExtResource("1_0ledg")
+gi_mode = 0
+mesh = ExtResource("18_3q8f3")
+
+[node name="Collision" type="CollisionShape3D" parent="chunk_p1_m2_m1" unique_id=494009568]
+shape = ExtResource("19_okmd1")
+
+[node name="chunk_p1_m2_m2" type="StaticBody3D" parent="." unique_id=1203708015]
+collision_mask = 0
+
+[node name="Mesh" type="MeshInstance3D" parent="chunk_p1_m2_m2" unique_id=1988779487]
+material_override = ExtResource("1_0ledg")
+gi_mode = 0
+mesh = ExtResource("20_exep4")
+
+[node name="Collision" type="CollisionShape3D" parent="chunk_p1_m2_m2" unique_id=1525281001]
+shape = ExtResource("21_x3ahi")
+
+[node name="chunk_p2_m2_m1" type="StaticBody3D" parent="." unique_id=841699850]
+collision_mask = 0
+
+[node name="Mesh" type="MeshInstance3D" parent="chunk_p2_m2_m1" unique_id=1206774332]
+material_override = ExtResource("1_0ledg")
+gi_mode = 0
+mesh = ExtResource("22_l0t2u")
+
+[node name="Collision" type="CollisionShape3D" parent="chunk_p2_m2_m1" unique_id=1177776177]
+shape = ExtResource("23_mldlx")
+
+[node name="chunk_p2_m2_m2" type="StaticBody3D" parent="." unique_id=1514643540]
+collision_mask = 0
+
+[node name="Mesh" type="MeshInstance3D" parent="chunk_p2_m2_m2" unique_id=470880716]
+material_override = ExtResource("1_0ledg")
+gi_mode = 0
+mesh = ExtResource("24_2p2gr")
+
+[node name="Collision" type="CollisionShape3D" parent="chunk_p2_m2_m2" unique_id=2099847141]
+shape = ExtResource("25_2xlfm")
+
+[node name="chunk_p2_m3_m1" type="StaticBody3D" parent="." unique_id=136144163]
+collision_mask = 0
+
+[node name="Mesh" type="MeshInstance3D" parent="chunk_p2_m3_m1" unique_id=1880387031]
+material_override = ExtResource("1_0ledg")
+gi_mode = 0
+mesh = ExtResource("26_lwix8")
+
+[node name="Collision" type="CollisionShape3D" parent="chunk_p2_m3_m1" unique_id=1849285608]
+shape = ExtResource("27_gbyqv")
+
+[node name="chunk_p2_m3_m2" type="StaticBody3D" parent="." unique_id=2105575402]
+collision_mask = 0
+
+[node name="Mesh" type="MeshInstance3D" parent="chunk_p2_m3_m2" unique_id=2124742029]
+material_override = ExtResource("1_0ledg")
+gi_mode = 0
+mesh = ExtResource("28_ot6hb")
+
+[node name="Collision" type="CollisionShape3D" parent="chunk_p2_m3_m2" unique_id=736583737]
+shape = ExtResource("29_hkdwb")
+
+[node name="chunk_m2_m2_p0" type="StaticBody3D" parent="." unique_id=1987185138]
+collision_mask = 0
+
+[node name="Mesh" type="MeshInstance3D" parent="chunk_m2_m2_p0" unique_id=1112061324]
+material_override = ExtResource("1_0ledg")
+gi_mode = 0
+mesh = ExtResource("30_jiwtl")
+
+[node name="Collision" type="CollisionShape3D" parent="chunk_m2_m2_p0" unique_id=181866353]
+shape = ExtResource("31_c2lfd")
+
+[node name="chunk_m2_m2_p1" type="StaticBody3D" parent="." unique_id=834186653]
+collision_mask = 0
+
+[node name="Mesh" type="MeshInstance3D" parent="chunk_m2_m2_p1" unique_id=1329156017]
+material_override = ExtResource("1_0ledg")
+gi_mode = 0
+mesh = ExtResource("32_n0juh")
+
+[node name="Collision" type="CollisionShape3D" parent="chunk_m2_m2_p1" unique_id=119954427]
+shape = ExtResource("33_6d03l")
+
+[node name="chunk_m3_m2_p0" type="StaticBody3D" parent="." unique_id=94294009]
+collision_mask = 0
+
+[node name="Mesh" type="MeshInstance3D" parent="chunk_m3_m2_p0" unique_id=1639726130]
+material_override = ExtResource("1_0ledg")
+gi_mode = 0
+mesh = ExtResource("34_a4y8x")
+
+[node name="Collision" type="CollisionShape3D" parent="chunk_m3_m2_p0" unique_id=2107273404]
+shape = ExtResource("35_p3r5p")
+
+[node name="chunk_m3_m2_p1" type="StaticBody3D" parent="." unique_id=1579576239]
+collision_mask = 0
+
+[node name="Mesh" type="MeshInstance3D" parent="chunk_m3_m2_p1" unique_id=2035256576]
+material_override = ExtResource("1_0ledg")
+gi_mode = 0
+mesh = ExtResource("36_fuo58")
+
+[node name="Collision" type="CollisionShape3D" parent="chunk_m3_m2_p1" unique_id=2028590751]
+shape = ExtResource("37_y6h5g")
+
+[node name="chunk_p3_m3_m1" type="StaticBody3D" parent="." unique_id=1557779276]
+collision_mask = 0
+
+[node name="Mesh" type="MeshInstance3D" parent="chunk_p3_m3_m1" unique_id=1110200503]
+material_override = ExtResource("1_0ledg")
+gi_mode = 0
+mesh = ExtResource("38_xhxaj")
+
+[node name="Collision" type="CollisionShape3D" parent="chunk_p3_m3_m1" unique_id=1920778982]
+shape = ExtResource("39_difmg")
+
+[node name="chunk_p3_m3_m2" type="StaticBody3D" parent="." unique_id=412680962]
+collision_mask = 0
+
+[node name="Mesh" type="MeshInstance3D" parent="chunk_p3_m3_m2" unique_id=1454289223]
+material_override = ExtResource("1_0ledg")
+gi_mode = 0
+mesh = ExtResource("40_2mto5")
+
+[node name="Collision" type="CollisionShape3D" parent="chunk_p3_m3_m2" unique_id=430173519]
+shape = ExtResource("41_qwk6c")
+
+[node name="chunk_p2_m4_m2" type="StaticBody3D" parent="." unique_id=774977756]
+collision_mask = 0
+
+[node name="Mesh" type="MeshInstance3D" parent="chunk_p2_m4_m2" unique_id=1712043375]
+material_override = ExtResource("1_0ledg")
+gi_mode = 0
+mesh = ExtResource("42_oib8v")
+
+[node name="Collision" type="CollisionShape3D" parent="chunk_p2_m4_m2" unique_id=1700519204]
+shape = ExtResource("43_dqqw4")
+
+[node name="chunk_p3_m4_m2" type="StaticBody3D" parent="." unique_id=1926275118]
+collision_mask = 0
+
+[node name="Mesh" type="MeshInstance3D" parent="chunk_p3_m4_m2" unique_id=1944444042]
+material_override = ExtResource("1_0ledg")
+gi_mode = 0
+mesh = ExtResource("44_85ncw")
+
+[node name="Collision" type="CollisionShape3D" parent="chunk_p3_m4_m2" unique_id=713103164]
+shape = ExtResource("45_3pcoc")
+
+[node name="chunk_p3_m5_m2" type="StaticBody3D" parent="." unique_id=1795189825]
+collision_mask = 0
+
+[node name="Mesh" type="MeshInstance3D" parent="chunk_p3_m5_m2" unique_id=36578151]
+material_override = ExtResource("1_0ledg")
+gi_mode = 0
+mesh = ExtResource("46_ddkpx")
+
+[node name="Collision" type="CollisionShape3D" parent="chunk_p3_m5_m2" unique_id=387264905]
+shape = ExtResource("47_ir0b4")
+
+[node name="chunk_p3_m6_m2" type="StaticBody3D" parent="." unique_id=20564748]
+collision_mask = 0
+
+[node name="Mesh" type="MeshInstance3D" parent="chunk_p3_m6_m2" unique_id=1034646165]
+material_override = ExtResource("1_0ledg")
+gi_mode = 0
+mesh = ExtResource("48_pfh4b")
+
+[node name="Collision" type="CollisionShape3D" parent="chunk_p3_m6_m2" unique_id=867670883]
+shape = ExtResource("49_3mpgt")
+
+[node name="chunk_p2_m6_m2" type="StaticBody3D" parent="." unique_id=682172064]
+collision_mask = 0
+
+[node name="Mesh" type="MeshInstance3D" parent="chunk_p2_m6_m2" unique_id=1665942103]
+material_override = ExtResource("1_0ledg")
+gi_mode = 0
+mesh = ExtResource("50_ojr81")
+
+[node name="Collision" type="CollisionShape3D" parent="chunk_p2_m6_m2" unique_id=183572779]
+shape = ExtResource("51_ywytw")
+
+[node name="chunk_p2_m7_m2" type="StaticBody3D" parent="." unique_id=861640035]
+collision_mask = 0
+
+[node name="Mesh" type="MeshInstance3D" parent="chunk_p2_m7_m2" unique_id=929430769]
+material_override = ExtResource("1_0ledg")
+gi_mode = 0
+mesh = ExtResource("52_hkng1")
+
+[node name="Collision" type="CollisionShape3D" parent="chunk_p2_m7_m2" unique_id=1256625384]
+shape = ExtResource("53_wmw8s")
+
+[node name="chunk_p2_m7_m1" type="StaticBody3D" parent="." unique_id=2111611175]
+collision_mask = 0
+
+[node name="Mesh" type="MeshInstance3D" parent="chunk_p2_m7_m1" unique_id=589554567]
+material_override = ExtResource("1_0ledg")
+gi_mode = 0
+mesh = ExtResource("54_nmqcm")
+
+[node name="Collision" type="CollisionShape3D" parent="chunk_p2_m7_m1" unique_id=191963887]
+shape = ExtResource("55_ptto4")
+
+[node name="chunk_p2_m8_m1" type="StaticBody3D" parent="." unique_id=1174875190]
+collision_mask = 0
+
+[node name="Mesh" type="MeshInstance3D" parent="chunk_p2_m8_m1" unique_id=1010194695]
+material_override = ExtResource("1_0ledg")
+gi_mode = 0
+mesh = ExtResource("56_yl8wx")
+
+[node name="Collision" type="CollisionShape3D" parent="chunk_p2_m8_m1" unique_id=228354488]
+shape = ExtResource("57_u151d")
+
+[node name="chunk_p1_m7_m1" type="StaticBody3D" parent="." unique_id=2056685496]
+collision_mask = 0
+
+[node name="Mesh" type="MeshInstance3D" parent="chunk_p1_m7_m1" unique_id=194638517]
+material_override = ExtResource("1_0ledg")
+gi_mode = 0
+mesh = ExtResource("58_omfsp")
+
+[node name="Collision" type="CollisionShape3D" parent="chunk_p1_m7_m1" unique_id=2037123295]
+shape = ExtResource("59_6c6wj")
+
+[node name="chunk_p1_m8_m1" type="StaticBody3D" parent="." unique_id=1697558154]
+collision_mask = 0
+
+[node name="Mesh" type="MeshInstance3D" parent="chunk_p1_m8_m1" unique_id=111409477]
+material_override = ExtResource("1_0ledg")
+gi_mode = 0
+mesh = ExtResource("60_nrfbn")
+
+[node name="Collision" type="CollisionShape3D" parent="chunk_p1_m8_m1" unique_id=827017865]
+shape = ExtResource("61_vr03t")
+
+[node name="chunk_p1_m7_p0" type="StaticBody3D" parent="." unique_id=1066212518]
+collision_mask = 0
+
+[node name="Mesh" type="MeshInstance3D" parent="chunk_p1_m7_p0" unique_id=1775163258]
+material_override = ExtResource("1_0ledg")
+gi_mode = 0
+mesh = ExtResource("62_un5ph")
+
+[node name="Collision" type="CollisionShape3D" parent="chunk_p1_m7_p0" unique_id=486077643]
+shape = ExtResource("63_edgh1")
+
+[node name="chunk_p2_m7_p0" type="StaticBody3D" parent="." unique_id=1821137040]
+collision_mask = 0
+
+[node name="Mesh" type="MeshInstance3D" parent="chunk_p2_m7_p0" unique_id=1758748428]
+material_override = ExtResource("1_0ledg")
+gi_mode = 0
+mesh = ExtResource("64_j81fx")
+
+[node name="Collision" type="CollisionShape3D" parent="chunk_p2_m7_p0" unique_id=1457458244]
+shape = ExtResource("65_r5cag")
+
+[node name="chunk_p2_m8_p0" type="StaticBody3D" parent="." unique_id=685941529]
+collision_mask = 0
+
+[node name="Mesh" type="MeshInstance3D" parent="chunk_p2_m8_p0" unique_id=133798270]
+material_override = ExtResource("1_0ledg")
+gi_mode = 0
+mesh = ExtResource("66_v722j")
+
+[node name="Collision" type="CollisionShape3D" parent="chunk_p2_m8_p0" unique_id=406302558]
+shape = ExtResource("67_fs7ir")
+
+[node name="chunk_p1_m8_p0" type="StaticBody3D" parent="." unique_id=1105911933]
+collision_mask = 0
+
+[node name="Mesh" type="MeshInstance3D" parent="chunk_p1_m8_p0" unique_id=205825863]
+material_override = ExtResource("1_0ledg")
+gi_mode = 0
+mesh = ExtResource("68_vr8i8")
+
+[node name="Collision" type="CollisionShape3D" parent="chunk_p1_m8_p0" unique_id=976634407]
+shape = ExtResource("69_ajgn0")
+
+[node name="chunk_m3_m3_p1" type="StaticBody3D" parent="." unique_id=1521219572]
+collision_mask = 0
+
+[node name="Mesh" type="MeshInstance3D" parent="chunk_m3_m3_p1" unique_id=1671675310]
+material_override = ExtResource("1_0ledg")
+gi_mode = 0
+mesh = ExtResource("70_5iasg")
+
+[node name="Collision" type="CollisionShape3D" parent="chunk_m3_m3_p1" unique_id=1730083883]
+shape = ExtResource("71_kcwgx")
+
+[node name="chunk_m2_m3_p1" type="StaticBody3D" parent="." unique_id=1393544371]
+collision_mask = 0
+
+[node name="Mesh" type="MeshInstance3D" parent="chunk_m2_m3_p1" unique_id=1386064284]
+material_override = ExtResource("1_0ledg")
+gi_mode = 0
+mesh = ExtResource("72_ex3xu")
+
+[node name="Collision" type="CollisionShape3D" parent="chunk_m2_m3_p1" unique_id=1266134455]
+shape = ExtResource("73_i7wt8")
+
+[node name="chunk_m2_m4_p1" type="StaticBody3D" parent="." unique_id=1276679857]
+collision_mask = 0
+
+[node name="Mesh" type="MeshInstance3D" parent="chunk_m2_m4_p1" unique_id=131328484]
+material_override = ExtResource("1_0ledg")
+gi_mode = 0
+mesh = ExtResource("74_3oijn")
+
+[node name="Collision" type="CollisionShape3D" parent="chunk_m2_m4_p1" unique_id=214606846]
+shape = ExtResource("75_44gqg")
+
+[node name="chunk_m1_m3_p1" type="StaticBody3D" parent="." unique_id=1856478505]
+collision_mask = 0
+
+[node name="Mesh" type="MeshInstance3D" parent="chunk_m1_m3_p1" unique_id=824914663]
+material_override = ExtResource("1_0ledg")
+gi_mode = 0
+mesh = ExtResource("76_mb0wj")
+
+[node name="Collision" type="CollisionShape3D" parent="chunk_m1_m3_p1" unique_id=849241325]
+shape = ExtResource("77_mjgvk")
+
+[node name="chunk_m1_m4_p1" type="StaticBody3D" parent="." unique_id=703113788]
+collision_mask = 0
+
+[node name="Mesh" type="MeshInstance3D" parent="chunk_m1_m4_p1" unique_id=802808899]
+material_override = ExtResource("1_0ledg")
+gi_mode = 0
+mesh = ExtResource("78_ul5hh")
+
+[node name="Collision" type="CollisionShape3D" parent="chunk_m1_m4_p1" unique_id=203067138]
+shape = ExtResource("79_cdru6")
+
+[node name="chunk_m1_m4_p0" type="StaticBody3D" parent="." unique_id=1289267807]
+collision_mask = 0
+
+[node name="Mesh" type="MeshInstance3D" parent="chunk_m1_m4_p0" unique_id=1152465571]
+material_override = ExtResource("1_0ledg")
+gi_mode = 0
+mesh = ExtResource("80_wrcnj")
+
+[node name="Collision" type="CollisionShape3D" parent="chunk_m1_m4_p0" unique_id=529509920]
+shape = ExtResource("81_7y2nk")
+
+[node name="chunk_p0_m4_p0" type="StaticBody3D" parent="." unique_id=313518976]
+collision_mask = 0
+
+[node name="Mesh" type="MeshInstance3D" parent="chunk_p0_m4_p0" unique_id=1454474605]
+material_override = ExtResource("1_0ledg")
+gi_mode = 0
+mesh = ExtResource("82_ic48q")
+
+[node name="Collision" type="CollisionShape3D" parent="chunk_p0_m4_p0" unique_id=1119484195]
+shape = ExtResource("83_174u0")
+
+[node name="chunk_p0_m5_p0" type="StaticBody3D" parent="." unique_id=1859975721]
+collision_mask = 0
+
+[node name="Mesh" type="MeshInstance3D" parent="chunk_p0_m5_p0" unique_id=437591740]
+material_override = ExtResource("1_0ledg")
+gi_mode = 0
+mesh = ExtResource("84_ygjx1")
+
+[node name="Collision" type="CollisionShape3D" parent="chunk_p0_m5_p0" unique_id=402731926]
+shape = ExtResource("85_a8t7g")
+
+[node name="chunk_p0_m5_m1" type="StaticBody3D" parent="." unique_id=975279253]
+collision_mask = 0
+
+[node name="Mesh" type="MeshInstance3D" parent="chunk_p0_m5_m1" unique_id=1100805233]
+material_override = ExtResource("1_0ledg")
+gi_mode = 0
+mesh = ExtResource("86_xtyoa")
+
+[node name="Collision" type="CollisionShape3D" parent="chunk_p0_m5_m1" unique_id=1823571177]
+shape = ExtResource("87_eaitc")
+
+[node name="chunk_p1_m5_p0" type="StaticBody3D" parent="." unique_id=1536703232]
+collision_mask = 0
+
+[node name="Mesh" type="MeshInstance3D" parent="chunk_p1_m5_p0" unique_id=987516350]
+material_override = ExtResource("1_0ledg")
+gi_mode = 0
+mesh = ExtResource("88_wjlxa")
+
+[node name="Collision" type="CollisionShape3D" parent="chunk_p1_m5_p0" unique_id=2140368820]
+shape = ExtResource("89_fskwu")
+
+[node name="chunk_p1_m5_m1" type="StaticBody3D" parent="." unique_id=2031353144]
+collision_mask = 0
+
+[node name="Mesh" type="MeshInstance3D" parent="chunk_p1_m5_m1" unique_id=620084891]
+material_override = ExtResource("1_0ledg")
+gi_mode = 0
+mesh = ExtResource("90_h5wv6")
+
+[node name="Collision" type="CollisionShape3D" parent="chunk_p1_m5_m1" unique_id=176960549]
+shape = ExtResource("91_ucp12")
+
+[node name="chunk_p2_m5_m1" type="StaticBody3D" parent="." unique_id=260606545]
+collision_mask = 0
+
+[node name="Mesh" type="MeshInstance3D" parent="chunk_p2_m5_m1" unique_id=1464248631]
+material_override = ExtResource("1_0ledg")
+gi_mode = 0
+mesh = ExtResource("92_8nh1m")
+
+[node name="Collision" type="CollisionShape3D" parent="chunk_p2_m5_m1" unique_id=1316825432]
+shape = ExtResource("93_ia6l6")
+
+[node name="chunk_p2_m5_m2" type="StaticBody3D" parent="." unique_id=1947068519]
+collision_mask = 0
+
+[node name="Mesh" type="MeshInstance3D" parent="chunk_p2_m5_m2" unique_id=1383994931]
+material_override = ExtResource("1_0ledg")
+gi_mode = 0
+mesh = ExtResource("94_ruk33")
+
+[node name="Collision" type="CollisionShape3D" parent="chunk_p2_m5_m2" unique_id=1642803507]
+shape = ExtResource("95_0qif7")
+
+[node name="chunk_p1_m1_m1" type="StaticBody3D" parent="." unique_id=878532505]
+collision_mask = 0
+
+[node name="Mesh" type="MeshInstance3D" parent="chunk_p1_m1_m1" unique_id=1602122370]
+material_override = ExtResource("1_0ledg")
+gi_mode = 0
+mesh = ExtResource("96_bnm6k")
+
+[node name="Collision" type="CollisionShape3D" parent="chunk_p1_m1_m1" unique_id=277768231]
+shape = ExtResource("97_enjn4")
+
+[node name="chunk_p1_m1_p0" type="StaticBody3D" parent="." unique_id=67384353]
+collision_mask = 0
+
+[node name="Mesh" type="MeshInstance3D" parent="chunk_p1_m1_p0" unique_id=708115821]
+material_override = ExtResource("1_0ledg")
+gi_mode = 0
+mesh = ExtResource("98_m3h8x")
+
+[node name="Collision" type="CollisionShape3D" parent="chunk_p1_m1_p0" unique_id=97052755]
+shape = ExtResource("99_as8d2")
+
+[node name="chunk_p0_m1_p1" type="StaticBody3D" parent="." unique_id=497251026]
+collision_mask = 0
+
+[node name="Mesh" type="MeshInstance3D" parent="chunk_p0_m1_p1" unique_id=2090435704]
+material_override = ExtResource("1_0ledg")
+gi_mode = 0
+mesh = ExtResource("100_k22mw")
+
+[node name="Collision" type="CollisionShape3D" parent="chunk_p0_m1_p1" unique_id=1168054606]
+shape = ExtResource("101_224dp")
+
+[node name="chunk_m1_m1_p1" type="StaticBody3D" parent="." unique_id=1767560011]
+collision_mask = 0
+
+[node name="Mesh" type="MeshInstance3D" parent="chunk_m1_m1_p1" unique_id=254740319]
+material_override = ExtResource("1_0ledg")
+gi_mode = 0
+mesh = ExtResource("102_726e7")
+
+[node name="Collision" type="CollisionShape3D" parent="chunk_m1_m1_p1" unique_id=792170056]
+shape = ExtResource("103_q56vw")
+
+[node name="chunk_m1_m2_p1" type="StaticBody3D" parent="." unique_id=608740411]
+collision_mask = 0
+
+[node name="Mesh" type="MeshInstance3D" parent="chunk_m1_m2_p1" unique_id=295402441]
+material_override = ExtResource("1_0ledg")
+gi_mode = 0
+mesh = ExtResource("104_ettw0")
+
+[node name="Collision" type="CollisionShape3D" parent="chunk_m1_m2_p1" unique_id=207699973]
+shape = ExtResource("105_0j5m1")
+
+[node name="chunk_m1_m2_m2" type="StaticBody3D" parent="." unique_id=1066224447]
+collision_mask = 0
+
+[node name="Mesh" type="MeshInstance3D" parent="chunk_m1_m2_m2" unique_id=658401722]
+material_override = ExtResource("1_0ledg")
+gi_mode = 0
+mesh = ExtResource("106_y52nb")
+
+[node name="Collision" type="CollisionShape3D" parent="chunk_m1_m2_m2" unique_id=129359339]
+shape = ExtResource("107_dac0w")
+
+[node name="chunk_p0_m2_p1" type="StaticBody3D" parent="." unique_id=210117669]
+collision_mask = 0
+
+[node name="Mesh" type="MeshInstance3D" parent="chunk_p0_m2_p1" unique_id=1271886482]
+material_override = ExtResource("1_0ledg")
+gi_mode = 0
+mesh = ExtResource("108_721bs")
+
+[node name="Collision" type="CollisionShape3D" parent="chunk_p0_m2_p1" unique_id=443698862]
+shape = ExtResource("109_qacx5")
+
+[node name="chunk_p3_m3_p0" type="StaticBody3D" parent="." unique_id=1057841420]
+collision_mask = 0
+
+[node name="Mesh" type="MeshInstance3D" parent="chunk_p3_m3_p0" unique_id=996277264]
+material_override = ExtResource("1_0ledg")
+gi_mode = 0
+mesh = ExtResource("110_btmp1")
+
+[node name="Collision" type="CollisionShape3D" parent="chunk_p3_m3_p0" unique_id=1040397871]
+shape = ExtResource("111_pv3b6")
+
+[node name="chunk_p2_m3_m3" type="StaticBody3D" parent="." unique_id=168085211]
+collision_mask = 0
+
+[node name="Mesh" type="MeshInstance3D" parent="chunk_p2_m3_m3" unique_id=1086508424]
+material_override = ExtResource("1_0ledg")
+gi_mode = 0
+mesh = ExtResource("112_nonx2")
+
+[node name="Collision" type="CollisionShape3D" parent="chunk_p2_m3_m3" unique_id=573546335]
+shape = ExtResource("113_pnjcu")
+
+[node name="chunk_p2_m4_m3" type="StaticBody3D" parent="." unique_id=1738030743]
+collision_mask = 0
+
+[node name="Mesh" type="MeshInstance3D" parent="chunk_p2_m4_m3" unique_id=1446462665]
+material_override = ExtResource("1_0ledg")
+gi_mode = 0
+mesh = ExtResource("114_wuep3")
+
+[node name="Collision" type="CollisionShape3D" parent="chunk_p2_m4_m3" unique_id=377473668]
+shape = ExtResource("115_36u4e")
+
+[node name="chunk_m4_m2_p1" type="StaticBody3D" parent="." unique_id=1833698763]
+collision_mask = 0
+
+[node name="Mesh" type="MeshInstance3D" parent="chunk_m4_m2_p1" unique_id=1070456474]
+material_override = ExtResource("1_0ledg")
+gi_mode = 0
+mesh = ExtResource("116_4avyo")
+
+[node name="Collision" type="CollisionShape3D" parent="chunk_m4_m2_p1" unique_id=1952014025]
+shape = ExtResource("117_3fm2f")
+
+[node name="chunk_m4_m2_p2" type="StaticBody3D" parent="." unique_id=1630606530]
+collision_mask = 0
+
+[node name="Mesh" type="MeshInstance3D" parent="chunk_m4_m2_p2" unique_id=12618891]
+material_override = ExtResource("1_0ledg")
+gi_mode = 0
+mesh = ExtResource("118_h84am")
+
+[node name="Collision" type="CollisionShape3D" parent="chunk_m4_m2_p2" unique_id=2053029963]
+shape = ExtResource("119_3vvjh")
+
+[node name="chunk_m3_m3_p0" type="StaticBody3D" parent="." unique_id=1541089529]
+collision_mask = 0
+
+[node name="Mesh" type="MeshInstance3D" parent="chunk_m3_m3_p0" unique_id=1362011346]
+material_override = ExtResource("1_0ledg")
+gi_mode = 0
+mesh = ExtResource("120_s040p")
+
+[node name="Collision" type="CollisionShape3D" parent="chunk_m3_m3_p0" unique_id=243296597]
+shape = ExtResource("121_v0818")
+
+[node name="chunk_p3_m6_m3" type="StaticBody3D" parent="." unique_id=1567920213]
+collision_mask = 0
+
+[node name="Mesh" type="MeshInstance3D" parent="chunk_p3_m6_m3" unique_id=1708015161]
+material_override = ExtResource("1_0ledg")
+gi_mode = 0
+mesh = ExtResource("122_t7dlf")
+
+[node name="Collision" type="CollisionShape3D" parent="chunk_p3_m6_m3" unique_id=658829809]
+shape = ExtResource("123_30m88")
+
+[node name="chunk_p3_m7_m3" type="StaticBody3D" parent="." unique_id=701742036]
+collision_mask = 0
+
+[node name="Mesh" type="MeshInstance3D" parent="chunk_p3_m7_m3" unique_id=576854813]
+material_override = ExtResource("1_0ledg")
+gi_mode = 0
+mesh = ExtResource("124_deo4w")
+
+[node name="Collision" type="CollisionShape3D" parent="chunk_p3_m7_m3" unique_id=1371582126]
+shape = ExtResource("125_ns7xw")
+
+[node name="chunk_p2_m6_m3" type="StaticBody3D" parent="." unique_id=680469496]
+collision_mask = 0
+
+[node name="Mesh" type="MeshInstance3D" parent="chunk_p2_m6_m3" unique_id=1570931444]
+material_override = ExtResource("1_0ledg")
+gi_mode = 0
+mesh = ExtResource("126_08oml")
+
+[node name="Collision" type="CollisionShape3D" parent="chunk_p2_m6_m3" unique_id=1837908279]
+shape = ExtResource("127_xfpas")
+
+[node name="chunk_p2_m5_m3" type="StaticBody3D" parent="." unique_id=745436596]
+collision_mask = 0
+
+[node name="Mesh" type="MeshInstance3D" parent="chunk_p2_m5_m3" unique_id=1123276370]
+material_override = ExtResource("1_0ledg")
+gi_mode = 0
+mesh = ExtResource("128_5xuwv")
+
+[node name="Collision" type="CollisionShape3D" parent="chunk_p2_m5_m3" unique_id=399388210]
+shape = ExtResource("129_eq13j")
+
+[node name="chunk_p2_m5_m4" type="StaticBody3D" parent="." unique_id=1044251403]
+collision_mask = 0
+
+[node name="Mesh" type="MeshInstance3D" parent="chunk_p2_m5_m4" unique_id=1719422701]
+material_override = ExtResource("1_0ledg")
+gi_mode = 0
+mesh = ExtResource("130_b4i7j")
+
+[node name="Collision" type="CollisionShape3D" parent="chunk_p2_m5_m4" unique_id=1228343165]
+shape = ExtResource("131_o7rji")
+
+[node name="chunk_p1_m5_m4" type="StaticBody3D" parent="." unique_id=1964395938]
+collision_mask = 0
+
+[node name="Mesh" type="MeshInstance3D" parent="chunk_p1_m5_m4" unique_id=727618680]
+material_override = ExtResource("1_0ledg")
+gi_mode = 0
+mesh = ExtResource("132_pngao")
+
+[node name="Collision" type="CollisionShape3D" parent="chunk_p1_m5_m4" unique_id=1990855142]
+shape = ExtResource("133_eya1x")
+
+[node name="chunk_p1_m5_m3" type="StaticBody3D" parent="." unique_id=1561196321]
+collision_mask = 0
+
+[node name="Mesh" type="MeshInstance3D" parent="chunk_p1_m5_m3" unique_id=1027818332]
+material_override = ExtResource("1_0ledg")
+gi_mode = 0
+mesh = ExtResource("134_ckjtk")
+
+[node name="Collision" type="CollisionShape3D" parent="chunk_p1_m5_m3" unique_id=830001027]
+shape = ExtResource("135_5y34d")
+
+[node name="chunk_p1_m8_p1" type="StaticBody3D" parent="." unique_id=914525658]
+collision_mask = 0
+
+[node name="Mesh" type="MeshInstance3D" parent="chunk_p1_m8_p1" unique_id=660268081]
+material_override = ExtResource("1_0ledg")
+gi_mode = 0
+mesh = ExtResource("136_p8var")
+
+[node name="Collision" type="CollisionShape3D" parent="chunk_p1_m8_p1" unique_id=909974903]
+shape = ExtResource("137_nxr5f")
+
+[node name="chunk_p0_m8_p1" type="StaticBody3D" parent="." unique_id=934528400]
+collision_mask = 0
+
+[node name="Mesh" type="MeshInstance3D" parent="chunk_p0_m8_p1" unique_id=807852551]
+material_override = ExtResource("1_0ledg")
+gi_mode = 0
+mesh = ExtResource("138_woqfq")
+
+[node name="Collision" type="CollisionShape3D" parent="chunk_p0_m8_p1" unique_id=268848026]
+shape = ExtResource("139_mxhir")
+
+[node name="chunk_p0_m9_p1" type="StaticBody3D" parent="." unique_id=1641138178]
+collision_mask = 0
+
+[node name="Mesh" type="MeshInstance3D" parent="chunk_p0_m9_p1" unique_id=79730540]
+material_override = ExtResource("1_0ledg")
+gi_mode = 0
+mesh = ExtResource("140_eemxu")
+
+[node name="Collision" type="CollisionShape3D" parent="chunk_p0_m9_p1" unique_id=1158869061]
+shape = ExtResource("141_hd10m")
+
+[node name="chunk_p0_m8_p0" type="StaticBody3D" parent="." unique_id=211989825]
+collision_mask = 0
+
+[node name="Mesh" type="MeshInstance3D" parent="chunk_p0_m8_p0" unique_id=143280441]
+material_override = ExtResource("1_0ledg")
+gi_mode = 0
+mesh = ExtResource("142_hpje1")
+
+[node name="Collision" type="CollisionShape3D" parent="chunk_p0_m8_p0" unique_id=255438841]
+shape = ExtResource("143_0tskj")
+
+[node name="chunk_p0_m2_m2" type="StaticBody3D" parent="." unique_id=115604506]
+collision_mask = 0
+
+[node name="Mesh" type="MeshInstance3D" parent="chunk_p0_m2_m2" unique_id=1015913061]
+material_override = ExtResource("1_0ledg")
+gi_mode = 0
+mesh = ExtResource("144_o6adu")
+
+[node name="Collision" type="CollisionShape3D" parent="chunk_p0_m2_m2" unique_id=1221239812]
+shape = ExtResource("145_rg2je")
+
+[node name="chunk_p3_m2_p0" type="StaticBody3D" parent="." unique_id=1879406366]
+collision_mask = 0
+
+[node name="Mesh" type="MeshInstance3D" parent="chunk_p3_m2_p0" unique_id=616421700]
+material_override = ExtResource("1_0ledg")
+gi_mode = 0
+mesh = ExtResource("146_0eq5a")
+
+[node name="Collision" type="CollisionShape3D" parent="chunk_p3_m2_p0" unique_id=2130890489]
+shape = ExtResource("147_86p6i")
+
+[node name="chunk_p1_m4_m3" type="StaticBody3D" parent="." unique_id=1997474271]
+collision_mask = 0
+
+[node name="Mesh" type="MeshInstance3D" parent="chunk_p1_m4_m3" unique_id=1481919402]
+material_override = ExtResource("1_0ledg")
+gi_mode = 0
+mesh = ExtResource("148_bnq14")
+
+[node name="Collision" type="CollisionShape3D" parent="chunk_p1_m4_m3" unique_id=1334290867]
+shape = ExtResource("149_hngnc")
+
+[node name="chunk_p1_m4_m2" type="StaticBody3D" parent="." unique_id=578470377]
+collision_mask = 0
+
+[node name="Mesh" type="MeshInstance3D" parent="chunk_p1_m4_m2" unique_id=1268582136]
+material_override = ExtResource("1_0ledg")
+gi_mode = 0
+mesh = ExtResource("150_sqcg5")
+
+[node name="Collision" type="CollisionShape3D" parent="chunk_p1_m4_m2" unique_id=1115015862]
+shape = ExtResource("151_cs2vs")
+
+[node name="chunk_m3_m3_m1" type="StaticBody3D" parent="." unique_id=1454691691]
+collision_mask = 0
+
+[node name="Mesh" type="MeshInstance3D" parent="chunk_m3_m3_m1" unique_id=1728410809]
+material_override = ExtResource("1_0ledg")
+gi_mode = 0
+mesh = ExtResource("152_5sl07")
+
+[node name="Collision" type="CollisionShape3D" parent="chunk_m3_m3_m1" unique_id=524571567]
+shape = ExtResource("153_j62bf")
+
+[node name="chunk_m1_m9_p1" type="StaticBody3D" parent="." unique_id=1706702492]
+collision_mask = 0
+
+[node name="Mesh" type="MeshInstance3D" parent="chunk_m1_m9_p1" unique_id=1648783310]
+material_override = ExtResource("1_0ledg")
+gi_mode = 0
+mesh = ExtResource("154_t70g7")
+
+[node name="Collision" type="CollisionShape3D" parent="chunk_m1_m9_p1" unique_id=654284553]
+shape = ExtResource("155_7gk7p")
