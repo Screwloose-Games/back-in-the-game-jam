@@ -1,6 +1,7 @@
 [gd_scene format=3 uid="uid://b77va8ome3t3b"]
 
 [ext_resource type="Script" uid="uid://l0qtkd6jrdx" path="res://prototypes/navigation/zero_g_player.gd" id="1_controller"]
+[ext_resource type="PackedScene" uid="uid://bexcb5g13fblw" path="res://prototypes/navigation/fpv_helmet.tscn" id="2_mapm5"]
 
 [sub_resource type="SphereShape3D" id="SphereShape3D_hull"]
 radius = 0.4
@@ -19,7 +20,7 @@ current = true
 far = 20.0
 
 [node name="HelmetLamp" type="SpotLight3D" parent="HeadCamera" unique_id=1998591431]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.14, -0.12, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.015836567, -0.12, -0.54930973)
 light_color = Color(1, 0.96, 0.89, 1)
 light_energy = 3.5
 shadow_enabled = true
@@ -27,3 +28,18 @@ spot_range = 18.0
 spot_attenuation = 1.2
 spot_angle = 35.0
 spot_angle_attenuation = 0.6
+
+[node name="HelmetLamp2" type="SpotLight3D" parent="HeadCamera" unique_id=1860314770]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.015836567, -0.064801805, -0.16030464)
+light_color = Color(0.1559746, 0.21915743, 0.19979493, 1)
+light_energy = 3.5
+light_volumetric_fog_energy = 10.245
+light_specular = 3.357
+shadow_enabled = true
+spot_range = 0.7144912
+spot_attenuation = 2.92
+spot_angle = 66.09375
+spot_angle_attenuation = 0.6
+
+[node name="fpv_helmet" parent="HeadCamera" unique_id=1080812257 instance=ExtResource("2_mapm5")]
+transform = Transform3D(-1, 0, -8.742278e-08, 0, 1, 0, 8.742278e-08, 0, -1, -0.0072677433, 0.5575421, -0.32371908)

@@ -29,6 +29,7 @@ script = ExtResource("1_8dv3o")
 environment = SubResource("Environment_void")
 
 [node name="ZeroGPlayer" parent="." unique_id=1556223583 instance=ExtResource("3_wlun1")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 1)
 
 [node name="HUD" type="CanvasLayer" parent="." unique_id=1895493360]
 script = ExtResource("4_78f1w")

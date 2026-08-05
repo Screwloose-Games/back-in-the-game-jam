@@ -1,0 +1,12 @@
+[gd_scene format=3 uid="uid://bexcb5g13fblw"]
+
+[ext_resource type="PackedScene" uid="uid://cjviviqmyd4rr" path="res://assets/art/character/fpv_helmet.gltf" id="1_pr57f"]
+
+[node name="fpv_helmet" unique_id=1080812257 instance=ExtResource("1_pr57f")]
+
+[node name="Layer_1" parent="Node_0" parent_id_path=PackedInt32Array(2125601551) index="0" unique_id=801895553]
+transform = Transform3D(1, 0, 0, 0, 0.99999994, -2.842171e-14, 0, 2.842171e-14, 0.99999994, 0, 0, 0)
+
+[node name="Layer_3" parent="Node_0" parent_id_path=PackedInt32Array(2125601551) index="1" unique_id=1440342941]
+transform = Transform3D(1, 0, 0, 0, 0.99999994, -2.842171e-14, 0, 2.842171e-14, 0.99999994, 1.9915402e-05, 0.0002617825, 0.9164485)
+visible = false
