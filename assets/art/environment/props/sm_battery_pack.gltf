@@ -67,8 +67,8 @@
 	"images":[
 		{
 			"mimeType":"image/png",
-			"name":"Image_0",
-			"uri":"Image_0.png"
+			"name":"t_battery_pack",
+			"uri":"t_battery_pack.png"
 		}
 	],
 	"accessors":[

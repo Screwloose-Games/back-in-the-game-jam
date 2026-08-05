@@ -109,8 +109,8 @@
 	"images":[
 		{
 			"mimeType":"image/png",
-			"name":"Image_0",
-			"uri":"t_player_character/Image_0.png"
+			"name":"t_player_character",
+			"uri":"t_player_character.png"
 		}
 	],
 	"accessors":[
