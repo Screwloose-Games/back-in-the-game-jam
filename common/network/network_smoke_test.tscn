@@ -126,8 +126,8 @@ text = "Signaling endpoint"
 [node name="SignalingEndpointInput" type="LineEdit" parent="Margin/Layout/Content/SessionPanel/SessionControls" unique_id=974032484]
 unique_name_in_owner = true
 layout_mode = 2
-text = "ws://127.0.0.1:8788"
-placeholder_text = "ws://127.0.0.1:8788"
+text = "wss://signaling-worker.voidfall-jam.workers.dev"
+placeholder_text = "wss://signaling-worker.voidfall-jam.workers.dev"
 
 [node name="HostButton" type="Button" parent="Margin/Layout/Content/SessionPanel/SessionControls" unique_id=914688116]
 unique_name_in_owner = true
