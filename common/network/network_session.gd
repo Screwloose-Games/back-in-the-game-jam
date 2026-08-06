@@ -41,6 +41,20 @@ enum State {
 const SESSION_CODE_ALPHABET := "ABCDEFGHJKLMNPQRSTUVWXYZ23456789"
 const SESSION_CODE_LENGTH := 6
 const WEBRTC_SESSION_SCRIPT := preload("res://common/network/webrtc_session.gd")
+
+# STUN lets WebRTC discover each player's public NAT mapping.
+# It helps direct peer connections across ordinary home routers.
+# This is not TURN: no gameplay data is relayed through Cloudflare here.
+# CF's is free and public.
+const ICE_SERVERS: Array[Dictionary] = [
+	{
+		"urls":
+		[
+			"stun:stun.cloudflare.com:3478",
+		],
+	},
+]
+
 var _signaling_client: SignalingClient
 # One direct connection exists for a two-player session.
 var _webrtc_session
@@ -253,9 +267,9 @@ func _start_webrtc() -> void:
 	_webrtc_session.packet_received.connect(_on_webrtc_packet_received)
 	_webrtc_session.diagnostic.connect(_on_webrtc_diagnostic)
 
-	# Empty ICE servers are enough for our initial same-machine browser test.
-	# STUN configuration comes in the following batch.
-	var ice_servers: Array[Dictionary] = []
+	# Both roles receive the same STUN configuration before generating ICE
+	# candidates. The signaling server will relay those candidates, but not gameplay data.
+	var ice_servers: Array[Dictionary] = ICE_SERVERS
 	var result: Error = OK
 
 	if _role == Role.HOST:
