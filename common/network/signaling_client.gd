@@ -41,9 +41,9 @@ func _ready() -> void:
 
 
 func connect_to_session(
-		base_url: String,
-		session_code: String,
-		role: Role,
+	base_url: String,
+	session_code: String,
+	role: Role,
 ) -> Error:
 	# Avoid silently abandoning a live or closing session.
 	if _socket != null:
@@ -62,11 +62,14 @@ func connect_to_session(
 
 	# THe route matches the signaling server endpoints
 	var role_path := "host" if role == Role.HOST else "join"
-	_session_url = "%s/sessions/%s/%s" % [
-		normalized_base_url,
-		normalized_code,
-		role_path,
-	]
+	_session_url = (
+		"%s/sessions/%s/%s"
+		% [
+			normalized_base_url,
+			normalized_code,
+			role_path,
+		]
+	)
 	_socket = WebSocketPeer.new()
 	_has_opened = false
 
@@ -91,11 +94,14 @@ func send_relay_message(message_type: StringName, payload: Dictionary) -> Error:
 		return ERR_INVALID_PARAMETER
 
 	# This matches the signaling server shape
-	var json_text := JSON.stringify(
-		{
-			"type": message_type,
-			"payload": payload,
-		},
+	var json_text := (
+		JSON
+		. stringify(
+			{
+				"type": message_type,
+				"payload": payload,
+			},
+		)
 	)
 
 	# send_text() explicitly produces a WebSocket text frame, which is what our
@@ -171,9 +177,11 @@ func _report_closed_socket() -> void:
 	if _has_opened:
 		connection_closed.emit(close_code, close_reason)
 	else:
-		connection_failed.emit(
-			"WebSocket did not open. Code: %d. Reason: %s"
-			% [close_code, close_reason],
+		(
+			connection_failed
+			. emit(
+				"WebSocket did not open. Code: %d. Reason: %s" % [close_code, close_reason],
+			)
 		)
 
 	_has_opened = false

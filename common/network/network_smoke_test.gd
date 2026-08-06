@@ -97,9 +97,12 @@ func _on_join_pressed() -> void:
 	var session_code := _session_code_input.text.strip_edges().to_upper()
 	_session_code_input.text = session_code
 
-	var result: Error = _network_session.join(
-		_signaling_endpoint_input.text,
-		session_code,
+	var result: Error = (
+		_network_session
+		. join(
+			_signaling_endpoint_input.text,
+			session_code,
+		)
 	)
 
 	if result != OK:
@@ -320,10 +323,10 @@ func _direction_for_key(keycode: Key) -> Vector2i:
 			return Vector2i.ZERO
 
 
-func _move_on_grid(position: Vector2i, direction: Vector2i) -> Vector2i:
+func _move_on_grid(pos: Vector2i, direction: Vector2i) -> Vector2i:
 	return Vector2i(
-		clampi(position.x + direction.x, 0, GRID_COLUMNS - 1),
-		clampi(position.y + direction.y, 0, GRID_ROWS - 1),
+		clampi(pos.x + direction.x, 0, GRID_COLUMNS - 1),
+		clampi(pos.y + direction.y, 0, GRID_ROWS - 1),
 	)
 
 

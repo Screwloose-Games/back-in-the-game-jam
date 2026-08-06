@@ -7,12 +7,12 @@ extends Node
 
 signal state_changed(new_state: int, description: String)
 signal host_started(session_code: String)
-signal peer_available()
+signal peer_available
 signal signaling_message_received(message: Dictionary)
 signal session_failed(description: String)
 signal session_closed(close_code: int, reason: String)
 # The game layer will eventually begin state/input exchange after this.
-signal direct_connection_opened()
+signal direct_connection_opened
 # Application bytes received from the one remote peer. Their schema belongs to
 # the game layer, never the Worker or this session lifecycle coordinator.
 signal game_packet_received(packet: PackedByteArray)
@@ -133,15 +133,16 @@ func _connect_to_signaling(signaling_base_url: String) -> Error:
 	_set_state(State.CONNECTING_SIGNALING, "Connecting to signaling service")
 
 	var signaling_role := (
-			SignalingClient.Role.HOST
-			if _role == Role.HOST
-			else SignalingClient.Role.CLIENT
+		SignalingClient.Role.HOST if _role == Role.HOST else SignalingClient.Role.CLIENT
 	)
 
-	var result := _signaling_client.connect_to_session(
-		signaling_base_url,
-		_session_code,
-		signaling_role,
+	var result := (
+		_signaling_client
+		. connect_to_session(
+			signaling_base_url,
+			_session_code,
+			signaling_role,
+		)
 	)
 
 	if result != OK:
@@ -281,7 +282,7 @@ func _on_signaling_protocol_error(description: String) -> void:
 	_fail(description)
 
 
-func _set_state(new_state: int, description: String) -> void:
+func _set_state(new_state: State, description: String) -> void:
 	_state = new_state
 	state_changed.emit(_state, description)
 
@@ -306,9 +307,12 @@ func _generate_session_code() -> String:
 	var generated_code := ""
 
 	for index in SESSION_CODE_LENGTH:
-		var alphabet_index := _random.randi_range(
-			0,
-			SESSION_CODE_ALPHABET.length() - 1,
+		var alphabet_index := (
+			_random
+			. randi_range(
+				0,
+				SESSION_CODE_ALPHABET.length() - 1,
+			)
 		)
 		generated_code += SESSION_CODE_ALPHABET.substr(alphabet_index, 1)
 

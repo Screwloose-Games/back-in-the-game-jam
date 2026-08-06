@@ -7,7 +7,7 @@ extends Node
 ## through the existing signaling service.
 
 signal relay_message_ready(message_type: StringName, payload: Dictionary)
-signal connection_opened()
+signal connection_opened
 signal connection_failed(description: String)
 # Raw application bytes received over the direct WebRTC data channel.
 signal packet_received(packet: PackedByteArray)
@@ -95,8 +95,7 @@ func close_connection() -> void:
 func send_packet(packet: PackedByteArray) -> Error:
 	# Transport deliberately accepts bytes only. Packet meaning belongs to the
 	# game or prototype layer above WebRTCSession.
-	if _data_channel == null \
-			or _data_channel.get_ready_state() != WebRTCDataChannel.STATE_OPEN:
+	if _data_channel == null or _data_channel.get_ready_state() != WebRTCDataChannel.STATE_OPEN:
 		return ERR_UNAVAILABLE
 
 	return _data_channel.put_packet(packet)
@@ -110,9 +109,11 @@ func _process(_delta: float) -> void:
 
 	# A usable gameplay channel (not merely ICE connection) is our definition
 	# of “connected” for the game layer.
-	if _data_channel != null \
-			and _data_channel.get_ready_state() == WebRTCDataChannel.STATE_OPEN \
-			and not _connection_reported_open:
+	if (
+		_data_channel != null
+		and _data_channel.get_ready_state() == WebRTCDataChannel.STATE_OPEN
+		and not _connection_reported_open
+	):
 		_connection_reported_open = true
 		connection_opened.emit()
 
@@ -124,8 +125,7 @@ func _process(_delta: float) -> void:
 
 
 func _read_available_packets() -> void:
-	if _data_channel == null \
-			or _data_channel.get_ready_state() != WebRTCDataChannel.STATE_OPEN:
+	if _data_channel == null or _data_channel.get_ready_state() != WebRTCDataChannel.STATE_OPEN:
 		return
 
 	while _data_channel.get_available_packet_count() > 0:
@@ -145,7 +145,7 @@ func _create_peer(ice_servers: Array[Dictionary]) -> Error:
 		return ERR_UNAVAILABLE
 
 	# STUN/TURN configuration belongs to the caller, not this reusable class.
-	var result: Error = _peer.initialize({ "iceServers": ice_servers })
+	var result: Error = _peer.initialize({"iceServers": ice_servers})
 	if result != OK:
 		_peer = null
 		_fail("Could not initialize WebRTC. Error: %d" % result)
@@ -173,10 +173,13 @@ func _apply_remote_description(description_type: String, payload: Dictionary) ->
 	var result: Error = _peer.set_remote_description(description_type, sdp)
 	if result != OK:
 		_fail(
-			"Could not apply the remote %s. Error: %d" % [
-				description_type,
-				result,
-			],
+			(
+				"Could not apply the remote %s. Error: %d"
+				% [
+					description_type,
+					result,
+				]
+			),
 		)
 		return
 
@@ -203,33 +206,42 @@ func _on_session_description_created(description_type: String, sdp: String) -> v
 	var result: Error = _peer.set_local_description(description_type, sdp)
 	if result != OK:
 		_fail(
-			"Could not set the local %s. Error: %d" % [
-				description_type,
-				result,
-			],
+			(
+				"Could not set the local %s. Error: %d"
+				% [
+					description_type,
+					result,
+				]
+			),
 		)
 		return
 
-	relay_message_ready.emit(
-		StringName(description_type),
-		{ "sdp": sdp },
+	(
+		relay_message_ready
+		. emit(
+			StringName(description_type),
+			{"sdp": sdp},
+		)
 	)
 
 
 func _on_ice_candidate_created(
-		media: String,
-		index: int,
-		candidate: String,
+	media: String,
+	index: int,
+	candidate: String,
 ) -> void:
 	# Candidates are connection-routing information, never gameplay state.
 	diagnostic.emit("Generated an ICE candidate.")
-	relay_message_ready.emit(
-		&"ice_candidate",
-		{
-			"media": media,
-			"index": index,
-			"candidate": candidate,
-		},
+	(
+		relay_message_ready
+		. emit(
+			&"ice_candidate",
+			{
+				"media": media,
+				"index": index,
+				"candidate": candidate,
+			},
+		)
 	)
 
 
