@@ -24,6 +24,10 @@ const GRID_COLUMNS := 8
 const GRID_ROWS := 6
 const GRID_MARGIN := 42.0
 
+var _network_session
+var _host_grid_position := Vector2i(1, 1)
+var _client_grid_position := Vector2i(6, 4)
+
 @onready var _host_button: Button = %HostButton
 @onready var _join_button: Button = %JoinButton
 @onready var _signaling_endpoint_input: LineEdit = %SignalingEndpointInput
@@ -38,10 +42,6 @@ const GRID_MARGIN := 42.0
 @onready var _move_left_button: Button = %MoveLeftButton
 @onready var _move_down_button: Button = %MoveDownButton
 @onready var _move_right_button: Button = %MoveRightButton
-
-var _network_session
-var _host_grid_position := Vector2i(1, 1)
-var _client_grid_position := Vector2i(6, 4)
 
 
 func _ready() -> void:

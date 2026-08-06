@@ -14,14 +14,14 @@ signal connection_closed(close_code: int, reason: String)
 signal connection_failed(description: String)
 signal protocol_error(description: String)
 
-# The signaling Worker permits only these message categories to be relayed.
-# Game inputs and state snapshots must never use this connection.
-const RELAY_MESSAGE_TYPES := [&"offer", &"answer", &"ice_candidate"]
-
 enum Role {
 	HOST,
 	CLIENT,
 }
+
+# The signaling Worker permits only these message categories to be relayed.
+# Game inputs and state snapshots must never use this connection.
+const RELAY_MESSAGE_TYPES := [&"offer", &"answer", &"ice_candidate"]
 
 # WebSocketPeer is a low-level connection object, not a scene node.
 var _socket: WebSocketPeer
