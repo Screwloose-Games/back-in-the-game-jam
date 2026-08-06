@@ -27,6 +27,7 @@ signal caught(body: Node3D)
 @export var armed: bool = true
 
 var _catch_count: int = 0
+var _sphere: SphereShape3D
 
 
 func _ready() -> void:
@@ -34,13 +35,25 @@ func _ready() -> void:
 	collision_mask = ChaseKnobs.CATCH_MASK
 	monitorable = false
 
-	var sphere := SphereShape3D.new()
-	sphere.radius = catch_radius
+	_sphere = SphereShape3D.new()
+	_sphere.radius = catch_radius
 	var collider := CollisionShape3D.new()
-	collider.shape = sphere
+	collider.shape = _sphere
 	add_child(collider)
 
 	body_entered.connect(_on_body_entered)
+
+
+## Resizes the catch sphere in place.
+##
+## The shape is built once in _ready, so writing catch_radius on its own moves
+## the number and not the sphere - the reach would go on being whatever it was at
+## startup while the panel claimed otherwise. Keeping the shape reference is what
+## makes the slider mean anything mid-chase.
+func set_catch_radius(metres: float) -> void:
+	catch_radius = metres
+	if _sphere != null:
+		_sphere.radius = metres
 
 
 func catch_count() -> int:

@@ -1,4 +1,4 @@
-[gd_scene load_steps=13 format=3]
+[gd_scene load_steps=15 format=3]
 
 [ext_resource type="Script" path="res://prototypes/tentacle_crawler_chaser/tentacle_crawler_chaser_prototype.gd" id="0_root"]
 [ext_resource type="Script" path="res://prototypes/tentacle_crawler_chaser/chase_corridor_generator.gd" id="1_corridors"]
@@ -11,6 +11,8 @@
 [ext_resource type="PackedScene" path="res://prototypes/tentacle_crawler/components/camera/crawler_camera_director.tscn" id="8_camera"]
 [ext_resource type="Script" path="res://prototypes/tentacle_crawler_chaser/chase_debug_draw.gd" id="9_debug"]
 [ext_resource type="Script" path="res://prototypes/tentacle_crawler_chaser/chase_hud.gd" id="10_hud"]
+[ext_resource type="Script" path="res://prototypes/shared/prototype_tuning_panel.gd" id="11_tuning"]
+[ext_resource type="Resource" path="res://prototypes/tentacle_crawler_chaser/chase_settings.tres" id="12_settings"]
 
 ; Copied from object_carrying_prototype.tscn, so the corridors are lit and fogged
 ; exactly as that prototype's chamber is and hauling reads the same. The fog
@@ -34,6 +36,7 @@ fog_depth_end = 10.0
 
 [node name="TentacleCrawlerChaser" type="Node3D"]
 script = ExtResource("0_root")
+settings = ExtResource("12_settings")
 
 [node name="WorldEnvironment" type="WorldEnvironment" parent="."]
 environment = SubResource("Environment_void")
@@ -121,3 +124,15 @@ offset_right = 470.0
 offset_bottom = 270.0
 theme_override_colors/font_color = Color(0.62, 0.74, 0.86, 0.85)
 theme_override_font_sizes/font_size = 14
+
+; Bottom left, sized to its own content: zero width/height offsets plus the
+; bottom-left grow directions make it expand right and upward from the corner,
+; so adding a slider does not need the box resized by hand.
+[node name="Tuning" type="PanelContainer" parent="HUD"]
+anchors_preset = 2
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_left = 16.0
+offset_bottom = -16.0
+grow_vertical = 0
+script = ExtResource("11_tuning")

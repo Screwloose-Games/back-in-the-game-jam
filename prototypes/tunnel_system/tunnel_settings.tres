@@ -1,0 +1,10 @@
+[gd_resource type="Resource" script_class="TunnelSettings" format=3]
+
+[ext_resource type="Script" path="res://prototypes/tunnel_system/tunnel_settings.gd" id="1_cxuny"]
+
+[resource]
+script = ExtResource("1_cxuny")
+view_distance = 60.0
+helmet_lamp_angle = 41.0
+ambient_energy = 0.155
+fog_density = 0.0

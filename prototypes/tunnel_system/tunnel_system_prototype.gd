@@ -15,6 +15,10 @@ extends Node3D
 
 const PLAYER_SCENE := "res://prototypes/navigation/zero_g_player.tscn"
 
+## The optics you can move from the tuning panel, and what SAVE writes back to.
+## Assigned in the .tscn; see _ready for what happens when it is missing.
+@export var settings: TunnelSettings
+
 var network: TunnelNetwork
 
 var _player: ZeroGPlayer
@@ -26,14 +30,22 @@ var _player: ZeroGPlayer
 
 
 func _ready() -> void:
+	# A fresh clone has no tunnel_settings.tres yet, and anyone may delete it. A
+	# bare instance holds exactly the knobs consts, so the fallback is the old
+	# behaviour rather than a crash.
+	if settings == null:
+		settings = TunnelSettings.new()
+		push_warning("No tunnel_settings.tres wired; running on tunnel_knobs.gd defaults.")
+	settings.changed.connect(_apply_settings)
+
 	network = TunnelNetwork.from_scene(_paths_root, _chambers_root)
-	# Before the environment, because set_view_distance reaches into the player's
+	# Before the settings, because _apply_settings reaches into the player's
 	# camera and lamp and there has to be a player for it to reach into.
 	_spawn_player()
-	_apply_environment()
+	_apply_settings()
 	if TunnelKnobs.JUNCTION_BEACONS:
 		_build_beacons()
-	_hud.bind(self, _player)
+	_hud.bind(self, _player, settings)
 	_report()
 
 
@@ -91,12 +103,24 @@ func _reference_up(direction: Vector3) -> Vector3:
 	return Vector3.UP
 
 
-func _apply_environment() -> void:
+## Every live-tunable value, pushed onto the scene.
+##
+## Runs once at startup and again on every change from the tuning panel, so
+## "it took effect while flying" and "it took effect on the next run" are the
+## same code path rather than two that can drift apart.
+##
+## NOTHING IN HERE WRITES BACK TO `settings`. set_view_distance clamps the value
+## it applies without storing the clamp, so this cannot re-enter `changed`.
+func _apply_settings() -> void:
 	var environment := _world_environment.environment
-	environment.ambient_light_energy = TunnelKnobs.AMBIENT_ENERGY
-	environment.fog_density = TunnelKnobs.FOG_DENSITY
+	environment.ambient_light_energy = settings.ambient_energy
+	environment.fog_density = settings.fog_density
 	environment.fog_depth_begin = TunnelKnobs.FOG_DEPTH_BEGIN
-	set_view_distance(TunnelKnobs.FOG_DEPTH_END)
+	set_view_distance(settings.view_distance)
+	set_lamp_angle(settings.helmet_lamp_angle)
+	if _player != null:
+		var lamp := _player.get_node("HeadCamera/HelmetLamp") as SpotLight3D
+		lamp.shadow_enabled = settings.helmet_lamp_shadows
 
 
 ## The player is instantiated and POSITIONED BEFORE being added to the tree, not
@@ -131,12 +155,10 @@ func _spawn_player() -> void:
 	# directory from forking a 200-line controller and its whole movement tuning
 	# table - the movement is meant to feel identical, it is only the optics that
 	# differ. Nothing outside prototypes/tunnel_system/ is modified.
-	# Throw and clip distance are not set here: _apply_environment runs next and
-	# derives both from the one view-distance number, so there is a single owner
-	# and the slider cannot fight the startup values.
-	var lamp := _player.get_node("HeadCamera/HelmetLamp") as SpotLight3D
-	lamp.shadow_enabled = TunnelKnobs.HELMET_LAMP_SHADOWS
-	set_lamp_angle(TunnelKnobs.HELMET_LAMP_ANGLE)
+	# The optics are not set here: _apply_settings runs next and owns every one of
+	# them, so there is a single owner and the sliders cannot fight the startup
+	# values. It also derives throw and clip distance from the one view-distance
+	# number rather than letting three properties disagree.
 
 
 ## An emissive dot at every junction where three or more routes meet.

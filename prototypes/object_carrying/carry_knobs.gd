@@ -5,8 +5,14 @@ extends RefCounted
 ##
 ## Change a number here and re-run the scene. These values are read directly by
 ## the prototype's scripts and pushed onto the scene at startup, so they win
-## over whatever is saved in the .tscn files - there is nothing to tweak in the
-## inspector, and no exported copy of these that could drift out of sync.
+## over whatever is saved in the .tscn files.
+##
+## THIS FILE IS STILL WHERE A DEFAULT LIVES, and there is still no exported copy
+## that could drift out of sync. The few values the tuning panel puts a slider on
+## are overridden by carry_settings.tres, which the SAVE button writes - but that
+## resource declares its defaults AS these consts and takes its slider bounds the
+## same way, so no number is written down twice and RESET means "read this file
+## again". Everything without a slider is read straight from here as before.
 ##
 ## The Movement and Draw Distance regions start out matching the navigation
 ## prototype exactly, so anything that feels different here is the carried

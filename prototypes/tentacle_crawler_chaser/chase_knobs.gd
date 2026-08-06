@@ -4,8 +4,13 @@ extends RefCounted
 ## Every tunable value for the chase prototype, in one place.
 ##
 ## These values are read directly by the prototype's scripts and pushed onto the
-## scene at startup, so they win over whatever is saved in the .tscn files - there
-## is nothing to tweak in the inspector.
+## scene at startup, so they win over whatever is saved in the .tscn files.
+##
+## THIS FILE IS STILL WHERE A DEFAULT LIVES. The few values the tuning panel puts
+## a slider on are overridden by chase_settings.tres, which the SAVE button writes
+## - but that resource declares its defaults AS these consts and takes its slider
+## bounds the same way, so no number is written down twice and RESET means "read
+## this file again". Everything without a slider is read straight from here.
 ##
 ## THE CREATURE SETS THE SCALE OF THE WORLD, and that is the lesson this file was
 ## rewritten around. The first version of this prototype ran the chase through the
