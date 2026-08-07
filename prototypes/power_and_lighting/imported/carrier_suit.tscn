@@ -1,0 +1,42 @@
+[gd_scene load_steps=4 format=3]
+
+[ext_resource type="Script" path="res://prototypes/power_and_lighting/imported/carrier_suit.gd" id="1_controller"]
+[ext_resource type="Material" path="res://prototypes/power_and_lighting/imported/materials/tether_material.tres" id="2_tether"]
+
+[sub_resource type="SphereShape3D" id="SphereShape3D_hull"]
+radius = 0.4
+
+[node name="CarrierSuit" type="CharacterBody3D"]
+collision_layer = 2
+collision_mask = 9
+motion_mode = 1
+script = ExtResource("1_controller")
+
+[node name="HullShape" type="CollisionShape3D" parent="."]
+shape = SubResource("SphereShape3D_hull")
+
+[node name="HeadCamera" type="Camera3D" parent="."]
+current = true
+fov = 75.0
+near = 0.05
+far = 20.0
+
+[node name="HelmetLamp" type="SpotLight3D" parent="HeadCamera"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.14, -0.12, 0)
+light_color = Color(1, 0.96, 0.89, 1)
+light_energy = 3.5
+shadow_enabled = true
+spot_range = 18.0
+spot_angle = 35.0
+spot_attenuation = 1.2
+spot_angle_attenuation = 0.6
+
+[node name="GrabRay" type="RayCast3D" parent="HeadCamera"]
+target_position = Vector3(0, 0, -2)
+collision_mask = 8
+
+[node name="TetherLine" type="MeshInstance3D" parent="."]
+top_level = true
+cast_shadow = 0
+visible = false
+material_override = ExtResource("2_tether")

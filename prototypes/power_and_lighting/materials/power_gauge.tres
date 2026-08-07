@@ -1,0 +1,24 @@
+[gd_resource type="StandardMaterial3D" format=3]
+
+; The segments of the charge gauge on the cube.
+;
+; Unshaded, and it carries its colour as VERTEX COLOUR so one material serves
+; every segment - lit and spent, green through red - from a single MultiMesh.
+; Godot does not infer vertex_color_use_as_albedo; it is asserted here.
+;
+; Unshaded is load-bearing rather than a look. The whole question the gauge
+; exists to answer is whether you can read the cube's charge across the room with
+; your own lamp failing, and a lit material would answer it with how bright your
+; lamp is instead. Fog is deliberately left ON: distance should still cost you
+; legibility, or the gauge stops being a thing in the room.
+;
+; No emission, deliberately. In unshaded mode Godot writes ALBEDO straight out
+; and never adds EMISSION, so an emission colour here would be a setting that
+; looks like it is doing the work and is not - the segment colours are picked to
+; carry on their own.
+
+[resource]
+resource_name = "PowerGauge"
+shading_mode = 0
+vertex_color_use_as_albedo = true
+albedo_color = Color(1, 1, 1, 1)
