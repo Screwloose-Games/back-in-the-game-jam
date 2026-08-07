@@ -1,7 +1,6 @@
 class_name AsteroidInspectionCamera
 extends Node3D
 
-
 @export var fly_speed: float = 8.0
 @export var fast_multiplier: float = 3.0
 @export var mouse_sensitivity: float = 0.0025
@@ -33,11 +32,14 @@ func _input(event: InputEvent) -> void:
 
 
 func _process(delta: float) -> void:
-	var movement := Vector3(
-		Input.get_axis(&"thrust_left", &"thrust_right"),
-		Input.get_axis(&"thrust_down", &"thrust_up"),
-		Input.get_axis(&"thrust_forward", &"thrust_back")
-	).limit_length(1.0)
+	var movement := (
+		Vector3(
+			Input.get_axis(&"thrust_left", &"thrust_right"),
+			Input.get_axis(&"thrust_down", &"thrust_up"),
+			Input.get_axis(&"thrust_forward", &"thrust_back")
+		)
+		. limit_length(1.0)
+	)
 
 	var current_speed := fly_speed
 	if Input.is_action_pressed(&"stabilize"):
@@ -52,30 +54,20 @@ func go_outside() -> void:
 
 func go_to_entrance() -> void:
 	_teleport_and_look(
-		AsteroidLayout.ENTRANCE_START + Vector3(0.0, 0.0, 2.5),
-		AsteroidLayout.BLUE_ROOM_CENTER
+		AsteroidLayout.ENTRANCE_START + Vector3(0.0, 0.0, 2.5), AsteroidLayout.BLUE_ROOM_CENTER
 	)
 
 
 func go_to_blue_room() -> void:
-	_teleport_and_look(
-		AsteroidLayout.BLUE_ROOM_CENTER,
-		AsteroidLayout.PURPLE_ROOM_CENTER
-	)
+	_teleport_and_look(AsteroidLayout.BLUE_ROOM_CENTER, AsteroidLayout.PURPLE_ROOM_CENTER)
 
 
 func go_to_purple_room() -> void:
-	_teleport_and_look(
-		AsteroidLayout.PURPLE_ROOM_CENTER,
-		AsteroidLayout.CORE_ROOM_CENTER
-	)
+	_teleport_and_look(AsteroidLayout.PURPLE_ROOM_CENTER, AsteroidLayout.CORE_ROOM_CENTER)
 
 
 func go_to_core_room() -> void:
-	_teleport_and_look(
-		AsteroidLayout.CORE_ROOM_CENTER,
-		AsteroidLayout.YELLOW_DEPOSIT_CENTER
-	)
+	_teleport_and_look(AsteroidLayout.CORE_ROOM_CENTER, AsteroidLayout.YELLOW_DEPOSIT_CENTER)
 
 
 func _teleport_and_look(new_position: Vector3, target: Vector3) -> void:
@@ -87,11 +79,7 @@ func _teleport_and_look(new_position: Vector3, target: Vector3) -> void:
 
 func _set_mouse_captured(should_capture: bool) -> void:
 	mouse_captured = should_capture
-	Input.mouse_mode = (
-		Input.MOUSE_MODE_CAPTURED
-		if should_capture
-		else Input.MOUSE_MODE_VISIBLE
-	)
+	Input.mouse_mode = (Input.MOUSE_MODE_CAPTURED if should_capture else Input.MOUSE_MODE_VISIBLE)
 
 
 func _build_toolbar() -> void:
@@ -112,11 +100,7 @@ func _build_toolbar() -> void:
 	_add_toolbar_button(toolbar, "Capture Mouse (Tab)", _toggle_mouse_from_button)
 
 
-func _add_toolbar_button(
-	toolbar: HBoxContainer,
-	button_text: String,
-	callback: Callable
-) -> void:
+func _add_toolbar_button(toolbar: HBoxContainer, button_text: String, callback: Callable) -> void:
 	var button := Button.new()
 	button.text = button_text
 	button.custom_minimum_size = Vector2(92.0, 42.0)
