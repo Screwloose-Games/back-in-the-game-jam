@@ -11,27 +11,58 @@ Your lamp is the only thing you can see by, your lamp runs on the suit battery,
 and the suit battery is refilled by the cube you have to haul around with you.
 This is the prototype for that loop.
 
-## What is currently switched on
+## This prototype is finished
 
-**The cube's lamp.** The prototype answers one question at a time, and the rest is
-switched off in the *What is switched on* region at the top of `power_knobs.gd`.
-The `*_ENABLED` switches decide what runs; the `*_TUNING_ENABLED` ones decide only
-what the panel still offers.
+Nothing is open. Both lamps are settled - how bright, how far, what colour, how
+they fail - both batteries are settled, and the last question, what you are
+allowed to do to your own lamp, came back as an off switch and nothing else. Every
+`*_TUNING_ENABLED` switch is off and the panel is down to the two sets of buttons
+that put the scene somewhere worth looking at.
 
 | Switch | State | What that means |
 |---|---|---|
-| `CUBE_LIGHT_ENABLED` | **on** | The cube lights the room and its faces glow. There are two lights in here now - which is exactly what made the helmet lamp impossible to judge, and exactly why it was judged first. |
-| `CUBE_TUNING_ENABLED` | **on** | `CUBE LAMP` and `CUBE RESPONSE` are on the panel. **This is the step.** |
-| `LAMP_RESPONDS_TO_POWER` | **on** | Both lamps dim and stutter as their battery falls. The suit's answer is settled; the cube's is the open half. |
-| `POWER_ENABLED` | **on** | The suit leaks charge, a clipped tether refills it from the cube, and cranking is the only way to refill the cube. Suit bar, cube gauge and state buttons are up, and `F` is one key doing two verbs. |
+| `LAMP_MODES_ENABLED` | **on** | `1` puts the helmet lamp out and stops the drain with it, `2` brings both back. Nothing to tune: see *The lamp switch*. |
+| `CUBE_LIGHT_ENABLED` | **on** | The cube lights the room and its faces glow. Two lights in here - which is exactly what made the helmet lamp impossible to judge, and exactly why it was judged first. |
+| `LAMP_RESPONDS_TO_POWER` | **on** | Both lamps dim and stutter as their battery falls, and the cube's faces dim with them. Both answers are settled. |
+| `POWER_ENABLED` | **on** | The suit leaks charge while its lamp is on, a clipped tether refills it from the cube, and cranking is the only way to refill the cube. Suit bar, cube gauge and state buttons are up, and `F` is one key doing two verbs. |
+| `CUBE_TUNING_ENABLED` | **off** | The cube's optics and its three curves are settled. |
 | `SUIT_BEAM_TUNING_ENABLED` | **off** | The helmet lamp's shape, and the fog and ambient it is seen through, are settled. |
 | `SUIT_RESPONSE_TUNING_ENABLED` | **off** | So are its dim and flicker curves and its empty throw. |
-| `POWER_TUNING_ENABLED` | **off** | So are the drain and charge rates. **The state buttons are not part of this** and stay up - they are not tuning, they put a battery where you want to look at it, and a lamp being tuned for how it dies needs that more than anything else on the panel. |
+| `POWER_TUNING_ENABLED` | **off** | So are the drain and charge rates. **The state and lamp buttons are not part of this** and stay up - they are not tuning, they put a battery or a lamp where you want to look at it. |
 
-None of it is deleted - the code all still runs, the switches just decide what it
-is allowed to do, and the numbers behind each part are still in `power_knobs.gd`
-under their own regions. Turning any of them back on is one line and nothing else
-has to move.
+The switches stay because the answers are worth being able to re-open one line at
+a time, and because what is switched off is where the reasoning for each answer
+lives. Nothing is deleted; the code all still runs.
+
+## The lamp switch
+
+`1` puts the lamp out. `2` brings it back. On is the settled helmet lamp,
+unchanged in every respect; out is no light and no drain at all.
+
+**Out costs nothing.** The suit battery stops dead while the lamp is out, so
+hiding in the dark is always survivable and the only thing it takes from you is
+being able to see. That is a decision and not a default: the alternative is a life
+support drain that runs whatever the lamp is doing, which makes darkness a delay
+rather than a refuge - and turns the last of a battery into a countdown you cannot
+stop instead of a resource you are choosing how to spend.
+
+### What was cut, and why
+
+This started as **four** settings - off, dimmed, normal and overcharged, each
+buying a different amount of light for a different rate of drain. The middle two
+were built, flown, and cut. They were numbers you could set rather than decisions
+you would make:
+
+- **Overcharged** could only ever buy brightness. `HELMET_LAMP_RANGE` is already
+  exactly `FOG_DEPTH_END`, so light thrown past it lands where the fog has
+  swallowed the room anyway - it buys nothing you can see and costs shadow map
+  precision on everything you can. Brightness alone was not worth 2.2x the drain.
+- **Dimmed** was never worth choosing until you had nearly run out, by which point
+  it is a warning light rather than a choice.
+
+Four settings where one of them is right almost all of the time is not four
+settings; it is one lamp and three traps. What survived is the off switch, because
+it is the only one that changed what you **do** rather than what you see.
 
 ## Tuning the cube
 
@@ -72,10 +103,16 @@ up. Nothing is wired between them; that is the point.
   real setting and the suit uses it: no dropouts at all until the battery is low
   enough to be worth warning about.
 
+- **glow** - the cube only. Charge fraction across, fraction of `CUBE_GLOW` up. It
+  drives the emission on the cube's own faces rather than a light, which is why it
+  lives on the prototype and not on `lamp_power_response.gd`: the colour of that
+  material is already the prototype's, tied to the lamp's hue, and splitting one
+  material between two owners is how the hue and the energy end up a frame apart.
+
 **Nothing is saved, and a curve cannot be read off a label the way a slider can**,
-so each response section has a print button. It prints that lamp's two curves
-formatted as the `Array[Vector2]` constants in `power_knobs.gd`, ready to paste
-over them.
+so each response section has a print button. It prints that lamp's curves - three
+for the cube, two for the suit - formatted as the `Array[Vector2]` constants in
+`power_knobs.gd`, ready to paste over them.
 
 ## What no power looks like
 
@@ -143,6 +180,17 @@ now rather than numbers, so the shape is the answer:
 | `SUIT_FLICKER_POINTS` | silent, then climbing | **Flat zero above about three fifths of a battery.** A healthy suit does not stutter at all, so the first dropout is itself the warning rather than a change in a rate you were already living with. Below that it climbs to 1.5 a second at empty. |
 | `SUIT_LAMP_MIN_RANGE_METRES` | 14 m | What a flat suit still shows you. Stored in metres, not as a fraction, because metres are what was judged. |
 
+And from the cube pass, in *Cube optics* and the three `CUBE_*` point lists:
+
+| Knob | Value | |
+|---|---|---|
+| `CUBE_LIGHT_ENERGY` / `CUBE_LIGHT_RANGE` | 2.0 / 16 m | Kept under the 30 m you can see, so a full cube lights the room out to about where the fog closes in anyway. |
+| `CUBE_LIGHT_COLOR` | cool blue | Against the helmet lamp's warm white, so which light you are seeing by is never in question - which matters most exactly when the suit is nearly out and the two are comparable. |
+| `CUBE_GLOW` | 1.0 | The top of the glow curve now, not a fixed level. |
+| `CUBE_DIM_POINTS` | the suit's shape, darker floor | A flat cube is left with less than a flat suit is, but it recovers most of its brightness in the first few percent of a crank - so cranking a dead cube shows you something on the first turn of the handle rather than the tenth. |
+| `CUBE_GLOW_POINTS` | sags earlier than the lamp | The faces are already down to a third when the lamp still holds four fifths, so a cube across the room announces its own trouble before the light it casts does. The glow is the early warning and the lamp is the late one. |
+| `CUBE_FLICKER_POINTS` + `CUBE_FLICKER_SCALE` | the suit's, pushed later and run at 0.7x | **The cube is the more stubborn of the two.** At a fifth of a battery it drops out at under half the suit's rate. Two lights failing at visibly different speeds is what lets you tell which one is in trouble without looking at either gauge. |
+
 And from the power pass, in *Suit power* and *Cube power*:
 
 | Knob | Value | |
@@ -158,10 +206,19 @@ rather than a penance. Whatever cranking is supposed to cost has to come from th
 animation and from having to stop and do it, because it is not coming from the
 rate.
 
+And from the lamp pass, in *Lamp modes*:
+
+| Knob | Value | |
+|---|---|---|
+| `LAMP_MODE_NAMES` | off, on | Two settings, not four. See *The lamp switch* for what dimmed and overcharged were and why they were cut. |
+| `LAMP_START_MODE` | on | The prototype opens on the lamp every earlier stage was judged against. |
+| off's drain | 0.0 | **The whole of the decision.** The battery stops dead while the lamp is out, so the dark is a refuge rather than a delay. One number away from the opposite. |
+
 ## Controls
 
 | Key | Does |
 |---|---|
+| `1` / `2` | Helmet lamp out / on. Out drains nothing. |
 | `WASD` | Thrust along the suit's own axes |
 | `Space` / `Ctrl` | Thrust up / down |
 | `Q` / `E` | Roll |
@@ -186,37 +243,29 @@ knowing before you decide the split is wrong:
 
 ## The panel
 
-Only the sections whose feature is switched on are built, so the panel is
-currently the state buttons, `CUBE LAMP` and `CUBE RESPONSE`.
+Only the sections whose feature is switched on are built, so the panel is now down
+to two sets of buttons: the state buttons and `LAMP`.
 
 **`JUMP TO A STATE`** matters as much as the sliders: suit to 10%, suit empty,
-cube empty, refill both. `Cube empty` is the one this step is about - it puts you
-straight into the state being tuned instead of hauling the cube around until it
-gets there.
+cube empty, refill both, and a `set cube to` slider for the fractions between
+them. That slider is **one-way** like the buttons beside it - it puts the cube
+where you want it and does not follow it afterwards, so cranking leaves it reading
+where you last left it. The live number is the HUD's `cube` line.
 
-**`CUBE LAMP`** is brightness, throw, distance falloff, hue, saturation, glow, and
-a shadows toggle. Brightness reaches zero and glow reaches zero, so "a cube that
-carries power without lighting anything" and "a cube you can only see when
-something else lights it" are both reachable and can be rejected rather than
-assumed away. Throw runs past the view distance, so "the cube lights further than
-you can see" can be too. Its saturation goes all the way where the helmet lamp's
-stops at 0.6 - a helmet lamp with a colour is a broken helmet lamp, but the cube's
-whole job is to be told apart from it across a dark room.
-
-**`CUBE RESPONSE`** is the same section the suit had: two curve editors, a flicker
-rate, an empty throw, and a print button. **Flicker rate is per lamp now**, not
-one multiplier over both - each lamp has its own curve, and silencing one to look
-at the other is exactly the comparison worth keeping.
+**`LAMP`** is two buttons and nothing else, because there is nothing here to tune:
+on is the settled helmet lamp and out is the absence of it. They do what `1` and
+`2` do, for when the mouse is already free.
 
 Everything settled is gone from the panel; see *What is locked in*. `BEAM` and
 `ROOM` come back with `SUIT_BEAM_TUNING_ENABLED`, the suit's curves with
-`SUIT_RESPONSE_TUNING_ENABLED`, the rate sliders with `POWER_TUNING_ENABLED`.
+`SUIT_RESPONSE_TUNING_ENABLED`, `CUBE LAMP` and `CUBE RESPONSE` with
+`CUBE_TUNING_ENABLED`, the rate sliders with `POWER_TUNING_ENABLED`.
 
-**The panel scrolls.** Two sections and two curve editors come to about 850 px
-against the 404 px the 1280x720 window leaves above the panel's corner, so the
-column sits in a scroll view capped at whatever room is on screen - and grows back
-to hugging its content when there is room for all of it. Use the wheel; the panel
-refuses keyboard focus on purpose, so there is no other way in.
+**The panel scrolls.** With the cube sections up it comes to about 850 px against
+the 404 px the 1280x720 window leaves above the panel's corner, so the column sits
+in a scroll view capped at whatever room is on screen - and grows back to hugging
+its content when there is room for all of it. Use the wheel; the panel refuses
+keyboard focus on purpose, so there is no other way in.
 
 The wheel works over the sliders and the curve editors, not only over the gaps
 between them, and it does not nudge a slider on the way past. That takes two
@@ -240,8 +289,9 @@ precision is spent past it.
 They are separate stores with separate rules, and none of the rules live in the
 batteries themselves - see `power_system.gd`.
 
-- **The suit** holds a little and leaks constantly, cube or no cube. About three
-  minutes from full at the default drain.
+- **The suit** holds a little and leaks whenever its lamp is on, cube or no cube.
+  33 seconds from full. With the lamp out it does not leak at all - see *The lamp
+  switch*.
 - **The cube** holds about six suits' worth and leaks nothing. It loses power
   only through what it hands the suit.
 - **The tether is the only charge link.** Clip on with `T` and the suit draws
@@ -264,45 +314,43 @@ As a battery falls its lamp does two separate things:
   rather than how deep they are, because a light that fails deeper as it drains
   just looks like the dimming that is already happening.
 
+The cube does a third thing: its **faces dim on their own curve**, ahead of the
+lamp. See `CUBE_GLOW_POINTS` in *What is locked in*.
+
 The cube also carries its charge on its outside: eight segments, on all four
 vertical faces, unshaded so they stay legible when your own lamp has gone. That
 gauge exists to answer whether you can read the cube from across the room in fog
 without a HUD element telling you - so if it is unreadable, that is the finding,
 not a bug.
 
-## Questions it exists to answer
+## What it answered
 
-With the cube lighting the room, these are the ones on the table:
+Everything it was built to. In *What is locked in*: the helmet lamp's shape,
+brightness, colour and shadows; how far you can see and what the fog does to it;
+how both lamps dim and stutter as their batteries fall; what the cube looks like
+and how it dies; every capacity, drain and charge rate. And last, that the lamp
+wants an off switch and does not want a dial.
 
-- **Should the cube light the room at all?** A second light source is what made
-  the first one hard to judge, and the honest answer might be that the cube is
-  something you haul in the dark. Brightness reaches zero so that answer is one
-  drag away.
-- How far should it reach, against the 30 m you can see? A cube lighting further
-  than the fog allows is a cube spending power on nothing.
-- What colour, and how saturated? It has to be told from the helmet lamp at a
-  glance across a dark room, and it also has to not look like a different game.
-- Should the cube glow, and how much? A dark box in the middle of a room it is
-  lighting is wrong; a lantern you cannot look at is wrong the other way.
-- **How does a cube die?** Same question as the suit, and it need not have the
-  same answer - a bigger, dumber box could plausibly be more stubborn, failing
-  later and harder.
-- Two lamps stuttering on different schedules: does that read as two failing
-  lights, or as one broken renderer?
-
-Already answered, in *What is locked in*: everything about the helmet lamp, how
-far you can see, every drain and charge rate.
-
-Still open, and not on the panel:
+**What it did not answer, and what a real build would have to.**
 
 - Can you tell the cube's charge from its own gauge, at range, in fog, with a
-  failing lamp - or do you end up flying over to read it?
+  failing lamp - or do you end up flying over to read it? The gauge exists to test
+  exactly this and it was never put under pressure.
+- **The cube's light barely survives the fog.** `FOG_DEPTH_END` is 30 m with a
+  near-black fog colour, so a surface at 20 m keeps well under half of whatever is
+  lighting it. Your own lamp never shows this because it only ever lights what is
+  near you; the cube's light lands on the far half of the room and most of it is
+  erased. GL Compatibility has no volumetric fog, so the air will never glow near
+  a light - the options are a thinner fog, a brighter cube, or a billboard halo on
+  the cube itself. None was taken here.
 - Should the cube cost something to run? `CUBE_IDLE_DRAIN_PER_SECOND` has never
   been anything but zero.
+- Cranking is a placeholder. It is faster than the tether, which makes it a way out
+  of trouble rather than a penance, and whatever it is supposed to cost has to come
+  from an animation that does not exist yet.
 
-Drag the sliders while flying rather than guessing, and use `Cube empty` rather
-than waiting for it. **Nothing the panel does is saved.** Print the curves and
-read the rest off the labels.
+**Nothing the panel does is saved.** The curve print buttons are how a shape leaves
+a session; everything else reads off a label.
 
 ## Layout
 

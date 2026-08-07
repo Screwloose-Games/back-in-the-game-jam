@@ -14,6 +14,12 @@ extends Control
 
 const FRAME_COLOR := Color(0.62, 0.74, 0.86, 0.5)
 const BACKING_COLOR := Color(0.04, 0.05, 0.07, 0.7)
+
+## The fill at full charge and at empty. The bar's own rather than the cube
+## gauge's pair in PowerKnobs, because the two readouts are meant to be told apart
+## on sight and the cube's went yellow to sit against its blue lamp.
+const FILL_FULL_COLOR := Color(0.45, 0.95, 0.75)
+const FILL_EMPTY_COLOR := Color(1.0, 0.32, 0.22)
 const FRAME_THICKNESS := 1.0
 const PADDING := 2.0
 
@@ -77,8 +83,8 @@ func set_charging(charging: bool) -> void:
 
 func _pick_fill_color() -> Color:
 	if _charging:
-		return PowerKnobs.GAUGE_FULL_COLOR
-	var color := PowerKnobs.GAUGE_EMPTY_COLOR.lerp(PowerKnobs.GAUGE_FULL_COLOR, _fraction)
+		return FILL_FULL_COLOR
+	var color := FILL_EMPTY_COLOR.lerp(FILL_FULL_COLOR, _fraction)
 	if _fraction >= ALARM_FRACTION:
 		return color
 	var pulse := 0.5 + 0.5 * sin(_elapsed * TAU * ALARM_RATE)

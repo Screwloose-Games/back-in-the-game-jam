@@ -16,6 +16,12 @@ extends RefCounted
 ## after. Movement, the grip, the tether and the chamber are still that file's;
 ## everything you can see by is this one's.
 
+## The helmet lamp's two settings, in the order the number keys select them.
+##
+## Declared above every constant because gdlint enforces it - see
+## .claude/rules/gdscript-style.md - not because it outranks the switches below.
+enum LampMode { OFF, ON }
+
 #region What is switched on
 #
 # The prototype answers one question at a time, and everything that answers a
@@ -23,10 +29,15 @@ extends RefCounted
 # it is wanted back, and the numbers behind each part are still in their own
 # regions below.
 #
-# THE QUESTION NOW IS THE CUBE'S LAMP: the same questions the helmet lamp has
-# already answered - how bright, how far, what colour, what shadows - and then how
-# it fails, which the helmet lamp has answered too. Everything about the suit's
-# light is settled and off the panel.
+# NOTHING IS OPEN. This prototype is finished: both lamps are settled - how
+# bright, how far, what colour, how they fail - both batteries are settled, and the
+# last question, what you are allowed to do to your own lamp, came back as an off
+# switch and nothing else. Every *_TUNING_ENABLED switch below is off and the panel
+# is down to the two sets of buttons that put the scene somewhere worth looking at.
+#
+# The switches stay because the answers are worth being able to re-open one line at
+# a time, and because what is switched off is where the reasoning for each answer
+# lives.
 #
 # The *_ENABLED switches decide what runs. The *_TUNING_ENABLED ones decide only
 # what the panel still offers, and turning one off is how an answered question
@@ -62,9 +73,23 @@ const SUIT_BEAM_TUNING_ENABLED := false
 ## the two SUIT point lists and SUIT_LAMP_MIN_RANGE_METRES are the answer.
 const SUIT_RESPONSE_TUNING_ENABLED := false
 
-## Whether the panel offers the cube's lamp: its optics and its two curves. ON.
-## This is the step.
-const CUBE_TUNING_ENABLED := true
+## Whether the panel offers the cube's lamp: its optics and its three curves. OFF
+## - the Cube optics region and the three CUBE point lists are the answer.
+##
+## The glow curve was the last thing this opened for, and the shape it reached is
+## the one worth reading first: the faces sag further and faster than the lamp
+## does, so the cube announces its own trouble before the light it casts does.
+const CUBE_TUNING_ENABLED := false
+
+## Whether the helmet lamp can be switched off, rather than being a lamp that is
+## always on until it dies.
+##
+## ON, and it is the last thing this prototype added. `1` puts the lamp out and
+## stops the drain with it, `2` brings both back - so how long a charge lasts stops
+## being a property of the suit and becomes something you are spending. There is
+## nothing to tune: see the Lamp modes region for the two settings that are left
+## and the two that were cut.
+const LAMP_MODES_ENABLED := true
 
 ## Whether the panel still offers the drain and charge rates. OFF - the Suit power
 ## and Cube power regions are settled.
@@ -276,12 +301,18 @@ const SUIT_DIM_POINTS: Array[Vector2] = [
 	Vector2(1.000, 1.000),
 ]
 
-## The cube's, still a seed rather than an answer - CUBE_TUNING_ENABLED has this
-## one on the panel.
+## The cube's. SETTLED, and no longer on the panel.
+##
+## The suit's shape with a DARKER FLOOR and a steeper climb out of it: a flat cube
+## is left with less than a flat suit is, but it recovers most of its brightness in
+## the first few percent of a crank. Cranking a dead cube should show you something
+## for the first turn of the handle rather than for the tenth.
 const CUBE_DIM_POINTS: Array[Vector2] = [
-	Vector2(0.0, 0.08),
-	Vector2(0.5, 0.48),
-	Vector2(1.0, 1.0),
+	Vector2(0.000, 0.071),
+	Vector2(0.077, 0.512),
+	Vector2(0.290, 0.810),
+	Vector2(0.751, 1.000),
+	Vector2(1.000, 1.000),
 ]
 
 ## How far the helmet lamp still throws on a flat battery, in metres.
@@ -339,14 +370,28 @@ const SUIT_FLICKER_POINTS: Array[Vector2] = [
 	Vector2(1.000, 0.000),
 ]
 
-## The cube's schedule, still a seed. Slower at both ends on the guess that the
-## cube is a bigger, dumber box and should read as more stubborn than the suit -
-## which is exactly the sort of guess CUBE_TUNING_ENABLED exists to settle.
+## The cube's schedule. SETTLED, and no longer on the panel.
+##
+## THE CUBE IS THE MORE STUBBORN OF THE TWO, which was the guess and is now the
+## answer. Its curve is the suit's pushed left - it holds off stuttering until a
+## lower charge - and then run at CUBE_FLICKER_SCALE on top, so at a fifth of a
+## battery it drops out at under half the suit's rate. Two lights failing at
+## visibly different speeds is what lets you tell which one is in trouble without
+## looking at either gauge.
 const CUBE_FLICKER_POINTS: Array[Vector2] = [
-	Vector2(0.0, 0.63),
-	Vector2(0.5, 0.06),
-	Vector2(1.0, 0.03),
+	Vector2(0.000, 1.500),
+	Vector2(0.098, 0.750),
+	Vector2(0.269, 0.250),
+	Vector2(0.619, 0.000),
+	Vector2(1.000, 0.000),
 ]
+
+## Multiplier over the whole of the curve above, as the cube starts. Below 1.0,
+## so the cube's schedule is the suit's shape run SLOWER rather than a different
+## shape - the stubbornness is in the rate, and the curve stays comparable to the
+## suit's point for point. The suit has no equivalent because the suit's curve is
+## settled at the rate it is drawn.
+const CUBE_FLICKER_SCALE := 0.7
 
 ## Top of the flicker curve's axis, in dropouts per second. At three a second the
 ## lamp is down about a quarter of the time, which is as far as a failing lamp can
@@ -369,10 +414,11 @@ const FLICKER_RANDOM_SEED := 20260803
 
 #region Cube optics
 #
-# What the cube's lamp looks like at FULL charge, and the open question. These are
-# the same decisions the Suit optics region already records for the helmet lamp,
-# asked again for a light that is carried rather than worn - and asked with the
-# helmet lamp settled beside it, which is the whole reason it went first.
+# What the cube's lamp looks like at FULL charge. SETTLED, and no longer on the
+# panel. These are the same decisions the Suit optics region records for the
+# helmet lamp, asked again for a light that is carried rather than worn - and
+# asked with the helmet lamp settled beside it, which is the whole reason it went
+# first.
 
 ## Colour of the cube's lamp, and of the glow on the cube's own faces. One value
 ## feeds both, so the thing you are hauling always looks like the source of the
@@ -397,10 +443,36 @@ const CUBE_LIGHT_RANGE := 16.0
 ## How sharply the cube's lamp falls off across its range.
 const CUBE_LIGHT_ATTENUATION := 1.0
 
-## How brightly the cube's own faces glow. Throws no light on anything - the lamp
-## does that - it only keeps the cube from reading as a dark box sitting in the
-## middle of a room it is supposed to be lighting.
-const CUBE_GLOW := 1.6
+## How brightly the cube's own faces glow AT FULL CHARGE. Throws no light on
+## anything - the lamp does that - it only keeps the cube from reading as a dark
+## box sitting in the middle of a room it is supposed to be lighting.
+##
+## The top of a range now rather than a fixed value: CUBE_GLOW_POINTS scales it by
+## charge, the same way CUBE_DIM_POINTS scales CUBE_LIGHT_ENERGY.
+const CUBE_GLOW := 1.0
+
+## The cube's glow curve: charge fraction across, fraction of CUBE_GLOW up.
+##
+## A SEPARATE CURVE FROM THE DIM ONE, which is the question it exists to ask. The
+## faces and the lamp are two readings of the same battery and they do not have to
+## fall together: a cube whose glow outlives its lamp is still findable across a
+## dark room after it has stopped lighting anything, and a cube whose glow dies
+## first goes dark in your hands while the room it is lighting does not. Both are
+## reachable from here and neither is assumed.
+##
+## IT SAGS FURTHER AND FASTER THAN THE DIM CURVE, which is the answer this stage
+## reached. The lamp holds four fifths of its brightness down to a third of a
+## battery while the faces are already down to a third of theirs - so a cube
+## across the room reads as being in trouble well before the light it is casting
+## does. The glow is the early warning and the lamp is the late one.
+const CUBE_GLOW_POINTS: Array[Vector2] = [
+	Vector2(0.000, 0.071),
+	Vector2(0.178, 0.190),
+	Vector2(0.325, 0.369),
+	Vector2(0.479, 0.750),
+	Vector2(0.751, 1.000),
+	Vector2(1.000, 1.000),
+]
 
 ## Whether the cube's lamp casts shadows.
 const CUBE_LIGHT_SHADOWS := true
@@ -426,15 +498,56 @@ const GAUGE_SEGMENT_GAP := 0.022
 ## not z-fight with the face it is mounted on.
 const GAUGE_SURFACE_OFFSET := 0.004
 
-## Colour of a lit segment at full charge, and at empty. The gauge goes from cool
-## to alarm on its own, so the cube says how it is doing even in a frame where
+## Colour of a lit segment at full charge, and at empty. The gauge walks from one
+## to the other on its own, so the cube says how it is doing even in a frame where
 ## its lamp happens to be mid-dropout.
-const GAUGE_FULL_COLOR := Color(0.45, 0.95, 0.75)
+##
+## YELLOW AT FULL, against the cube's blue lamp and the bloom around it. A readout
+## the same hue as the light coming off the box it is mounted on is a readout you
+## have to hunt for, and this one has to be read across a room. It is also what
+## tells the cube's gauge apart from the suit's bar at a glance - PowerBar keeps
+## its own green, and telling the two readouts apart is the point of both.
+const GAUGE_FULL_COLOR := Color(1.0, 0.82, 0.18)
 const GAUGE_EMPTY_COLOR := Color(1.0, 0.32, 0.22)
 
 ## Colour of a spent segment. Dim rather than black, so the gauge still reads as
 ## a gauge with a length when it is nearly empty rather than as one floating dot.
 const GAUGE_UNLIT_COLOR := Color(0.1, 0.12, 0.15)
+#endregion
+
+#region Lamp modes
+#
+# The helmet lamp is a switch. ON is the settled lamp in the Suit optics region,
+# unchanged in every respect. OFF is no light and no drain at all.
+#
+# THIS STARTED AS FOUR SETTINGS - off, dimmed, normal and overcharged, each buying
+# a different amount of light for a different rate of drain - and the middle two
+# were cut after being flown. They were numbers you could set rather than decisions
+# you would make. Overcharged could only buy brightness, because HELMET_LAMP_RANGE
+# is already exactly FOG_DEPTH_END and light thrown past that lands where the fog
+# has swallowed the room anyway. Dimmed was never worth choosing until you had
+# nearly run out, by which point it is a warning light rather than a choice. Four
+# settings where one of them is right almost all of the time is not four settings;
+# it is one lamp and three traps.
+#
+# WHAT SURVIVED IS THE OFF SWITCH, because it is the only one that changed what you
+# do rather than what you see.
+#
+# OFF COSTS NOTHING AT ALL: the suit battery stops dead while the lamp is out, so
+# hiding in the dark is always survivable and the only thing it takes from you is
+# being able to see. That is a decision and not a default. The alternative is a
+# life support drain that runs whatever the lamp is doing, which makes darkness a
+# delay rather than a refuge - and turns the last of a battery into a countdown you
+# cannot stop instead of a resource you are choosing how to spend.
+
+## Names, in enum order. The HUD's lamp line and the panel's buttons read from
+## here, so a setting cannot end up called one thing in one place and another in
+## the other.
+const LAMP_MODE_NAMES: Array[String] = ["off", "on"]
+
+## Which setting the suit starts in. ON, so the prototype opens on the lamp every
+## earlier stage was judged against.
+const LAMP_START_MODE := LampMode.ON
 #endregion
 
 #region Cranking

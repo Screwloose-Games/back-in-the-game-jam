@@ -35,6 +35,8 @@ const GRIP_LEGEND_UNPOWERED := "F grab-release"
 
 const LINK_LEGEND := "T clip-unclip tether  TAB respawn  ESC free mouse"
 
+const MODE_LEGEND := "1 lamp out  2 lamp on"
+
 ## Nothing within reach.
 const CROSSHAIR_IDLE_COLOR := Color(0.78, 0.88, 1, 0.55)
 ## Something grabbable under the crosshair.
@@ -122,6 +124,11 @@ func _refresh() -> void:
 			)
 		)
 		lines.append("cube   %3.0f%%%s" % [_cube_store.get_fraction() * 100.0, _describe_crank()])
+	if PowerKnobs.LAMP_MODES_ENABLED:
+		lines.append(_describe_lamp_mode())
+	# Rather than inside the power block, because the lamp line can be the only
+	# thing above it - the modes do not need batteries.
+	if not lines.is_empty():
 		lines.append("")
 	var flight := (
 		"%5.2f m/s  tumble %4.2f rad/s" % [_suit.get_drift_speed(), _suit.angular_velocity.length()]
@@ -140,7 +147,22 @@ func _refresh() -> void:
 		]
 	)
 	lines.append_array(flight_lines)
+	if PowerKnobs.LAMP_MODES_ENABLED:
+		lines.append(MODE_LEGEND)
 	_readout.text = "\n".join(lines)
+
+
+## The lamp's setting AND what it is costing. A name on its own states half of a
+## trade, and the trade is the whole reason the switch is there - a line reading
+## "on" says nothing you did not know when you pressed 2.
+##
+## The drain comes off the store rather than off what the setting was supposed to
+## mean, so it is the number actually being taken out of the battery.
+func _describe_lamp_mode() -> String:
+	var mode_name := _prototype.get_lamp_mode_name()
+	if not PowerKnobs.POWER_ENABLED:
+		return "lamp   %s" % mode_name
+	return "lamp   %-3s  %.2f /s" % [mode_name, _suit_store.idle_drain_per_second]
 
 
 ## Why the rate is what it is. An empty cube on a clipped tether reports

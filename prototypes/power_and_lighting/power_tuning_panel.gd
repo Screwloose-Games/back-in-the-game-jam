@@ -136,15 +136,21 @@ func _build() -> void:
 
 	if PowerKnobs.POWER_ENABLED:
 		_add_section(_build_state_row)
+	if PowerKnobs.LAMP_MODES_ENABLED:
+		_add_section(_build_lamp_mode_section)
 	if PowerKnobs.SUIT_BEAM_TUNING_ENABLED:
 		_add_section(_build_beam_section)
 		_add_section(_build_room_section)
 	if PowerKnobs.LAMP_RESPONDS_TO_POWER and PowerKnobs.SUIT_RESPONSE_TUNING_ENABLED:
-		_add_section(_build_response_section.bind("SUIT", _prototype.get_suit_lamp()))
+		_add_section(_build_response_section.bind("SUIT", _prototype.get_suit_lamp(), null))
 	if PowerKnobs.CUBE_LIGHT_ENABLED and PowerKnobs.CUBE_TUNING_ENABLED:
 		_add_section(_build_cube_lamp_section)
 		if PowerKnobs.LAMP_RESPONDS_TO_POWER:
-			_add_section(_build_response_section.bind("CUBE", _prototype.get_cube_lamp()))
+			_add_section(
+				_build_response_section.bind(
+					"CUBE", _prototype.get_cube_lamp(), _prototype.get_cube_glow_curve()
+				)
+			)
 	if PowerKnobs.POWER_ENABLED and PowerKnobs.POWER_TUNING_ENABLED:
 		_add_section(_build_power_section)
 	_add_section(_build_help)
@@ -204,6 +210,9 @@ func _add_section(builder: Callable) -> void:
 ## that is not there is how a panel starts lying about what it does.
 func _build_help() -> void:
 	var lines := PackedStringArray(["ESC frees the mouse to use this panel."])
+	if PowerKnobs.LAMP_MODES_ENABLED:
+		lines.append("1 puts the lamp out, 2 brings it back.")
+		lines.append("Out drains nothing at all - the dark is free.")
 	if not PowerKnobs.POWER_ENABLED:
 		lines.append("Power is off - both batteries are full and stay full.")
 	elif not PowerKnobs.POWER_TUNING_ENABLED:
@@ -215,6 +224,7 @@ func _build_help() -> void:
 		lines.append("The helmet lamp is settled - judge the cube against it.")
 		lines.append("Hue and glow share a colour, so the cube looks like its own")
 		lines.append("light source rather than a box lit by something else.")
+		lines.append("The glow slider is the top of its curve, not a fixed level.")
 	if PowerKnobs.LAMP_RESPONDS_TO_POWER:
 		lines.append("Click a curve to add a point, drag it, right-click to drop.")
 		lines.append("A dim curve's left end is what an empty battery is left with.")
@@ -233,6 +243,34 @@ func _build_state_row() -> void:
 	_column.add_child(grid)
 	for index: int in STATE_BUTTONS.size():
 		grid.add_child(_state_button(index))
+	# The buttons land on four fixed states; a dim curve is judged at whatever
+	# fraction its next bend happens to sit at, which is what this is for.
+	#
+	# ONE-WAY, like the buttons above it - it puts the cube where you want it and
+	# does not follow it afterwards, so cranking or a clipped tether leaves it
+	# reading where you last left it rather than where the cube now is. Captioned
+	# as an instruction rather than as a readout for that reason: the live number
+	# is the HUD's cube line, and the gauge on the cube itself.
+	_add_slider(
+		"set cube to", 0.0, 1.0, PowerKnobs.CUBE_START_FRACTION, 0.01, _on_cube_charge_changed
+	)
+
+
+## Two buttons and nothing else, because there is nothing here to tune: on IS the
+## settled helmet lamp and off is the absence of it.
+##
+## They are up whenever the switch is, like the state buttons above them and for
+## the same reason - they are not tuning, they put the lamp where you want to look
+## at it. They duplicate `1` and `2` for when the mouse is already free.
+func _build_lamp_mode_section() -> void:
+	_column.add_child(_heading("LAMP"))
+	var grid := GridContainer.new()
+	grid.columns = 2
+	grid.add_theme_constant_override("h_separation", 4)
+	grid.add_theme_constant_override("v_separation", 4)
+	_column.add_child(grid)
+	for mode: int in PowerKnobs.LAMP_MODE_NAMES.size():
+		grid.add_child(_lamp_mode_button(mode))
 
 
 ## The lamp itself: what shape the light is and what colour.
@@ -410,13 +448,22 @@ func _build_cube_lamp_section() -> void:
 ## code too - right down to the print button, which names the constants of
 ## whichever lamp it was built for.
 ##
-## The two curves are handed to the editors LIVE - the editors mutate the same
+## The curves are handed to the editors LIVE - the editors mutate the same
 ## resources the response samples every frame, so a drag shows on the lamp before
 ## the mouse button comes up. Nothing here connects them; that is the point.
-func _build_response_section(label: String, response: LampPowerResponse) -> void:
+##
+## `glow_curve` is the cube's third curve and null for the suit, which has no
+## emissive faces to answer for. It sits directly under the dim curve rather than
+## at the end of the section because the two are read against each other - whether
+## the faces outlive the lamp is a question about the gap between those two
+## shapes, and it is not one you can hold in your head across a scroll.
+func _build_response_section(label: String, response: LampPowerResponse, glow_curve: Curve) -> void:
 	_column.add_child(_heading("%s RESPONSE" % label))
 	_column.add_child(_caption("dim   charge -> brightness"))
 	_column.add_child(_curve_editor(response.dim_curve, ""))
+	if glow_curve != null:
+		_column.add_child(_caption("glow   charge -> face glow"))
+		_column.add_child(_curve_editor(glow_curve, ""))
 	_column.add_child(_caption("flicker   charge -> dropouts/s"))
 	_column.add_child(_curve_editor(response.flicker_curve, "/s"))
 
@@ -436,7 +483,7 @@ func _build_response_section(label: String, response: LampPowerResponse) -> void
 		0.01,
 		_on_empty_throw_changed.bind(response)
 	)
-	_column.add_child(_print_button(label, response))
+	_column.add_child(_print_button(label, response, glow_curve))
 
 
 func _build_power_section() -> void:
@@ -523,6 +570,21 @@ func _on_slider_changed(value: float, handler: Callable, value_label: Label) -> 
 	value_label.text = handler.call(value)
 
 
+func _lamp_mode_button(mode: int) -> Button:
+	var button := Button.new()
+	button.text = PowerKnobs.LAMP_MODE_NAMES[mode]
+	button.add_theme_font_size_override("font_size", 11)
+	button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	button.focus_mode = Control.FOCUS_NONE
+	button.pressed.connect(_on_lamp_mode_pressed.bind(mode))
+	return button
+
+
+func _on_lamp_mode_pressed(mode: int) -> void:
+	if _prototype != null:
+		_prototype.set_lamp_mode(mode)
+
+
 func _state_button(index: int) -> Button:
 	var state: Dictionary = STATE_BUTTONS[index]
 	var button := Button.new()
@@ -603,8 +665,11 @@ func _on_ambient_changed(value: float) -> String:
 	return "black" if value <= 0.0 else "%.3f" % value
 
 
+## Through the prototype rather than onto the response, because the lamp mode
+## multiplies this and only one of the two can own base_energy. See
+## PowerAndLightingPrototype._apply_lamp_mode.
 func _on_brightness_changed(value: float) -> String:
-	_prototype.get_suit_lamp().base_energy = value
+	_prototype.set_suit_lamp_energy(value)
 	return "%.1f" % value
 
 
@@ -694,8 +759,10 @@ func _on_empty_throw_changed(value: float, response: LampPowerResponse) -> Strin
 ## panel is saved, and a shape dragged out over five minutes cannot be read off
 ## the screen and retyped the way one number can - so the only way it survives the
 ## session is as source, printed in the shape of the constants it replaces.
-func _on_print_pressed(label: String, response: LampPowerResponse) -> void:
+func _on_print_pressed(label: String, response: LampPowerResponse, glow_curve: Curve) -> void:
 	print(_describe_curve("%s_DIM_POINTS" % label, response.dim_curve))
+	if glow_curve != null:
+		print(_describe_curve("%s_GLOW_POINTS" % label, glow_curve))
 	print(_describe_curve("%s_FLICKER_POINTS" % label, response.flicker_curve))
 
 
@@ -738,6 +805,14 @@ func _on_crank_rate_changed(value: float) -> String:
 	return "%.1f" % value
 
 
+## The finer-grained half of the state buttons. -1.0 for the suit leaves it alone,
+## so dialling the cube does not disturb whatever the suit is in the middle of.
+func _on_cube_charge_changed(value: float) -> String:
+	if _prototype != null:
+		_prototype.set_store_fractions(-1.0, value)
+	return "%.0f%%" % (value * 100.0)
+
+
 # --- Widgets ---------------------------------------------------------------
 
 
@@ -765,12 +840,12 @@ func _curve_editor(curve: Curve, units: String) -> LampCurveEditor:
 	return editor
 
 
-func _print_button(label: String, response: LampPowerResponse) -> Button:
+func _print_button(label: String, response: LampPowerResponse, glow_curve: Curve) -> Button:
 	var button := Button.new()
 	button.text = "Print %s curves" % label.to_lower()
 	button.add_theme_font_size_override("font_size", 11)
 	button.focus_mode = Control.FOCUS_NONE
-	button.pressed.connect(_on_print_pressed.bind(label, response))
+	button.pressed.connect(_on_print_pressed.bind(label, response, glow_curve))
 	return button
 
 
