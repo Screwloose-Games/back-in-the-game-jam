@@ -101,12 +101,17 @@ func _collect_spans() -> void:
 			if span_start.is_equal_approx(span_end):
 				push_warning("Corridor span has zero length at %s; skipped." % span_start)
 				continue
-			_spans.append({
-				"start": span_start,
-				"end": span_end,
-				"length": span_start.distance_to(span_end),
-				"transform": _make_span_transform(span_start, span_end),
-			})
+			(
+				_spans
+				. append(
+					{
+						"start": span_start,
+						"end": span_end,
+						"length": span_start.distance_to(span_end),
+						"transform": _make_span_transform(span_start, span_end),
+					}
+				)
+			)
 
 
 ## Order matters: hulls union into one solid, then tunnels subtract from it.
@@ -179,8 +184,10 @@ func _scatter_span_spikes(span: Dictionary) -> void:
 	var span_transform: Transform3D = span["transform"]
 	var span_direction := (span_end - span_start).normalized()
 	var wall_axes: Array[Vector3] = [
-		span_transform.basis.x, -span_transform.basis.x,
-		span_transform.basis.y, -span_transform.basis.y,
+		span_transform.basis.x,
+		-span_transform.basis.x,
+		span_transform.basis.y,
+		-span_transform.basis.y,
 	]
 	var margin := PrototypeKnobs.CORRIDOR_WIDTH * 0.5
 	var distance := margin
@@ -226,9 +233,7 @@ func _build_spike(axis_position: Vector3, wall_outward: Vector3) -> void:
 	# base face lifts clear of the surface unless it is sunk deeper than an
 	# upright one would need to be. Half the diagonal of the cross-section,
 	# projected onto the wall normal, is exactly how much deeper.
-	var embed_depth := (
-		PrototypeKnobs.SPIKE_EMBED_DEPTH + thickness * sqrt(2.0) * 0.5 * sin(tilt)
-	)
+	var embed_depth := PrototypeKnobs.SPIKE_EMBED_DEPTH + thickness * sqrt(2.0) * 0.5 * sin(tilt)
 
 	var spike_basis := Basis.looking_at(spike_direction, _pick_reference_up(spike_direction))
 	var spike_center := base_position + spike_direction * (length * 0.5 - embed_depth)
@@ -244,7 +249,8 @@ func _build_spike(axis_position: Vector3, wall_outward: Vector3) -> void:
 		# scaled_local, not scaled: the latter scales in parent space, which
 		# shears a tilted spike's mesh away from the collider sitting correctly
 		# in the wall and leaves it looking like it hangs in mid-air.
-		spike_basis.scaled_local(Vector3(thickness, thickness, length)), spike_center
+		spike_basis.scaled_local(Vector3(thickness, thickness, length)),
+		spike_center
 	)
 	add_child(spike_mesh_instance)
 
@@ -303,9 +309,7 @@ func _scatter_span_debris(span: Dictionary) -> void:
 
 
 func _spawn_debris(spawn_position: Vector3, is_heavy: bool) -> void:
-	var size := (
-		PrototypeKnobs.HEAVY_DEBRIS_SIZE if is_heavy else PrototypeKnobs.LIGHT_DEBRIS_SIZE
-	)
+	var size := PrototypeKnobs.HEAVY_DEBRIS_SIZE if is_heavy else PrototypeKnobs.LIGHT_DEBRIS_SIZE
 	var body := RigidBody3D.new()
 	body.mass = PrototypeKnobs.HEAVY_DEBRIS_MASS if is_heavy else PrototypeKnobs.LIGHT_DEBRIS_MASS
 	# Zero-g: nothing falls, it only goes where something pushed it.
@@ -329,9 +333,7 @@ func _spawn_debris(spawn_position: Vector3, is_heavy: bool) -> void:
 	debris_mesh.size = Vector3.ONE * size
 	var mesh_instance := MeshInstance3D.new()
 	mesh_instance.mesh = debris_mesh
-	mesh_instance.material_override = (
-		HEAVY_DEBRIS_MATERIAL if is_heavy else LIGHT_DEBRIS_MATERIAL
-	)
+	mesh_instance.material_override = (HEAVY_DEBRIS_MATERIAL if is_heavy else LIGHT_DEBRIS_MATERIAL)
 	body.add_child(mesh_instance)
 
 	var debris_shape := BoxShape3D.new()
@@ -380,9 +382,7 @@ func _is_clear_of_spikes(candidate: Vector3, size: float) -> bool:
 
 
 func _random_unit_vector() -> Vector3:
-	return Vector3(
-		_randomizer.randfn(), _randomizer.randfn(), _randomizer.randfn()
-	).normalized()
+	return Vector3(_randomizer.randfn(), _randomizer.randfn(), _randomizer.randfn()).normalized()
 
 
 # --- Geometry helpers ------------------------------------------------------
@@ -409,18 +409,14 @@ func _is_point_in_hull(point: Vector3, span: Dictionary) -> bool:
 	var local := (span["transform"] as Transform3D).affine_inverse() * point
 	var half_side := PrototypeKnobs.CORRIDOR_WIDTH * 0.5 + PrototypeKnobs.WALL_THICKNESS
 	var half_length: float = span["length"] * 0.5 + _hull_overrun
-	return (
-		absf(local.x) < half_side and absf(local.y) < half_side and absf(local.z) < half_length
-	)
+	return absf(local.x) < half_side and absf(local.y) < half_side and absf(local.z) < half_length
 
 
 func _is_point_in_tunnel(point: Vector3, span: Dictionary) -> bool:
 	var local := (span["transform"] as Transform3D).affine_inverse() * point
 	var half_width := PrototypeKnobs.CORRIDOR_WIDTH * 0.5
 	var half_length: float = span["length"] * 0.5 + _tunnel_overrun
-	return (
-		absf(local.x) < half_width and absf(local.y) < half_width and absf(local.z) < half_length
-	)
+	return absf(local.x) < half_width and absf(local.y) < half_width and absf(local.z) < half_length
 
 
 ## Builds a basis whose local Z runs along the span, centred on its midpoint.

@@ -31,9 +31,19 @@ jobs:
     # .github/workflows/README.md for how to resolve this to a commit SHA.
     - uses: Scony/godot-gdscript-toolkit@master
 
-    # # 3) (optional) gdformat check
-    # - name: GDFormat check
-    #   run: gdformat --check ${{ steps.changed-files.outputs.all_changed_files }}
+    # 3) gdformat check
+    # The only place formatting is enforced. .pre-commit-config.yaml and
+    # .githooks/pre-commit both run it too, but both are local and both are
+    # skippable with --no-verify, so this is the copy that decides.
+    # --check reports without rewriting: CI never pushes a reformat back.
+    - name: GDFormat check
+      if: steps.changed-files.outputs.any_changed == 'true'
+      run: |
+        echo "Checking formatting on ${{ steps.changed-files.outputs.all_changed_files_count }} file(s)"
+        gdformat --check ${{ steps.changed-files.outputs.all_changed_files }} || {
+          echo "::error::Formatting drift. Run 'gdformat <file>' on the files listed above."
+          exit 1
+        }
 
     # # 4) run gdlint, capture exit & output
     # - name: Run gdlint

@@ -1,7 +1,6 @@
 class_name AsteroidLayoutDebugger
 extends Node3D
 
-
 @export var visible_on_start: bool = true
 @export var show_labels: bool = true
 
@@ -43,9 +42,7 @@ func _on_toggle_button_pressed() -> void:
 func _set_layout_visible(layout_is_visible: bool) -> void:
 	markers_root.visible = layout_is_visible
 	toggle_button.text = (
-		"Hide Asteroid Layout (L)"
-		if layout_is_visible
-		else "Show Asteroid Layout (L)"
+		"Hide Asteroid Layout (L)" if layout_is_visible else "Show Asteroid Layout (L)"
 	)
 
 

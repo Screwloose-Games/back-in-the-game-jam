@@ -76,9 +76,7 @@ func _assemble_combiner() -> void:
 	for pillar: Dictionary in CarryKnobs.PILLARS:
 		var pillar_center: Vector3 = pillar["center"]
 		var pillar_size: Vector3 = pillar["size"]
-		combiner.add_child(
-			_make_brush(pillar_center, pillar_size, CSGShape3D.OPERATION_UNION)
-		)
+		combiner.add_child(_make_brush(pillar_center, pillar_size, CSGShape3D.OPERATION_UNION))
 
 	for pillar: Dictionary in CarryKnobs.ROUND_PILLARS:
 		var pillar_center: Vector3 = pillar["center"]
@@ -97,9 +95,7 @@ func _add_divider(combiner: CSGCombiner3D) -> void:
 		_make_brush(
 			divider_center,
 			Vector3(
-				CarryKnobs.CHAMBER_SIZE.x,
-				CarryKnobs.CHAMBER_SIZE.y,
-				CarryKnobs.DIVIDER_THICKNESS
+				CarryKnobs.CHAMBER_SIZE.x, CarryKnobs.CHAMBER_SIZE.y, CarryKnobs.DIVIDER_THICKNESS
 			),
 			CSGShape3D.OPERATION_UNION
 		)

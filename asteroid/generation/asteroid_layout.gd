@@ -1,7 +1,6 @@
 class_name AsteroidLayout
 extends RefCounted
 
-
 const LANDING_CENTER := Vector3(0.0, 0.0, 16.0)
 const LANDING_RADIUS := 6.0
 
