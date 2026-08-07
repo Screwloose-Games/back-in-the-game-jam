@@ -99,14 +99,9 @@ var _tether_drape := 0.0
 ## HUD.
 var _tether_strain := 0.0
 
-## The drawn rope: a ring of vertices around every point the rope is simulated
-## at, rebuilt every frame from wherever those points ended up.
-var _tether_mesh := ArrayMesh.new()
-var _tether_tube_vertices := PackedVector3Array()
-var _tether_tube_normals := PackedVector3Array()
-## Which vertices make which faces. The rope's point count is fixed from the
-## moment it is laid out, so this is worked out once rather than every frame.
-var _tether_tube_indices := PackedInt32Array()
+## The drawn rope: a tube laid over every point the rope is simulated at,
+## rebuilt every frame from wherever those points ended up.
+var _tether_rope_mesh := TetherRopeMesh.new()
 
 @onready var _head_camera: Camera3D = $HeadCamera
 @onready var _helmet_lamp: SpotLight3D = $HeadCamera/HelmetLamp
@@ -125,7 +120,7 @@ func _ready() -> void:
 
 	# The line node is top_level, so parking its transform at the origin lets
 	# the tether be redrawn straight in world space every frame.
-	_tether_line.mesh = _tether_mesh
+	_tether_line.mesh = _tether_rope_mesh.read_mesh()
 	_tether_line.global_transform = Transform3D.IDENTITY
 
 	capture_mouse()
@@ -697,120 +692,7 @@ func _update_tether_line() -> void:
 	if not _tether_line.visible:
 		return
 
-	_build_rope_tube(rope_points)
-
-	var surface_arrays := []
-	surface_arrays.resize(Mesh.ARRAY_MAX)
-	surface_arrays[Mesh.ARRAY_VERTEX] = _tether_tube_vertices
-	surface_arrays[Mesh.ARRAY_NORMAL] = _tether_tube_normals
-	surface_arrays[Mesh.ARRAY_INDEX] = _tether_tube_indices
-	_tether_mesh.clear_surfaces()
-	_tether_mesh.add_surface_from_arrays(Mesh.PRIMITIVE_TRIANGLES, surface_arrays)
-
-
-## Lays a ring of vertices across the rope at each of its points, which is what
-## gives the drawn rope a thickness the simulated chain of points does not have.
-##
-## Each ring needs a pair of axes across the rope, and nothing picks which way
-## round they go - a tube is the same shape whichever you choose. What matters
-## is that neighbouring rings agree, or the tube creases along its length, so
-## each ring leans the previous ring's axes onto its own cross-section rather
-## than choosing afresh.
-##
-## Both end rings are drawn in to nothing. That closes the tube off where it
-## meets its anchors without any geometry beyond what is already here, and the
-## taper is hidden in the module and the harness it runs into.
-func _build_rope_tube(rope_points: PackedVector3Array) -> void:
-	var point_count := rope_points.size()
-	var sides := maxi(3, CarryKnobs.TETHER_ROPE_DRAW_SIDES)
-	_resize_rope_tube(point_count, sides)
-
-	var across := Vector3.ZERO
-	for point_index: int in range(point_count):
-		var along := _measure_rope_direction(rope_points, point_index)
-		across -= along * across.dot(along)
-		# Only reachable on the first ring, which has nothing to lean, and on a
-		# rope that has doubled back hard enough to leave nothing to lean on.
-		if across.length_squared() < 0.0001:
-			across = _find_any_perpendicular(along)
-		across = across.normalized()
-		var other_across := along.cross(across)
-
-		var radius := CarryKnobs.TETHER_ROPE_DRAW_RADIUS
-		if point_index == 0 or point_index == point_count - 1:
-			radius = 0.0
-
-		var ring_center := rope_points[point_index]
-		var ring_start := point_index * sides
-		for side_index: int in range(sides):
-			var angle := TAU * float(side_index) / float(sides)
-			var outward := across * cos(angle) + other_across * sin(angle)
-			_tether_tube_vertices[ring_start + side_index] = ring_center + outward * radius
-			_tether_tube_normals[ring_start + side_index] = outward
-
-
-## Sizes the tube's arrays to the rope and works out its faces. Both only ever
-## change when the rope's point count does, which is when a line is clipped on.
-func _resize_rope_tube(point_count: int, sides: int) -> void:
-	var vertex_count := point_count * sides
-	if _tether_tube_vertices.size() == vertex_count:
-		return
-	_tether_tube_vertices.resize(vertex_count)
-	_tether_tube_normals.resize(vertex_count)
-	_tether_tube_indices.resize((point_count - 1) * sides * 6)
-
-	# Each pair of neighbouring rings is joined by a quad per side, wound the way
-	# round that leaves it facing out of the rope.
-	var index := 0
-	for ring_index: int in range(point_count - 1):
-		for side_index: int in range(sides):
-			var next_side := (side_index + 1) % sides
-			var near_first := ring_index * sides + side_index
-			var near_second := ring_index * sides + next_side
-			var far_first := near_first + sides
-			var far_second := near_second + sides
-			_tether_tube_indices[index] = near_first
-			_tether_tube_indices[index + 1] = far_first
-			_tether_tube_indices[index + 2] = far_second
-			_tether_tube_indices[index + 3] = near_first
-			_tether_tube_indices[index + 4] = far_second
-			_tether_tube_indices[index + 5] = near_second
-			index += 6
-
-
-## Which way the rope runs at one of its points, averaged from the runs either
-## side of it so the tube bends through a link rather than kinking at it.
-##
-## Averaged rather than simply taken across the point, because the two
-## neighbours of a point where the rope has folded back on itself are in nearly
-## the same place, and the line between them is noise. A ring built on a tangent
-## that has come out pointing back down the rope is wound the opposite way to
-## its neighbours, and the tube turns inside out between them.
-##
-## Where the average cancels the rope really has doubled right back, and the run
-## out of the point is the honest answer. A tube through a fold that sharp
-## pinches through itself whatever tangent it is given.
-static func _measure_rope_direction(rope_points: PackedVector3Array, point_index: int) -> Vector3:
-	var ahead := Vector3.ZERO
-	if point_index < rope_points.size() - 1:
-		ahead = (rope_points[point_index + 1] - rope_points[point_index]).normalized()
-	var behind := Vector3.ZERO
-	if point_index > 0:
-		behind = (rope_points[point_index] - rope_points[point_index - 1]).normalized()
-
-	var along := ahead + behind
-	if along.length_squared() < 0.0001:
-		along = behind if ahead.is_zero_approx() else ahead
-	if along.is_zero_approx():
-		return Vector3.BACK
-	return along.normalized()
-
-
-## Any unit vector across the direction given. Which one is immaterial: it only
-## ever seeds the first ring, and a tube has no preferred way round.
-static func _find_any_perpendicular(direction: Vector3) -> Vector3:
-	var off_axis := Vector3.UP if absf(direction.y) < 0.9 else Vector3.RIGHT
-	return direction.cross(off_axis).normalized()
+	_tether_rope_mesh.rebuild(rope_points)
 
 
 # --- Movement --------------------------------------------------------------
