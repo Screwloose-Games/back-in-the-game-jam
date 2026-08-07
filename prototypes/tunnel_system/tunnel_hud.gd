@@ -31,11 +31,11 @@ func _process(delta: float) -> void:
 	_refresh()
 
 
-func bind(prototype: TunnelSystemPrototype, player: ZeroGPlayer) -> void:
+func bind(prototype: TunnelSystemPrototype, player: ZeroGPlayer, settings: TunnelSettings) -> void:
 	_prototype = prototype
 	_player = player
 	_map.bind(prototype.network, player)
-	_tuning.bind(prototype)
+	_tuning.bind_prototype(prototype, settings)
 
 
 func _refresh() -> void:

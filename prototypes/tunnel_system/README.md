@@ -108,12 +108,23 @@ Then say which of those five you would want to do a second time.
 
 ## What you can change quickly
 
-**While flying**, from the bottom-left panel: lamp cone width and view distance.
-Neither is saved — when you find values you like, read them off the panel and put
-them in `tunnel_knobs.gd`.
+**While flying**, from the bottom-left panel: view distance, lamp cone width,
+ambient fill, fog density and lamp shadows.
 
-**Between runs**, everything else lives in `tunnel_knobs.gd` too, each number
-with a note on why it is what it is. The ones most worth arguing about:
+Press **SAVE** and the values you stopped on go into
+`tunnel_settings.tres`, which is committed — so they are still there next run and
+turn up in the diff as numbers somebody can read. Press **RESET** to go back to
+the defaults in `tunnel_knobs.gd`. Delete the `.tres` and the prototype runs on
+those defaults again, so nothing here can get stuck in a bad state.
+
+**Between runs**, everything else lives in `tunnel_knobs.gd`, each number
+with a note on why it is what it is. That file is still where a default lives:
+the panel only overrides the handful of values it puts a slider on, and RESET
+means "read the consts again". To give another knob a slider, add an
+`@export_range` for it to `tunnel_settings.gd` — the panel builds itself from
+whatever it finds there, so there is no panel code to write.
+
+The ones most worth arguing about:
 
 - **Tunnel widths** — the four bore sizes above.
 - **The teleport stops** — add one anywhere you keep wanting to get back to.

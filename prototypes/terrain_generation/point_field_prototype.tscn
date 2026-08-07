@@ -1,0 +1,13 @@
+[gd_scene format=3 uid="uid://bbobbth3yo0wd"]
+
+[ext_resource type="Script" uid="uid://bk5qih1h8lec3" path="res://prototypes/terrain_generation/PointFieldVisualizer.gd" id="1_08c76"]
+
+[node name="PointFieldPrototype" type="Node3D" unique_id=1976915001]
+
+[node name="PointFieldVisualizer" type="Node3D" parent="." unique_id=1637557412]
+script = ExtResource("1_08c76")
+field_size = Vector3(200, 200, 200)
+number_of_points = 200
+
+[node name="CSGSphere3D" type="CSGSphere3D" parent="." unique_id=2025198107]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.1146584, 0, 8.542523)

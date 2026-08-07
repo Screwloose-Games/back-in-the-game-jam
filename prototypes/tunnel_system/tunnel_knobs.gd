@@ -9,6 +9,12 @@ extends RefCounted
 ## the prototype's scripts and pushed onto the scene at startup, so they win over
 ## whatever is saved in the .tscn files.
 ##
+## THIS FILE IS STILL WHERE A DEFAULT LIVES. The few values the tuning panel puts
+## a slider on are overridden by tunnel_settings.tres, which the SAVE button
+## writes - but that resource declares its defaults AS these consts, so there is
+## still exactly one place any number is written down, and RESET means "read this
+## file again". The .tscn holds no copy of anything here either way.
+##
 ## THE LAYOUT TABLE BELOW IS A SCAFFOLD, NOT THE SOURCE OF TRUTH. It seeds
 ## paths/tunnel_paths.tscn once, via tools/build_tunnel_paths.gd. After that the
 ## Path3D curves IN THAT SCENE are what the baker reads, so dragging a curve

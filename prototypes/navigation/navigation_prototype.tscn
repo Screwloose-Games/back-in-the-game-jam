@@ -4,6 +4,8 @@
 [ext_resource type="Script" uid="uid://vinikvlmmyhc" path="res://prototypes/navigation/corridor_generator.gd" id="1_corridor"]
 [ext_resource type="PackedScene" uid="uid://b77va8ome3t3b" path="res://prototypes/navigation/zero_g_player.tscn" id="2_player"]
 [ext_resource type="Script" uid="uid://bggwdwhp058wd" path="res://prototypes/navigation/prototype_hud.gd" id="3_hud"]
+[ext_resource type="Script" path="res://prototypes/shared/prototype_tuning_panel.gd" id="4_tuning"]
+[ext_resource type="Resource" path="res://prototypes/navigation/navigation_settings.tres" id="5_settings"]
 
 [sub_resource type="Environment" id="Environment_void"]
 background_mode = 1
@@ -24,6 +26,7 @@ fog_depth_end = 14.0
 
 [node name="NavigationPrototype" type="Node3D" unique_id=1013925193]
 script = ExtResource("0_root")
+settings = ExtResource("5_settings")
 
 [node name="WorldEnvironment" type="WorldEnvironment" parent="." unique_id=65014685]
 environment = SubResource("Environment_void")
@@ -57,3 +60,15 @@ offset_right = 420.0
 offset_bottom = 220.0
 theme_override_colors/font_color = Color(0.62, 0.74, 0.86, 0.85)
 theme_override_font_sizes/font_size = 14
+
+; Bottom left, sized to its own content: zero width/height offsets plus the
+; bottom-left grow directions make it expand right and upward from the corner,
+; so adding a slider does not need the box resized by hand.
+[node name="Tuning" type="PanelContainer" parent="HUD"]
+anchors_preset = 2
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_left = 16.0
+offset_bottom = -16.0
+grow_vertical = 0
+script = ExtResource("4_tuning")

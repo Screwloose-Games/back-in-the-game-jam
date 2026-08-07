@@ -1,0 +1,6 @@
+[gd_resource type="Resource" script_class="CarrySettings" format=3]
+
+[ext_resource type="Script" path="res://prototypes/object_carrying/carry_settings.gd" id="1_ssphj"]
+
+[resource]
+script = ExtResource("1_ssphj")
