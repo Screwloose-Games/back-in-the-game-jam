@@ -14,7 +14,7 @@ Out of the box you get: a main menu → level flow with scene transitions, an op
    - Godot version is pinned via `GODOT_VERSION` in `.github/workflows/build-godot-game.yml`.
 4. **Release flow**: push a tag like `v0.1.0` → `build-godot-game.yml` builds the **Web** export preset → `publish-to-itchio.yml` pushes it to itch.io (channel `web`). The Web preset name in `export_presets.cfg` must stay `"Web"`.
 5. **Code owners**: uncomment and set the owner in `.github/CODEOWNERS` if you want required reviews.
-6. **Pre-commit hooks**: `pip install pre-commit && pre-commit install` (runs `gdlint` + `gdformat --check`).
+6. **Pre-commit hooks**: nothing to install — opening the project in Godot points `core.hooksPath` at the tracked `.githooks/`, which runs `gdlint` + `gdformat --check` on commit. `pip install pre-commit` upgrades that to the full `.pre-commit-config.yaml` (adds 3D model validation).
 7. **Credits**: edit `ATTRIBUTION.md` — the credits screen auto-scrolls it.
 
 ## Project structure

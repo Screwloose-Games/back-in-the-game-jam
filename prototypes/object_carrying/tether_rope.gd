@@ -35,14 +35,17 @@ var _segment_rest_length := 0.0
 ## Lays the rope out straight between the two anchors, at rest. Called when a
 ## load is taken hold of, so the rope starts the run with no momentum of its
 ## own and no shape it did not earn.
-func reset(object_anchor: Vector3, suit_anchor: Vector3) -> void:
-	var segment_count := maxi(
-		1, int(roundf(CarryKnobs.TETHER_LENGTH / CarryKnobs.TETHER_ROPE_SEGMENT))
-	)
+##
+## The length is passed in rather than read from the knobs because it has a
+## slider now, and this is the only moment it can be acted on: the point count is
+## fixed from here until the next clip, so a rope already on the line cannot
+## change length. Unclip and re-clip to pick up a new one.
+func reset(object_anchor: Vector3, suit_anchor: Vector3, length: float) -> void:
+	var segment_count := maxi(1, int(roundf(length / CarryKnobs.TETHER_ROPE_SEGMENT)))
 	var point_count := segment_count + 1
 	_positions.resize(point_count)
 	_previous_positions.resize(point_count)
-	_segment_rest_length = CarryKnobs.TETHER_LENGTH / float(segment_count)
+	_segment_rest_length = length / float(segment_count)
 
 	for index: int in range(point_count):
 		var along := float(index) / float(point_count - 1)

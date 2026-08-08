@@ -15,6 +15,10 @@ extends Node3D
 ## the two scenes it borrows, which know nothing about ChaseKnobs and would
 ## otherwise run at values chosen for a different room.
 
+## Creature and pursuit values you can move from the tuning panel, and what SAVE
+## writes back to. Assigned in the .tscn; see _ready for a missing one.
+@export var settings: ChaseSettings
+
 var _debug_camera_active: bool = false
 
 @onready var _world_environment: WorldEnvironment = $WorldEnvironment
@@ -28,6 +32,7 @@ var _debug_camera_active: bool = false
 @onready var _contact: CreatureContact = $Crawler/CreatureContact
 @onready var _director: CrawlerCameraDirector = $DebugCamera
 @onready var _debug_draw: ChaseDebugDraw = $DebugDraw
+@onready var _tuning: PrototypeTuningPanel = $HUD/Tuning
 
 
 # Both the player and the creature have to be at their spawns before they enter
@@ -67,35 +72,34 @@ func _apply_cave_audio() -> void:
 
 
 func _ready() -> void:
-	_check_passage_width()
+	# A fresh clone has no chase_settings.tres yet, and anyone may delete it. A
+	# bare instance holds exactly the knobs consts, so the fallback is the old
+	# behaviour rather than a crash.
+	if settings == null:
+		settings = ChaseSettings.new()
+		push_warning("No chase_settings.tres wired; running on chase_knobs.gd defaults.")
+	settings.changed.connect(_apply_creature_tuning)
+
 	_apply_draw_distance()
 	_apply_creature_tuning()
+	_tuning.bind(settings)
 	_contact.caught.connect(_on_caught)
 	_set_debug_camera(false)
 	await _bake_navigation()
 
 
-## The one level-design rule this prototype cannot break.
+## The one level-design rule this prototype cannot break is now
+## ChaseSettings.invariant_failures(), because creature_probe_comfort has a
+## slider and the rule has to hold against whatever that slider is left on.
 ##
 ## The first version of this scene ran the chase through the object carrying
 ## prototype's chamber, whose two halves are joined by a 5 m hatch. The creature
 ## could almost never get through: at 5 m it is inside its own comfort distance of
 ## all four sides at once and its avoidance pushes it back out of the opening. It
 ## read as broken pathfinding for a long time before it turned out to be a
-## corridor narrower than the thing walking down it. This is here so the next
-## person gets a sentence instead of that afternoon.
-func _check_passage_width() -> void:
-	if ChaseKnobs.CORRIDOR_WIDTH >= ChaseKnobs.MIN_PASSAGE_WIDTH:
-		return
-	push_warning(
-		(
-			(
-				"ChaseKnobs.CORRIDOR_WIDTH is %.1f m but the creature needs %.1f m to pass "
-				+ "(twice CREATURE_PROBE_COMFORT). It will stall in the corridors."
-			)
-			% [ChaseKnobs.CORRIDOR_WIDTH, ChaseKnobs.MIN_PASSAGE_WIDTH]
-		)
-	)
+## corridor narrower than the thing walking down it. That is also why the slider's
+## maximum is 5.0 rather than something round - a value that cannot pass is not
+## worth being able to dial in.
 
 
 func _input(event: InputEvent) -> void:
@@ -160,18 +164,32 @@ func _apply_draw_distance() -> void:
 ## Its AUDIO is overridden too, but not from here - see _apply_cave_audio, which
 ## runs in _enter_tree because the two exports it writes are read once at the
 ## crawler's own _ready, and this function is far too late for them.
+## Runs once at startup and again on every change from the tuning panel, so
+## "it took effect while being chased" and "it took effect on the next run" are
+## the same code path rather than two that can drift apart.
 func _apply_creature_tuning() -> void:
-	_crawler.max_speed = ChaseKnobs.CREATURE_MAX_SPEED
-	_crawler.leash_slack = ChaseKnobs.CREATURE_LEASH_SLACK
-	_crawler.probe_comfort = ChaseKnobs.CREATURE_PROBE_COMFORT
+	_crawler.max_speed = settings.creature_max_speed
+	_crawler.leash_slack = settings.creature_leash_slack
+	_crawler.probe_comfort = settings.creature_probe_comfort
 	_crawler.probe_mask = ChaseKnobs.CREATURE_PROBE_MASK
 	_tentacles.query_mask = ChaseKnobs.CREATURE_TENTACLE_MASK
+	_follower.move_speed = settings.follower_speed
+	# Through the setter, not the property: the catch sphere is built once and
+	# writing the number alone would leave the reach at its startup size.
+	_contact.set_catch_radius(settings.catch_radius)
 
 	_creature_light.light_color = ChaseKnobs.CREATURE_LIGHT_COLOR
-	_creature_light.light_energy = ChaseKnobs.CREATURE_LIGHT_ENERGY
+	_creature_light.light_energy = settings.creature_light_energy
 	_creature_light.omni_range = ChaseKnobs.CREATURE_LIGHT_RANGE
 	_creature_light.omni_attenuation = ChaseKnobs.CREATURE_LIGHT_ATTENUATION
 	_creature_light.shadow_enabled = ChaseKnobs.CREATURE_LIGHT_SHADOWS
+
+	# The corridor-width rule that used to be _check_passage_width, plus the
+	# catch-inside-the-standoff one. Both are ChaseSettings.invariant_failures()
+	# now, so they are checked against the SAVED values and by the verifier
+	# rather than only at startup against the consts.
+	for failure: String in settings.invariant_failures():
+		push_warning("chase_settings: %s" % failure)
 
 
 ## Which camera is rendering, decided here rather than left to tree order.

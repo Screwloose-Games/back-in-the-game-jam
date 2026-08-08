@@ -1,0 +1,82 @@
+[gd_scene format=3 uid="uid://87cp6d383ync"]
+
+[ext_resource type="Script" uid="uid://cbm4uxebj04vk" path="res://prototypes/power_and_lighting/power_and_lighting_prototype.gd" id="0_root"]
+[ext_resource type="Script" uid="uid://lewi428fp67l" path="res://prototypes/power_and_lighting/imported/test_chamber_generator.gd" id="1_chamber"]
+[ext_resource type="Script" uid="uid://bbjqdxrlg4efw" path="res://prototypes/power_and_lighting/power_hud.gd" id="2_hud"]
+[ext_resource type="Script" uid="uid://dh3tc4o84bf2x" path="res://prototypes/power_and_lighting/power_bar.gd" id="3_bar"]
+[ext_resource type="Script" uid="uid://cfikb8nhygcye" path="res://prototypes/power_and_lighting/power_tuning_panel.gd" id="4_tuning"]
+
+[sub_resource type="Environment" id="Environment_void"]
+background_mode = 1
+ambient_light_source = 2
+ambient_light_color = Color(0.42, 0.48, 0.56, 1)
+ambient_light_energy = 0.02
+tonemap_mode = 4
+glow_enabled = true
+glow_intensity = 0.45
+glow_bloom = 0.05
+fog_enabled = true
+fog_mode = 1
+fog_light_color = Color(0.02, 0.024, 0.03, 1)
+fog_light_energy = 0.6
+fog_density = 1.0
+fog_depth_begin = 2.0
+fog_depth_end = 24.0
+
+[node name="PowerAndLightingPrototype" type="Node3D" unique_id=1699327142]
+script = ExtResource("0_root")
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="." unique_id=1053481333]
+environment = SubResource("Environment_void")
+
+[node name="Chamber" type="Node3D" parent="." unique_id=524343477]
+script = ExtResource("1_chamber")
+
+[node name="Hud" type="CanvasLayer" parent="." unique_id=589259153]
+script = ExtResource("2_hud")
+
+[node name="Crosshair" type="ColorRect" parent="Hud" unique_id=839003942]
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -2.0
+offset_top = -2.0
+offset_right = 2.0
+offset_bottom = 2.0
+mouse_filter = 2
+color = Color(0.78, 0.88, 1, 0.55)
+
+[node name="Readout" type="Label" parent="Hud" unique_id=563723064]
+offset_left = 16.0
+offset_top = 12.0
+offset_right = 480.0
+offset_bottom = 280.0
+theme_override_colors/font_color = Color(0.62, 0.74, 0.86, 0.85)
+theme_override_font_sizes/font_size = 14
+
+[node name="SuitPower" type="Control" parent="Hud" unique_id=1622921165]
+layout_mode = 3
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -150.0
+offset_top = -46.0
+offset_right = 150.0
+offset_bottom = -28.0
+grow_horizontal = 2
+grow_vertical = 0
+mouse_filter = 2
+script = ExtResource("3_bar")
+
+[node name="Tuning" type="PanelContainer" parent="Hud" unique_id=1494084436]
+anchors_preset = 2
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_left = 16.0
+offset_bottom = -16.0
+grow_vertical = 0
+script = ExtResource("4_tuning")

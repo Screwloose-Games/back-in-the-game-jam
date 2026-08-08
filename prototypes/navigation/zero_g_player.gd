@@ -7,7 +7,16 @@ extends CharacterBody3D
 ## player coasts until they counter-thrust or hit something. Nothing here reads
 ## a world "up": the body may end up at any orientation and stay there.
 ##
-## Every tunable value lives in prototype_knobs.gd.
+## Every tunable value lives in prototype_knobs.gd. The handful of them that have
+## sliders are read through `settings`, which defaults to the consts.
+
+## Flight feel, live-tunable from the navigation prototype's panel.
+##
+## Defaults to a bare instance, which holds exactly prototype_knobs.gd - so a
+## scene that never binds one behaves as it always did. That matters because the
+## tunnel prototype instances this player too and tunes its own optics on top;
+## binding a resource is opt-in, per scene.
+var settings := NavigationSettings.new()
 
 ## Tumble rate about the body's own axes: x pitch, y yaw, z roll. Only ever
 ## non-zero in INERTIAL rotation mode; impacts do not impart spin.
@@ -18,7 +27,9 @@ var stabilizers_engaged := false
 var sprint_engaged := false
 
 var _spawn_transform: Transform3D
-var _current_speed_cap := PrototypeKnobs.MAX_SPEED
+## Seed only - _update_speed_cap owns this from the first physics frame. Safe to
+## read `settings` here because it is declared above and so initialised first.
+var _current_speed_cap := settings.max_speed
 var _accumulated_mouse_motion := Vector2.ZERO
 var _was_touching_surface := false
 var _is_mouse_captured := false
@@ -29,9 +40,23 @@ var _is_mouse_captured := false
 
 func _ready() -> void:
 	_spawn_transform = global_transform
-	_head_camera.far = PrototypeKnobs.CAMERA_FAR
-	_helmet_lamp.spot_range = PrototypeKnobs.HELMET_LAMP_RANGE
+	_apply_settings()
 	capture_mouse()
+
+
+## Points the controller at a settings resource and follows it from then on.
+##
+## The per-frame values need no push - reading settings.max_speed next frame is
+## the whole apply. Only the two that live on nodes have to be written.
+func bind_settings(new_settings: NavigationSettings) -> void:
+	settings = new_settings
+	settings.changed.connect(_apply_settings)
+	_apply_settings()
+
+
+func _apply_settings() -> void:
+	_head_camera.far = settings.camera_far
+	_helmet_lamp.spot_range = settings.helmet_lamp_range
 
 
 # Aiming is read in _input rather than _unhandled_input: while the mouse is
@@ -72,7 +97,7 @@ func respawn() -> void:
 	velocity = Vector3.ZERO
 	angular_velocity = Vector3.ZERO
 	_accumulated_mouse_motion = Vector2.ZERO
-	_current_speed_cap = PrototypeKnobs.MAX_SPEED
+	_current_speed_cap = settings.max_speed
 	_was_touching_surface = false
 	global_transform = _spawn_transform
 
@@ -87,9 +112,7 @@ func toggle_mouse_capture() -> void:
 
 func _set_mouse_captured(should_capture: bool) -> void:
 	_is_mouse_captured = should_capture
-	Input.mouse_mode = (
-		Input.MOUSE_MODE_CAPTURED if should_capture else Input.MOUSE_MODE_VISIBLE
-	)
+	Input.mouse_mode = (Input.MOUSE_MODE_CAPTURED if should_capture else Input.MOUSE_MODE_VISIBLE)
 
 
 func _update_orientation(delta: float) -> void:
@@ -99,7 +122,7 @@ func _update_orientation(delta: float) -> void:
 
 	var is_inertial := PrototypeKnobs.ROTATION_MODE == PrototypeKnobs.RotationMode.INERTIAL
 	if is_inertial:
-		var aim_gain := PrototypeKnobs.MOUSE_SENSITIVITY * PrototypeKnobs.ANGULAR_ACCELERATION
+		var aim_gain := settings.mouse_sensitivity * PrototypeKnobs.ANGULAR_ACCELERATION
 		angular_velocity.x += -mouse_motion.y * aim_gain
 		angular_velocity.y += -mouse_motion.x * aim_gain
 		angular_velocity.z += -roll_input * PrototypeKnobs.ROLL_RATE * delta
@@ -114,8 +137,8 @@ func _update_orientation(delta: float) -> void:
 	var aim_yaw := 0.0
 	var aim_roll := 0.0
 	if not is_inertial:
-		aim_pitch = -mouse_motion.y * PrototypeKnobs.MOUSE_SENSITIVITY
-		aim_yaw = -mouse_motion.x * PrototypeKnobs.MOUSE_SENSITIVITY
+		aim_pitch = -mouse_motion.y * settings.mouse_sensitivity
+		aim_yaw = -mouse_motion.x * settings.mouse_sensitivity
 		aim_roll = -roll_input * PrototypeKnobs.ROLL_RATE * delta
 
 	_rotate_about_own_axes(
@@ -130,9 +153,7 @@ func _update_orientation(delta: float) -> void:
 func _damp_angular_velocity(delta: float) -> void:
 	if angular_velocity.is_zero_approx():
 		return
-	angular_velocity = angular_velocity.lerp(
-		Vector3.ZERO, minf(PrototypeKnobs.ANGULAR_DRAG * delta, 1.0)
-	)
+	angular_velocity = angular_velocity.lerp(Vector3.ZERO, minf(settings.angular_drag * delta, 1.0))
 	if stabilizers_engaged:
 		angular_velocity = angular_velocity.lerp(
 			Vector3.ZERO, minf(PrototypeKnobs.ANGULAR_STABILIZER_RATE * delta, 1.0)
@@ -151,13 +172,19 @@ func _rotate_about_own_axes(pitch_delta: float, yaw_delta: float, roll_delta: fl
 
 
 func _update_velocity(delta: float) -> void:
-	var thrust_input := Vector3(
-		Input.get_axis("thrust_left", "thrust_right"),
-		Input.get_axis("thrust_down", "thrust_up"),
-		Input.get_axis("thrust_forward", "thrust_back")
-	).limit_length(1.0)
+	var thrust_input := (
+		Vector3(
+			Input.get_axis("thrust_left", "thrust_right"),
+			Input.get_axis("thrust_down", "thrust_up"),
+			Input.get_axis("thrust_forward", "thrust_back")
+		)
+		. limit_length(1.0)
+	)
 
-	var thrust_acceleration := PrototypeKnobs.THRUST_ACCELERATION
+	# Sprint multiplies the TUNED acceleration, not the const, so dragging the
+	# thrust slider moves sprinting and cruising together and the multiplier goes
+	# on meaning "this much faster than normal" whatever normal has been set to.
+	var thrust_acceleration := settings.thrust_acceleration
 	if sprint_engaged:
 		thrust_acceleration *= PrototypeKnobs.SPRINT_ACCELERATION_MULTIPLIER
 
@@ -174,12 +201,15 @@ func _update_velocity(delta: float) -> void:
 
 ## Tracks the ceiling the speed is clamped to. Sprint raises it immediately, so
 ## the boost is there the moment Shift goes down, and lowers it gradually, so
-## releasing sprint coasts back down to MAX_SPEED instead of snapping.
+## releasing sprint coasts back down to the cruising ceiling instead of snapping.
 ##
 ## The cap stays a hard clamp throughout - easing the clamp itself rather than
 ## the speed is what keeps thrust from outrunning the ceiling on the way down.
+##
+## The ceiling is settings.max_speed rather than the const, so the speed slider
+## moves sprinting and cruising together; SPRINT_SPEED_MULTIPLIER stays a ratio.
 func _update_speed_cap(delta: float) -> void:
-	var target_speed_cap := PrototypeKnobs.MAX_SPEED
+	var target_speed_cap := settings.max_speed
 	if sprint_engaged:
 		target_speed_cap *= PrototypeKnobs.SPRINT_SPEED_MULTIPLIER
 
@@ -269,7 +299,7 @@ func _resolve_hull_contact(
 
 	velocity = (
 		along_surface * (1.0 - PrototypeKnobs.COLLISION_FRICTION)
-		- into_surface * PrototypeKnobs.COLLISION_RESTITUTION
+		- into_surface * settings.collision_restitution
 	)
 
 	_apply_impact_spin(along_surface, contact_point)
@@ -301,7 +331,7 @@ func _shove_debris(
 	# Bounce only on the frame contact begins; sustained contact becomes a
 	# steady push, which is what lets you shoulder something out of the way
 	# instead of pinballing off it.
-	var restitution := 0.0 if was_already_touching else PrototypeKnobs.COLLISION_RESTITUTION
+	var restitution := 0.0 if was_already_touching else settings.collision_restitution
 	var reduced_mass := 1.0 / (1.0 / PrototypeKnobs.PLAYER_MASS + 1.0 / debris.mass)
 	var impulse_magnitude := -(1.0 + restitution) * closing_speed * reduced_mass
 

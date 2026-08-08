@@ -1,4 +1,4 @@
-[gd_scene load_steps=8 format=3]
+[gd_scene load_steps=9 format=3]
 
 ; The runnable scene. Both instanced children are GENERATED - Paths by
 ; tools/build_tunnel_paths.gd, Geometry by tools/bake_tunnel_mesh.gd - and the
@@ -16,6 +16,7 @@
 [ext_resource type="Script" path="res://prototypes/tunnel_system/tunnel_hud.gd" id="3_hud"]
 [ext_resource type="Script" path="res://prototypes/tunnel_system/tunnel_map_overlay.gd" id="4_map"]
 [ext_resource type="Script" path="res://prototypes/tunnel_system/tunnel_tuning_panel.gd" id="5_tuning"]
+[ext_resource type="Resource" path="res://prototypes/tunnel_system/tunnel_settings.tres" id="6_settings"]
 
 [sub_resource type="Environment" id="Environment_deep"]
 background_mode = 1
@@ -36,6 +37,7 @@ fog_depth_end = 22.0
 
 [node name="TunnelSystemPrototype" type="Node3D"]
 script = ExtResource("0_root")
+settings = ExtResource("6_settings")
 
 [node name="WorldEnvironment" type="WorldEnvironment" parent="."]
 environment = SubResource("Environment_deep")

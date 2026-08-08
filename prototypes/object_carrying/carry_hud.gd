@@ -21,11 +21,11 @@ const CROSSHAIR_HELD_COLOR := Color(0.55, 1, 0.7, 0.9)
 
 @export var player_path: NodePath
 
-@onready var _readout: Label = $Readout
-@onready var _crosshair: ColorRect = $Crosshair
-
 var _player: CarrierPlayer
 var _rotation_mode_name: String
+
+@onready var _readout: Label = $Readout
+@onready var _crosshair: ColorRect = $Crosshair
 
 
 func _ready() -> void:
@@ -66,7 +66,7 @@ func _describe_grip() -> String:
 		return "grip %s" % ("READY" if _player.get_targeted_object() != null else "empty")
 	return (
 		"grip HELD %.0f kg  strain %4.2f / %4.2f m"
-		% [held_object.mass, _player.get_grip_strain(), CarryKnobs.GRIP_BREAK_DISTANCE]
+		% [held_object.mass, _player.get_grip_strain(), _player.settings.grip_break_distance]
 	)
 
 
@@ -83,9 +83,9 @@ func _describe_tether() -> String:
 		% [
 			tethered_object.mass,
 			_player.get_tether_distance(),
-			CarryKnobs.TETHER_LENGTH,
+			_player.settings.tether_length,
 			_player.get_tether_strain(),
-			CarryKnobs.TETHER_BREAK_STRETCH,
+			_player.settings.tether_break_stretch,
 			_player.get_tether_drape(),
 		]
 	)

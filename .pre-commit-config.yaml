@@ -1,8 +1,13 @@
 # Git hooks for this repo, managed by the pre-commit framework.
 #
-# One-time setup per clone:
+# Do NOT run `pre-commit install`. Hooks are reached through
+# `git config core.hooksPath .githooks`, which addons/repo_hooks sets the first
+# time the project is opened in the Godot editor, and .githooks/pre-commit runs
+# this config when `pre-commit` is on PATH. `pre-commit install` would copy a
+# shim into .git/hooks/ that takes precedence and then goes stale.
+#
+# Optional, to get this config rather than the bare gdlint/gdformat fallback:
 #   pip install pre-commit
-#   pre-commit install
 #
 # Useful commands:
 #   pre-commit run --all-files    # sweep the whole repo

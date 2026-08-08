@@ -1,0 +1,64 @@
+#!/bin/sh
+# The repo's commit gate, versioned rather than installed.
+#
+# Nothing copies this into .git/hooks/. It is reached through
+# `git config core.hooksPath .githooks`, which addons/repo_hooks sets the first
+# time anyone opens the project in the Godot editor. That indirection is the
+# whole point: a hook edited here reaches every clone on the next pull, where
+# `pre-commit install` bakes a snapshot into .git/hooks/ that then goes stale
+# without anyone noticing.
+#
+# Three tiers, because the people committing to this repo do not all have the
+# same toolchain. Artists filing models should not have to curate a Python
+# environment to commit, so a missing tool degrades to a weaker check and then
+# to a warning - never to a blocked commit on a machine that was never set up.
+#
+# `git commit --no-verify` skips this, as it skips any hook. That is why the
+# same checks run in CI, which is the copy that actually enforces them.
+
+set -e
+
+# Tier 1: the full .pre-commit-config.yaml - gdlint, gdformat --check, and the
+# 3D model validation. pre-commit builds its own pinned venv, so this is the
+# only tier that agrees with CI exactly.
+if command -v pre-commit >/dev/null 2>&1; then
+	exec pre-commit run --hook-stage pre-commit
+fi
+
+# Tier 2: gdtoolkit straight off PATH. Covers GDScript only - a model committed
+# on this tier is not validated until CI.
+staged_gd=$(
+	git diff --cached --name-only --diff-filter=ACM \
+		| grep '\.gd$' \
+		| grep -v '^addons/' \
+		|| true
+)
+
+if [ -z "$staged_gd" ]; then
+	exit 0
+fi
+
+if command -v gdlint >/dev/null 2>&1 && command -v gdformat >/dev/null 2>&1; then
+	# Quoting is deliberately left off: the list is newline-separated and this
+	# repo's naming convention forbids spaces in asset and script names.
+	# shellcheck disable=SC2086
+	gdlint $staged_gd || {
+		echo "" >&2
+		echo "gdlint failed. Fix the problems above, or commit with --no-verify." >&2
+		exit 1
+	}
+	# shellcheck disable=SC2086
+	gdformat --check $staged_gd || {
+		echo "" >&2
+		echo "Formatting drift. Run: gdformat $staged_gd" >&2
+		exit 1
+	}
+	exit 0
+fi
+
+# Tier 3: nothing available. Warn rather than block - a machine that cannot run
+# the check is not evidence that the commit is bad, and CI still has the final
+# say.
+echo "warning: neither pre-commit nor gdtoolkit found; staged GDScript was not checked." >&2
+echo "         pip install pre-commit   (see .pre-commit-config.yaml)" >&2
+exit 0

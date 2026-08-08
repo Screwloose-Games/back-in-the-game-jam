@@ -1,0 +1,11 @@
+[gd_scene load_steps=2 format=3]
+
+; This wrapper exists only so the suite can be NAMED ON THE COMMAND LINE as a
+; scene. Nodes added during SceneTree._initialize() never receive _ready(), and
+; the [panel] check builds a real PanelContainer, so running the script bare
+; would print nothing and exit 0 - which looks exactly like a pass.
+
+[ext_resource type="Script" path="res://prototypes/tools/verify_prototype_settings.gd" id="0_verify"]
+
+[node name="VerifyPrototypeSettings" type="Node"]
+script = ExtResource("0_verify")

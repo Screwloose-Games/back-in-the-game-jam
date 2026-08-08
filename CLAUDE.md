@@ -68,7 +68,15 @@ python .github/scripts/validate-audio-files.py <file>     # audio
 gdformat <file> && gdlint <file>                          # GDScript
 ```
 
-`pre-commit install` wires these up so a commit fails before CI does.
+These also run on commit, and nobody has to install them: opening the project in
+the Godot editor points `core.hooksPath` at the tracked `.githooks/` directory
+(`addons/repo_hooks/`). `.githooks/pre-commit` uses the full
+`.pre-commit-config.yaml` when `pre-commit` is on PATH, falls back to bare
+`gdlint`/`gdformat` when it is not, and warns rather than blocks when neither is
+available. `pip install pre-commit` is therefore worth having but is not setup.
+
+Local hooks are fast feedback, not enforcement — `--no-verify` skips them and so
+does never opening the editor. CI is the copy that decides.
 
 ## Conventions worth knowing up front
 

@@ -35,7 +35,14 @@ extends CharacterBody3D
 ## most of your thrust. Let go of, it is heavier still, which is what makes a
 ## taut tether reel you in toward the module rather than towing it after you.
 ##
-## Every tunable value lives in carry_knobs.gd.
+## Every tunable value lives in carry_knobs.gd. The handful of them that have
+## sliders are read through `settings`, which defaults to the consts.
+
+## Grip, tether and flight feel, live-tunable from the prototype's panel.
+##
+## Defaults to a bare instance, which holds exactly carry_knobs.gd - so a scene
+## that never binds one behaves as it always did.
+var settings := CarrySettings.new()
 
 ## Tumble rate about the body's own axes: x pitch, y yaw, z roll. Only ever
 ## non-zero in INERTIAL rotation mode; impacts do not impart spin.
@@ -92,19 +99,14 @@ var _tether_drape := 0.0
 ## HUD.
 var _tether_strain := 0.0
 
+## The drawn rope: a tube laid over every point the rope is simulated at,
+## rebuilt every frame from wherever those points ended up.
+var _tether_rope_mesh := TetherRopeMesh.new()
+
 @onready var _head_camera: Camera3D = $HeadCamera
 @onready var _helmet_lamp: SpotLight3D = $HeadCamera/HelmetLamp
 @onready var _grab_ray: RayCast3D = $HeadCamera/GrabRay
 @onready var _tether_line: MeshInstance3D = $TetherLine
-
-## The drawn rope: a ring of vertices around every point the rope is simulated
-## at, rebuilt every frame from wherever those points ended up.
-var _tether_mesh := ArrayMesh.new()
-var _tether_tube_vertices := PackedVector3Array()
-var _tether_tube_normals := PackedVector3Array()
-## Which vertices make which faces. The rope's point count is fixed from the
-## moment it is laid out, so this is worked out once rather than every frame.
-var _tether_tube_indices := PackedInt32Array()
 
 
 func _ready() -> void:
@@ -112,16 +114,30 @@ func _ready() -> void:
 	# CarryKnobs.PLAYER_SPAWN before it enters the tree; the pose it arrives
 	# with is the one R returns to.
 	_spawn_transform = global_transform
-	_head_camera.far = CarryKnobs.CAMERA_FAR
+	_apply_settings()
 	_helmet_lamp.spot_range = CarryKnobs.HELMET_LAMP_RANGE
 	_grab_ray.target_position = Vector3(0.0, 0.0, -CarryKnobs.GRAB_RANGE)
 
 	# The line node is top_level, so parking its transform at the origin lets
 	# the tether be redrawn straight in world space every frame.
-	_tether_line.mesh = _tether_mesh
+	_tether_line.mesh = _tether_rope_mesh.read_mesh()
 	_tether_line.global_transform = Transform3D.IDENTITY
 
 	capture_mouse()
+
+
+## Points the controller at a settings resource and follows it from then on.
+##
+## Most of these are read at the point of use, so reading settings.max_speed next
+## frame is the whole apply. Only the camera's clip plane has to be written.
+func bind_settings(new_settings: CarrySettings) -> void:
+	settings = new_settings
+	settings.changed.connect(_apply_settings)
+	_apply_settings()
+
+
+func _apply_settings() -> void:
+	_head_camera.far = settings.camera_far
 
 
 # Aiming is read in _input rather than _unhandled_input: while the mouse is
@@ -251,9 +267,7 @@ func toggle_mouse_capture() -> void:
 
 func _set_mouse_captured(should_capture: bool) -> void:
 	_is_mouse_captured = should_capture
-	Input.mouse_mode = (
-		Input.MOUSE_MODE_CAPTURED if should_capture else Input.MOUSE_MODE_VISIBLE
-	)
+	Input.mouse_mode = (Input.MOUSE_MODE_CAPTURED if should_capture else Input.MOUSE_MODE_VISIBLE)
 
 
 # --- Carry link ------------------------------------------------------------
@@ -297,7 +311,7 @@ func _toggle_tether() -> void:
 func _take_hold_of(object: RigidBody3D, grab_point: Vector3) -> void:
 	_held_object = object
 	_held_object_free_mass = object.mass
-	object.mass = CarryKnobs.CARRY_OBJECT_HELD_MASS
+	object.mass = settings.carry_object_held_mass
 
 	var object_inverse := object.global_transform.affine_inverse()
 	var half_span := global_transform.basis.x * CarryKnobs.GRIP_HAND_SEPARATION * 0.5
@@ -320,7 +334,7 @@ func _clip_tether_to(object: RigidBody3D, clip_point: Vector3) -> void:
 	_tethered_object = object
 	_tether_object_anchor = object.global_transform.affine_inverse() * clip_point
 	_tether_suit_anchor = CarryKnobs.TETHER_ANCHOR_OFFSET
-	_tether_rope.reset(clip_point, global_transform * _tether_suit_anchor)
+	_tether_rope.reset(clip_point, global_transform * _tether_suit_anchor, settings.tether_length)
 	_tether_distance = 0.0
 	_tether_strain = 0.0
 	_tether_drape = 0.0
@@ -341,9 +355,7 @@ func _apply_grip_force(delta: float) -> void:
 	if _held_object == null:
 		return
 
-	_grip_settle = minf(
-		_grip_settle + delta / maxf(CarryKnobs.GRIP_SETTLE_TIME, 0.0001), 1.0
-	)
+	_grip_settle = minf(_grip_settle + delta / maxf(CarryKnobs.GRIP_SETTLE_TIME, 0.0001), 1.0)
 	var target_pose := global_transform * _blend_toward_carry_pose()
 
 	# Two springs in parallel between the same pair of bodies are twice the
@@ -353,7 +365,7 @@ func _apply_grip_force(delta: float) -> void:
 	# changes.
 	var hand_count := _hand_object_anchors.size()
 	var reduced_mass := _measure_reduced_mass(_held_object) / float(hand_count)
-	var angular_frequency := TAU * CarryKnobs.GRIP_SPRING_FREQUENCY
+	var angular_frequency := TAU * settings.grip_spring_frequency
 	var stiffness := reduced_mass * angular_frequency * angular_frequency
 	var damping := 2.0 * CarryKnobs.GRIP_SPRING_DAMPING_RATIO * angular_frequency * reduced_mass
 	var force_ceiling := CarryKnobs.GRIP_MAX_FORCE / float(hand_count)
@@ -371,7 +383,7 @@ func _apply_grip_force(delta: float) -> void:
 		suit_points.append(suit_point)
 		_grip_strain = maxf(_grip_strain, hand_point.distance_to(suit_point))
 
-	if _grip_strain > CarryKnobs.GRIP_BREAK_DISTANCE:
+	if _grip_strain > settings.grip_break_distance:
 		# Pulled further than the grip can hold. Giving out is what keeps it from
 		# reading as a rubber band on a hard yank.
 		release_grip()
@@ -388,13 +400,12 @@ func _apply_grip_force(delta: float) -> void:
 		var hand_velocity := (
 			_held_object.linear_velocity + _held_object.angular_velocity.cross(object_lever_arm)
 		)
-		var suit_point_velocity := (
-			velocity + _read_world_spin().cross(suit_point - global_position)
-		)
+		var suit_point_velocity := velocity + _read_world_spin().cross(suit_point - global_position)
 		var relative_velocity := hand_velocity - suit_point_velocity
 		var grip_force := (
-			(suit_point - hand_point) * stiffness - relative_velocity * damping
-		).limit_length(force_ceiling)
+			((suit_point - hand_point) * stiffness - relative_velocity * damping)
+			. limit_length(force_ceiling)
+		)
 		_push_link_force(
 			delta,
 			_held_object,
@@ -420,9 +431,7 @@ func _apply_grip_twist(delta: float, target_basis: Basis) -> void:
 		return
 
 	var object_pose := _held_object.global_transform
-	var hand_span := (
-		object_pose * _hand_object_anchors[1] - object_pose * _hand_object_anchors[0]
-	)
+	var hand_span := object_pose * _hand_object_anchors[1] - object_pose * _hand_object_anchors[0]
 	if hand_span.is_zero_approx():
 		return
 	var twist_axis := hand_span.normalized()
@@ -439,9 +448,7 @@ func _apply_grip_twist(delta: float, target_basis: Basis) -> void:
 	var moment_of_inertia := _measure_inertia_about(twist_axis)
 	var angular_frequency := TAU * CarryKnobs.GRIP_TWIST_FREQUENCY
 	var stiffness := moment_of_inertia * angular_frequency * angular_frequency
-	var damping := (
-		2.0 * CarryKnobs.GRIP_TWIST_DAMPING_RATIO * angular_frequency * moment_of_inertia
-	)
+	var damping := 2.0 * CarryKnobs.GRIP_TWIST_DAMPING_RATIO * angular_frequency * moment_of_inertia
 	var torque := clampf(
 		twist_error * stiffness - twist_rate * damping,
 		-CarryKnobs.GRIP_TWIST_MAX_TORQUE,
@@ -487,8 +494,7 @@ func _apply_tether_force(delta: float) -> void:
 	# The line is clipped to a point on the module's surface, so the module's
 	# spin contributes to how fast that point is moving.
 	var object_point_velocity := (
-		_tethered_object.linear_velocity
-		+ _tethered_object.angular_velocity.cross(object_lever_arm)
+		_tethered_object.linear_velocity + _tethered_object.angular_velocity.cross(object_lever_arm)
 	)
 
 	# Both ends have to sit outside the hull before the rope is asked to hang
@@ -499,15 +505,13 @@ func _apply_tether_force(delta: float) -> void:
 	# same when it is dragged up against something.
 	var space_state := get_world_3d().direct_space_state
 	suit_point = _hold_anchor_clear(space_state, global_position, suit_point)
-	object_point = _hold_anchor_clear(
-		space_state, _tethered_object.global_position, object_point
-	)
+	object_point = _hold_anchor_clear(space_state, _tethered_object.global_position, object_point)
 
 	_tether_rope.step(delta, space_state, object_point, suit_point)
 	_tether_distance = _tether_rope.measure_length()
 	_tether_drape = _tether_distance - _tether_rope.measure_span()
-	_tether_strain = maxf(_tether_distance - CarryKnobs.TETHER_LENGTH, 0.0)
-	if _tether_strain > CarryKnobs.TETHER_BREAK_STRETCH:
+	_tether_strain = maxf(_tether_distance - settings.tether_length, 0.0)
+	if _tether_strain > settings.tether_break_stretch:
 		unclip_tether()
 		return
 	if is_zero_approx(_tether_strain):
@@ -591,7 +595,7 @@ func _push_link_force(
 	object.apply_impulse(object_force * delta, object_lever_arm)
 
 	var suit_velocity_change := suit_force * delta / CarryKnobs.PLAYER_MASS
-	velocity = (velocity + suit_velocity_change).limit_length(CarryKnobs.MAX_SPEED)
+	velocity = (velocity + suit_velocity_change).limit_length(settings.max_speed)
 	if not is_zero_approx(spin_transfer):
 		_add_spin_from_impulse(suit_velocity_change, suit_point, spin_transfer)
 
@@ -688,120 +692,7 @@ func _update_tether_line() -> void:
 	if not _tether_line.visible:
 		return
 
-	_build_rope_tube(rope_points)
-
-	var surface_arrays := []
-	surface_arrays.resize(Mesh.ARRAY_MAX)
-	surface_arrays[Mesh.ARRAY_VERTEX] = _tether_tube_vertices
-	surface_arrays[Mesh.ARRAY_NORMAL] = _tether_tube_normals
-	surface_arrays[Mesh.ARRAY_INDEX] = _tether_tube_indices
-	_tether_mesh.clear_surfaces()
-	_tether_mesh.add_surface_from_arrays(Mesh.PRIMITIVE_TRIANGLES, surface_arrays)
-
-
-## Lays a ring of vertices across the rope at each of its points, which is what
-## gives the drawn rope a thickness the simulated chain of points does not have.
-##
-## Each ring needs a pair of axes across the rope, and nothing picks which way
-## round they go - a tube is the same shape whichever you choose. What matters
-## is that neighbouring rings agree, or the tube creases along its length, so
-## each ring leans the previous ring's axes onto its own cross-section rather
-## than choosing afresh.
-##
-## Both end rings are drawn in to nothing. That closes the tube off where it
-## meets its anchors without any geometry beyond what is already here, and the
-## taper is hidden in the module and the harness it runs into.
-func _build_rope_tube(rope_points: PackedVector3Array) -> void:
-	var point_count := rope_points.size()
-	var sides := maxi(3, CarryKnobs.TETHER_ROPE_DRAW_SIDES)
-	_resize_rope_tube(point_count, sides)
-
-	var across := Vector3.ZERO
-	for point_index: int in range(point_count):
-		var along := _measure_rope_direction(rope_points, point_index)
-		across -= along * across.dot(along)
-		# Only reachable on the first ring, which has nothing to lean, and on a
-		# rope that has doubled back hard enough to leave nothing to lean on.
-		if across.length_squared() < 0.0001:
-			across = _find_any_perpendicular(along)
-		across = across.normalized()
-		var other_across := along.cross(across)
-
-		var radius := CarryKnobs.TETHER_ROPE_DRAW_RADIUS
-		if point_index == 0 or point_index == point_count - 1:
-			radius = 0.0
-
-		var ring_center := rope_points[point_index]
-		var ring_start := point_index * sides
-		for side_index: int in range(sides):
-			var angle := TAU * float(side_index) / float(sides)
-			var outward := across * cos(angle) + other_across * sin(angle)
-			_tether_tube_vertices[ring_start + side_index] = ring_center + outward * radius
-			_tether_tube_normals[ring_start + side_index] = outward
-
-
-## Sizes the tube's arrays to the rope and works out its faces. Both only ever
-## change when the rope's point count does, which is when a line is clipped on.
-func _resize_rope_tube(point_count: int, sides: int) -> void:
-	var vertex_count := point_count * sides
-	if _tether_tube_vertices.size() == vertex_count:
-		return
-	_tether_tube_vertices.resize(vertex_count)
-	_tether_tube_normals.resize(vertex_count)
-	_tether_tube_indices.resize((point_count - 1) * sides * 6)
-
-	# Each pair of neighbouring rings is joined by a quad per side, wound the way
-	# round that leaves it facing out of the rope.
-	var index := 0
-	for ring_index: int in range(point_count - 1):
-		for side_index: int in range(sides):
-			var next_side := (side_index + 1) % sides
-			var near_first := ring_index * sides + side_index
-			var near_second := ring_index * sides + next_side
-			var far_first := near_first + sides
-			var far_second := near_second + sides
-			_tether_tube_indices[index] = near_first
-			_tether_tube_indices[index + 1] = far_first
-			_tether_tube_indices[index + 2] = far_second
-			_tether_tube_indices[index + 3] = near_first
-			_tether_tube_indices[index + 4] = far_second
-			_tether_tube_indices[index + 5] = near_second
-			index += 6
-
-
-## Which way the rope runs at one of its points, averaged from the runs either
-## side of it so the tube bends through a link rather than kinking at it.
-##
-## Averaged rather than simply taken across the point, because the two
-## neighbours of a point where the rope has folded back on itself are in nearly
-## the same place, and the line between them is noise. A ring built on a tangent
-## that has come out pointing back down the rope is wound the opposite way to
-## its neighbours, and the tube turns inside out between them.
-##
-## Where the average cancels the rope really has doubled right back, and the run
-## out of the point is the honest answer. A tube through a fold that sharp
-## pinches through itself whatever tangent it is given.
-static func _measure_rope_direction(rope_points: PackedVector3Array, point_index: int) -> Vector3:
-	var ahead := Vector3.ZERO
-	if point_index < rope_points.size() - 1:
-		ahead = (rope_points[point_index + 1] - rope_points[point_index]).normalized()
-	var behind := Vector3.ZERO
-	if point_index > 0:
-		behind = (rope_points[point_index] - rope_points[point_index - 1]).normalized()
-
-	var along := ahead + behind
-	if along.length_squared() < 0.0001:
-		along = behind if ahead.is_zero_approx() else ahead
-	if along.is_zero_approx():
-		return Vector3.BACK
-	return along.normalized()
-
-
-## Any unit vector across the direction given. Which one is immaterial: it only
-## ever seeds the first ring, and a tube has no preferred way round.
-static func _find_any_perpendicular(direction: Vector3) -> Vector3:
-	var off_axis := Vector3.UP if absf(direction.y) < 0.9 else Vector3.RIGHT
-	return direction.cross(off_axis).normalized()
+	_tether_rope_mesh.rebuild(rope_points)
 
 
 # --- Movement --------------------------------------------------------------
@@ -866,13 +757,16 @@ func _rotate_about_own_axes(pitch_delta: float, yaw_delta: float, roll_delta: fl
 
 
 func _update_velocity(delta: float) -> void:
-	var thrust_input := Vector3(
-		Input.get_axis("thrust_left", "thrust_right"),
-		Input.get_axis("thrust_down", "thrust_up"),
-		Input.get_axis("thrust_forward", "thrust_back")
-	).limit_length(1.0)
+	var thrust_input := (
+		Vector3(
+			Input.get_axis("thrust_left", "thrust_right"),
+			Input.get_axis("thrust_down", "thrust_up"),
+			Input.get_axis("thrust_forward", "thrust_back")
+		)
+		. limit_length(1.0)
+	)
 	_apply_braced_velocity_change(
-		global_transform.basis * thrust_input * CarryKnobs.THRUST_ACCELERATION * delta
+		global_transform.basis * thrust_input * settings.thrust_acceleration * delta
 	)
 
 	# Braking is thrust pointed backwards as far as the module is concerned, and
@@ -884,7 +778,7 @@ func _update_velocity(delta: float) -> void:
 			-velocity * minf(CarryKnobs.LINEAR_STABILIZER_RATE * delta, 1.0)
 		)
 
-	velocity = velocity.limit_length(CarryKnobs.MAX_SPEED)
+	velocity = velocity.limit_length(settings.max_speed)
 
 
 ## Spends one frame of the suit manoeuvring under its own power - a burst of
@@ -1088,9 +982,6 @@ func _add_spin_from_angular_impulse(world_angular_impulse: Vector3, transfer: fl
 	# angular_velocity is held in body-local axes, so the impulse has to come
 	# back out of world space before it can be added.
 	angular_velocity += (
-		global_transform.basis.inverse()
-		* world_angular_impulse
-		* transfer
-		/ CarryKnobs.PLAYER_MASS
+		global_transform.basis.inverse() * world_angular_impulse * transfer / CarryKnobs.PLAYER_MASS
 	)
 	angular_velocity = angular_velocity.limit_length(CarryKnobs.MAX_ANGULAR_SPEED)
