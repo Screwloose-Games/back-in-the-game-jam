@@ -1,0 +1,6 @@
+[gd_resource type="Resource" script_class="VoxelCavernSettings" format=3]
+
+[ext_resource type="Script" path="res://prototypes/voxel_cavern/voxel_cavern_settings.gd" id="1_vcav1"]
+
+[resource]
+script = ExtResource("1_vcav1")

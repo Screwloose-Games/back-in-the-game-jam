@@ -30,6 +30,7 @@ const SETTINGS_SCRIPTS := [
 	"res://prototypes/alien_ai_pathfinding/alien_pathfinding_settings.gd",
 	"res://prototypes/drill_and_mining/drill_settings.gd",
 	"res://prototypes/core_loop/core_loop_settings.gd",
+	"res://prototypes/voxel_cavern/voxel_cavern_settings.gd",
 ]
 
 ## Somewhere writable that is not the repo. The round trip has to write a real
