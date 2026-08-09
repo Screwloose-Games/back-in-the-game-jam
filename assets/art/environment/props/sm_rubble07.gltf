@@ -1,0 +1,125 @@
+{
+  "asset": {
+    "version": "2.0",
+    "generator": "tools/voxel-rubble/build_rubble.py",
+    "extras": {
+      "bufferSha1": "919b42638cea4c79c432ff9345f5c4cc91e73cc4"
+    }
+  },
+  "scene": 0,
+  "scenes": [
+    {
+      "nodes": [
+        0
+      ]
+    }
+  ],
+  "nodes": [
+    {
+      "name": "rubble",
+      "mesh": 0
+    }
+  ],
+  "meshes": [
+    {
+      "name": "sm_rubble07",
+      "primitives": [
+        {
+          "attributes": {
+            "POSITION": 0,
+            "NORMAL": 1,
+            "COLOR_0": 2
+          },
+          "indices": 3,
+          "material": 0,
+          "mode": 4
+        }
+      ]
+    }
+  ],
+  "materials": [
+    {
+      "name": "mat_rubble",
+      "pbrMetallicRoughness": {
+        "baseColorFactor": [
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "metallicFactor": 0.0,
+        "roughnessFactor": 0.92
+      },
+      "doubleSided": false
+    }
+  ],
+  "buffers": [
+    {
+      "uri": "sm_rubble07.bin",
+      "byteLength": 27404
+    }
+  ],
+  "bufferViews": [
+    {
+      "buffer": 0,
+      "byteOffset": 0,
+      "byteLength": 10608,
+      "target": 34962
+    },
+    {
+      "buffer": 0,
+      "byteOffset": 10608,
+      "byteLength": 10608,
+      "target": 34962
+    },
+    {
+      "buffer": 0,
+      "byteOffset": 21216,
+      "byteLength": 3536,
+      "target": 34962
+    },
+    {
+      "buffer": 0,
+      "byteOffset": 24752,
+      "byteLength": 2652,
+      "target": 34963
+    }
+  ],
+  "accessors": [
+    {
+      "bufferView": 0,
+      "componentType": 5126,
+      "count": 884,
+      "type": "VEC3",
+      "min": [
+        -0.32999999999999996,
+        -0.21,
+        -0.21
+      ],
+      "max": [
+        0.32999999999999996,
+        0.21,
+        0.21
+      ]
+    },
+    {
+      "bufferView": 1,
+      "componentType": 5126,
+      "count": 884,
+      "type": "VEC3"
+    },
+    {
+      "bufferView": 2,
+      "componentType": 5121,
+      "count": 884,
+      "type": "VEC4",
+      "normalized": true
+    },
+    {
+      "bufferView": 3,
+      "componentType": 5123,
+      "count": 1326,
+      "type": "SCALAR"
+    }
+  ]
+}
