@@ -7,6 +7,7 @@
 [ext_resource type="Script" path="res://prototypes/shared/prototype_settings_index.gd" id="5_61e54"]
 [ext_resource type="Resource" path="res://prototypes/tentacle_crawler_chaser/chase_settings.tres" id="6_0s31v"]
 [ext_resource type="Resource" path="res://prototypes/tunnel_system/tunnel_settings.tres" id="7_083y0"]
+[ext_resource type="Resource" path="res://prototypes/voxel_cavern/voxel_cavern_settings.tres" id="8_vcav1"]
 
 [resource]
 script = ExtResource("5_61e54")
@@ -16,3 +17,4 @@ tunnel_system = ExtResource("7_083y0")
 tentacle_crawler_chaser = ExtResource("6_0s31v")
 elevator_cutscene = ExtResource("1_86qw3")
 level_design_01 = ExtResource("2_16jwu")
+voxel_cavern = ExtResource("8_vcav1")
