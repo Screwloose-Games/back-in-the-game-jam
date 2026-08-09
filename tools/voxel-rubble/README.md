@@ -41,11 +41,26 @@ Each model has an inherited scene beside it — `sm_rubble01.tscn` next to
 `{mesh_stem}.tscn`, same directory. Not `prefab_rubble01.tscn`; that name is
 listed as invalid for this slot.
 
-**Collision shapes, scripts and physics bodies go in the container, not in the
-glTF.** Regenerating a model overwrites the glTF and leaves the container alone,
-which is the whole point of the seam. Right now each one is bare — the inherited
-root and nothing else — so a debris piece still needs a `RigidBody3D` and a
-collision shape before it can be shoved around.
+**Scripts and gameplay components go in the prefab**, not here and not in the
+glTF — `pipeline.yaml` is master and its `programming.create_prefab_scene` step
+owns that layer. The container is the seam that survives a re-export: regenerating
+a model overwrites the glTF and leaves the container's material overrides alone.
+
+**Collision, physics bodies and navmeshes have a second home.** Godot's importer
+reinterprets node names, so a mesh named `*-col`, `*-colonly`, `*-convcol`,
+`*-convcolonly` or `*-navmesh` in the glTF becomes collision or navigation on
+import — a legitimate choice when the shape belongs to the art rather than to the
+gameplay. If you take it, flip `collision_expected` or `navigation_expected` in
+the spec to match: the validator fails when presence disagrees with the flag,
+in both directions. Otherwise the shape goes in the prefab with everything else.
+
+Right now the containers are bare — the inherited root and the placeholder marker,
+nothing more — and so are the prefabs, so a debris piece still needs a
+`RigidBody3D` and a collision shape before it can be shoved around.
+
+Each container carries `metadata/placeholder = true`, and so does its prefab. See
+`tools/placeholder-art/README.md` for what the marker means and how to list what
+still needs real art.
 
 ```
 <godot> --headless --path . --script res://tools/voxel-rubble/make_container_scenes.gd
@@ -64,6 +79,10 @@ directory after `--`; defaults to the props folder.
 4. `python tools/voxel-rubble/build_rubble.py --patch-imports` (new pieces only)
 5. `<godot> --headless --path . --import` again, if step 4 patched anything.
 6. `<godot> --headless --path . --script res://tools/voxel-rubble/make_container_scenes.gd`
+7. `<godot> --headless --path . --script res://tools/placeholder-art/make_prefab_scenes.gd`
+
+Steps 6 and 7 create only what is missing, so running the whole loop after a
+recipe change is safe.
 
 A recipe is not a shape. Erosion plus random cutting planes is an unreliable
 process — a bad draw hollows a piece out or slices it in half — so the generator
@@ -113,11 +132,15 @@ python .github/scripts/validate-model-files.py assets/art/environment/props/*.gl
 set RUBBLE_SHOT=<somewhere>\rubble.png
 <godot> --path . --resolution 1600x760 --rendering-driver opengl3 \
   res://tools/voxel-rubble/preview_rubble.tscn
+
+python tools/placeholder-art/audit_placeholders.py
 ```
 
-Three checks, because each sees something the others cannot. The validator reads
+Four checks, because each sees something the others cannot. The validator reads
 the glTF JSON and is the pass/fail authority CI runs. `verify_rubble_import.gd`
 reads what Godot then *made* of it — the material flag above is decided there and
 is invisible to everything else. The preview is not headless, because headless has
-no rendering device: it is the only one of the three that would have caught a set
-that passed every check and rendered flat white.
+no rendering device: it is the only one of the four that would have caught a set
+that passed every check and rendered flat white. The audit reads none of that — it
+checks that every container reached a prefab and that both still agree the art is
+a stand-in.
