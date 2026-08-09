@@ -25,6 +25,7 @@ const SETTINGS_SCRIPTS := [
 	"res://prototypes/object_carrying/carry_settings.gd",
 	"res://prototypes/tunnel_system/tunnel_settings.gd",
 	"res://prototypes/tentacle_crawler_chaser/chase_settings.gd",
+	"res://prototypes/mineral_discovery/mineral_settings.gd",
 ]
 
 ## Somewhere writable that is not the repo. The round trip has to write a real

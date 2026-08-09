@@ -17,13 +17,18 @@ const INDEX_PATH := "res://prototypes/prototype_settings.tres"
 @export var object_carrying: CarrySettings
 @export var tunnel_system: TunnelSettings
 @export var tentacle_crawler_chaser: ChaseSettings
+@export var mineral_discovery: MineralSettings
 
 
 ## The children that are actually present, in declaration order.
 func all() -> Array[PrototypeSettings]:
 	var found: Array[PrototypeSettings] = []
 	for child: PrototypeSettings in [
-		navigation, object_carrying, tunnel_system, tentacle_crawler_chaser
+		navigation,
+		object_carrying,
+		tunnel_system,
+		tentacle_crawler_chaser,
+		mineral_discovery,
 	]:
 		if child != null:
 			found.append(child)
