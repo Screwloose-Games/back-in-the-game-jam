@@ -1,0 +1,21 @@
+[gd_resource type="StandardMaterial3D" format=3]
+
+; Every ore node and every fragment thrown off one, from a single material.
+;
+; It carries no vertex colours. The eighty-chunk shell this replaced needed them,
+; because a chunk's damage rode in its MultiMesh instance colour - and that came
+; with a trap worth remembering if instance colours ever come back: a material's
+; albedo_color is converted from sRGB to linear on its way to the GPU and an
+; instance colour is NOT, so the same numbers come out about five times too
+; bright and blow out under a lamp.
+;
+; Rock is faceted, so its shading comes entirely from flat per-triangle normals
+; off the surface nets mesher. Roughness is high and specular low because the
+; only thing that should read on a crater wall is the angle it is cut at.
+
+[resource]
+resource_name = "RockMaterial"
+albedo_color = Color(0.30, 0.27, 0.24, 1)
+metallic = 0.0
+metallic_specular = 0.15
+roughness = 0.95

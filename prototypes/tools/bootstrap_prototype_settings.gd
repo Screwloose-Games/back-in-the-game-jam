@@ -28,6 +28,7 @@ const SETTINGS_SCRIPTS := [
 	"res://prototypes/elevator_cutscene/elevator_cutscene_settings.gd",
 	"res://prototypes/level_design_01/level_design_01_settings.gd",
 	"res://prototypes/alien_ai_pathfinding/alien_pathfinding_settings.gd",
+	"res://prototypes/drill_and_mining/drill_settings.gd",
 ]
 
 const INDEX_SCRIPT := "res://prototypes/shared/prototype_settings_index.gd"
@@ -42,6 +43,7 @@ const INDEX_PROPERTIES := [
 	"elevator_cutscene",
 	"level_design_01",
 	"alien_ai_pathfinding",
+	"drill_and_mining",
 ]
 
 
