@@ -1,0 +1,46 @@
+[gd_scene load_steps=6 format=3]
+
+[ext_resource type="Script" path="res://prototypes/mineral_discovery/mineral_discovery_prototype.gd" id="0_root"]
+[ext_resource type="Script" path="res://prototypes/mineral_discovery/mineral_cave.gd" id="1_cave"]
+[ext_resource type="Script" path="res://prototypes/mineral_discovery/mineral_hud.gd" id="2_hud"]
+[ext_resource type="Script" path="res://prototypes/shared/prototype_tuning_panel.gd" id="3_tuning"]
+[ext_resource type="Resource" path="res://prototypes/mineral_discovery/mineral_settings.tres" id="4_settings"]
+
+[sub_resource type="Environment" id="Environment_cave"]
+background_mode = 1
+ambient_light_source = 2
+ambient_light_color = Color(0.42, 0.48, 0.56, 1)
+ambient_light_energy = 0.02
+tonemap_mode = 4
+glow_enabled = true
+glow_intensity = 0.45
+glow_bloom = 0.05
+fog_enabled = true
+fog_mode = 1
+fog_light_color = Color(0.02, 0.024, 0.03, 1)
+fog_light_energy = 0.6
+fog_density = 1.0
+fog_depth_begin = 4.0
+fog_depth_end = 30.0
+
+[node name="MineralDiscoveryPrototype" type="Node3D"]
+script = ExtResource("0_root")
+settings = ExtResource("4_settings")
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = SubResource("Environment_cave")
+
+[node name="Cave" type="Node3D" parent="."]
+script = ExtResource("1_cave")
+
+[node name="Hud" type="CanvasLayer" parent="."]
+script = ExtResource("2_hud")
+
+[node name="Tuning" type="PanelContainer" parent="Hud"]
+anchors_preset = 2
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_left = 16.0
+offset_bottom = -16.0
+grow_vertical = 0
+script = ExtResource("3_tuning")

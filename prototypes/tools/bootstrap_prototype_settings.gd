@@ -25,6 +25,7 @@ const SETTINGS_SCRIPTS := [
 	"res://prototypes/object_carrying/carry_settings.gd",
 	"res://prototypes/tunnel_system/tunnel_settings.gd",
 	"res://prototypes/tentacle_crawler_chaser/chase_settings.gd",
+	"res://prototypes/mineral_discovery/mineral_settings.gd",
 ]
 
 const INDEX_SCRIPT := "res://prototypes/shared/prototype_settings_index.gd"
@@ -36,6 +37,7 @@ const INDEX_PROPERTIES := [
 	"object_carrying",
 	"tunnel_system",
 	"tentacle_crawler_chaser",
+	"mineral_discovery",
 ]
 
 

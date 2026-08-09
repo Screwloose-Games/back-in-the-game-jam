@@ -1,0 +1,21 @@
+[gd_resource type="Resource" script_class="MineralSettings" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://prototypes/mineral_discovery/mineral_settings.gd" id="1_mineral"]
+
+[resource]
+script = ExtResource("1_mineral")
+deposit_hue = 0.11
+deposit_saturation = 0.75
+deposit_lightness = 0.62
+deposit_emission_energy = 0.3
+deposit_roughness = 0.35
+deposit_specular = 0.65
+env_hue = 0.6
+env_saturation = 0.08
+env_lightness = 0.26
+env_roughness = 0.9
+env_specular = 0.2
+markers_enabled = true
+marker_proximity = 12.0
+extract_time = 2.0
+extract_range = 3.0
