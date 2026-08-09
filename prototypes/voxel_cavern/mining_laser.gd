@@ -161,9 +161,12 @@ func _material_at_surface(world_hit: Vector3, world_normal: Vector3) -> int:
 
 
 func _update_beam(hit: Dictionary) -> void:
-	var from := _camera.global_position
+	# Fired from the right hip: the beam emerges at the muzzle offset (down and to
+	# the right of the eyes) but still converges on the crosshair, so aiming stays
+	# centre-screen while the beam reads as coming from a held tool.
+	var from := _camera.global_transform * VoxelCavernKnobs.MINING_BEAM_MUZZLE_OFFSET
 	var forward := -_camera.global_transform.basis.z
-	var to: Vector3 = from + forward * _settings.mining_beam_range
+	var to: Vector3 = _camera.global_position + forward * _settings.mining_beam_range
 	if not hit.is_empty():
 		to = hit["position"]
 	var length := from.distance_to(to)

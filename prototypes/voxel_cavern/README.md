@@ -1,46 +1,55 @@
 # voxel_cavern
 
-A blocky rock body you spawn *inside*, built to answer one thing: **what does it
-feel like to carve mineral veins out of a voxel cavern with a mining laser?**
-
-Every surface is a voxel face, so everything the beam touches — walls, veins, the
-hole you just made — is perpendicular and stair-stepped. The rock is threaded with
-glowing mineral veins, and the laser can be set to eat the rock, the ore, or both.
+A blocky voxel cavern you mine through — and get hunted in. Three rooms joined by
+tunnels, carved out of solid rock, with glowing mineral veins in the walls. You
+fly, you carve, and the tentacle crawler hunts you down the wide tunnels. When it
+closes in, you dive into the narrow tunnel it can't fit through.
 
 ```
 godot --path <root> res://prototypes/voxel_cavern/voxel_cavern_prototype.tscn
 ```
 
 WASD + space/ctrl to thrust, mouse to look, Q/E to roll, shift to sprint,
-R to stabilise, escape to release the mouse. **Hold left mouse to fire the laser.**
+R to stabilise. **Hold left mouse to fire the mining laser** (it fires from your
+right hip and converges on the crosshair). Esc frees the cursor for the tuning
+panel.
 
-Press **escape** and use the panel in the bottom left to change the laser while you
-fly.
+The cavern generates and the navmesh bakes over the first few seconds — the HUD
+reads `alien: navmesh baking...` until the hunt begins.
 
 ---
 
-## The questions it exists to answer
+## The layout
 
-- Does carving into a wall and following a vein feel **satisfying**, or fiddly?
-- Is a sphere-shaped bite out of a cubic wall a good "dig", or does it read wrong?
-- Twice a second is the deform rate — does the beam feel like it's *working*, or
-  like it's lagging behind you?
-- With **deform terrain off**, the laser removes only ore and leaves the rock — a
-  clean "mining laser only cuts the valuable stuff" fantasy. Does that read, or is
-  ore-only mining more frustrating than freeform digging?
+- **Room A** — where you spawn.
+- **Room C** — where the alien spawns, on the far side.
+- **Room B** — the corner between them.
+- **Two wide tunnels** (9 m bore) join the rooms the long way, A → B → C. The alien
+  is big enough to fit and will chase you down them.
+- **One narrow tunnel** (2 m bore) is a direct A → C shortcut. You fit; the alien
+  (2.15 m body radius, needs ~6.4 m of width to move) does not, and it isn't even
+  in the alien's navmesh. This is your escape.
 
-## How the laser works
+The alien, its hunting AI, and its wall-crawling navmesh are reused wholesale from
+`prototypes/tentacle_crawler_chaser` — the creature senses the world only by
+raycasts on the hull layer, so it drops onto the voxel terrain unchanged. It
+crawls the walls toward the nearest point to you and never stops. If it gets within
+reach, the HUD flashes `CAUGHT`, and after a moment you and the alien reset to your
+spawns.
 
-Hold left mouse and the beam raycasts from the camera. Wherever it lands on
-terrain it removes a sphere of voxels **twice per second**, of diameter
-`mining_beam_deformation_diameter` (the sphere radius is half that). Each voxel in
-the sphere is only removed if its class is enabled:
+## The mining laser
+
+Hold left mouse and the beam raycasts from the camera. Wherever it lands on terrain
+it removes a sphere of voxels twice per second, of diameter
+`mining_beam_deformation_diameter`. Each voxel is only removed if its class is
+enabled — the two live CheckButtons in the panel:
 
 - **`deform minerals`** — the glowing cyan/gold veins.
 - **`deform terrain`** — the plain grey rock.
 
-Both are live CheckButtons in the panel, so you can flip between "cut everything",
-"cut only ore", and "cut only rock (leave the veins floating)" without a restart.
+So you can carve everything, mine only ore, or (to see it) cut only rock and leave
+the veins hanging. You can also widen your escape: mine the narrow tunnel bigger and
+the alien will eventually fit — a knob on the fantasy, not a bug.
 
 ---
 
@@ -48,31 +57,38 @@ Both are live CheckButtons in the panel, so you can flip between "cut everything
 
 **While flying**, from the bottom-left panel: carve diameter, deforms per second,
 beam range, and the two deform toggles. **SAVE** writes them to
-`voxel_cavern_settings.tres` (committed); **RESET** returns to the
-`voxel_cavern_knobs.gd` defaults; deleting the `.tres` runs on those defaults again.
+`voxel_cavern_settings.tres`; **RESET** returns to the `voxel_cavern_knobs.gd`
+defaults.
 
-**Between runs**, everything else lives in `voxel_cavern_knobs.gd`: the world size,
-the spawn chamber, the vein noise, and — most importantly — `VOXEL_SIZE`.
+**Between runs**, everything else lives in `voxel_cavern_knobs.gd`: the room
+positions and radii, the tunnel widths (wide vs the narrow shortcut), the alien's
+speed and size, and — most importantly — `VOXEL_SIZE`.
 
-## A note on voxel size and performance
+## A note on scale and performance
 
-`VOXEL_SIZE` is `0.06 m` — a deliberately fine grid, so the walls read as detailed
-rather than as big Minecraft cubes. That is expensive: generation and meshing cost
-scale with roughly `1 / VOXEL_SIZE^3`, and the world is kept small (a 5 m rock
-body) and the view distance short (4 m, hidden by fog) to pay for it. **If the
-GL Compatibility / web build can't hold framerate, raise `VOXEL_SIZE` first**
-(0.12–0.25 m) — everything else is derived from it.
+This map is much bigger than a pure mining pocket because the alien is ~4.3 m across
+and needs 6.4 m+ tunnels to move. That forces a coarser grid: `VOXEL_SIZE` is
+`0.4 m`, a compromise between mining detail and a map large enough to host the
+chase. Generation and meshing cost scale with roughly `1 / VOXEL_SIZE^3`, and the
+**whole** cavern is streamed at once (a single fixed viewer at the map centre) so
+the navmesh can bake over the collided terrain — so startup takes a few seconds.
+**If the GL Compatibility / web build is slow, raise `VOXEL_SIZE`** (0.5–0.6);
+everything else is derived from it. Lower it for finer mining at a heavier startup.
+
+The narrow tunnel is kept out of the alien's navmesh by setting the bake's
+`NAVMESH_OPENNESS_RADIUS` above the tunnel's radius, so the alien never even tries
+to path the shortcut.
 
 ---
 
 ## What it deliberately does not have
 
-No ore collection, no inventory, no oxygen or power, no structural collapse, no
-enemies, no objective. The laser removes voxels and nothing else happens — the
-question is only whether *removing* them feels good.
+No ore collection, no inventory, no oxygen or power, no health — being caught just
+resets the chase. The mining and the hunt are the two things under test: does
+carving feel good, and is being chased through a cavern you can reshape tense?
 
 ---
 
-*Technical notes — the generator, the selective sphere carve via `VoxelTool`, and
-the voxel-space coordinate conversion — live in the comments of the scripts
-themselves.*
+*Technical notes — the layout-driven voxel carve, the selective sphere mining via
+`VoxelTool`, the reused chase stack, and the runtime navmesh bake over the voxel
+collider — live in the comments of the scripts themselves.*
