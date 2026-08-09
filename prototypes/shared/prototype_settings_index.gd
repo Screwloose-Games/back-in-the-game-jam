@@ -3,7 +3,7 @@ extends Resource
 
 ## Every prototype's saved playtest values, collected in one resource.
 ##
-## Open prototypes/prototype_settings.tres to see and edit all four sets in the
+## Open prototypes/prototype_settings.tres to see and edit every set in the
 ## inspector at once, and to reset or re-save them together.
 ##
 ## NOTHING AT RUNTIME COMES THROUGH HERE. Each prototype scene holds its own
@@ -17,13 +17,14 @@ const INDEX_PATH := "res://prototypes/prototype_settings.tres"
 @export var object_carrying: CarrySettings
 @export var tunnel_system: TunnelSettings
 @export var tentacle_crawler_chaser: ChaseSettings
+@export var drill_and_mining: DrillSettings
 
 
 ## The children that are actually present, in declaration order.
 func all() -> Array[PrototypeSettings]:
 	var found: Array[PrototypeSettings] = []
 	for child: PrototypeSettings in [
-		navigation, object_carrying, tunnel_system, tentacle_crawler_chaser
+		navigation, object_carrying, tunnel_system, tentacle_crawler_chaser, drill_and_mining
 	]:
 		if child != null:
 			found.append(child)

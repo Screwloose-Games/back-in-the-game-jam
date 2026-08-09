@@ -1,0 +1,24 @@
+[gd_resource type="StandardMaterial3D" format=3]
+
+; The drill beam and its impact dot.
+;
+; Unshaded and ADDITIVE, which is the pair that makes it read as light rather
+; than as a coloured rod: additive blending means the beam can only ever brighten
+; what is behind it, so it never occludes the rock it is cutting.
+;
+; No emission. In unshaded mode Godot writes ALBEDO straight out and never adds
+; EMISSION, so an emission colour here would look like it was doing the work and
+; would not - the albedo is deliberately over 1.0 instead, which is also what
+; pushes it past the environment's glow threshold and gives it its bloom.
+;
+; Depth write off: additive geometry that writes depth punches a hole in
+; anything drawn after it.
+
+[resource]
+resource_name = "BeamMaterial"
+transparency = 1
+blend_mode = 1
+shading_mode = 0
+depth_draw_mode = 1
+disable_receive_shadows = true
+albedo_color = Color(2.4, 0.72, 0.34, 0.85)
