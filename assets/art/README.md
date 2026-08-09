@@ -24,6 +24,13 @@ Optional siblings seen here, when a model needs them:
 
 - `t_<name>_basecolor.png` + `.png.import` — textures, `t_` prefix.
 
+On the voxel props and the character, that PNG is an **indexed palette**, not a
+texture map: a 16×16 grid of 4×4-texel swatches, every face pointing at one
+swatch centre. It has two `.import` settings it cannot survive without —
+`detect_3d/compress_to=0` and `mipmaps/generate=false` — because Godot's defaults
+block-compress it on first 3D use and ETC2's 4×4 blocks land exactly on the
+swatch grid. See `tools/voxel-props/README.md`.
+
 ### Naming
 
 Lowercase, underscores between words, prefix first: `sm_` static mesh, `t_`
@@ -68,7 +75,31 @@ after the file:
 
 ```gdscript
 [node name="sm_rubble01" instance=ExtResource("1_8avgo")]
+metadata/placeholder = true
 ```
 
 It exists so other scenes reference a stable file rather than the imported mesh
 directly.
+
+Nothing places a container in a level. That is the prefab's job — the container's
+counterpart under `prefabs/{category}/`, named `prefab_<object>.tscn`, which
+instances this file and adds whatever makes the object work. `sm_rubble01.tscn`
+here pairs with `prefabs/environment/props/prefab_rubble01.tscn`.
+
+### Placeholder art
+
+Art that is standing in for something real carries one line, on the container and
+on its prefab both:
+
+```gdscript
+metadata/placeholder = true
+```
+
+The two files have different owners — integration owns the container, programming
+owns the prefab — so each marks its own without editing the other's, and
+`tools/placeholder-art/audit_placeholders.py` lists what still needs real art and
+reports any pair that has drifted apart.
+
+`examples/` is exempt. Those models exist to make the validator fail in known ways,
+and `test_pass_crate` is the "everything reads OK" baseline and the 1 m scale
+reference. None of them will ever be replaced by real art.

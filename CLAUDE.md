@@ -17,7 +17,8 @@ texture budgets are tight.
 | `tools/blender-vehicle/` | Procedural vehicle toolkit + the retrospective that produced it. |
 | `.claude/rules/` | Path-scoped rules that load when you touch matching files. |
 | `assets/art/{category}/{object}/` | All art, 2D and 3D, grouped by category rather than by media type. One directory per object. |
-| `examples/` | Self-contained "is this loop fun?" prototypes. Exempt from shared conventions on purpose — do not tidy them into line. |
+| `prototypes/` | Self-contained "is this loop fun?" prototypes. Exempt from shared conventions on purpose — do not tidy them into line. |
+| `assets/art/examples/` | Validator fixtures named for the check they trip, plus third-party art. Also exempt — several exist in order to fail. |
 
 ## Generated files
 

@@ -1,4 +1,18 @@
 ## Learn more about CODEOWNERS at https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/about-code-owners
 
-# Uncomment and set an owner to require their review on all pull requests.
-# * @your-github-handle
+/.github/                       @jonathandavidlewis
+/documentation/pipeline/        @jonathandavidlewis
+/tools/                         @jonathandavidlewis
+
+# --- Conventions and local gates -------------------------------------------
+/CLAUDE.md                      @jonathandavidlewis
+/CONTRIBUTING.md                @jonathandavidlewis
+/.pre-commit-config.yaml        @jonathandavidlewis
+/.githooks/                     @jonathandavidlewis
+
+# --- Intentionally unowned -------------------------------------------------
+# assets/    -- art lands during a jam and is already gated by four validators
+#               plus a rendered preview comment; a required human review would
+#               be the slowest step in the pipeline, not the safest.
+# prototypes/ -- exempt from shared conventions on purpose. See CLAUDE.md.
+

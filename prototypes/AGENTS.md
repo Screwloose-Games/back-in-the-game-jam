@@ -82,4 +82,4 @@ whatever the settings resource exports.
 `prototypes/tentacle_crawler/` is exempt from all of this — its own `CLAUDE.md`
 requires it to stay self-contained and not depend on the host project.
 
-See `REAMDE.md` for the playtester-facing version.
+See `README.md` for the playtester-facing version.

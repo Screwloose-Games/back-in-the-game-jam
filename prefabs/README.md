@@ -8,9 +8,9 @@ components that make it a working game object. The contract level design relies
 on: **a prefab works as-is when dropped into a level**, with no per-placement
 wiring.
 
-`unity-prefab-organization-spec.md` is the Unity-flavoured version of the
-organisation rules below, kept for reference. This file is the one that applies
-here — same domain-first idea, Godot file naming.
+The organisation rules below started as a Unity-flavoured spec; this is the Godot
+version and the one that applies here — same domain-first idea, this repo's file
+naming.
 
 ## Naming
 
@@ -166,12 +166,55 @@ prefabs/
 appear here.
 
 `_a` and `_b` stand in for the two crystal colours until art names them; once
-named, use the colour (`prefab_crystal_azure_small.tscn`). `environment/props/`
-mirrors `assets/art/environment/props/`, where the ten rubble meshes already
-live.
+named, use the colour (`prefab_crystal_azure_small.tscn`).
 
-Nothing here is pre-created. Add a category directory when you have a prefab to
+Three of these exist today:
+
+- `environment/props/` — `prefab_rubble01.tscn` … `prefab_rubble10.tscn`,
+  mirroring `assets/art/environment/props/`.
+- `environment/elevator/` — `prefab_elevator_car.tscn` and
+  `prefab_wall_switch.tscn`. A subdomain rather than two loose entries under
+  `environment/`, per rule 3: the switch has no meaning apart from the car it
+  drives.
+- `gameplay/` — `prefab_mining_laser.tscn`, the digging laser the placement
+  decision below already routed here.
+
+Every other directory above is still notional — add one when you have a prefab to
 put in it.
+
+The three non-rubble prefabs are bare wrappers too, and for the same reason: the
+art is final, the behaviour is not. The car still needs a `StaticBody3D` and an
+`AnimationPlayer` for the door slide (the leaves are separate nodes in the glTF
+precisely so it can have one), and the switch still needs whatever drives it. They
+carry no `metadata/placeholder` line, because the art they wrap is not a stand-in.
+
+## Placeholder prefabs
+
+A prefab wrapping placeholder art says so, on its own root:
+
+```gdscript
+[node name="prefab_rubble01" type="Node3D"]
+metadata/placeholder = true
+
+[node name="sm_rubble01" parent="." instance=ExtResource("1_106aa")]
+```
+
+The container it instances carries the same line. The duplication is deliberate:
+integration owns the container and programming owns the prefab, so each marks its
+own file. `tools/placeholder-art/audit_placeholders.py` lists every marked scene
+and reports any prefab and container that disagree.
+
+The rubble prefabs are bare wrappers today — no collision, no physics body, no
+script — which does not yet satisfy `prefab_works_standalone`. They exist so level
+design has a stable file and a stable `uid` to place against while the behaviour
+is written.
+
+**Wrap the container; do not inherit from it.** The root is a plain `Node3D` with
+the container as a child, because Godot cannot change the root node type of an
+inherited scene. A rubble chunk that later becomes a `RigidBody3D` would otherwise
+have to be deleted and rebuilt — new file, new `uid`, and every level that placed
+it rebound by hand. `tools/placeholder-art/make_prefab_scenes.gd` scaffolds them
+this way and never overwrites one that has grown past it.
 
 ## Placement decision
 
@@ -214,3 +257,4 @@ nodes are attached.
 - `assets/art/` — models, textures, and the model container scenes prefabs
   instance.
 - `levels/` and `test/levels/` — where prefabs get placed.
+- `tools/placeholder-art/` — the prefab scaffolder and the placeholder audit.
