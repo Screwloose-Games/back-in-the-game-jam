@@ -3,7 +3,7 @@ extends Resource
 
 ## Every prototype's saved playtest values, collected in one resource.
 ##
-## Open prototypes/prototype_settings.tres to see and edit all four sets in the
+## Open prototypes/prototype_settings.tres to see and edit every set in the
 ## inspector at once, and to reset or re-save them together.
 ##
 ## NOTHING AT RUNTIME COMES THROUGH HERE. Each prototype scene holds its own
@@ -19,6 +19,7 @@ const INDEX_PATH := "res://prototypes/prototype_settings.tres"
 @export var tentacle_crawler_chaser: ChaseSettings
 @export var elevator_cutscene: ElevatorCutsceneSettings
 @export var level_design_01: LevelDesign01Settings
+@export var drill_and_mining: DrillSettings
 
 
 ## The children that are actually present, in declaration order.
@@ -35,6 +36,7 @@ func all() -> Array[PrototypeSettings]:
 		tentacle_crawler_chaser,
 		elevator_cutscene,
 		level_design_01,
+		drill_and_mining,
 	]:
 		if child != null:
 			found.append(child)
@@ -43,7 +45,7 @@ func all() -> Array[PrototypeSettings]:
 
 ## Saves every child to its own .tres.
 ##
-## THIS FILE IS NEVER WRITTEN. It holds four references and no values, so
+## THIS FILE IS NEVER WRITTEN. It holds references and no values, so
 ## re-saving it can only churn resource ids in git for no gain - and the children
 ## are separate files held as ExtResource, which is exactly why saving one of them
 ## does not need the index rewritten.

@@ -1,0 +1,11 @@
+[gd_scene format=3]
+
+; A wrapper so the suite can be NAMED ON THE COMMAND LINE as a scene. Nodes
+; added during SceneTree._initialize() never receive _ready(), and this builds
+; real ore nodes, so running the script bare would print nothing and exit 0 -
+; which looks exactly like a pass.
+
+[ext_resource type="Script" path="res://prototypes/drill_and_mining/verify_drill.gd" id="0_verify"]
+
+[node name="VerifyDrill" type="Node"]
+script = ExtResource("0_verify")
