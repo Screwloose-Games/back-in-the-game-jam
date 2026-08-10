@@ -1,0 +1,257 @@
+[gd_scene load_steps=7 format=3]
+
+[ext_resource type="Script" path="res://prototypes/tentacle_crawler_chaser/tentacle_crawler_multiplayer_demo.gd" id="1_demo"]
+[ext_resource type="Script" path="res://prototypes/tentacle_crawler_chaser/multiplayer_chase_arena.gd" id="2_arena"]
+[ext_resource type="PackedScene" path="res://common/network/multiplayer_session_shell.tscn" id="4_shell"]
+[ext_resource type="Theme" path="res://common/themes/theme.tres" id="5_theme"]
+
+[sub_resource type="Environment" id="Environment_chase"]
+background_mode = 1
+background_color = Color(0.004, 0.006, 0.009, 1)
+ambient_light_source = 2
+ambient_light_color = Color(0.15, 0.19, 0.25, 1)
+ambient_light_energy = 0.06
+tonemap_mode = 4
+glow_enabled = true
+glow_intensity = 0.32
+glow_bloom = 0.03
+fog_enabled = true
+fog_mode = 1
+fog_light_color = Color(0.012, 0.016, 0.024, 1)
+fog_light_energy = 0.45
+fog_density = 1.0
+fog_depth_begin = 5.0
+fog_depth_end = 34.0
+
+[sub_resource type="SceneReplicationConfig" id="ReplicationConfig_round"]
+properties/0/path = NodePath(".:round_phase")
+properties/0/spawn = true
+properties/0/replication_mode = 2
+properties/1/path = NodePath(".:round_message")
+properties/1/spawn = true
+properties/1/replication_mode = 2
+properties/2/path = NodePath(".:target_peer_id")
+properties/2/spawn = true
+properties/2/replication_mode = 2
+properties/3/path = NodePath(".:round_serial")
+properties/3/spawn = true
+properties/3/replication_mode = 2
+
+[node name="TentacleCrawlerMultiplayerDemo" type="Node3D"]
+script = ExtResource("1_demo")
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = SubResource("Environment_chase")
+
+[node name="Arena" type="Node3D" parent="."]
+script = ExtResource("2_arena")
+
+[node name="ChaseIntent" type="Marker3D" parent="."]
+position = Vector3(-1.5, 0, 14)
+
+[node name="Players" type="Node3D" parent="."]
+
+[node name="PlayerSpawner" type="MultiplayerSpawner" parent="."]
+spawn_path = NodePath("../Players")
+spawn_limit = 2
+
+[node name="RoundSync" type="MultiplayerSynchronizer" parent="."]
+replication_config = SubResource("ReplicationConfig_round")
+
+[node name="MultiplayerSessionShell" parent="." instance=ExtResource("4_shell")]
+
+[node name="GameHud" type="CanvasLayer" parent="."]
+layer = 20
+
+[node name="TopShade" type="ColorRect" parent="GameHud"]
+anchors_preset = 10
+anchor_right = 1.0
+offset_bottom = 116.0
+grow_horizontal = 2
+mouse_filter = 2
+color = Color(0.008, 0.012, 0.018, 0.84)
+
+[node name="SessionReadout" type="Label" parent="GameHud"]
+unique_name_in_owner = true
+offset_left = 24.0
+offset_top = 18.0
+offset_right = 490.0
+offset_bottom = 46.0
+theme = ExtResource("5_theme")
+theme_override_colors/font_color = Color(0.65, 0.82, 1, 1)
+theme_override_font_sizes/font_size = 17
+text = "HOST · SESSION ------"
+
+[node name="RoundReadout" type="Label" parent="GameHud"]
+unique_name_in_owner = true
+anchors_preset = 10
+anchor_right = 1.0
+offset_left = 260.0
+offset_top = 62.0
+offset_right = -260.0
+offset_bottom = 94.0
+grow_horizontal = 2
+theme = ExtResource("5_theme")
+theme_override_colors/font_color = Color(0.78, 0.86, 0.96, 1)
+theme_override_font_sizes/font_size = 18
+text = "Reach extraction."
+horizontal_alignment = 1
+autowrap_mode = 2
+
+[node name="TargetReadout" type="Label" parent="GameHud"]
+unique_name_in_owner = true
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -430.0
+offset_top = 18.0
+offset_right = -24.0
+offset_bottom = 46.0
+grow_horizontal = 0
+theme = ExtResource("5_theme")
+theme_override_colors/font_color = Color(0.95, 0.76, 0.38, 1)
+theme_override_font_sizes/font_size = 17
+text = "CRAWLER TARGET · ACQUIRING"
+horizontal_alignment = 2
+
+[node name="DistanceReadout" type="Label" parent="GameHud"]
+unique_name_in_owner = true
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -360.0
+offset_top = 48.0
+offset_right = -24.0
+offset_bottom = 76.0
+grow_horizontal = 0
+theme = ExtResource("5_theme")
+theme_override_colors/font_color = Color(0.42, 1, 0.7, 1)
+theme_override_font_sizes/font_size = 17
+text = "EXTRACTION · 44 m"
+horizontal_alignment = 2
+
+[node name="Crosshair" type="Label" parent="GameHud"]
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -16.0
+offset_top = -18.0
+offset_right = 16.0
+offset_bottom = 18.0
+grow_horizontal = 2
+grow_vertical = 2
+theme = ExtResource("5_theme")
+theme_override_colors/font_color = Color(0.72, 0.86, 1, 0.7)
+theme_override_font_sizes/font_size = 22
+text = "+"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="CapturePrompt" type="PanelContainer" parent="GameHud"]
+unique_name_in_owner = true
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -230.0
+offset_top = -82.0
+offset_right = 230.0
+offset_bottom = -24.0
+grow_horizontal = 2
+grow_vertical = 0
+theme = ExtResource("5_theme")
+
+[node name="CaptureButton" type="Button" parent="GameHud/CapturePrompt"]
+unique_name_in_owner = true
+focus_mode = 0
+text = "CLICK TO CAPTURE TRACKPAD / MOUSE"
+
+[node name="Briefing" type="CanvasLayer" parent="."]
+layer = 80
+
+[node name="Backdrop" type="ColorRect" parent="Briefing"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.008, 0.012, 0.018, 0.96)
+
+[node name="Center" type="CenterContainer" parent="Briefing"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme = ExtResource("5_theme")
+
+[node name="Panel" type="PanelContainer" parent="Briefing/Center"]
+custom_minimum_size = Vector2(940, 0)
+
+[node name="Margin" type="MarginContainer" parent="Briefing/Center/Panel"]
+theme_override_constants/margin_left = 40
+theme_override_constants/margin_top = 34
+theme_override_constants/margin_right = 40
+theme_override_constants/margin_bottom = 34
+
+[node name="Content" type="VBoxContainer" parent="Briefing/Center/Panel/Margin"]
+theme_override_constants/separation = 18
+
+[node name="Proof" type="Label" parent="Briefing/Center/Panel/Margin/Content"]
+theme_override_colors/font_color = Color(0.42, 1, 0.7, 1)
+theme_override_font_sizes/font_size = 18
+text = "TWO-PLAYER HOST-AUTHORITATIVE PROOF"
+horizontal_alignment = 1
+
+[node name="Title" type="Label" parent="Briefing/Center/Panel/Margin/Content"]
+theme_override_colors/font_color = Color(0.65, 0.82, 1, 1)
+theme_override_font_sizes/font_size = 38
+text = "ESCAPE THE CRAWLER"
+horizontal_alignment = 1
+
+[node name="BriefingSession" type="Label" parent="Briefing/Center/Panel/Margin/Content"]
+unique_name_in_owner = true
+theme_override_colors/font_color = Color(0.95, 0.76, 0.38, 1)
+theme_override_font_sizes/font_size = 20
+text = "HOST · SESSION ------"
+horizontal_alignment = 1
+
+[node name="Rule" type="Label" parent="Briefing/Center/Panel/Margin/Content"]
+theme_override_font_sizes/font_size = 19
+text = "Follow the green floor marker to the far end. Both survivors must reach extraction.\nThe host simulates both suits, the crawler, catches, and resets. The crawler targets whoever falls behind."
+horizontal_alignment = 1
+autowrap_mode = 2
+
+[node name="Separator" type="HSeparator" parent="Briefing/Center/Panel/Margin/Content"]
+
+[node name="ControlsTitle" type="Label" parent="Briefing/Center/Panel/Margin/Content"]
+theme_override_colors/font_color = Color(0.42, 1, 0.7, 1)
+theme_override_font_sizes/font_size = 18
+text = "LAPTOP CONTROLS"
+
+[node name="Controls" type="Label" parent="Briefing/Center/Panel/Margin/Content"]
+theme_override_font_sizes/font_size = 18
+text = "WASD  thrust       SPACE / SHIFT  up / down       TRACKPAD / MOUSE  look\nQ / E  roll          HOLD R  brake your drift       ESC  release the mouse"
+autowrap_mode = 2
+
+[node name="Verify" type="Label" parent="Briefing/Center/Panel/Margin/Content"]
+theme_override_colors/font_color = Color(0.95, 0.76, 0.38, 1)
+theme_override_font_sizes/font_size = 17
+text = "CHECK  See the other suit move · crawler target matches · catch/reset matches · host continues if guest leaves"
+autowrap_mode = 2
+
+[node name="BriefingReady" type="Label" parent="Briefing/Center/Panel/Margin/Content"]
+unique_name_in_owner = true
+theme_override_colors/font_color = Color(0.65, 0.82, 1, 1)
+theme_override_font_sizes/font_size = 17
+text = "Synchronizing your survivor…"
+horizontal_alignment = 1
+
+[node name="EnterButton" type="Button" parent="Briefing/Center/Panel/Margin/Content"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 58)
+focus_mode = 0
+text = "ENTER CORRIDOR · CAPTURE TRACKPAD / MOUSE"
