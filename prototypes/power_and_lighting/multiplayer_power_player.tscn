@@ -1,0 +1,112 @@
+[gd_scene load_steps=10 format=3]
+
+[ext_resource type="Script" path="res://prototypes/power_and_lighting/multiplayer_power_player.gd" id="1_player"]
+[ext_resource type="Script" path="res://prototypes/power_and_lighting/multiplayer_input_state.gd" id="2_inputs"]
+[ext_resource type="Script" path="res://common/network/prediction/client_predictor_3d.gd" id="3_prediction"]
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape_player"]
+radius = 0.35
+height = 1.2
+
+[sub_resource type="StandardMaterial3D" id="Material_player"]
+resource_local_to_scene = true
+albedo_color = Color(0.35, 0.95, 0.68, 1)
+metallic = 0.45
+roughness = 0.38
+emission_enabled = true
+emission = Color(0.08, 0.35, 0.2, 1)
+emission_energy_multiplier = 0.7
+
+[sub_resource type="CapsuleMesh" id="CapsuleMesh_player"]
+material = SubResource("Material_player")
+radius = 0.35
+height = 1.2
+
+[sub_resource type="StandardMaterial3D" id="Material_tether"]
+shading_mode = 0
+albedo_color = Color(0.4, 0.7, 1, 0.9)
+emission_enabled = true
+emission = Color(0.15, 0.45, 1, 1)
+emission_energy_multiplier = 1.4
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_tether"]
+material = SubResource("Material_tether")
+top_radius = 0.025
+bottom_radius = 0.025
+height = 1.0
+radial_segments = 8
+rings = 1
+
+[sub_resource type="SceneReplicationConfig" id="ReplicationConfig_state"]
+properties/0/path = NodePath("Prediction:authoritative_transform")
+properties/0/spawn = true
+properties/0/replication_mode = 1
+properties/1/path = NodePath("Prediction:authoritative_velocity")
+properties/1/spawn = true
+properties/1/replication_mode = 1
+properties/2/path = NodePath("Prediction:authoritative_epoch")
+properties/2/spawn = true
+properties/2/replication_mode = 1
+properties/3/path = NodePath("Prediction:acknowledged_input_sequence")
+properties/3/spawn = true
+properties/3/replication_mode = 1
+properties/4/path = NodePath("Prediction:simulation_active")
+properties/4/spawn = true
+properties/4/replication_mode = 1
+properties/5/path = NodePath("Prediction:snapshot_sequence")
+properties/5/spawn = true
+properties/5/replication_mode = 1
+
+[node name="MultiplayerPowerPlayer" type="CharacterBody3D"]
+collision_layer = 2
+collision_mask = 9
+motion_mode = 1
+script = ExtResource("1_player")
+
+[node name="CollisionShape" type="CollisionShape3D" parent="."]
+shape = SubResource("CapsuleShape_player")
+
+[node name="Presentation" type="Node3D" parent="."]
+
+[node name="BodyMesh" type="MeshInstance3D" parent="Presentation"]
+material_override = SubResource("Material_player")
+mesh = SubResource("CapsuleMesh_player")
+
+[node name="HeadCamera" type="Camera3D" parent="Presentation"]
+position = Vector3(0, 0.25, 0)
+fov = 75.0
+near = 0.05
+far = 28.0
+
+[node name="HelmetLamp" type="SpotLight3D" parent="Presentation/HeadCamera"]
+position = Vector3(0.14, -0.12, 0)
+light_color = Color(1, 0.96, 0.89, 1)
+light_energy = 3.5
+shadow_enabled = true
+spot_range = 26.0
+spot_angle = 45.0
+spot_attenuation = 1.0
+spot_angle_attenuation = 0.75
+
+[node name="Nameplate" type="Label3D" parent="Presentation"]
+position = Vector3(0, 0.95, 0)
+billboard = 1
+text = "SURVIVOR"
+font_size = 36
+outline_size = 10
+modulate = Color(0.72, 0.86, 1, 1)
+
+[node name="Tether" type="MeshInstance3D" parent="."]
+top_level = true
+cast_shadow = 0
+mesh = SubResource("CylinderMesh_tether")
+
+[node name="Prediction" type="Node" parent="."]
+script = ExtResource("3_prediction")
+
+[node name="StateSync" type="MultiplayerSynchronizer" parent="."]
+replication_interval = 0.05
+replication_config = SubResource("ReplicationConfig_state")
+
+[node name="Inputs" type="Node" parent="."]
+script = ExtResource("2_inputs")
