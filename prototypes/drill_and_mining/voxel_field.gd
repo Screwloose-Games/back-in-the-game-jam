@@ -260,6 +260,27 @@ func count_solid_corners() -> int:
 	return solid
 
 
+## A detached copy of every field corner, suitable for a late-join snapshot.
+## Callers cannot accidentally mutate the live field through the returned array.
+func export_values() -> PackedFloat32Array:
+	return _field.duplicate()
+
+
+## Replaces every field corner from a snapshot. A snapshot from a differently
+## configured field is rejected without changing this one.
+func import_values(values: PackedFloat32Array) -> bool:
+	if values.size() != _field.size():
+		return false
+	for value: float in values:
+		if not is_finite(value):
+			return false
+	_field = values.duplicate()
+	_dirty.clear()
+	_dirty_lookup.clear()
+	_mark_all_dirty()
+	return true
+
+
 ## Sub-chunks waiting to be remeshed, oldest first. The caller takes as many as
 ## its frame budget allows and leaves the rest.
 func take_dirty(limit: int) -> Array[Vector3i]:

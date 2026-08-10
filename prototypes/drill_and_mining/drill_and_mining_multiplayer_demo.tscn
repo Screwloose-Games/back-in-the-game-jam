@@ -1,0 +1,293 @@
+[gd_scene load_steps=9 format=3]
+
+[ext_resource type="Script" path="res://prototypes/drill_and_mining/drill_and_mining_multiplayer_demo.gd" id="1_demo"]
+[ext_resource type="Script" path="res://prototypes/drill_and_mining/multiplayer_drill_arena.gd" id="2_arena"]
+[ext_resource type="Script" path="res://prototypes/drill_and_mining/multiplayer_drill_world.gd" id="3_world"]
+[ext_resource type="PackedScene" path="res://common/network/multiplayer_session_shell.tscn" id="4_shell"]
+[ext_resource type="Theme" path="res://common/themes/theme.tres" id="5_theme"]
+[ext_resource type="Resource" path="res://prototypes/drill_and_mining/drill_settings.tres" id="6_settings"]
+
+[sub_resource type="Environment" id="Environment_drill"]
+background_mode = 1
+background_color = Color(0.01, 0.014, 0.022, 1)
+ambient_light_source = 2
+ambient_light_color = Color(0.46, 0.5, 0.58, 1)
+ambient_light_energy = 0.52
+tonemap_mode = 4
+glow_enabled = true
+glow_intensity = 0.4
+glow_bloom = 0.04
+fog_enabled = true
+fog_mode = 1
+fog_light_color = Color(0.09, 0.11, 0.15, 1)
+fog_light_energy = 0.6
+fog_density = 1.0
+fog_depth_begin = 7.0
+fog_depth_end = 22.0
+
+[sub_resource type="SceneReplicationConfig" id="ReplicationConfig_world"]
+properties/0/path = NodePath(".:crystal_state")
+properties/0/spawn = true
+properties/0/replication_mode = 2
+properties/1/path = NodePath(".:crystal_transform")
+properties/1/spawn = true
+properties/1/replication_mode = 1
+properties/2/path = NodePath(".:crystal_linear_velocity")
+properties/2/spawn = true
+properties/2/replication_mode = 1
+properties/3/path = NodePath(".:crystal_angular_velocity")
+properties/3/spawn = true
+properties/3/replication_mode = 1
+properties/4/path = NodePath(".:host_collected")
+properties/4/spawn = true
+properties/4/replication_mode = 2
+properties/5/path = NodePath(".:client_collected")
+properties/5/spawn = true
+properties/5/replication_mode = 2
+properties/6/path = NodePath(".:state_serial")
+properties/6/spawn = true
+properties/6/replication_mode = 2
+
+[node name="DrillAndMiningMultiplayerDemo" type="Node3D"]
+script = ExtResource("1_demo")
+settings = ExtResource("6_settings")
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = SubResource("Environment_drill")
+
+[node name="Arena" type="Node3D" parent="."]
+script = ExtResource("2_arena")
+
+[node name="OreMarker" type="Label3D" parent="."]
+position = Vector3(0, 1.65, -3)
+billboard = 1
+text = "SHARED ORE"
+font_size = 38
+outline_size = 10
+modulate = Color(0.95, 0.76, 0.38, 1)
+
+[node name="Players" type="Node3D" parent="."]
+
+[node name="PlayerSpawner" type="MultiplayerSpawner" parent="."]
+spawn_path = NodePath("../Players")
+spawn_limit = 2
+
+[node name="DrillWorld" type="Node3D" parent="."]
+script = ExtResource("3_world")
+
+[node name="StateSync" type="MultiplayerSynchronizer" parent="DrillWorld"]
+replication_interval = 0.05
+replication_config = SubResource("ReplicationConfig_world")
+
+[node name="MultiplayerSessionShell" parent="." instance=ExtResource("4_shell")]
+
+[node name="GameHud" type="CanvasLayer" parent="."]
+layer = 20
+
+[node name="TopShade" type="ColorRect" parent="GameHud"]
+anchors_preset = 10
+anchor_right = 1.0
+offset_bottom = 124.0
+grow_horizontal = 2
+mouse_filter = 2
+color = Color(0.008, 0.012, 0.018, 0.86)
+
+[node name="SessionReadout" type="Label" parent="GameHud"]
+unique_name_in_owner = true
+offset_left = 24.0
+offset_top = 16.0
+offset_right = 500.0
+offset_bottom = 44.0
+theme = ExtResource("5_theme")
+theme_override_colors/font_color = Color(0.65, 0.82, 1, 1)
+theme_override_font_sizes/font_size = 17
+text = "HOST · SESSION ------"
+
+[node name="OreReadout" type="Label" parent="GameHud"]
+unique_name_in_owner = true
+anchors_preset = 10
+anchor_right = 1.0
+offset_left = 260.0
+offset_top = 54.0
+offset_right = -260.0
+offset_bottom = 82.0
+grow_horizontal = 2
+theme = ExtResource("5_theme")
+theme_override_colors/font_color = Color(0.78, 0.86, 0.96, 1)
+theme_override_font_sizes/font_size = 17
+text = "ROCK 100% · OPENING 0.00 / 0.16 m · CARVE #0"
+horizontal_alignment = 1
+
+[node name="CrystalReadout" type="Label" parent="GameHud"]
+unique_name_in_owner = true
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -430.0
+offset_top = 16.0
+offset_right = -24.0
+offset_bottom = 44.0
+grow_horizontal = 0
+theme = ExtResource("5_theme")
+theme_override_colors/font_color = Color(0.95, 0.76, 0.38, 1)
+theme_override_font_sizes/font_size = 17
+text = "CRYSTAL · EMBEDDED"
+horizontal_alignment = 2
+
+[node name="ScoreReadout" type="Label" parent="GameHud"]
+unique_name_in_owner = true
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -430.0
+offset_top = 48.0
+offset_right = -24.0
+offset_bottom = 76.0
+grow_horizontal = 0
+theme = ExtResource("5_theme")
+theme_override_colors/font_color = Color(0.42, 1, 0.7, 1)
+theme_override_font_sizes/font_size = 17
+text = "HOST 0 · MINER-02 0"
+horizontal_alignment = 2
+
+[node name="NoticeReadout" type="Label" parent="GameHud"]
+unique_name_in_owner = true
+anchors_preset = 10
+anchor_right = 1.0
+offset_left = 220.0
+offset_top = 88.0
+offset_right = -220.0
+offset_bottom = 116.0
+grow_horizontal = 2
+theme = ExtResource("5_theme")
+theme_override_colors/font_color = Color(0.95, 0.76, 0.38, 1)
+theme_override_font_sizes/font_size = 16
+text = "Fly toward the labeled ore and hold left mouse to drill."
+horizontal_alignment = 1
+text_overrun_behavior = 3
+
+[node name="Crosshair" type="Label" parent="GameHud"]
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -16.0
+offset_top = -18.0
+offset_right = 16.0
+offset_bottom = 18.0
+grow_horizontal = 2
+grow_vertical = 2
+theme = ExtResource("5_theme")
+theme_override_colors/font_color = Color(0.95, 0.76, 0.38, 0.82)
+theme_override_font_sizes/font_size = 22
+text = "+"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="CapturePrompt" type="PanelContainer" parent="GameHud"]
+unique_name_in_owner = true
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -230.0
+offset_top = -82.0
+offset_right = 230.0
+offset_bottom = -24.0
+grow_horizontal = 2
+grow_vertical = 0
+theme = ExtResource("5_theme")
+
+[node name="CaptureButton" type="Button" parent="GameHud/CapturePrompt"]
+unique_name_in_owner = true
+focus_mode = 0
+text = "CLICK TO CAPTURE TRACKPAD / MOUSE"
+
+[node name="Briefing" type="CanvasLayer" parent="."]
+layer = 80
+
+[node name="Backdrop" type="ColorRect" parent="Briefing"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.008, 0.012, 0.018, 0.97)
+
+[node name="Center" type="CenterContainer" parent="Briefing"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme = ExtResource("5_theme")
+
+[node name="Panel" type="PanelContainer" parent="Briefing/Center"]
+custom_minimum_size = Vector2(940, 0)
+
+[node name="Margin" type="MarginContainer" parent="Briefing/Center/Panel"]
+theme_override_constants/margin_left = 40
+theme_override_constants/margin_top = 32
+theme_override_constants/margin_right = 40
+theme_override_constants/margin_bottom = 32
+
+[node name="Content" type="VBoxContainer" parent="Briefing/Center/Panel/Margin"]
+theme_override_constants/separation = 17
+
+[node name="Proof" type="Label" parent="Briefing/Center/Panel/Margin/Content"]
+theme_override_colors/font_color = Color(0.42, 1, 0.7, 1)
+theme_override_font_sizes/font_size = 18
+text = "TWO-PLAYER SHARED-WORLD PROOF"
+horizontal_alignment = 1
+
+[node name="Title" type="Label" parent="Briefing/Center/Panel/Margin/Content"]
+theme_override_colors/font_color = Color(0.65, 0.82, 1, 1)
+theme_override_font_sizes/font_size = 38
+text = "CUT THE CRYSTAL FREE"
+horizontal_alignment = 1
+
+[node name="BriefingSession" type="Label" parent="Briefing/Center/Panel/Margin/Content"]
+unique_name_in_owner = true
+theme_override_colors/font_color = Color(0.95, 0.76, 0.38, 1)
+theme_override_font_sizes/font_size = 20
+text = "HOST · SESSION ------"
+horizontal_alignment = 1
+
+[node name="Rule" type="Label" parent="Briefing/Center/Panel/Margin/Content"]
+theme_override_font_sizes/font_size = 19
+text = "Fly to the labeled ore and hold left mouse to drill. Widen one route until the crystal drifts free, then fly into it to collect it.\nPeer 1 validates every ray and orders each accepted carve; both browsers rebuild the mesh locally."
+horizontal_alignment = 1
+autowrap_mode = 2
+
+[node name="Separator" type="HSeparator" parent="Briefing/Center/Panel/Margin/Content"]
+
+[node name="ControlsTitle" type="Label" parent="Briefing/Center/Panel/Margin/Content"]
+theme_override_colors/font_color = Color(0.42, 1, 0.7, 1)
+theme_override_font_sizes/font_size = 18
+text = "LAPTOP CONTROLS"
+
+[node name="Controls" type="Label" parent="Briefing/Center/Panel/Margin/Content"]
+theme_override_font_sizes/font_size = 18
+text = "WASD  thrust       SPACE / CTRL  up / down       TRACKPAD / MOUSE  look\nQ / E  roll          HOLD R  brake your drift       HOLD LMB  drill       ESC  release mouse"
+autowrap_mode = 2
+
+[node name="Verify" type="Label" parent="Briefing/Center/Panel/Margin/Content"]
+theme_override_colors/font_color = Color(0.95, 0.76, 0.38, 1)
+theme_override_font_sizes/font_size = 17
+text = "CHECK  Both see the same hole · both can drill · late join gets prior cuts · crystal releases once · host continues if guest leaves"
+autowrap_mode = 2
+
+[node name="BriefingReady" type="Label" parent="Briefing/Center/Panel/Margin/Content"]
+unique_name_in_owner = true
+theme_override_colors/font_color = Color(0.65, 0.82, 1, 1)
+theme_override_font_sizes/font_size = 17
+text = "Synchronizing miner and shared ore…"
+horizontal_alignment = 1
+
+[node name="EnterButton" type="Button" parent="Briefing/Center/Panel/Margin/Content"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 58)
+focus_mode = 0
+text = "ENTER CHAMBER · CAPTURE TRACKPAD / MOUSE"

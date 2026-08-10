@@ -30,8 +30,10 @@ func _ready() -> void:
 	_verify_field()
 	_verify_mesh()
 	_verify_carve()
+	_verify_field_snapshot()
 	_verify_release()
 	_verify_crystal()
+	_verify_replica_crystal_state()
 	_verify_spray()
 	_verify_debris_cap()
 	_verify_heft()
@@ -149,6 +151,74 @@ func _verify_carve() -> void:
 	)
 
 
+## Late join transfers field values, not generated meshes. The snapshot must be
+## detached, exact, bounded by the configured layout, and dirty every sub-chunk
+## after import so the receiver can rebuild its own presentation and collision.
+func _verify_field_snapshot() -> void:
+	var field := _make_field(31)
+	field.take_dirty(1_000_000)
+	var original := field.export_values()
+	var detached := field.export_values()
+	detached[0] += 1.0
+	_check(
+		"[snapshot] export is detached from the live field",
+		field.export_values()[0] == original[0],
+		"mutating an exported array changed the authoritative field",
+	)
+
+	field.erode(Vector3.ZERO, 0.35, 0.7)
+	_check(
+		"[snapshot] carving changes the exported state",
+		field.export_values() != original,
+		"the field snapshot did not observe an accepted carve",
+	)
+	_check(
+		"[snapshot] an exact snapshot imports",
+		field.import_values(original),
+		"a same-layout snapshot was rejected",
+	)
+	_check(
+		"[snapshot] import restores exact values",
+		field.export_values() == original,
+		"round-tripped field values differ",
+	)
+	var dirty := field.take_dirty(1_000_000)
+	_check(
+		"[snapshot] import dirties every sub-chunk",
+		dirty.size() == field.subchunks_per_axis ** 3,
+		"%d of %d sub-chunks were queued" % [dirty.size(), field.subchunks_per_axis ** 3],
+	)
+
+	var wrong_size := PackedFloat32Array([0.0])
+	_check(
+		"[snapshot] a different layout is rejected",
+		not field.import_values(wrong_size),
+		"a one-value field replaced the configured layout",
+	)
+	_check(
+		"[snapshot] rejected layout leaves the field clean",
+		field.export_values() == original and not field.has_dirty(),
+		"a rejected snapshot changed values or dirtied geometry",
+	)
+	var non_finite := original.duplicate()
+	non_finite[0] = NAN
+	_check(
+		"[snapshot] non-finite network values are rejected",
+		not field.import_values(non_finite),
+		"NaN entered the SDF",
+	)
+
+	var replica := _make_field(31)
+	for point: Vector3 in [Vector3(0.0, 0.0, 0.5), Vector3(0.1, 0.0, 0.7), Vector3(0.0, 0.1, 0.9)]:
+		field.erode(point, 0.22, 0.04)
+		replica.erode(point, 0.22, 0.04)
+	_check(
+		"[snapshot] ordered carve deltas converge exactly",
+		field.export_values() == replica.export_values(),
+		"equal seeded fields diverged after equal operations",
+	)
+
+
 ## A tube cut straight out from the crystal frees it, and nothing less does.
 func _verify_release() -> void:
 	var ore_node := _make_node(14)
@@ -245,6 +315,97 @@ func _verify_crystal() -> void:
 			through["is_crystal"],
 			"the bore reached the crystal and the ray went straight past it"
 		)
+	ore_node.queue_free()
+
+
+## A replica may rebuild the rock but must never originate crystal gameplay.
+## The host can publish FREE/COLLECTED, and a new session can return the same
+## body to a complete embedded state without reconstructing the OreNode.
+func _verify_replica_crystal_state() -> void:
+	var ore_node := _make_node(32)
+	var initial_field := ore_node.export_field_values()
+	ore_node.set_release_authority(false)
+	var direction := Vector3.FORWARD
+	var step := DrillKnobs.CARVE_RADIUS * 0.5
+	var travelled := DrillKnobs.CRYSTAL_RADIUS
+	while travelled < DrillKnobs.NODE_RADIUS + DrillKnobs.NODE_SURFACE_NOISE + step:
+		for _pass in 40:
+			(
+				ore_node
+				. carve(
+					ore_node.global_position + direction * travelled,
+					DrillKnobs.CARVE_RADIUS,
+					0.2,
+				)
+			)
+		travelled += step
+	_run_pending(ore_node)
+	_check(
+		"[replica] a non-authority never derives release",
+		not ore_node.is_crystal_free(),
+		"replica field measurement freed its own crystal",
+	)
+
+	var replica_transform := Transform3D(Basis.IDENTITY, Vector3(1.0, 2.0, 3.0))
+	(
+		ore_node
+		. apply_crystal_replica_state(
+			OreNode.CrystalState.FREE,
+			replica_transform,
+			Vector3(0.5, 0.0, 0.0),
+			Vector3(0.0, 0.5, 0.0),
+		)
+	)
+	var crystal := ore_node.get_crystal()
+	_check(
+		"[replica] authoritative FREE stays frozen locally",
+		ore_node.get_crystal_state() == OreNode.CrystalState.FREE and crystal.freeze,
+		"the replica began simulating shared crystal physics",
+	)
+	_check(
+		"[replica] collection cannot originate without authority",
+		not ore_node.collect_crystal(),
+		"a replica collected the crystal",
+	)
+	ore_node.set_release_authority(true)
+	_check(
+		"[replica] the host owns FREE crystal physics",
+		not crystal.freeze,
+		"granting authority left the crystal frozen",
+	)
+	_check(
+		"[replica] authoritative collection succeeds",
+		ore_node.collect_crystal(),
+		"the host could not collect a free crystal",
+	)
+	_check(
+		"[replica] collected crystal leaves collision",
+		crystal.collision_layer == 0 and crystal.collision_mask == 0 and crystal.freeze,
+		"collected crystal still participates in physics",
+	)
+
+	ore_node.set_release_authority(false)
+	ore_node.import_field_values(initial_field)
+	ore_node.reset_crystal_to_embedded()
+	_check(
+		"[replica] reset immediately invalidates the old opening",
+		is_zero_approx(ore_node.get_widest_opening()),
+		"opening %.3f survived the reset" % ore_node.get_widest_opening(),
+	)
+	_run_pending(ore_node)
+	_check(
+		"[replica] reset restores embedded crystal physics",
+		(
+			ore_node.get_crystal_state() == OreNode.CrystalState.EMBEDDED
+			and crystal.transform.is_equal_approx(Transform3D.IDENTITY)
+			and crystal.linear_velocity.is_zero_approx()
+			and crystal.angular_velocity.is_zero_approx()
+			and crystal.collision_layer == DrillKnobs.ORE_LAYER
+			and crystal.collision_mask == 0
+			and crystal.freeze
+		),
+		"embedded body state was incomplete after reset",
+	)
 	ore_node.queue_free()
 
 

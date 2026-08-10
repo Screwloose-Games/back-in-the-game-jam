@@ -45,6 +45,38 @@ the panel, and a left click on a slider must not also cut a hole in something, s
 firing is gated on the mouse being captured. If the beam has stopped working,
 press Escape.
 
+## Multiplayer proof
+
+`drill_and_mining_multiplayer_demo.tscn` is a sibling proof, not a multiplayer
+mode bolted into the single-player root. It narrows the room to one shared ore
+node and deliberately omits tuning, sprint, and physical debris so two browser
+instances spend their frame budget on predicted movement and SDF remeshing.
+
+The split is intentionally compositional:
+
+| Layer | Owns |
+|---|---|
+| `common/network/multiplayer_session_shell.*` | Host/join/cancel UI and session lifecycle. It has no drilling code. |
+| `common/network/prediction/*` | Sequenced input, host reconciliation, local prediction, and remote interpolation. It has no mining rules. |
+| `multiplayer_drill_player.*` | Drill controls and miner presentation. Only its input subtree belongs to the controlling peer. |
+| `multiplayer_drill_world.gd` | Host ray validation, authoritative SDF mutation, ordered carve deltas, crystal physics, and collection. |
+
+Generated meshes are never serialized. A late joiner receives the host's 62 KB
+field as bounded reliable chunks, rebuilds its own mesh and collision, then
+applies later accepted carves in sequence. `MultiplayerSynchronizer` carries the
+small crystal/score state, while `MultiplayerSpawner` owns player lifecycle.
+
+Build the portable single-thread Web proof with:
+
+```sh
+tools/export_drill_multiplayer_demo_web.sh
+```
+
+Serve `releases/drill-multiplayer-demo-web/` over HTTP and open it in two
+browsers. The host can mine while alone; the joiner should receive the existing
+hole before controls are enabled. Either miner can then drill or collect the
+single crystal, and the host keeps the same mined field if the guest leaves.
+
 ## What the rock is, and what it is not
 
 **The ore nodes are the only destructible thing in the prototype.** The chamber

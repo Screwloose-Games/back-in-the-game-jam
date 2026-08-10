@@ -21,6 +21,12 @@ extends Node3D
 ## Emitted the moment the rock lets go, before the crystal has moved.
 signal crystal_freed(node: OreNode)
 
+enum CrystalState {
+	EMBEDDED,
+	FREE,
+	COLLECTED,
+}
+
 const ROCK_MATERIAL := preload("res://prototypes/drill_and_mining/materials/rock_material.tres")
 const CRYSTAL_MATERIAL := preload(
 	"res://prototypes/drill_and_mining/materials/crystal_material.tres"
@@ -38,6 +44,8 @@ var debris_pool: OreDebrisPool
 var _field: VoxelField
 var _mesher := SurfaceNetMesher.new()
 var _crystal: RigidBody3D
+var _crystal_mesh: MeshInstance3D
+var _crystal_collider: CollisionShape3D
 var _rock_body: StaticBody3D
 
 ## One MeshInstance3D and one CollisionShape3D per sub-chunk, by grid position.
@@ -45,7 +53,8 @@ var _meshes := {}
 var _shapes := {}
 
 var _escape_directions := PackedVector3Array()
-var _is_crystal_free := false
+var _crystal_state := CrystalState.EMBEDDED
+var _release_authority := true
 var _hardness := 1.0
 var _escape_clearance := DrillKnobs.ESCAPE_CLEARANCE
 var _original_solid_corners := 1
@@ -117,7 +126,7 @@ func build(node_seed: int, hardness: float, clearance: float) -> void:
 ## write back to the settings resource - it is called from the changed signal.
 func apply_tuning(clearance: float) -> void:
 	_escape_clearance = clearance
-	if not _is_crystal_free:
+	if _crystal_state == CrystalState.EMBEDDED:
 		_escape_check_pending = true
 
 
@@ -128,7 +137,7 @@ func carve(world_point: Vector3, radius: float, amount: float) -> bool:
 	if _field == null:
 		return false
 	var eaten := _field.erode(to_local(world_point), radius, amount / _hardness)
-	if eaten and not _is_crystal_free:
+	if eaten and _crystal_state == CrystalState.EMBEDDED:
 		_escape_check_pending = true
 	return eaten
 
@@ -164,7 +173,74 @@ func cast(world_origin: Vector3, world_direction: Vector3, max_distance: float) 
 
 ## Whether the rock has let go of the crystal yet.
 func is_crystal_free() -> bool:
-	return _is_crystal_free
+	return _crystal_state != CrystalState.EMBEDDED
+
+
+## Enables the one peer allowed to derive a release from the mutable field.
+## Single-player nodes retain authority unless their multiplayer owner opts out.
+func set_release_authority(has_authority: bool) -> void:
+	_release_authority = has_authority
+	if _crystal_state == CrystalState.FREE:
+		_crystal.freeze = not _release_authority
+
+
+func get_crystal_state() -> CrystalState:
+	return _crystal_state
+
+
+## Marks a loose crystal collected without deleting the replicated body.
+## Only the authoritative simulation may originate this transition.
+func collect_crystal() -> bool:
+	if not _release_authority or _crystal_state != CrystalState.FREE:
+		return false
+	_set_crystal_state(CrystalState.COLLECTED)
+	return true
+
+
+## Applies an authoritative crystal snapshot. A non-authoritative FREE crystal
+## remains frozen so local physics cannot fight the incoming transforms.
+func apply_crystal_replica_state(
+	state: int, world_transform: Transform3D, linear_velocity: Vector3, angular_velocity: Vector3
+) -> void:
+	if state < CrystalState.EMBEDDED or state > CrystalState.COLLECTED:
+		push_warning("Ignoring invalid replicated crystal state: %d" % state)
+		return
+	var replica_state: CrystalState = state as CrystalState
+	_set_crystal_state(replica_state)
+	_crystal.global_transform = world_transform
+	_crystal.linear_velocity = linear_velocity
+	_crystal.angular_velocity = angular_velocity
+
+
+## Restores the crystal body to its generated, buried state.
+func reset_crystal_to_embedded() -> void:
+	_set_crystal_state(CrystalState.EMBEDDED)
+	_crystal.transform = Transform3D.IDENTITY
+	_crystal.linear_velocity = Vector3.ZERO
+	_crystal.angular_velocity = Vector3.ZERO
+	# A reset can follow a FREE or COLLECTED session, where field imports do not
+	# schedule an escape measurement. Invalidate every derived opening value so
+	# the fresh field cannot inherit stale HUD/release state from the old session.
+	_widest_opening = 0.0
+	_escape_cooldown = 0.0
+	_escape_check_pending = true
+
+
+## Full-field snapshots are intentionally a boundary on OreNode: networking
+## does not need to know how the destructible field stores its corners.
+func export_field_values() -> PackedFloat32Array:
+	if _field == null:
+		return PackedFloat32Array()
+	return _field.export_values()
+
+
+func import_field_values(values: PackedFloat32Array) -> bool:
+	if _field == null:
+		return false
+	var imported := _field.import_values(values)
+	if imported and _crystal_state == CrystalState.EMBEDDED:
+		_escape_check_pending = true
+	return imported
 
 
 ## The crystal body, so the prototype root can watch it being collected.
@@ -198,14 +274,14 @@ func _build_crystal() -> void:
 	crystal_mesh.radial_segments = 7
 	crystal_mesh.rings = 4
 
-	var mesh_instance := MeshInstance3D.new()
-	mesh_instance.mesh = crystal_mesh
-	mesh_instance.material_override = CRYSTAL_MATERIAL
+	_crystal_mesh = MeshInstance3D.new()
+	_crystal_mesh.mesh = crystal_mesh
+	_crystal_mesh.material_override = CRYSTAL_MATERIAL
 
 	var shape := SphereShape3D.new()
 	shape.radius = DrillKnobs.CRYSTAL_RADIUS
-	var collider := CollisionShape3D.new()
-	collider.shape = shape
+	_crystal_collider = CollisionShape3D.new()
+	_crystal_collider.shape = shape
 
 	_crystal = RigidBody3D.new()
 	_crystal.name = "Crystal"
@@ -218,8 +294,8 @@ func _build_crystal() -> void:
 	_crystal.can_sleep = false
 	_crystal.collision_layer = DrillKnobs.ORE_LAYER
 	_crystal.collision_mask = 0
-	_crystal.add_child(mesh_instance)
-	_crystal.add_child(collider)
+	_crystal.add_child(_crystal_mesh)
+	_crystal.add_child(_crystal_collider)
 	add_child(_crystal)
 
 
@@ -314,23 +390,46 @@ func _measure_escape() -> void:
 			widest = narrowest
 			best_direction = direction
 	_widest_opening = widest
-	if not _is_crystal_free and widest >= _escape_clearance:
+	if (
+		_release_authority
+		and _crystal_state == CrystalState.EMBEDDED
+		and widest >= _escape_clearance
+	):
 		_free_crystal(best_direction)
 
 
 func _free_crystal(escape_direction: Vector3) -> void:
-	_is_crystal_free = true
+	_set_crystal_state(CrystalState.FREE)
 	# The layer change is the state change: the suit's collector masks
 	# CRYSTAL_LAYER and not ORE_LAYER, so nothing has to remember to switch a
 	# pickup on. The mask drops to the hull alone so a crystal cannot wedge in
 	# the rock it was just cut out of, which would read as the release rule being
 	# broken.
-	_crystal.collision_layer = DrillKnobs.CRYSTAL_LAYER
-	_crystal.collision_mask = DrillKnobs.HULL_LAYER
-	_crystal.freeze = false
 	crystal_freed.emit(self)
 	_crystal.apply_impulse(escape_direction.normalized() * DrillKnobs.CRYSTAL_FREE_IMPULSE)
 	_crystal.angular_velocity = Vector3(0.4, 1.0, -0.3).normalized() * DrillKnobs.CRYSTAL_FREE_SPIN
+
+
+func _set_crystal_state(state: CrystalState) -> void:
+	_crystal_state = state
+	_crystal_mesh.visible = state != CrystalState.COLLECTED
+	_crystal_collider.disabled = state == CrystalState.COLLECTED
+
+	match state:
+		CrystalState.EMBEDDED:
+			_crystal.collision_layer = DrillKnobs.ORE_LAYER
+			_crystal.collision_mask = 0
+			_crystal.freeze = true
+		CrystalState.FREE:
+			_crystal.collision_layer = DrillKnobs.CRYSTAL_LAYER
+			_crystal.collision_mask = DrillKnobs.HULL_LAYER
+			_crystal.freeze = not _release_authority
+		CrystalState.COLLECTED:
+			_crystal.collision_layer = 0
+			_crystal.collision_mask = 0
+			_crystal.freeze = true
+			_crystal.linear_velocity = Vector3.ZERO
+			_crystal.angular_velocity = Vector3.ZERO
 
 
 ## Where a ray meets the crystal's sphere, or -1. Analytic rather than a physics
@@ -351,7 +450,7 @@ func _surface_normal(local_point: Vector3, on_crystal: bool) -> Vector3:
 
 
 func _crystal_hit(origin: Vector3, direction: Vector3, max_distance: float) -> float:
-	if _crystal == null or _is_crystal_free:
+	if _crystal == null or _crystal_state != CrystalState.EMBEDDED:
 		return -1.0
 	var to_centre := -origin
 	var along := to_centre.dot(direction)
