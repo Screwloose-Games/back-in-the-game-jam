@@ -1,0 +1,182 @@
+[gd_scene load_steps=4 format=3]
+
+[ext_resource type="Script" path="res://common/network/multiplayer_session_shell.gd" id="1_shell"]
+[ext_resource type="Theme" path="res://common/themes/theme.tres" id="2_theme"]
+[ext_resource type="Script" path="res://common/network/network_session.gd" id="3_session"]
+
+[node name="MultiplayerSessionShell" type="CanvasLayer"]
+layer = 100
+script = ExtResource("1_shell")
+
+[node name="NetworkSession" type="Node" parent="."]
+unique_name_in_owner = true
+script = ExtResource("3_session")
+
+[node name="Backdrop" type="ColorRect" parent="."]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.018, 0.024, 0.031, 1)
+mouse_filter = 0
+
+[node name="Lobby" type="CenterContainer" parent="."]
+unique_name_in_owner = true
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme = ExtResource("2_theme")
+
+[node name="Panel" type="PanelContainer" parent="Lobby"]
+custom_minimum_size = Vector2(760, 0)
+
+[node name="Margin" type="MarginContainer" parent="Lobby/Panel"]
+theme_override_constants/margin_left = 34
+theme_override_constants/margin_top = 30
+theme_override_constants/margin_right = 34
+theme_override_constants/margin_bottom = 30
+
+[node name="Content" type="VBoxContainer" parent="Lobby/Panel/Margin"]
+theme_override_constants/separation = 15
+
+[node name="BrandTitle" type="Label" parent="Lobby/Panel/Margin/Content"]
+unique_name_in_owner = true
+theme_override_font_sizes/font_size = 42
+text = "MULTIPLAYER DEMO"
+horizontal_alignment = 1
+
+[node name="BrandSubtitle" type="Label" parent="Lobby/Panel/Margin/Content"]
+unique_name_in_owner = true
+theme_override_colors/font_color = Color(0.65, 0.82, 1, 1)
+theme_override_font_sizes/font_size = 22
+text = "Host-authoritative two-player proof"
+horizontal_alignment = 1
+
+[node name="Objective" type="Label" parent="Lobby/Panel/Margin/Content"]
+unique_name_in_owner = true
+theme_override_font_sizes/font_size = 18
+text = "Host a session or join with a six-character code."
+horizontal_alignment = 1
+autowrap_mode = 2
+
+[node name="SeparatorTop" type="HSeparator" parent="Lobby/Panel/Margin/Content"]
+
+[node name="EndpointLabel" type="Label" parent="Lobby/Panel/Margin/Content"]
+text = "SIGNALING ENDPOINT · ADVANCED / LEAVE UNCHANGED"
+
+[node name="SignalingEndpointInput" type="LineEdit" parent="Lobby/Panel/Margin/Content"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 48)
+text = "wss://signaling.screwloose.workers.dev"
+select_all_on_focus = true
+
+[node name="HostButton" type="Button" parent="Lobby/Panel/Margin/Content"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 56)
+focus_mode = 0
+text = "HOST & GET CODE"
+
+[node name="JoinLabel" type="Label" parent="Lobby/Panel/Margin/Content"]
+text = "JOIN AN EXISTING SESSION"
+
+[node name="JoinRow" type="HBoxContainer" parent="Lobby/Panel/Margin/Content"]
+theme_override_constants/separation = 12
+
+[node name="SessionCodeInput" type="LineEdit" parent="Lobby/Panel/Margin/Content/JoinRow"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(260, 52)
+size_flags_horizontal = 3
+placeholder_text = "SIX-CHARACTER CODE"
+max_length = 6
+alignment = 1
+select_all_on_focus = true
+
+[node name="JoinButton" type="Button" parent="Lobby/Panel/Margin/Content/JoinRow"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(260, 52)
+size_flags_horizontal = 3
+focus_mode = 0
+text = "JOIN BY CODE"
+
+[node name="SeparatorBottom" type="HSeparator" parent="Lobby/Panel/Margin/Content"]
+
+[node name="LobbyStatus" type="Label" parent="Lobby/Panel/Margin/Content"]
+unique_name_in_owner = true
+theme_override_font_sizes/font_size = 18
+text = "Choose Host or enter a six-character session code."
+horizontal_alignment = 1
+autowrap_mode = 2
+
+[node name="TransportDetail" type="Label" parent="Lobby/Panel/Margin/Content"]
+unique_name_in_owner = true
+theme_override_colors/font_color = Color(0.57, 0.65, 0.74, 1)
+theme_override_font_sizes/font_size = 14
+horizontal_alignment = 1
+autowrap_mode = 2
+
+[node name="Progress" type="CenterContainer" parent="."]
+unique_name_in_owner = true
+visible = false
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme = ExtResource("2_theme")
+
+[node name="Panel" type="PanelContainer" parent="Progress"]
+custom_minimum_size = Vector2(880, 430)
+
+[node name="Margin" type="MarginContainer" parent="Progress/Panel"]
+theme_override_constants/margin_left = 38
+theme_override_constants/margin_top = 34
+theme_override_constants/margin_right = 38
+theme_override_constants/margin_bottom = 34
+
+[node name="Content" type="VBoxContainer" parent="Progress/Panel/Margin"]
+theme_override_constants/separation = 22
+
+[node name="LoadingPhase" type="Label" parent="Progress/Panel/Margin/Content"]
+unique_name_in_owner = true
+theme_override_colors/font_color = Color(0.42, 1, 0.7, 1)
+theme_override_font_sizes/font_size = 22
+text = "STAGE 1 OF 1"
+horizontal_alignment = 1
+
+[node name="LoadingTitle" type="Label" parent="Progress/Panel/Margin/Content"]
+unique_name_in_owner = true
+theme_override_colors/font_color = Color(0.65, 0.82, 1, 1)
+theme_override_font_sizes/font_size = 38
+text = "PREPARING MULTIPLAYER"
+horizontal_alignment = 1
+autowrap_mode = 2
+
+[node name="LoadingCode" type="Label" parent="Progress/Panel/Margin/Content"]
+unique_name_in_owner = true
+visible = false
+theme_override_colors/font_color = Color(0.95, 0.76, 0.38, 1)
+theme_override_font_sizes/font_size = 26
+horizontal_alignment = 1
+
+[node name="LoadingDetail" type="Label" parent="Progress/Panel/Margin/Content"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 76)
+theme_override_font_sizes/font_size = 20
+text = "Loading…"
+horizontal_alignment = 1
+vertical_alignment = 1
+autowrap_mode = 2
+
+[node name="LoadingBar" type="ProgressBar" parent="Progress/Panel/Margin/Content"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 28)
+show_percentage = false
+
+[node name="CancelButton" type="Button" parent="Progress/Panel/Margin/Content"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 48)
+focus_mode = 0
+text = "CANCEL / RETURN TO LOBBY"

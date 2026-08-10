@@ -60,7 +60,7 @@ func connect_to_session(
 	if normalized_code.length() != 6:
 		return ERR_INVALID_PARAMETER
 
-	# THe route matches the signaling server endpoints
+	# The route matches the signaling server endpoints.
 	var role_path := "host" if role == Role.HOST else "join"
 	_session_url = (
 		"%s/sessions/%s/%s"
@@ -73,8 +73,8 @@ func connect_to_session(
 	_socket = WebSocketPeer.new()
 	_has_opened = false
 
-	# This starts a non-blocking connection at attempt. It returning OK means only
-	# that Godot accepted the reqeust
+	# This starts a non-blocking connection attempt. Returning OK means only
+	# that Godot accepted the request.
 	var result := _socket.connect_to_url(_session_url)
 	if result != OK:
 		_socket = null
@@ -89,7 +89,7 @@ func send_relay_message(message_type: StringName, payload: Dictionary) -> Error:
 	if _socket == null or _socket.get_ready_state() != WebSocketPeer.STATE_OPEN:
 		return ERR_UNAVAILABLE
 
-	# keep gameplay traffic out of the signaling server by accidental caller misuse
+	# Keep gameplay traffic out of signaling even if a caller misuses this API.
 	if message_type not in RELAY_MESSAGE_TYPES:
 		return ERR_INVALID_PARAMETER
 
@@ -109,17 +109,23 @@ func send_relay_message(message_type: StringName, payload: Dictionary) -> Error:
 	return _socket.send_text(json_text)
 
 
-func close_connection(reason := "Client requested disconnect.") -> void:
+## Starts an asynchronous close and reports whether a socket existed to close.
+func close_connection(reason := "Client requested disconnect.") -> bool:
 	if _socket == null:
-		return
+		return false
 
 	# Closing is asynchronous. Keep _process() active until the socket reaches
 	# STATE_CLOSED so the WebSocket close handshake can complete cleanly.
 	_socket.close(1000, reason)
+	return true
 
 
 func is_open() -> bool:
 	return _socket != null and _socket.get_ready_state() == WebSocketPeer.STATE_OPEN
+
+
+func has_connection() -> bool:
+	return _socket != null
 
 
 func _process(_delta: float) -> void:
@@ -127,7 +133,7 @@ func _process(_delta: float) -> void:
 		set_process(false)
 		return
 
-	# WebSocketPeer performs all netowrk I/O only when polled regularly
+	# WebSocketPeer performs all network I/O only when polled regularly.
 	_socket.poll()
 
 	match _socket.get_ready_state():
@@ -145,22 +151,22 @@ func _process(_delta: float) -> void:
 
 func _read_incoming_messages() -> void:
 	while _socket.get_available_packet_count() > 0:
-		var packet = _socket.get_packet()
+		var packet: PackedByteArray = _socket.get_packet()
 
 		# The signaling server protocol is JSON text only. Do not attempt to
-		# interpret a binary frame as a gameplay packet or arbitrary serialize data
+		# interpret a binary frame as gameplay or arbitrary serialized data.
 		if not _socket.was_string_packet():
-			protocol_error.emit("Recieved an unexpected binary signaling packet.")
+			protocol_error.emit("Received an unexpected binary signaling packet.")
 			continue
 
 		var json := JSON.new()
 		var parse_result := json.parse(packet.get_string_from_utf8())
 
 		if parse_result != OK:
-			protocol_error.emit("Recieved malformed JSON from the signaling service.")
+			protocol_error.emit("Received malformed JSON from the signaling service.")
 			continue
 		if typeof(json.data) != TYPE_DICTIONARY:
-			protocol_error.emit("Recieved a JSON signaling message that was not an object.")
+			protocol_error.emit("Received a JSON signaling message that was not an object.")
 			continue
 
 		var message: Dictionary = json.data
