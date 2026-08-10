@@ -1,0 +1,6 @@
+[gd_scene format=3 uid="uid://dfyvwcqyfmaaa"]
+
+[ext_resource type="PackedScene" uid="uid://dk7k4axu1l6k6" path="res://assets/art/environment/props/sm_flare.gltf" id="1_ph"]
+
+[node name="sm_flare" unique_id=1201305970 instance=ExtResource("1_ph")]
+metadata/placeholder = true
