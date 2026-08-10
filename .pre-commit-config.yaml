@@ -63,9 +63,21 @@ repos:
         # Anchored to the model extension so an unrelated `*.spec.yaml` elsewhere
         # in the repo is not mistaken for a model spec.
         files: '\.(gltf|glb)$|\.(gltf|glb)\.spec\.yaml$'
-        # test-fixtures holds a model that exists in order to fail
-        # (unapplied_rotation_90z.gltf); without this exclusion
-        # `pre-commit run --all-files` could never pass. examples/ holds
-        # self-contained prototypes and third-party art that does not follow the
-        # naming convention on purpose.
-        exclude: '^(addons/|\.godot/|examples/|tools/gltf-validator/test-fixtures/)'
+        # Three directories hold models that are not supposed to pass, so without
+        # these exclusions `pre-commit run --all-files` could never be green:
+        #
+        #   tools/gltf-validator/test-fixtures/  a model that exists in order to
+        #                                        fail (unapplied_rotation_90z.gltf)
+        #   assets/art/examples/                 validator fixtures named for the
+        #                                        check they trip (test_bad_name,
+        #                                        test_zup_export, test_poly_budget)
+        #                                        plus third-party art that does not
+        #                                        follow the naming convention
+        #   prototypes/                          "is this loop fun?" prototypes,
+        #                                        exempt from shared conventions on
+        #                                        purpose -- see CLAUDE.md
+        #
+        # Every path is anchored, so an `examples` directory somewhere else in the
+        # tree is still validated. This previously read `examples/`, which is
+        # anchored to the repo root and therefore matched nothing at all.
+        exclude: '^(addons/|\.godot/|assets/art/examples/|prototypes/|tools/gltf-validator/test-fixtures/)'

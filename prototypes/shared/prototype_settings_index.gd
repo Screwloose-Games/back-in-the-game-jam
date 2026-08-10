@@ -17,13 +17,24 @@ const INDEX_PATH := "res://prototypes/prototype_settings.tres"
 @export var object_carrying: CarrySettings
 @export var tunnel_system: TunnelSettings
 @export var tentacle_crawler_chaser: ChaseSettings
+@export var elevator_cutscene: ElevatorCutsceneSettings
+@export var level_design_01: LevelDesign01Settings
 
 
 ## The children that are actually present, in declaration order.
+##
+## THIS LIST IS HAND-MAINTAINED AND NOTHING CHECKS IT. Adding an @export above
+## without adding it here compiles, saves, and loads - and the new prototype is
+## then silently absent from save_all(), reset_all() and invariant_failures().
 func all() -> Array[PrototypeSettings]:
 	var found: Array[PrototypeSettings] = []
 	for child: PrototypeSettings in [
-		navigation, object_carrying, tunnel_system, tentacle_crawler_chaser
+		navigation,
+		object_carrying,
+		tunnel_system,
+		tentacle_crawler_chaser,
+		elevator_cutscene,
+		level_design_01,
 	]:
 		if child != null:
 			found.append(child)

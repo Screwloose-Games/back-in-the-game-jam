@@ -1,0 +1,6 @@
+[gd_scene format=3 uid="uid://0w4uav28gw0h"]
+
+[ext_resource type="PackedScene" uid="uid://mexuomowrylm" path="res://assets/art/environment/props/sm_rubble02.gltf" id="1_f170f"]
+
+[node name="sm_rubble02" instance=ExtResource("1_f170f")]
+metadata/placeholder = true

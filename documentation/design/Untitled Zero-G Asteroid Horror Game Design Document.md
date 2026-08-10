@@ -1,17 +1,3 @@
----
-title: Untitled Zero-G Asteroid Horror Game Design Document
-layout: page
-published: true
----
-
-> **The source of truth is the Google Doc:**
-> <https://docs.google.com/document/d/1GpNiWQcfUk_kKqcb8EJSyjm_tjR9KshUHC0uEmROzFI/edit>
->
-> ⚠ **Revision 0.0.3 is pending paste-up.** The Doc is still at 0.0.1, two revisions behind.
-> The paste buffer is `Untitled Zero-G Asteroid Horror Game Design Document.md` in this
-> directory — edit that file, paste it over the Doc, then delete this note and the buffer,
-> and this file is a plain mirror again.
-
 # Untitled Zero-G Asteroid Horror Game Design Document
 
 ## Back in the Game Jam
@@ -73,26 +59,22 @@ Copyright © Jonathan, Dylan, Sean, Steven, Michael, AJ, Nestor 2026 - Present
 
 - **Web — the primary performance target.** The build has to be performant enough to actually
   play in a browser, and that budget bounds cave volume, draw distance and prop density for
-  everyone else. This matches the web-first GL Compatibility posture the repo already describes
-  in `CLAUDE.md`.
+  everyone else.
 - Windows
 - Mac
-
-Settled — not an open question. (Revision 0.0.2 recorded this as "PC", which contradicted both
-the kickoff notes and the repo. 0.0.3 corrects it.)
 
 ### Project _**scope**_
 
 - **Game Time Scale**
 
-  - **2.5 weeks total. Deadline: August 20th.** Settled — not an open question.
-  - Target session length: **~5 minutes** per run
+  - **2.5 weeks total. Deadline: August 17th.**
+  - Target session length: **~5-15 minutes** per run
 
 - **Player count**
 
   - Must be good solo. Solo is not a fallback, it is a first-class experience.
   - Multiplayer target is **2 players**
-  - **Networked only.** Settled — not an open question.
+  - **Networked only.** No local co-op. No split-screen.
 
 - **Hard technical pillars — both slots are now filled**
 
@@ -101,8 +83,7 @@ the kickoff notes and the repo. 0.0.3 corrects it.)
     so the AI has nothing to hide behind. It has to produce a specific player experience on
     its own. See [AI](#ai).
   - Destructible voxel terrain and procedural terrain generation are **stretch goals**,
-    not pillars. See [Stretch Goals](#stretch-goals--need-an-owner). With both pillar slots
-    committed, they do not enter scope on enthusiasm — only on a named owner.
+    not pillars. See [Stretch Goals](#stretch-goals--need-an-owner). Someone needs to own this if we do it.
   - Everything else stays cheap.
 
 - **Core team members**
@@ -139,8 +120,8 @@ the kickoff notes and the repo. 0.0.3 corrects it.)
 4. **Every convenience costs something shared.** Light, digging, and breathing all draw
    from one box that somebody has to carry and somebody has to crank. Comfort for one
    player is a bill paid by the group.
-5. **Five minutes, fully felt.** Short runs with real dead air in them. Silence is
-   content. Nothing gamey competes with the build-up — no card draws, no upgrade popups,
+5. **Five-fifteen minutes, fully felt.** Short runs with real dead air in them. Silence is
+   content. Target immersion. Nothing gamey competes with the build-up — no card draws, no upgrade popups,
    no tutorial overlays. They dissolve immersion faster than anything else on the list.
 
 ### MVP Definition
@@ -195,7 +176,7 @@ Lethal Company in zero gravity. You and a friend ride a mining elevator into an 
 
 ### Treatment
 
-_The elevator cage shudders to a halt and the gate rattles back onto nothing at all. Ahead of you — below, above, the distinction stops meaning anything the second you push off — is the abnormally mineral-rich dark your scanners picked up from several clicks away. The car's floodlights reach a few metres past the gate and then give up, catching the small openings of several winding tunnels burrowing into the rock. Tethering yourself to your portable life support system, you turn its crank and wince at the grinding, metallic noise. The support system whirs to life with a low droning buzz as you bring it up to full power before grabbing its handholds and pushing it out of the car ahead of you. Your mining tool lags behind you on its own tether as you pass the precipice into a tight tunnel. You are plunged into darkness. The light from the life support system illuminates some of the surrounding tunnel, revealing a hive-like cave system at odds with your sense of orientation. The faint light of your headlamp catches the glint of a {mineral} node a short ways down one of the split paths and you thrust toward it, your tether unravelling as it keeps you connected to oxygen and power. You reach for your mining tool, a high power laser, and seat it comfortably in your hands, pulling the trigger. A brilliant red beam erupts from the end of the tool, casting the walls red, and bites into the seam around the node, boiling the rock away from it in a shower of glowing grit. The loud scifi buzz of the laser echoes through the tunnels as a faint remnant after you release the trigger and the tunnel goes dark, the {mineral} node floating free of its ruined setting. As if in response to your triumph--as if in response to your noise--another sound echoes faintly from the bowels of the tunnels. A distinctly organic sound. You are not alone here._
+_The elevator cage shudders to a halt and the gate rattles back onto nothing at all. Ahead of you — below, above, the distinction stops meaning anything the second you push off — is the abnormally mineral-rich dark your scanners picked up from several clicks away. The car's floodlights reach a few metres past the gate and then give up, catching the small openings of several winding tunnels burrowing into the rock. Tethering yourself to your portable life support system, you turn its crank and wince at the grinding, metallic noise. The support system whirs to life with a low droning buzz as you bring it up to full power before grabbing its handholds and pushing it out of the car ahead of you. Your mining tool lags behind you on its own tether as you pass the precipice into a tight tunnel. You are plunged into darkness. The light from the life support system illuminates some of the surrounding tunnel, revealing a hive-like cave system at odds with your sense of orientation. The faint light of your headlamp catches the glint of a {mineral} node a short ways down one of the split paths and you thrust toward it, your tether unravelling as it keeps you connected to oxygen and power. You reach for your mining tool, a high power laser, and seat it comfortably in your hands, pulling the trigger. A brilliant red beam erupts from the end of the tool, casting the walls red, instantly slams into the rock, smashing it to pieces and melting its edges smooth. The loud scifi buzz of the laser echoes through the tunnels as a faint remnant after you release the trigger and the tunnel goes dark, the {mineral} node floating free of its ruined setting. As if in response to your triumph--as if in response to your noise--another sound echoes faintly from the bowels of the tunnels. A distinctly organic sound. You are not alone here._
 
 ### What sets this project apart?
 
@@ -259,7 +240,7 @@ _The elevator cage shudders to a halt and the gate rattles back onto nothing at 
 
 - **Mining**
 
-  - Mining tool runs on shared power
+  - Mining tool runs on suit power
   - Mining is loud
   - Ore breaks off nodes and **flings and bounces down tunnels** in zero-G. You have to go get it.
   - Mined ore must be physically carried back
@@ -282,13 +263,14 @@ _The elevator cage shudders to a halt and the gate rattles back onto nothing at 
 
   - Vision distance is deliberately short. Light is a resource.
   - Sound carries information: mining, cranking, thrusters, the creature, teammates
-  - (open) A second sense to lean on: proximity radar, echolocation/visor shader, or something else. **This is the hook and it is not chosen yet.**
+  - (open) A second sense to lean on: proximity radar.
+  - (open) A UV light that lets you see the slime trails of the creature.
   - (stretch) Consumable light sources, e.g. glow sticks
 
 - **The Creature**
 
   - Exactly **one** creature
-  - Cannot be killed. Cannot be shot. Tools at best buy time.
+  - Cannot be killed. Cannot be hurt by mining laser. Tools at best buy time.
   - Amorphous black mass. Body can be as simple as a sphere.
   - Ignores the fact that there is no gravity. This is its home and the player is the visitor.
   - **Spawns far from the entrance.** The opening stretch of a run is quiet because the

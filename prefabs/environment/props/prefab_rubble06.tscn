@@ -1,0 +1,8 @@
+[gd_scene load_steps=2 format=3 uid="uid://ci25aoqpnhmqb"]
+
+[ext_resource type="PackedScene" uid="uid://duyabeq3tk823" path="res://assets/art/environment/props/sm_rubble06.tscn" id="1_2c709"]
+
+[node name="prefab_rubble06" type="Node3D"]
+metadata/placeholder = true
+
+[node name="sm_rubble06" parent="." instance=ExtResource("1_2c709")]

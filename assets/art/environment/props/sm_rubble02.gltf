@@ -1,0 +1,125 @@
+{
+  "asset": {
+    "version": "2.0",
+    "generator": "tools/voxel-rubble/build_rubble.py",
+    "extras": {
+      "bufferSha1": "998633e00ba4ca8107e6b98429ce85b7cdb25b45"
+    }
+  },
+  "scene": 0,
+  "scenes": [
+    {
+      "nodes": [
+        0
+      ]
+    }
+  ],
+  "nodes": [
+    {
+      "name": "rubble",
+      "mesh": 0
+    }
+  ],
+  "meshes": [
+    {
+      "name": "sm_rubble02",
+      "primitives": [
+        {
+          "attributes": {
+            "POSITION": 0,
+            "NORMAL": 1,
+            "COLOR_0": 2
+          },
+          "indices": 3,
+          "material": 0,
+          "mode": 4
+        }
+      ]
+    }
+  ],
+  "materials": [
+    {
+      "name": "mat_rubble",
+      "pbrMetallicRoughness": {
+        "baseColorFactor": [
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "metallicFactor": 0.0,
+        "roughnessFactor": 0.92
+      },
+      "doubleSided": false
+    }
+  ],
+  "buffers": [
+    {
+      "uri": "sm_rubble02.bin",
+      "byteLength": 26536
+    }
+  ],
+  "bufferViews": [
+    {
+      "buffer": 0,
+      "byteOffset": 0,
+      "byteLength": 10272,
+      "target": 34962
+    },
+    {
+      "buffer": 0,
+      "byteOffset": 10272,
+      "byteLength": 10272,
+      "target": 34962
+    },
+    {
+      "buffer": 0,
+      "byteOffset": 20544,
+      "byteLength": 3424,
+      "target": 34962
+    },
+    {
+      "buffer": 0,
+      "byteOffset": 23968,
+      "byteLength": 2568,
+      "target": 34963
+    }
+  ],
+  "accessors": [
+    {
+      "bufferView": 0,
+      "componentType": 5126,
+      "count": 856,
+      "type": "VEC3",
+      "min": [
+        -0.42,
+        -0.12,
+        -0.3
+      ],
+      "max": [
+        0.42,
+        0.12,
+        0.3
+      ]
+    },
+    {
+      "bufferView": 1,
+      "componentType": 5126,
+      "count": 856,
+      "type": "VEC3"
+    },
+    {
+      "bufferView": 2,
+      "componentType": 5121,
+      "count": 856,
+      "type": "VEC4",
+      "normalized": true
+    },
+    {
+      "bufferView": 3,
+      "componentType": 5123,
+      "count": 1284,
+      "type": "SCALAR"
+    }
+  ]
+}
