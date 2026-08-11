@@ -1,0 +1,9 @@
+width: 0.0600
+height: 0.2400
+depth: 0.0600
+up_direction: "+Y"
+root_node_name: "flare"
+collision_expected: false
+navigation_expected: false
+min_material_count: 1
+rests_on_ground: true

@@ -1,0 +1,8 @@
+[gd_scene format=3 uid="uid://sxe12cw68poa"]
+
+[ext_resource type="PackedScene" uid="uid://dfyvwcqyfmaaa" path="res://assets/art/environment/props/sm_flare.tscn" id="1_ph"]
+
+[node name="prefab_flare" type="Node3D" unique_id=774860072]
+metadata/placeholder = true
+
+[node name="sm_flare" parent="." unique_id=1991266642 instance=ExtResource("1_ph")]
