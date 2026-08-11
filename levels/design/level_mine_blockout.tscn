@@ -1,0 +1,352 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://levels/design/mine_level.gd" id="1_k1nl5"]
+[ext_resource type="Script" path="res://levels/design/mine_space.gd" id="2_6b4y6"]
+[ext_resource type="Script" path="res://levels/design/mine_tunnel.gd" id="3_smlkf"]
+[ext_resource type="Script" path="res://levels/design/mine_bend.gd" id="4_ghrrc"]
+
+[node name="MineLevel" type="Node3D" unique_id=1771938575]
+script = ExtResource("1_k1nl5")
+tag_colors = Dictionary[StringName, Color]({
+&"connector": Color(0.5, 0.8, 0.9, 1),
+&"core": Color(1, 0.7, 0.1, 1),
+&"entrance": Color(0.9, 0.9, 0.4, 1),
+&"hub": Color(0.35, 0.7, 1, 1),
+&"pocket": Color(0.6, 0.5, 0.8, 1),
+&"refuge": Color(0.3, 0.9, 0.5, 1),
+&"trunk": Color(0.3, 0.55, 1, 1)
+})
+entrance_space = NodePath("Spaces/entrance")
+sound_origin = NodePath("Spaces/core_chamber")
+
+[node name="Spaces" type="Node3D" parent="." unique_id=1586680983]
+
+[node name="entrance" type="Node3D" parent="Spaces" unique_id=97998191]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -4, 0)
+script = ExtResource("2_6b4y6")
+radius = 0.0
+tags = Array[StringName]([&"entrance"])
+notes = "The mine mouth. The elevator arrives here and this is what a run has to get back to."
+
+[node name="hub_antechamber" type="Node3D" parent="Spaces" unique_id=786921700]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -30, 0)
+script = ExtResource("2_6b4y6")
+kind = 1
+radius = 7.5
+tags = Array[StringName]([&"hub"])
+notes = "Foot of the entrance shaft. Five ways out, so the first real decision of a run is made here."
+
+[node name="hub_east" type="Node3D" parent="Spaces" unique_id=51748664]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 60, -45, -20)
+script = ExtResource("2_6b4y6")
+kind = 1
+radius = 7.5
+tags = Array[StringName]([&"hub"])
+notes = "The upper loop rejoins here, so you can arrive from two directions and not be able to tell which."
+
+[node name="hub_west" type="Node3D" parent="Spaces" unique_id=620862187]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -55, -40, 25)
+script = ExtResource("2_6b4y6")
+kind = 1
+radius = 7.0
+tags = Array[StringName]([&"hub"])
+notes = "The only junction where a trunk meets the squeeze."
+
+[node name="hub_deep" type="Node3D" parent="Spaces" unique_id=887068043]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 70, -120, -40)
+script = ExtResource("2_6b4y6")
+kind = 1
+radius = 7.5
+tags = Array[StringName]([&"hub"])
+notes = "120 m down. Reachable by trunk the long way or by the squeeze the short way."
+
+[node name="core_chamber" type="Node3D" parent="Spaces" unique_id=1427025831]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 30, -170, 20)
+script = ExtResource("2_6b4y6")
+radius = 9.5
+tags = Array[StringName]([&"core"])
+notes = "The terminus. Deepest point, biggest chamber, worst place to be caught."
+
+[node name="spur_ante_south_end" type="Node3D" parent="Spaces" unique_id=1626780662]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 18, -20, 32)
+script = ExtResource("2_6b4y6")
+kind = 2
+radius = 4.5
+tags = Array[StringName]([&"pocket"])
+
+[node name="spur_east_high_end" type="Node3D" parent="Spaces" unique_id=1489260615]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 86, -46, 4)
+script = ExtResource("2_6b4y6")
+kind = 2
+radius = 4.5
+tags = Array[StringName]([&"pocket"])
+
+[node name="spur_east_low_end" type="Node3D" parent="Spaces" unique_id=120576637]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 46, -70, -46)
+script = ExtResource("2_6b4y6")
+kind = 2
+radius = 4.5
+tags = Array[StringName]([&"pocket"])
+
+[node name="spur_west_high_end" type="Node3D" parent="Spaces" unique_id=1455768921]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -83, -30, 48)
+script = ExtResource("2_6b4y6")
+kind = 2
+radius = 4.5
+tags = Array[StringName]([&"pocket"])
+
+[node name="spur_deep_east_end" type="Node3D" parent="Spaces" unique_id=1253258836]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 86, -144, -62)
+script = ExtResource("2_6b4y6")
+kind = 2
+radius = 4.5
+tags = Array[StringName]([&"pocket"])
+
+[node name="spur_deep_west_end" type="Node3D" parent="Spaces" unique_id=1709595354]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 44, -108, -70)
+script = ExtResource("2_6b4y6")
+kind = 2
+radius = 4.5
+tags = Array[StringName]([&"pocket"])
+
+[node name="spur_core_end" type="Node3D" parent="Spaces" unique_id=1670949181]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, -184, 42)
+script = ExtResource("2_6b4y6")
+kind = 2
+radius = 4.5
+tags = Array[StringName]([&"pocket"])
+
+[node name="spur_ante_north_end" type="Node3D" parent="Spaces" unique_id=1629934959]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2, -36, -34)
+script = ExtResource("2_6b4y6")
+kind = 2
+radius = 2.8
+tags = Array[StringName]([&"pocket", &"refuge"])
+
+[node name="spur_west_low_end" type="Node3D" parent="Spaces" unique_id=1022824537]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -64, -64, 2)
+script = ExtResource("2_6b4y6")
+kind = 2
+radius = 2.8
+tags = Array[StringName]([&"pocket", &"refuge"])
+
+[node name="Tunnels" type="Node3D" parent="." unique_id=1238643690]
+
+[node name="entrance_shaft" type="Node3D" parent="Tunnels" unique_id=1290590664]
+script = ExtResource("3_smlkf")
+from_space = NodePath("../../Spaces/entrance")
+to_space = NodePath("../../Spaces/hub_antechamber")
+width = 10.0
+tags = Array[StringName]([&"trunk"])
+
+[node name="bend_1" type="Marker3D" parent="Tunnels/entrance_shaft" unique_id=994883584]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4, -11, -3)
+script = ExtResource("4_ghrrc")
+
+[node name="bend_2" type="Marker3D" parent="Tunnels/entrance_shaft" unique_id=1441526074]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3, -20, 2)
+script = ExtResource("4_ghrrc")
+
+[node name="east_trunk" type="Node3D" parent="Tunnels" unique_id=312001049]
+script = ExtResource("3_smlkf")
+from_space = NodePath("../../Spaces/hub_antechamber")
+to_space = NodePath("../../Spaces/hub_east")
+width = 10.0
+tags = Array[StringName]([&"trunk"])
+
+[node name="bend_1" type="Marker3D" parent="Tunnels/east_trunk" unique_id=1400701823]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 22, -34, -12)
+script = ExtResource("4_ghrrc")
+
+[node name="bend_2" type="Marker3D" parent="Tunnels/east_trunk" unique_id=1364999076]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 43, -36, -22)
+script = ExtResource("4_ghrrc")
+
+[node name="west_trunk" type="Node3D" parent="Tunnels" unique_id=1363817652]
+script = ExtResource("3_smlkf")
+from_space = NodePath("../../Spaces/hub_antechamber")
+to_space = NodePath("../../Spaces/hub_west")
+width = 10.0
+tags = Array[StringName]([&"trunk"])
+
+[node name="bend_1" type="Marker3D" parent="Tunnels/west_trunk" unique_id=1046735780]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -20, -33, 10)
+script = ExtResource("4_ghrrc")
+
+[node name="bend_2" type="Marker3D" parent="Tunnels/west_trunk" unique_id=1658432007]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -40, -38, 20)
+script = ExtResource("4_ghrrc")
+
+[node name="deep_shaft" type="Node3D" parent="Tunnels" unique_id=1541853563]
+script = ExtResource("3_smlkf")
+from_space = NodePath("../../Spaces/hub_east")
+to_space = NodePath("../../Spaces/hub_deep")
+width = 10.0
+tags = Array[StringName]([&"trunk"])
+
+[node name="bend_1" type="Marker3D" parent="Tunnels/deep_shaft" unique_id=132883160]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 68, -70, -28)
+script = ExtResource("4_ghrrc")
+
+[node name="bend_2" type="Marker3D" parent="Tunnels/deep_shaft" unique_id=363825978]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 74, -98, -36)
+script = ExtResource("4_ghrrc")
+
+[node name="core_descent" type="Node3D" parent="Tunnels" unique_id=1508714645]
+script = ExtResource("3_smlkf")
+from_space = NodePath("../../Spaces/hub_deep")
+to_space = NodePath("../../Spaces/core_chamber")
+width = 10.0
+tags = Array[StringName]([&"trunk"])
+notes = "Widened from a connector to a trunk so the deep branch stops baking as a navmesh island."
+
+[node name="bend_1" type="Marker3D" parent="Tunnels/core_descent" unique_id=725400428]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 66, -133, -30)
+script = ExtResource("4_ghrrc")
+
+[node name="bend_2" type="Marker3D" parent="Tunnels/core_descent" unique_id=571563034]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 58, -145, -18)
+script = ExtResource("4_ghrrc")
+
+[node name="bend_3" type="Marker3D" parent="Tunnels/core_descent" unique_id=227013819]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 50, -153, -8)
+script = ExtResource("4_ghrrc")
+
+[node name="bend_4" type="Marker3D" parent="Tunnels/core_descent" unique_id=378367838]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 42, -160, 2)
+script = ExtResource("4_ghrrc")
+
+[node name="bend_5" type="Marker3D" parent="Tunnels/core_descent" unique_id=1406500727]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 36, -166, 12)
+script = ExtResource("4_ghrrc")
+
+[node name="the_squeeze" type="Node3D" parent="Tunnels" unique_id=1663972496]
+script = ExtResource("3_smlkf")
+from_space = NodePath("../../Spaces/hub_west")
+to_space = NodePath("../../Spaces/hub_deep")
+width = 4.0
+tags = Array[StringName]([&"refuge"])
+notes = "The longest way of saying no. Closes the biggest loop in the level, and the creature cannot follow you down it."
+
+[node name="bend_1" type="Marker3D" parent="Tunnels/the_squeeze" unique_id=124408815]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -30, -62, 30)
+script = ExtResource("4_ghrrc")
+
+[node name="bend_2" type="Marker3D" parent="Tunnels/the_squeeze" unique_id=1779218531]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -85, 18)
+script = ExtResource("4_ghrrc")
+
+[node name="bend_3" type="Marker3D" parent="Tunnels/the_squeeze" unique_id=2027993791]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 35, -100, -10)
+script = ExtResource("4_ghrrc")
+
+[node name="upper_loop" type="Node3D" parent="Tunnels" unique_id=1061478684]
+script = ExtResource("3_smlkf")
+from_space = NodePath("../../Spaces/hub_east")
+to_space = NodePath("../../Spaces/hub_west")
+tags = Array[StringName]([&"connector"])
+notes = "Routed high, so it re-enters hub_west facing the wrong way and the map stops being a tree you can hold in your head."
+
+[node name="bend_1" type="Marker3D" parent="Tunnels/upper_loop" unique_id=266304069]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 40, -22, -5)
+script = ExtResource("4_ghrrc")
+
+[node name="bend_2" type="Marker3D" parent="Tunnels/upper_loop" unique_id=1899696172]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5, -18, 22)
+script = ExtResource("4_ghrrc")
+
+[node name="bend_3" type="Marker3D" parent="Tunnels/upper_loop" unique_id=339673679]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -25, -26, 32)
+script = ExtResource("4_ghrrc")
+
+[node name="spur_ante_north" type="Node3D" parent="Tunnels" unique_id=1802249942]
+script = ExtResource("3_smlkf")
+from_space = NodePath("../../Spaces/hub_antechamber")
+to_space = NodePath("../../Spaces/spur_ante_north_end")
+width = 4.0
+tags = Array[StringName]([&"refuge"])
+
+[node name="bend_1" type="Marker3D" parent="Tunnels/spur_ante_north" unique_id=1721167512]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6, -28, -18)
+script = ExtResource("4_ghrrc")
+
+[node name="spur_ante_south" type="Node3D" parent="Tunnels" unique_id=2088640352]
+script = ExtResource("3_smlkf")
+from_space = NodePath("../../Spaces/hub_antechamber")
+to_space = NodePath("../../Spaces/spur_ante_south_end")
+tags = Array[StringName]([&"connector"])
+
+[node name="bend_1" type="Marker3D" parent="Tunnels/spur_ante_south" unique_id=1577640338]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 12, -26, 16)
+script = ExtResource("4_ghrrc")
+
+[node name="spur_east_high" type="Node3D" parent="Tunnels" unique_id=710617415]
+script = ExtResource("3_smlkf")
+from_space = NodePath("../../Spaces/hub_east")
+to_space = NodePath("../../Spaces/spur_east_high_end")
+tags = Array[StringName]([&"connector"])
+
+[node name="bend_1" type="Marker3D" parent="Tunnels/spur_east_high" unique_id=1163833216]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 76, -50, -8)
+script = ExtResource("4_ghrrc")
+
+[node name="spur_east_low" type="Node3D" parent="Tunnels" unique_id=511851573]
+script = ExtResource("3_smlkf")
+from_space = NodePath("../../Spaces/hub_east")
+to_space = NodePath("../../Spaces/spur_east_low_end")
+tags = Array[StringName]([&"connector"])
+
+[node name="bend_1" type="Marker3D" parent="Tunnels/spur_east_low" unique_id=234876095]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 52, -58, -34)
+script = ExtResource("4_ghrrc")
+
+[node name="spur_west_high" type="Node3D" parent="Tunnels" unique_id=1383063944]
+script = ExtResource("3_smlkf")
+from_space = NodePath("../../Spaces/hub_west")
+to_space = NodePath("../../Spaces/spur_west_high_end")
+tags = Array[StringName]([&"connector"])
+
+[node name="bend_1" type="Marker3D" parent="Tunnels/spur_west_high" unique_id=879661526]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -72, -34, 36)
+script = ExtResource("4_ghrrc")
+
+[node name="spur_west_low" type="Node3D" parent="Tunnels" unique_id=257401144]
+script = ExtResource("3_smlkf")
+from_space = NodePath("../../Spaces/hub_west")
+to_space = NodePath("../../Spaces/spur_west_low_end")
+width = 4.0
+tags = Array[StringName]([&"refuge"])
+
+[node name="bend_1" type="Marker3D" parent="Tunnels/spur_west_low" unique_id=1132940815]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -60, -52, 12)
+script = ExtResource("4_ghrrc")
+
+[node name="spur_deep_east" type="Node3D" parent="Tunnels" unique_id=872837161]
+script = ExtResource("3_smlkf")
+from_space = NodePath("../../Spaces/hub_deep")
+to_space = NodePath("../../Spaces/spur_deep_east_end")
+tags = Array[StringName]([&"connector"])
+
+[node name="bend_1" type="Marker3D" parent="Tunnels/spur_deep_east" unique_id=1500945710]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 84, -132, -52)
+script = ExtResource("4_ghrrc")
+
+[node name="spur_deep_west" type="Node3D" parent="Tunnels" unique_id=1399816588]
+script = ExtResource("3_smlkf")
+from_space = NodePath("../../Spaces/hub_deep")
+to_space = NodePath("../../Spaces/spur_deep_west_end")
+tags = Array[StringName]([&"connector"])
+
+[node name="bend_1" type="Marker3D" parent="Tunnels/spur_deep_west" unique_id=710795182]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 56, -112, -56)
+script = ExtResource("4_ghrrc")
+
+[node name="spur_core" type="Node3D" parent="Tunnels" unique_id=946829643]
+script = ExtResource("3_smlkf")
+from_space = NodePath("../../Spaces/core_chamber")
+to_space = NodePath("../../Spaces/spur_core_end")
+tags = Array[StringName]([&"connector"])
+
+[node name="bend_1" type="Marker3D" parent="Tunnels/spur_core" unique_id=1239513638]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 14, -178, 32)
+script = ExtResource("4_ghrrc")
