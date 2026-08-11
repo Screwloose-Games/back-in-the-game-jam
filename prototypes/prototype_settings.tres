@@ -9,6 +9,7 @@
 [ext_resource type="Resource" path="res://prototypes/tentacle_crawler_chaser/chase_settings.tres" id="7_sd8jl"]
 [ext_resource type="Resource" path="res://prototypes/tunnel_system/tunnel_settings.tres" id="8_yby5w"]
 [ext_resource type="Resource" path="res://prototypes/drill_and_mining/drill_settings.tres" id="9_up0nj"]
+[ext_resource type="Resource" path="res://prototypes/core_loop/core_loop_settings.tres" id="10_86qw3"]
 
 [resource]
 script = ExtResource("6_083y0")
@@ -20,3 +21,4 @@ elevator_cutscene = ExtResource("2_0p2wx")
 level_design_01 = ExtResource("3_ii6fk")
 alien_ai_pathfinding = ExtResource("1_16jwu")
 drill_and_mining = ExtResource("9_up0nj")
+core_loop = ExtResource("10_86qw3")

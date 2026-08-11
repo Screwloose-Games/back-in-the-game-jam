@@ -1,0 +1,62 @@
+[gd_scene load_steps=5 format=3]
+
+[ext_resource type="Script" path="res://prototypes/core_loop/imported/core_loop_suit.gd" id="1_controller"]
+[ext_resource type="Material" path="res://prototypes/object_carrying/materials/tether_material.tres" id="2_tether"]
+
+[sub_resource type="SphereShape3D" id="SphereShape3D_hull"]
+radius = 0.4
+
+[sub_resource type="SphereShape3D" id="SphereShape3D_collector"]
+radius = 0.6
+
+; collision_mask is 45 - hull|debris|carryable|ore - rather than either donor's.
+; CarrierPlayer masks 9 and never meets ore or rock fragments; DrillSuit masks 5
+; and has nothing to carry. Composed, the suit has to bump into all four, and the
+; one that is easy to miss is ore: without bit 6 you fly straight through the
+; thing you are drilling.
+[node name="CoreLoopSuit" type="CharacterBody3D"]
+collision_layer = 2
+collision_mask = 45
+motion_mode = 1
+script = ExtResource("1_controller")
+
+[node name="HullShape" type="CollisionShape3D" parent="."]
+shape = SubResource("SphereShape3D_hull")
+
+; far and spot_range are both overwritten from core_loop_knobs.gd at _ready; what
+; is here is only so the scene looks right when it is opened in the editor.
+[node name="HeadCamera" type="Camera3D" parent="."]
+current = true
+fov = 75.0
+near = 0.05
+far = 34.0
+
+[node name="HelmetLamp" type="SpotLight3D" parent="HeadCamera"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.14, -0.12, 0)
+light_color = Color(1, 0.96, 0.89, 1)
+light_energy = 3.5
+shadow_enabled = true
+spot_range = 26.0
+spot_angle = 45.0
+spot_attenuation = 1.0
+spot_angle_attenuation = 0.75
+
+[node name="GrabRay" type="RayCast3D" parent="HeadCamera"]
+target_position = Vector3(0, 0, -2)
+collision_mask = 8
+
+; On the body rather than on the camera: a collector that turned with your head
+; would pick a crystal up or not depending on where you happened to be looking.
+; Layer 0 and mask 64 - it detects loose crystals and nothing detects it.
+[node name="CrystalCollector" type="Area3D" parent="."]
+collision_layer = 0
+collision_mask = 64
+
+[node name="CollectorShape" type="CollisionShape3D" parent="CrystalCollector"]
+shape = SubResource("SphereShape3D_collector")
+
+[node name="TetherLine" type="MeshInstance3D" parent="."]
+top_level = true
+cast_shadow = 0
+visible = false
+material_override = ExtResource("2_tether")

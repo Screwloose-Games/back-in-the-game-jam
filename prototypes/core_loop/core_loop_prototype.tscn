@@ -1,0 +1,153 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://prototypes/core_loop/core_loop_prototype.gd" id="0_root"]
+[ext_resource type="Script" path="res://prototypes/core_loop/core_loop_tunnels.gd" id="1_tunnels"]
+[ext_resource type="Script" path="res://prototypes/tentacle_crawler_chaser/wall_navmesh_baker.gd" id="4_navmesh"]
+[ext_resource type="Script" path="res://prototypes/tentacle_crawler_chaser/chase_target.gd" id="5_target"]
+[ext_resource type="Script" path="res://prototypes/tentacle_crawler_chaser/chase_target_follower.gd" id="6_follower"]
+[ext_resource type="PackedScene" path="res://prototypes/tentacle_crawler/actors/crawler/crawler.tscn" id="7_crawler"]
+[ext_resource type="Script" path="res://prototypes/tentacle_crawler_chaser/creature_contact.gd" id="8_contact"]
+[ext_resource type="Script" path="res://prototypes/core_loop/monster_director.gd" id="9_director"]
+[ext_resource type="Script" path="res://prototypes/core_loop/core_loop_hud.gd" id="10_hud"]
+[ext_resource type="Script" path="res://prototypes/power_and_lighting/power_bar.gd" id="11_bar"]
+[ext_resource type="Script" path="res://prototypes/shared/prototype_tuning_panel.gd" id="2_tuning"]
+[ext_resource type="Resource" path="res://prototypes/core_loop/core_loop_settings.tres" id="3_settings"]
+
+; Fog and ambient are pushed on from core_loop_knobs.gd at startup; what is here
+; is only so the scene looks right when it is opened in the editor.
+;
+; glow is on because the drill beam depends on it: the beam material's albedo is
+; over 1.0 precisely so it crosses the glow threshold, and without this it is a
+; flat orange stick. The junction beacons lean on it too.
+[sub_resource type="Environment" id="Environment_void"]
+background_mode = 1
+ambient_light_source = 2
+ambient_light_color = Color(0.5, 0.55, 0.65, 1)
+ambient_light_energy = 0.02
+tonemap_mode = 4
+glow_enabled = true
+glow_intensity = 0.45
+glow_bloom = 0.05
+fog_enabled = true
+fog_mode = 1
+fog_light_color = Color(0.09, 0.11, 0.15, 1)
+fog_light_energy = 0.6
+fog_density = 1.0
+fog_depth_begin = 0.0
+fog_depth_end = 26.0
+
+[node name="CoreLoopPrototype" type="Node3D"]
+script = ExtResource("0_root")
+settings = ExtResource("3_settings")
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = SubResource("Environment_void")
+
+[node name="Tunnels" type="Node3D" parent="."]
+script = ExtResource("1_tunnels")
+
+; Empty until the root bakes it, two physics frames in - CSG has no collision on
+; frame zero, and a bake against an empty world silently produces a mesh of
+; nothing. Every export on it is overwritten from core_loop_knobs.gd, because its
+; own defaults come from ChaseKnobs and were chosen for a single 10 m corridor.
+[node name="Navigation" type="NavigationRegion3D" parent="."]
+script = ExtResource("4_navmesh")
+
+; The seam. `quarry` is the MonsterDirector rather than the player, so what the
+; creature walks to is the last thing it HEARD. Nothing below this line knows the
+; difference - see monster_director.gd.
+[node name="ChaseTarget" type="Node3D" parent="." node_paths=PackedStringArray("quarry")]
+script = ExtResource("5_target")
+quarry = NodePath("../MonsterDirector")
+
+; The marker the creature leashes to, filling the slot MarkerPilot fills when a
+; human is flying it. Left disabled until the navmesh exists AND the director has
+; woken the creature.
+[node name="ChaseTargetFollower" type="Marker3D" parent="." node_paths=PackedStringArray("chase_target")]
+script = ExtResource("6_follower")
+chase_target = NodePath("../ChaseTarget")
+
+[node name="NavigationAgent3D" type="NavigationAgent3D" parent="ChaseTargetFollower"]
+
+[node name="Crawler" parent="." node_paths=PackedStringArray("target_marker") instance=ExtResource("7_crawler")]
+target_marker = NodePath("../ChaseTargetFollower")
+
+; A light on the creature rather than on the room, so what it lights up is itself
+; arriving. Sibling of the rig, so the non-uniform squash CrawlerBody writes to
+; %Hull cannot shear it.
+[node name="CreatureLight" type="OmniLight3D" parent="Crawler"]
+
+[node name="CreatureContact" type="Area3D" parent="Crawler"]
+script = ExtResource("8_contact")
+
+; After the Crawler on purpose. _ready runs in tree order, and this node parks the
+; creature at its dormant position on the way up - CrawlerBody caches its own
+; position in its _ready, so a park that happened first would be overwritten.
+[node name="MonsterDirector" type="Node3D" parent="." node_paths=PackedStringArray("crawler", "follower", "contact", "quarry_of")]
+script = ExtResource("9_director")
+crawler = NodePath("../Crawler")
+follower = NodePath("../ChaseTargetFollower")
+contact = NodePath("../Crawler/CreatureContact")
+quarry_of = NodePath("../ChaseTarget")
+
+[node name="HUD" type="CanvasLayer" parent="."]
+script = ExtResource("10_hud")
+
+[node name="Crosshair" type="ColorRect" parent="HUD"]
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -2.0
+offset_top = -2.0
+offset_right = 2.0
+offset_bottom = 2.0
+mouse_filter = 2
+color = Color(0.78, 0.88, 1, 0.55)
+
+[node name="Readout" type="Label" parent="HUD"]
+offset_left = 16.0
+offset_top = 12.0
+offset_right = 520.0
+offset_bottom = 300.0
+theme_override_colors/font_color = Color(0.62, 0.74, 0.86, 0.85)
+theme_override_font_sizes/font_size = 14
+
+; Top RIGHT, away from everything else. The one readout you want to find without
+; looking for it, and the one whose colour is doing as much work as its text.
+[node name="Monster" type="Label" parent="HUD"]
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -320.0
+offset_top = 12.0
+offset_right = -16.0
+offset_bottom = 140.0
+horizontal_alignment = 2
+theme_override_colors/font_color = Color(0.55, 0.62, 0.7, 0.7)
+theme_override_font_sizes/font_size = 14
+
+[node name="SuitPower" type="Control" parent="HUD"]
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -150.0
+offset_top = -34.0
+offset_right = 150.0
+offset_bottom = -16.0
+script = ExtResource("11_bar")
+
+; Bottom left, sized to its own content: zero width/height offsets plus the
+; bottom-left grow directions make it expand right and upward from the corner, so
+; adding a slider does not need the box resized by hand.
+[node name="Tuning" type="PanelContainer" parent="HUD"]
+anchors_preset = 2
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_left = 16.0
+offset_bottom = -16.0
+grow_vertical = 0
+script = ExtResource("2_tuning")

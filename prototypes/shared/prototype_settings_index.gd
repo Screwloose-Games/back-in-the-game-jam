@@ -21,6 +21,7 @@ const INDEX_PATH := "res://prototypes/prototype_settings.tres"
 @export var level_design_01: LevelDesign01Settings
 @export var alien_ai_pathfinding: AlienPathfindingSettings
 @export var drill_and_mining: DrillSettings
+@export var core_loop: CoreLoopSettings
 
 
 ## The children that are actually present, in declaration order.
@@ -39,6 +40,7 @@ func all() -> Array[PrototypeSettings]:
 		level_design_01,
 		alien_ai_pathfinding,
 		drill_and_mining,
+		core_loop,
 	]:
 		if child != null:
 			found.append(child)
