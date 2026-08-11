@@ -75,6 +75,10 @@ func has_color_override() -> bool:
 ## MineLevel already refers to this class and a mutual reference between two
 ## class_name scripts is a resolution cycle Godot will not always untangle.
 func _mark_level_dirty() -> void:
+	if is_inside_tree():
+		# Redraws the editor gizmo, which is both how this is seen and how it is
+		# clickable at all.
+		update_gizmos()
 	var ancestor := get_parent()
 	while ancestor != null:
 		if ancestor.has_method(&"mark_visuals_dirty"):

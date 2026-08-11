@@ -57,11 +57,18 @@ extends Node3D
 
 
 func _enter_tree() -> void:
+	set_notify_transform(true)
 	_mark_level_dirty()
 
 
 func _exit_tree() -> void:
 	_mark_level_dirty()
+
+
+func _notification(what: int) -> void:
+	if what == NOTIFICATION_TRANSFORM_CHANGED:
+		update_configuration_warnings()
+		_mark_level_dirty()
 
 
 func _get_property_list() -> Array[Dictionary]:
@@ -79,6 +86,34 @@ func _get(property: StringName) -> Variant:
 	if property == &"length_metres":
 		return length()
 	return null
+
+
+## Warns when someone has dragged the tunnel node itself, which does nothing.
+##
+## Its shape is read from the two spaces it joins, so its own transform is unused.
+## Moving it looks like it ought to work and silently does not, which is worth a
+## triangle in the Scene dock rather than a puzzled five minutes.
+func _get_configuration_warnings() -> PackedStringArray:
+	var warnings := PackedStringArray()
+	# Outside the tree nothing resolves, so every check below would report a
+	# problem that is really just "the scene is still loading".
+	if not is_inside_tree():
+		return warnings
+	if not position.is_zero_approx():
+		warnings.append(
+			(
+				(
+					"This tunnel's node has been moved to %v, which has no effect - its "
+					+ "shape comes from the spaces at its ends. Move those instead, and "
+					+ "reset this transform to zero."
+				)
+				% position
+			)
+		)
+	var problem := describe_problem()
+	if not problem.is_empty():
+		warnings.append(problem)
+	return warnings
 
 
 func resolve_from() -> MineSpace:
@@ -118,6 +153,10 @@ func build_polyline() -> PackedVector3Array:
 
 	var points := PackedVector3Array([from_node.global_position])
 	for marker: Marker3D in bend_markers():
+		# A detached corner would silently shorten the run, and length is what
+		# every sound answer is computed from. No answer beats a wrong one.
+		if not marker.is_inside_tree():
+			return PackedVector3Array()
 		points.append(marker.global_position)
 	points.append(to_node.global_position)
 	return points
@@ -154,6 +193,8 @@ func describe_problem() -> String:
 
 ## See the note on MineSpace._mark_level_dirty for why this duck-types.
 func _mark_level_dirty() -> void:
+	if is_inside_tree():
+		update_gizmos()
 	var ancestor := get_parent()
 	while ancestor != null:
 		if ancestor.has_method(&"mark_visuals_dirty"):

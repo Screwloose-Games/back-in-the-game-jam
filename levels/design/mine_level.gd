@@ -242,6 +242,10 @@ func _draw_everything() -> void:
 	for space: MineSpace in spaces_in_level():
 		_draw_space(space)
 	for tunnel: MineTunnel in tunnels_in_level():
+		# A tunnel's shape comes from the spaces at its ends, so dragging a room
+		# has to refresh the gizmo of every tunnel arriving at it - which that
+		# tunnel has no way of noticing for itself.
+		tunnel.update_gizmos()
 		if tunnel.describe_problem().is_empty():
 			_draw_tunnel(tunnel)
 
@@ -442,7 +446,7 @@ func _draw_tube(points: PackedVector3Array, color: Color, radius: float) -> void
 		mesh_instance.mesh = cylinder
 		mesh_instance.material_override = material
 		mesh_instance.transform = _to_level(
-			Transform3D(_basis_aligning_up_with(direction), (start + finish) * 0.5)
+			Transform3D(basis_aligning_up_with(direction), (start + finish) * 0.5)
 		)
 		_visuals.add_child(mesh_instance)
 
@@ -563,7 +567,10 @@ func _to_level(world: Transform3D) -> Transform3D:
 ## Quaternion(from, to) picks a degenerate axis when the two are exactly
 ## opposite, which for a cylinder pointing straight down leaves it pointing
 ## straight up. The entrance shaft of a mine is the case that hits this.
-func _basis_aligning_up_with(direction: Vector3) -> Basis:
+##
+## Static and public because the editor gizmo builds the same tubes to make a
+## tunnel clickable, and two copies of this would disagree on the vertical case.
+static func basis_aligning_up_with(direction: Vector3) -> Basis:
 	if direction.is_zero_approx():
 		return Basis()
 	var heading := direction.normalized()

@@ -1,5 +1,5 @@
 @tool
-extends VBoxContainer
+extends ScrollContainer
 
 ## The Mine Level dock: everything the 3D editor does not already do for you.
 ##
@@ -39,11 +39,13 @@ var _loudness_slider: HSlider = null
 var _sound_report: RichTextLabel = null
 var _problem_report: RichTextLabel = null
 var _stats_report: RichTextLabel = null
+var _content: VBoxContainer = null
 var _refresh_timer: Timer = null
 var _suppress_control_signals := false
 
 
 func _ready() -> void:
+	_build_scroll_frame()
 	_build_ui()
 	EditorInterface.get_selection().selection_changed.connect(_on_selection_changed)
 	_refresh_timer = Timer.new()
@@ -84,18 +86,18 @@ func refresh() -> void:
 
 
 func _build_ui() -> void:
-	add_theme_constant_override("separation", 6)
+	_content.add_theme_constant_override("separation", 6)
 	_level_label = _add_heading("No MineLevel in the open scene.")
 
 	_add_heading("Create")
 	var create_row := HBoxContainer.new()
-	add_child(create_row)
+	_content.add_child(create_row)
 	_add_button(create_row, "+ Room", _on_add_room_pressed)
 	_add_button(create_row, "+ Junction", _on_add_junction_pressed)
 	_add_button(create_row, "+ Dead end", _on_add_dead_end_pressed)
 
 	var connect_row := HBoxContainer.new()
-	add_child(connect_row)
+	_content.add_child(connect_row)
 	var connect_button := _add_button(connect_row, "Connect selected", _on_connect_pressed)
 	connect_button.tooltip_text = ("Select exactly two spaces, then press this. Creates the tunnel and fills in both ends.")
 	var bend_button := _add_button(connect_row, "Add bend", _on_add_bend_pressed)
@@ -107,17 +109,17 @@ func _build_ui() -> void:
 	for mode_name: String in MineLevel.ColorMode.keys():
 		_color_mode_picker.add_item(mode_name.capitalize())
 	_color_mode_picker.item_selected.connect(_on_color_mode_selected)
-	add_child(_color_mode_picker)
+	_content.add_child(_color_mode_picker)
 
 	_label_toggle = CheckBox.new()
 	_label_toggle.text = "Show labels"
 	_label_toggle.toggled.connect(_on_labels_toggled)
-	add_child(_label_toggle)
+	_content.add_child(_label_toggle)
 
 	_add_separator()
 	_add_heading("Creature fit")
 	var width_row := HBoxContainer.new()
-	add_child(width_row)
+	_content.add_child(width_row)
 	_width_slider = HSlider.new()
 	_width_slider.min_value = 0.0
 	_width_slider.max_value = 16.0
@@ -133,23 +135,23 @@ func _build_ui() -> void:
 	width_note.text = "Narrowest tunnel the creature fits down."
 	width_note.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	width_note.add_theme_font_size_override("font_size", 10)
-	add_child(width_note)
+	_content.add_child(width_note)
 
 	_add_separator()
 	_add_heading("Noise")
 	_origin_label = Label.new()
-	add_child(_origin_label)
-	_add_button(self, "Use selection as noise origin", _on_set_origin_pressed)
+	_content.add_child(_origin_label)
+	_add_button(_content, "Use selection as noise origin", _on_set_origin_pressed)
 
 	_loudness_slider = HSlider.new()
 	_loudness_slider.min_value = 0.0
 	_loudness_slider.max_value = 200.0
 	_loudness_slider.step = 1.0
 	_loudness_slider.value_changed.connect(_on_loudness_changed)
-	add_child(_loudness_slider)
+	_content.add_child(_loudness_slider)
 
 	var preset_row := HBoxContainer.new()
-	add_child(preset_row)
+	_content.add_child(preset_row)
 	for preset: Dictionary in NOISE_PRESETS:
 		var loudness: float = preset["loudness"]
 		var button := _add_button(
@@ -160,7 +162,7 @@ func _build_ui() -> void:
 	_sound_report = _add_report()
 
 	_add_separator()
-	_add_button(self, "Validate", _on_validate_pressed)
+	_add_button(_content, "Validate", _on_validate_pressed)
 	_problem_report = _add_report()
 
 	_add_separator()
@@ -530,7 +532,7 @@ func _add_heading(text: String) -> Label:
 	var label := Label.new()
 	label.text = text
 	label.add_theme_font_size_override("font_size", 12)
-	add_child(label)
+	_content.add_child(label)
 	return label
 
 
@@ -548,9 +550,25 @@ func _add_report() -> RichTextLabel:
 	report.custom_minimum_size = Vector2(0, 40)
 	report.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	report.selection_enabled = true
-	add_child(report)
+	_content.add_child(report)
 	return report
 
 
 func _add_separator() -> void:
-	add_child(HSeparator.new())
+	_content.add_child(HSeparator.new())
+
+
+## Puts every control inside a scrolling column.
+##
+## THE DOCK MUST NOT ASK THE EDITOR FOR HEIGHT. A RichTextLabel with fit_content
+## on reports its full text height as its minimum size, so the moment the reports
+## were filled in the dock demanded several hundred pixels, the editor's vertical
+## split gave it to them, and the bottom panel - filesystem, output, debugger -
+## got squeezed off the screen. A ScrollContainer's minimum is its own and it
+## clips the rest, so the reports can be as long as they like.
+func _build_scroll_frame() -> void:
+	custom_minimum_size = Vector2(0, 180)
+	horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
+	_content = VBoxContainer.new()
+	_content.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	add_child(_content)

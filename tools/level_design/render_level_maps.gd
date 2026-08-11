@@ -15,10 +15,11 @@ extends SceneTree
 ##   godot --headless --path <root> --script res://tools/level_design/render_level_maps.gd
 ##   godot --headless --path <root> --script ... -- --mode=creature_passable
 
-const LEVEL_PATH := "res://levels/design/level_mine_blockout.tscn"
-## Named for the colour mode, so a width map and a sound map can sit side by side
-## in the design document instead of overwriting each other.
-const OUTPUT_PATTERN := "res://documentation/design/images/mine_blockout_%s.svg"
+const DEFAULT_LEVEL_PATH := "res://levels/design/level_asteroid_blockout.tscn"
+## Named for the level and the colour mode, so a width map and a sound map of two
+## different levels can all sit in the design document without overwriting each
+## other.
+const OUTPUT_PATTERN := "res://documentation/design/images/%s_%s.svg"
 
 const PANEL_WIDTH := 900.0
 const PANEL_HEIGHT := 1000.0
@@ -43,9 +44,9 @@ func _initialize() -> void:
 func _run() -> void:
 	await process_frame
 
-	var packed := load(LEVEL_PATH) as PackedScene
+	var packed := load(_level_path()) as PackedScene
 	if packed == null:
-		printerr("Could not load %s" % LEVEL_PATH)
+		printerr("Could not load %s" % _level_path())
 		quit(1)
 		return
 
@@ -54,14 +55,21 @@ func _run() -> void:
 	_apply_mode_override(level)
 	await process_frame
 
-	var graph := level.build_graph()
+	var wanted_tags := _wanted_tags()
+	var graph := _filter_graph(level.build_graph(), wanted_tags)
 	if graph.spaces.is_empty():
-		printerr("The level has no spaces to draw.")
+		printerr("Nothing to draw. Check --tags= against the tags actually in the level.")
 		quit(1)
 		return
 
 	var mode_name: String = MineLevel.ColorMode.keys()[level.color_mode]
-	var output_path := OUTPUT_PATTERN % mode_name.to_lower()
+	var output_path := (
+		OUTPUT_PATTERN
+		% [
+			_level_path().get_file().get_basename(),
+			mode_name.to_lower() + ("" if wanted_tags.is_empty() else "_" + "-".join(wanted_tags)),
+		]
+	)
 	var svg := _render(level, graph)
 	DirAccess.make_dir_recursive_absolute(output_path.get_base_dir())
 	var file := FileAccess.open(output_path, FileAccess.WRITE)
@@ -394,3 +402,44 @@ func _escape(text: String) -> String:
 	return text.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;").replace(
 		'"', "&quot;"
 	)
+
+
+## Tags to restrict the drawing to, from `-- --tags=mines_a,cavern`. Empty draws
+## everything.
+##
+## A plan of a mine with two levels stacked on the same survey grid is unreadable,
+## because every junction on the lower level sits exactly under one on the upper.
+## Real mine plans are drawn one level to a sheet, and this is how to do that.
+func _wanted_tags() -> PackedStringArray:
+	for argument: String in OS.get_cmdline_user_args():
+		if argument.begins_with("--tags="):
+			return argument.trim_prefix("--tags=").split(",", false)
+	return PackedStringArray()
+
+
+## Keeps spaces carrying any wanted tag, and the tunnels whose both ends survived.
+func _filter_graph(graph: LevelGraph, wanted_tags: PackedStringArray) -> LevelGraph:
+	if wanted_tags.is_empty():
+		return graph
+
+	var filtered := LevelGraph.new()
+	var kept := {}
+	for space: LevelGraph.Space in graph.spaces:
+		for tag: StringName in space.tags:
+			if String(tag) in wanted_tags:
+				filtered.add_space(space)
+				kept[space.id] = true
+				break
+	for tunnel: LevelGraph.Tunnel in graph.tunnels:
+		if kept.has(tunnel.from_id) and kept.has(tunnel.to_id):
+			filtered.add_tunnel(tunnel)
+	return filtered
+
+
+## Which level to read. Defaults to the asteroid blockout; `-- --level=res://...`
+## points any of these tools at another one.
+func _level_path() -> String:
+	for argument: String in OS.get_cmdline_user_args():
+		if argument.begins_with("--level="):
+			return argument.trim_prefix("--level=")
+	return DEFAULT_LEVEL_PATH

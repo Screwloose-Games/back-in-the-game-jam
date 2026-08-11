@@ -16,8 +16,8 @@ extends SceneTree
 ## Run headless:
 ##   godot --headless --path <root> --script res://tools/level_design/export_layout_snippet.gd
 
-const LEVEL_PATH := "res://levels/design/level_mine_blockout.tscn"
-const OUTPUT_PATH := "res://documentation/design/mine_blockout_layout.gd.txt"
+const DEFAULT_LEVEL_PATH := "res://levels/design/level_asteroid_blockout.tscn"
+const OUTPUT_PATTERN := "res://documentation/design/%s_layout.gd.txt"
 
 
 func _initialize() -> void:
@@ -27,9 +27,9 @@ func _initialize() -> void:
 func _run() -> void:
 	await process_frame
 
-	var packed := load(LEVEL_PATH) as PackedScene
+	var packed := load(_level_path()) as PackedScene
 	if packed == null:
-		printerr("Could not load %s" % LEVEL_PATH)
+		printerr("Could not load %s" % _level_path())
 		quit(1)
 		return
 
@@ -39,16 +39,17 @@ func _run() -> void:
 
 	var graph := level.build_graph()
 	var text := _render_snippet(level, graph)
-	DirAccess.make_dir_recursive_absolute(OUTPUT_PATH.get_base_dir())
-	var file := FileAccess.open(OUTPUT_PATH, FileAccess.WRITE)
+	DirAccess.make_dir_recursive_absolute(OUTPUT_PATTERN.get_base_dir())
+	var output_path := OUTPUT_PATTERN % _level_path().get_file().get_basename()
+	var file := FileAccess.open(output_path, FileAccess.WRITE)
 	if file == null:
-		printerr("Could not write %s" % OUTPUT_PATH)
+		printerr("Could not write %s" % output_path)
 		quit(1)
 		return
 	file.store_string(text)
 	file.close()
 
-	print("Wrote %s" % OUTPUT_PATH)
+	print("Wrote %s" % output_path)
 	print(
 		(
 			"  %d junction consts, %d routes, %d chambers"
@@ -65,7 +66,9 @@ func _run() -> void:
 
 func _render_snippet(level: MineLevel, graph: LevelGraph) -> String:
 	var lines := PackedStringArray()
-	lines.append("# Generated from %s by tools/level_design/export_layout_snippet.gd." % LEVEL_PATH)
+	lines.append(
+		"# Generated from %s by tools/level_design/export_layout_snippet.gd." % _level_path()
+	)
 	lines.append("# The blockout scene is the source of truth; this is a copy to diff against.")
 	lines.append("#")
 	(
@@ -185,3 +188,12 @@ func _float_literal(value: float) -> String:
 	if is_equal_approx(value, roundf(value)):
 		return "%d" % int(roundf(value))
 	return "%.2f" % value
+
+
+## Which level to read. Defaults to the asteroid blockout; `-- --level=res://...`
+## points any of these tools at another one.
+func _level_path() -> String:
+	for argument: String in OS.get_cmdline_user_args():
+		if argument.begins_with("--level="):
+			return argument.trim_prefix("--level=")
+	return DEFAULT_LEVEL_PATH
