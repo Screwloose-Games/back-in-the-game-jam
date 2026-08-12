@@ -139,7 +139,9 @@ func _redraw_tunnel(gizmo: EditorNode3DGizmo, tunnel: MineTunnel) -> void:
 	# Segments as well as the tube, so a tunnel drawn edge-on is still catchable
 	# on its centreline when the tube is only a couple of pixels wide.
 	gizmo.add_collision_segments(lines)
-	var tube := _tube_triangle_mesh(points, tunnel.width * 0.5)
+	var tube := _tube_triangle_mesh(
+		points, tunnel.width * 0.5, tunnel.bore_height() / maxf(tunnel.width, 0.001)
+	)
 	if tube != null:
 		gizmo.add_collision_triangles(tube)
 
@@ -204,7 +206,9 @@ func _circle_point(plane: int, angle: float, radius: float) -> Vector3:
 ## A tube along the polyline, purely as something for a click ray to hit. Built
 ## from the same alignment the level uses to draw its visible tubes, so the two
 ## agree about which way a vertical shaft points.
-func _tube_triangle_mesh(points: PackedVector3Array, radius: float) -> TriangleMesh:
+func _tube_triangle_mesh(
+	points: PackedVector3Array, radius: float, height_ratio: float
+) -> TriangleMesh:
 	var faces := PackedVector3Array()
 	for index: int in points.size() - 1:
 		var start := points[index]
@@ -219,8 +223,14 @@ func _tube_triangle_mesh(points: PackedVector3Array, radius: float) -> TriangleM
 		cylinder.height = span
 		cylinder.radial_segments = COLLISION_TUBE_SIDES
 		cylinder.rings = 0
+		# Matches the drawn bore, so a flat hive layer is not a fat click target
+		# that swallows everything stacked above and below it.
 		var placement := Transform3D(
-			MineLevel.basis_aligning_up_with(direction), (start + finish) * 0.5
+			(
+				LevelGraph.bore_basis(direction)
+				* Basis.from_scale(Vector3(1.0, 1.0, height_ratio))
+			),
+			(start + finish) * 0.5
 		)
 		for corner: Vector3 in cylinder.get_faces():
 			faces.append(placement * corner)

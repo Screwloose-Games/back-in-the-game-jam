@@ -142,7 +142,9 @@ func _add_span_brushes(combiner: CSGCombiner3D, tunnel: LevelGraph.Tunnel, is_hu
 		var finish := to_local(points[index + 1])
 		if start.is_equal_approx(finish):
 			continue
-		combiner.add_child(_span_brush(start, finish, tunnel.width, is_round, is_hull))
+		combiner.add_child(
+			_span_brush(start, finish, tunnel.width, tunnel.bore_height(), is_round, is_hull)
+		)
 
 
 ## One span's brush. `is_hull` picks which of the pair, because the two differ
@@ -154,10 +156,14 @@ func _add_span_brushes(combiner: CSGCombiner3D, tunnel: LevelGraph.Tunnel, is_hu
 ## far enough for adjoining bores to meet and short enough that it can never
 ## reach past its own hull.
 func _span_brush(
-	start: Vector3, finish: Vector3, width: float, is_round: bool, is_hull: bool
+	start: Vector3, finish: Vector3, width: float, height: float, is_round: bool, is_hull: bool
 ) -> CSGPrimitive3D:
-	var side := width + wall_thickness * 2.0 if is_hull else width
-	var overrun := width * 0.5 + wall_thickness if is_hull else width * 0.5
+	var across := width + wall_thickness * 2.0 if is_hull else width
+	var tall := height + wall_thickness * 2.0 if is_hull else height
+	# The overrun is measured on the widest face, so a hull always reaches at
+	# least as far as the bore it has to contain however flat that bore is.
+	var reach := maxf(width, height) * 0.5
+	var overrun := reach + wall_thickness if is_hull else reach
 	var span := start.distance_to(finish) + overrun * 2.0
 	var operation := CSGShape3D.OPERATION_UNION if is_hull else CSGShape3D.OPERATION_SUBTRACTION
 	var direction := (finish - start).normalized()
@@ -165,16 +171,22 @@ func _span_brush(
 
 	if is_round:
 		var tube := CSGCylinder3D.new()
-		tube.radius = side * 0.5
+		tube.radius = across * 0.5
 		tube.height = span
 		tube.sides = ROUND_BORE_SIDES
 		tube.operation = operation
-		# A CSGCylinder3D runs along its own Y, not its Z like the box does.
-		tube.transform = Transform3D(MineLevel.basis_aligning_up_with(direction), midpoint)
+		# A CSGCylinder3D runs along its own Y and is circular, so an oval bore is
+		# a circular one squashed across the up-ish axis bore_basis picks out.
+		var shaped := (
+			LevelGraph.bore_basis(direction)
+			* Basis.from_scale(Vector3(1.0, 1.0, tall / maxf(across, 0.001)))
+		)
+		tube.transform = Transform3D(shaped, midpoint)
 		return tube
 
 	var box := CSGBox3D.new()
-	box.size = Vector3(side, side, span)
+	# looking_at puts the run on Z, the width on X and the height on Y.
+	box.size = Vector3(across, tall, span)
 	box.operation = operation
 	box.transform = Transform3D(Basis.looking_at(direction, _reference_up(direction)), midpoint)
 	return box

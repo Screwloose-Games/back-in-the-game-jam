@@ -21,8 +21,12 @@ extends RefCounted
 ##   creature_min_width  metres; anything narrower is tagged a refuge.
 ##   tag_colors          StringName -> Color, for the level's colour coding.
 ##   grids               Array of grid dictionaries. See _create_grid_spaces.
+##   chains              Array of chain dictionaries. See _create_chain.
+##   layer_stacks        Array of stack dictionaries. See _create_layer_stack.
 ##   spaces              Array of free-form space entries.
-##   tunnels             Array of free-form tunnel entries.
+##   tunnels             Array of free-form tunnel entries. An entry carrying
+##                       `bends` as an int rather than an array gets that many
+##                       generated corners. See _wind_between.
 ##   entrance            name of the space the level is entered from.
 ##   sound_origin        name of the space the noise preview starts in.
 ##
@@ -118,8 +122,20 @@ func build(spec: Dictionary, level_name: String) -> MineLevel:
 	var grids: Array = spec.get("grids", [])
 	for grid: Dictionary in grids:
 		_create_grid_spaces(level, space_root, grid)
+	var chains: Array = spec.get("chains", [])
+	for chain: Dictionary in chains:
+		_create_chain_spaces(level, space_root, chain)
+	var stacks: Array = spec.get("layer_stacks", [])
+	for stack: Dictionary in stacks:
+		_create_layer_stack_spaces(level, space_root, stack)
+
+	# Tunnels only after every space exists, so any of them can name any of them.
 	for grid: Dictionary in grids:
 		_create_grid_tunnels(level, tunnel_root, grid, spec["creature_min_width"])
+	for chain: Dictionary in chains:
+		_create_chain_tunnels(level, tunnel_root, chain)
+	for stack: Dictionary in stacks:
+		_create_layer_stack_tunnels(level, tunnel_root, stack)
 	for entry: Dictionary in spec.get("tunnels", []):
 		_add_tunnel(level, tunnel_root, entry)
 
@@ -248,6 +264,203 @@ func _create_grid_tunnels(
 			)
 
 
+## A chain of spaces in a line, each joined to the next.
+##
+## This is what a ravine is: one long chasm is a run of stations rather than a
+## single node, so that where you are along it is a thing the graph can answer and
+## sound has somewhere to decay over.
+##
+## A chain dictionary is:
+##
+##   prefix        name prefix for every node it creates.
+##   stations      Array of {name, position, radius, kind, tags, notes}.
+##   width, height metres across and floor to roof, for every run in the chain.
+##   tags, notes   put on the runs.
+##   station_tags  put on the stations, on top of each station's own.
+func _create_chain_spaces(level: MineLevel, parent: Node3D, chain: Dictionary) -> void:
+	var prefix: String = chain["prefix"]
+	var shared: Array = chain.get("station_tags", [])
+	for station: Dictionary in chain["stations"]:
+		var tags: Array = shared.duplicate()
+		tags.append_array(station.get("tags", []))
+		var space := _make_space(
+			"%s_%s" % [prefix, station["name"]],
+			station["position"],
+			station["radius"],
+			_kind_from_text(station.get("kind", "junction")),
+			_to_tags(tags),
+			station.get("notes", "")
+		)
+		parent.add_child(space)
+		space.owner = level
+
+
+func _create_chain_tunnels(level: MineLevel, parent: Node3D, chain: Dictionary) -> void:
+	var prefix: String = chain["prefix"]
+	var stations: Array = chain["stations"]
+	for index: int in stations.size() - 1:
+		_add_tunnel(
+			level,
+			parent,
+			{
+				"name": "%s_run_%d" % [prefix, index + 1],
+				"from": "%s_%s" % [prefix, stations[index]["name"]],
+				"to": "%s_%s" % [prefix, stations[index + 1]["name"]],
+				"width": chain["width"],
+				"height": chain.get("height", 0.0),
+				"tags": chain.get("tags", []),
+				"notes": chain.get("notes", ""),
+			}
+		)
+
+
+## A stack of wide flat layers joined by short risers.
+##
+## Each layer is a hub with a ring of cells around it, all joined by bores that
+## are wide and shallow - which is what makes a layer read as one flat cavity
+## rather than as a ring of tunnels. Layers are offset and turned relative to one
+## another so the stack never lines up into a shaft you can see down.
+##
+## A stack dictionary is:
+##
+##   prefix        name prefix for every node it creates.
+##   center        x and z the whole stack is built around.
+##   layers        Array of {name, y, offset: Vector2, radius, cells, twist,
+##                 squash}. `twist` turns the ring, `squash` flattens it on z so
+##                 a layer is not a perfect circle.
+##   gap_width     in-plane bore, across. Wide.
+##   gap_height    in-plane bore, floor to roof. Thin. This is the whole idea.
+##   hub_radius, cell_radius
+##   riser_width, riser_height
+##   risers_per_gap  how many cells are joined to the layer below.
+##   layer_tags, riser_tags
+func _create_layer_stack_spaces(level: MineLevel, parent: Node3D, stack: Dictionary) -> void:
+	var prefix: String = stack["prefix"]
+	var tags := _to_tags(stack.get("layer_tags", []))
+	for layer: Dictionary in stack["layers"]:
+		var hub := _make_space(
+			"%s_%s_hub" % [prefix, layer["name"]],
+			_layer_center(stack, layer),
+			stack["hub_radius"],
+			LevelGraph.SpaceKind.ROOM,
+			tags,
+			layer.get("notes", "")
+		)
+		parent.add_child(hub)
+		hub.owner = level
+		for cell: int in layer["cells"]:
+			var space := _make_space(
+				"%s_%s_c%d" % [prefix, layer["name"], cell],
+				_cell_position(stack, layer, cell),
+				stack["cell_radius"],
+				LevelGraph.SpaceKind.JUNCTION,
+				tags,
+				""
+			)
+			parent.add_child(space)
+			space.owner = level
+
+
+func _create_layer_stack_tunnels(level: MineLevel, parent: Node3D, stack: Dictionary) -> void:
+	var prefix: String = stack["prefix"]
+	var layers: Array = stack["layers"]
+	for layer: Dictionary in layers:
+		var cells: int = layer["cells"]
+		for cell: int in cells:
+			var here := "%s_%s_c%d" % [prefix, layer["name"], cell]
+			# Round the rim, then in to the hub: a disc, not a ring.
+			_add_layer_tunnel(
+				level,
+				parent,
+				stack,
+				layer,
+				here,
+				"%s_%s_c%d" % [prefix, layer["name"], (cell + 1) % cells],
+				"rim%d" % cell
+			)
+			_add_layer_tunnel(
+				level,
+				parent,
+				stack,
+				layer,
+				here,
+				"%s_%s_hub" % [prefix, layer["name"]],
+				"spoke%d" % cell
+			)
+
+	for index: int in layers.size() - 1:
+		_add_risers(level, parent, stack, layers[index], layers[index + 1], index + 1)
+
+
+func _add_layer_tunnel(
+	level: MineLevel,
+	parent: Node3D,
+	stack: Dictionary,
+	layer: Dictionary,
+	from_name: String,
+	to_name: String,
+	suffix: String
+) -> void:
+	_add_tunnel(
+		level,
+		parent,
+		{
+			"name": "%s_%s_%s" % [stack["prefix"], layer["name"], suffix],
+			"from": from_name,
+			"to": to_name,
+			"width": stack["gap_width"],
+			"height": stack["gap_height"],
+			"tags": stack.get("layer_tags", []),
+		}
+	)
+
+
+## The short tunnels between one layer and the next.
+##
+## Spread evenly round the ring rather than stacked, so leaving a layer is a
+## choice of several doors and none of them is the obvious one.
+func _add_risers(
+	level: MineLevel,
+	parent: Node3D,
+	stack: Dictionary,
+	lower: Dictionary,
+	upper: Dictionary,
+	index: int
+) -> void:
+	var count: int = mini(stack["risers_per_gap"], mini(lower["cells"], upper["cells"]))
+	for riser: int in count:
+		var from_cell := int(round(float(riser) * float(lower["cells"]) / float(count)))
+		var to_cell := int(round(float(riser) * float(upper["cells"]) / float(count)))
+		_add_tunnel(
+			level,
+			parent,
+			{
+				"name": "%s_riser_%d_%d" % [stack["prefix"], index, riser],
+				"from":
+				"%s_%s_c%d" % [stack["prefix"], lower["name"], from_cell % int(lower["cells"])],
+				"to": "%s_%s_c%d" % [stack["prefix"], upper["name"], to_cell % int(upper["cells"])],
+				"width": stack["riser_width"],
+				"height": stack.get("riser_height", 0.0),
+				"tags": stack.get("riser_tags", []),
+			}
+		)
+
+
+func _layer_center(stack: Dictionary, layer: Dictionary) -> Vector3:
+	var origin: Vector3 = stack["center"]
+	var offset: Vector2 = layer.get("offset", Vector2.ZERO)
+	return Vector3(origin.x + offset.x, layer["y"], origin.z + offset.y)
+
+
+func _cell_position(stack: Dictionary, layer: Dictionary, cell: int) -> Vector3:
+	var middle := _layer_center(stack, layer)
+	var cells: int = layer["cells"]
+	var angle: float = layer.get("twist", 0.0) + TAU * float(cell) / float(cells)
+	var radius: float = layer["radius"]
+	var squash: float = layer.get("squash", 1.0)
+	return middle + Vector3(cos(angle) * radius, 0.0, sin(angle) * radius * squash)
+
+
 func _add_tunnel(level: MineLevel, parent: Node3D, entry: Dictionary) -> void:
 	var from_space: MineSpace = _spaces_by_name.get(entry["from"])
 	var to_space: MineSpace = _spaces_by_name.get(entry["to"])
@@ -258,6 +471,7 @@ func _add_tunnel(level: MineLevel, parent: Node3D, entry: Dictionary) -> void:
 	var tunnel := MineTunnel.new()
 	tunnel.name = entry["name"]
 	tunnel.width = entry["width"]
+	tunnel.height = entry.get("height", 0.0)
 	tunnel.tags = _to_tags(entry.get("tags", []))
 	tunnel.notes = entry.get("notes", "")
 	parent.add_child(tunnel)
@@ -265,13 +479,58 @@ func _add_tunnel(level: MineLevel, parent: Node3D, entry: Dictionary) -> void:
 	tunnel.from_space = tunnel.get_path_to(from_space)
 	tunnel.to_space = tunnel.get_path_to(to_space)
 
-	var bends: Array = entry.get("bends", [])
+	# An int asks for that many generated corners; an array is the corners.
+	var declared: Variant = entry.get("bends", [])
+	var bends: Array = (
+		(
+			_wind_between(from_space.position, to_space.position, entry)
+			if declared is int
+			else declared
+		)
+		as Array
+	)
 	for index: int in bends.size():
 		var bend := MineBend.new()
 		bend.name = "bend_%d" % (index + 1)
 		bend.position = bends[index]
 		tunnel.add_child(bend)
 		bend.owner = level
+
+
+## Corners for a tunnel that wanders rather than running straight.
+##
+## GENERATED, BECAUSE THE RAVINE HAS DOZENS OF THESE and typing three corners for
+## each would be a page of coordinates nobody would ever tune. SEEDED, because a
+## scaffold that produced a different level every run would not be a scaffold.
+##
+## `bends` is how many corners, `wander` how far they stray sideways and
+## `wander_vertical` how far up and down. Sideways strays more than vertical by
+## default: a solution tunnel following a seam snakes more than it undulates.
+func _wind_between(from_position: Vector3, to_position: Vector3, entry: Dictionary) -> Array:
+	var bend_count: int = entry.get("bends", 0)
+	if bend_count <= 0:
+		return []
+	var wander: float = entry.get("wander", 0.0)
+	var wander_vertical: float = entry.get("wander_vertical", wander * 0.4)
+	var generator := RandomNumberGenerator.new()
+	generator.seed = entry.get("seed", 0)
+
+	var run := to_position - from_position
+	var across := run.cross(Vector3.UP)
+	if across.is_zero_approx():
+		across = run.cross(Vector3.FORWARD)
+	across = across.normalized()
+	var vertical := across.cross(run).normalized()
+
+	var bends := []
+	for index: int in bend_count:
+		var along := float(index + 1) / float(bend_count + 1)
+		var stray := (
+			across * generator.randf_range(-wander, wander)
+			+ vertical * generator.randf_range(-wander_vertical, wander_vertical)
+		)
+		bends.append(from_position + run * along + stray)
+	return bends
 
 
 func _make_group(level: MineLevel, group_name: String) -> Node3D:

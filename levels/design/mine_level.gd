@@ -206,6 +206,7 @@ func build_graph() -> LevelGraph:
 		record.to_id = tunnel.resolve_to().name
 		record.polyline = tunnel.build_polyline()
 		record.width = tunnel.width
+		record.height = tunnel.height
 		record.tags = tunnel.tags
 		record.notes = tunnel.notes
 		graph.add_tunnel(record)
@@ -396,10 +397,12 @@ func _draw_space(space: MineSpace) -> void:
 func _draw_tunnel(tunnel: MineTunnel) -> void:
 	var points := tunnel.build_polyline()
 	var radius := tunnel.width * 0.5
+	# How squashed the bore is across its up-ish axis. 1.0 is square.
+	var height_ratio := tunnel.bore_height() / maxf(tunnel.width, 0.001)
 	if color_mode == ColorMode.SOUND:
-		_draw_tunnel_by_sound(tunnel, points, radius)
+		_draw_tunnel_by_sound(tunnel, points, radius, height_ratio)
 	else:
-		_draw_tube(points, color_for_tunnel(tunnel), radius)
+		_draw_tube(points, color_for_tunnel(tunnel), radius, height_ratio)
 
 	if show_labels:
 		var midpoint := LevelGraph.point_on_polyline(points, _polyline_length(points) * 0.5)
@@ -408,25 +411,37 @@ func _draw_tunnel(tunnel: MineTunnel) -> void:
 
 ## Splits the tunnel at the edges of what can hear the noise, so a partly-audible
 ## tunnel reads as partly audible rather than being rounded to one answer.
-func _draw_tunnel_by_sound(tunnel: MineTunnel, points: PackedVector3Array, radius: float) -> void:
+func _draw_tunnel_by_sound(
+	tunnel: MineTunnel, points: PackedVector3Array, radius: float, height_ratio: float
+) -> void:
 	var span := _polyline_length(points)
 	var intervals: Array = _sound_field.covered_intervals.get(tunnel.name, [])
 	var cursor := 0.0
 	for interval: Vector2 in intervals:
 		if interval.x > cursor:
-			_draw_tube(LevelGraph.slice_polyline(points, cursor, interval.x), COLOR_SILENT, radius)
+			_draw_tube(
+				LevelGraph.slice_polyline(points, cursor, interval.x),
+				COLOR_SILENT,
+				radius,
+				height_ratio
+			)
 		var remaining := _sound_field.loudness - minf(interval.x, span - interval.y)
 		_draw_tube(
 			LevelGraph.slice_polyline(points, interval.x, interval.y),
 			_sound_color(remaining),
-			radius
+			radius,
+			height_ratio
 		)
 		cursor = interval.y
 	if cursor < span:
-		_draw_tube(LevelGraph.slice_polyline(points, cursor, span), COLOR_SILENT, radius)
+		_draw_tube(
+			LevelGraph.slice_polyline(points, cursor, span), COLOR_SILENT, radius, height_ratio
+		)
 
 
-func _draw_tube(points: PackedVector3Array, color: Color, radius: float) -> void:
+func _draw_tube(
+	points: PackedVector3Array, color: Color, radius: float, height_ratio: float
+) -> void:
 	var material := _material_for(color, tunnel_alpha)
 	for index: int in maxi(points.size() - 1, 0):
 		var start := points[index]
@@ -445,9 +460,11 @@ func _draw_tube(points: PackedVector3Array, color: Color, radius: float) -> void
 		var mesh_instance := MeshInstance3D.new()
 		mesh_instance.mesh = cylinder
 		mesh_instance.material_override = material
-		mesh_instance.transform = _to_level(
-			Transform3D(basis_aligning_up_with(direction), (start + finish) * 0.5)
+		# Squashed across its up-ish axis, so a tall slot draws as a tall slot.
+		var shaped := (
+			LevelGraph.bore_basis(direction) * Basis.from_scale(Vector3(1.0, 1.0, height_ratio))
 		)
+		mesh_instance.transform = _to_level(Transform3D(shaped, (start + finish) * 0.5))
 		_visuals.add_child(mesh_instance)
 
 

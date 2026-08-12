@@ -1,8 +1,19 @@
 # Level blockouts
 
-**`level_asteroid_blockout.tscn` is the design of record.** It is the shape of the
-level, annotated, as a graph that keeps its 3D coordinates. It is not finished
-geometry and does not try to be.
+**One scene per biome, each edited independently.** Each is the shape of that
+biome, annotated, as a graph that keeps its 3D coordinates. None of them is
+finished geometry and none tries to be.
+
+| Scene | Biome | Size |
+|---|---|---|
+| `level_asteroid_blockout.tscn` | The mines, plus the central cavern | 30 spaces, 54 tunnels, 2,853 m |
+| `level_ravine_blockout.tscn` | The ravine | 19 spaces, 24 tunnels, 1,592 m |
+| `level_hive_blockout.tscn` | The hive | 54 spaces, 113 tunnels, 4,426 m |
+
+**Only the mines carry the central cavern**, and only because they were built
+before that idea was in question. The ravine and the hive assume nothing about how
+the biomes join: each has `link_*` dead-end stubs tagged `unbuilt` marking where a
+connection would land. Stitching them into one scene is a separate job.
 
 (`level_mine_blockout.tscn` is the older map the core loop prototype actually
 plays, kept for reference. Every tool takes `-- --level=res://...` to point at it.)
@@ -49,6 +60,40 @@ Rooms and junctions are nodes, tunnels are edges. That is a real graph, so the
 creature AI and the noise system can walk it, and it is also a real scene, so it
 is authored by dragging things in Godot's 3D viewport.
 
+## How the ravine is shaped
+
+One chasm, **12 m across and 48 m floor to roof**, running 440 m north to south
+and falling 60 m as it goes. It is a chain of nine stations rather than one space,
+so where you are along it is something the graph can answer.
+
+The stations drift up to 13 m either side of the axis. Measured on the carved
+rock, that is enough: **you can see the next station 58 m away and never the one
+after it**, and end to end is blocked after 24 m. Relatively straight, and never
+straight enough to see across.
+
+Off its sides, winding tunnels run out to `knot_*` junctions where two or three
+meet, on to `pocket_*` rooms, and back into the chasm further along. Their widths
+sit deliberately either side of the 6.4 m the creature needs, so which of them is
+a refuge and which is a trap is the question the side network exists to ask.
+
+## How the hive is shaped
+
+Seven layers over 150 m. Each is a hub with a ring of cells joined by bores
+**26 m across and 5 m floor to roof** - so a layer is one flat cavity you cross in
+any direction, not a ring of tunnels.
+
+No layer sits squarely on the one below: every one is offset, turned, and a
+different size and squash. Measured on the carved rock, there is **no sightline
+between any two layers at all**, while layer 4 is **91 m clear across its wide
+axis**. That is the pancake, and it is why this is the most disorienting biome -
+in the mines you are lost about where, here you are lost about which layer, and
+every layer looks like the answer.
+
+Risers between layers are spread round the rim rather than stacked, so leaving a
+layer is a choice of several doors and none is obvious. The `long_*` tunnels skip
+two to four layers; coming up one puts you somewhere that looks like where you
+started and is 60 m from it.
+
 ## Opening it
 
 1. Project > Project Settings > Plugins, tick **Mine Level Designer**. (It is
@@ -65,12 +110,18 @@ you cannot damage the design by deleting it.
 | Node | Is | Notes |
 |---|---|---|
 | `MineSpace` | a graph node | `kind` says whether it is a room, a junction, or a dead-end pocket. `radius` 0 means a bare corner with no chamber - a decision point that is not a place. |
-| `MineTunnel` | a graph edge | Names its two ends. It does **not** store their coordinates, so dragging a room drags every tunnel attached to it and the two can never disagree. |
+| `MineTunnel` | a graph edge | Names its two ends. It does **not** store their coordinates, so dragging a room drags every tunnel attached to it and the two can never disagree. `height` 0 means square; set it and the bore is `width` across by `height` tall. |
 | `MineBend` | a corner | A `Marker3D` child of a tunnel. Deliberately not a graph node: a corner you fly round is not a route choice. Child order is the order the tunnel runs through them. |
 
 `length_metres` on a tunnel is read-only and always derived. Tunnel length is
 what decides whether the creature can hear you, so a hand-typed length that had
 drifted from the geometry would quietly corrupt every sound answer.
+
+**`width` is the load-bearing number; `height` is shape only.** Creature fit and
+the width colour mode both read `width` and ignore `height` - a creature that fits
+through the width of a 26 x 5 hive layer is not helped by it being 26 wide. Height
+exists because the ravine is a tall slot and a hive layer is a flat one, and
+neither reads as itself with a square bore.
 
 ## Selecting and moving things in the viewport
 
@@ -234,25 +285,44 @@ sheet; this is how to do that. The elevation panel is fine unfiltered.
   being roughed out**; once you start moving things in the editor, stop, because
   it overwrites. It refuses to run over an existing scene without `--force` for
   that reason.
-- `blockout_scaffold.gd` is the builder every biome file shares. It knows exactly
-  one shape: a rectangle of drifts crossed by cross-cuts, plus free-form spaces
-  and tunnels that can say anything at all. A biome whose structure is a
-  different *idea* - the ravine's fissure, the hive's cells - needs either its own
-  generator or to be drawn in the viewport, and for something irregular the
-  viewport is the better answer.
+- `build_ravine_blockout.gd` and `build_hive_blockout.gd` are the same thing for
+  the other two biomes, writing their own scene files. Each is only data.
+- `blockout_scaffold.gd` is the builder every biome file shares. It knows three
+  shapes, and free-form spaces and tunnels that can say anything at all:
+
+  | Spec key | Shape | Used by |
+  |---|---|---|
+  | `grids` | a rectangle of drifts crossed by cross-cuts | the mines |
+  | `chains` | spaces in a line, each joined to the next | the ravine's chasm |
+  | `layer_stacks` | offset flat layers of hub-and-ring, joined by risers | the hive |
+
+  A free-form tunnel whose `bends` is a **number** rather than an array gets that
+  many generated corners, straying `wander` metres from `seed`. That is how the
+  ravine's side tunnels wind without anyone typing sixty coordinates, and the seed
+  is in the spec so re-running produces the same level rather than a new one.
+
+  A biome whose structure is a different *idea* again needs either a fourth shape
+  or to be drawn in the viewport, and for something irregular the viewport is the
+  better answer.
+- `check_sightlines.gd` raycasts the carved rock between named spaces. Sightline
+  is a design property in every biome and the one thing a coordinate table cannot
+  tell you, so the claims in this file are measured rather than asserted:
+
+  ```
+  ... check_sightlines.gd -- --level=res://levels/design/level_ravine_blockout.tscn \
+      --pairs=rv_north_end,rv_south_end;rv_s1,rv_s3
+  ```
 - `import_core_loop_layout.gd` is the equivalent one-off for
   `level_mine_blockout.tscn`, seeded from the core loop prototype.
 
 ## Starting a new biome
 
-Only if its structure is a **grid of drifts and cross-cuts**. Anything else wants
-the viewport, or a new generator.
-
-1. Copy `tools/level_design/build_asteroid_blockout.gd` next to itself and rename
-   it for the biome.
+1. Copy whichever of the three `build_*_blockout.gd` files is closest in shape,
+   and rename it.
 2. Change the numbers, and `output_path` and `level_name` in `SPEC` at the bottom.
-3. Run it. Nothing is shared with the mines except `blockout_scaffold.gd`.
-4. Point a walkthrough's `level_scene` at the result.
+3. Run it. Nothing is shared between biomes except `blockout_scaffold.gd`.
+4. Point a walkthrough's `level_scene` at the result, or pass `--level=` to any
+   tool.
 
 To write somewhere else without editing the file, both are overridable:
 

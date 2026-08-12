@@ -39,6 +39,17 @@ extends Node3D
 		width = maxf(value, 0.0)
 		_mark_level_dirty()
 
+## Metres floor to roof. Zero means "same as width", which is every tunnel a
+## machine cut.
+##
+## Shape only - width is still what decides whether the creature fits and still
+## drives the width colour mode. This exists because the ravine is a tall slot
+## and a hive layer is a flat one, and neither reads as itself with a square bore.
+@export_range(0.0, 60.0, 0.5, "or_greater", "suffix:m") var height := 0.0:
+	set(value):
+		height = maxf(value, 0.0)
+		_mark_level_dirty()
+
 @export var tags: Array[StringName] = []:
 	set(value):
 		tags = value
@@ -168,6 +179,11 @@ func length() -> float:
 	for index: int in maxi(points.size() - 1, 0):
 		total += points[index].distance_to(points[index + 1])
 	return total
+
+
+## Metres floor to roof, resolved. Square unless something said otherwise.
+func bore_height() -> float:
+	return height if height > 0.0 else width
 
 
 func has_color_override() -> bool:

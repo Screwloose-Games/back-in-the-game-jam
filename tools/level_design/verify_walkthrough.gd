@@ -9,6 +9,10 @@ extends SceneTree
 ## viewport but has a plug of rock across one drift.
 ##
 ##     godot --headless --path . --script res://tools/level_design/verify_walkthrough.gd
+##     ... verify_walkthrough.gd -- --level=res://levels/design/level_hive_blockout.tscn
+##
+## `--level=` swaps the blockout the walkthrough loads, so every biome is checked
+## by the same scene rather than needing a walkthrough of its own.
 
 const WALKTHROUGH_PATH := "res://levels/design/level_walkthrough.tscn"
 
@@ -27,6 +31,12 @@ func _initialize() -> void:
 func _run() -> void:
 	await process_frame
 	var walkthrough: Node3D = load(WALKTHROUGH_PATH).instantiate()
+	# Set before the walkthrough enters the tree, because its _ready is what
+	# mounts and carves whatever level_scene is pointing at.
+	var chosen := _requested_level()
+	if not chosen.is_empty():
+		walkthrough.level_scene = load(chosen)
+		print("level: %s" % chosen)
 	root.add_child(walkthrough)
 	for frame: int in SETTLE_FRAMES:
 		await physics_frame
@@ -92,6 +102,13 @@ func _check_hollow(walkthrough: Node3D) -> PackedStringArray:
 			failures.append("space '%s' is solid at its centre" % space.id)
 	print("probed %d tunnels and %d spaces" % [graph.tunnels.size(), graph.spaces.size()])
 	return failures
+
+
+func _requested_level() -> String:
+	for argument: String in OS.get_cmdline_user_args():
+		if argument.begins_with("--level="):
+			return argument.substr("--level=".length())
+	return ""
 
 
 func _is_open(space_state: PhysicsDirectSpaceState3D, where: Vector3) -> bool:

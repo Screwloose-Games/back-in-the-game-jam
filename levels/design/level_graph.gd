@@ -214,6 +214,28 @@ static func slice_polyline(
 	return slice
 
 
+## A basis for a bore running along `direction`: local Y is the run, local X is
+## horizontal across it, local Z is the up-ish axis.
+##
+## THE POINT IS THE ROLL. A bore that is wider than it is tall - a hive layer -
+## or taller than it is wide - the ravine - only reads that way if the code
+## drawing it knows which of the two cross-section axes is vertical. A basis built
+## from a bare Quaternion has whatever roll the maths happened to produce, so
+## scaling one axis of it would tilt the slot at a different angle down every
+## tunnel.
+static func bore_basis(direction: Vector3) -> Basis:
+	if direction.is_zero_approx():
+		return Basis()
+	var heading := direction.normalized()
+	# Basis.looking_at cannot use an up vector parallel to its direction, and a
+	# ravine's connecting shafts and a hive's risers are exactly vertical.
+	var reference_up := Vector3.BACK if absf(heading.dot(Vector3.UP)) > 0.999 else Vector3.UP
+	var facing := Basis.looking_at(heading, reference_up)
+	# looking_at puts the run on -Z, width on X and up on Y. Cylinders run along
+	# their own Y, so the axes rotate round one place.
+	return Basis(facing.x, -facing.z, facing.y)
+
+
 ## Multi-source Dijkstra over tunnel lengths, maximising the loudness left on
 ## arrival - which is the same ordering as minimising distance travelled, and
 ## saves carrying both numbers.
@@ -352,10 +374,23 @@ class Tunnel:
 	## Metres across. What decides whether the creature fits.
 	var width := 0.0
 
+	## Metres floor to roof. Zero means "same as width", which is every tunnel a
+	## machine cut.
+	##
+	## Width still decides creature fit and still drives the width colour mode.
+	## Height is shape only: it is what makes the ravine a tall slot and a hive
+	## layer a flat one, and a creature that fits through the width of a 24 x 5
+	## layer is not helped by it being 24 wide.
+	var height := 0.0
+
 	var tags: Array[StringName] = []
 	var notes := ""
 
 	var _length := -1.0
+
+	## Metres floor to roof, resolved. Square unless something said otherwise.
+	func bore_height() -> float:
+		return height if height > 0.0 else width
 
 	func length() -> float:
 		if _length < 0.0:
