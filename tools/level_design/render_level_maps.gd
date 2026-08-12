@@ -15,7 +15,7 @@ extends SceneTree
 ##   godot --headless --path <root> --script res://tools/level_design/render_level_maps.gd
 ##   godot --headless --path <root> --script ... -- --mode=creature_passable
 
-const DEFAULT_LEVEL_PATH := "res://levels/design/level_asteroid_blockout.tscn"
+const DEFAULT_LEVEL_PATH := "res://levels/design/level_mine_blockout.tscn"
 ## Named for the level and the colour mode, so a width map and a sound map of two
 ## different levels can all sit in the design document without overwriting each
 ## other.
@@ -436,7 +436,7 @@ func _filter_graph(graph: LevelGraph, wanted_tags: PackedStringArray) -> LevelGr
 	return filtered
 
 
-## Which level to read. Defaults to the asteroid blockout; `-- --level=res://...`
+## Which level to read. Defaults to the mine blockout; `-- --level=res://...`
 ## points any of these tools at another one.
 func _level_path() -> String:
 	for argument: String in OS.get_cmdline_user_args():

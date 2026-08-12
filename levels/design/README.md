@@ -6,7 +6,7 @@ finished geometry and none tries to be.
 
 | Scene | Biome | Size |
 |---|---|---|
-| `level_asteroid_blockout.tscn` | The mines, plus the central cavern | 30 spaces, 54 tunnels, 2,853 m |
+| `level_mine_blockout.tscn` | The mines, plus the central cavern | 30 spaces, 54 tunnels, 2,853 m |
 | `level_ravine_blockout.tscn` | The ravine | 19 spaces, 24 tunnels, 1,592 m |
 | `level_hive_blockout.tscn` | The hive | 54 spaces, 113 tunnels, 4,426 m |
 
@@ -15,18 +15,22 @@ before that idea was in question. The ravine and the hive assume nothing about h
 the biomes join: each has `link_*` dead-end stubs tagged `unbuilt` marking where a
 connection would land. Stitching them into one scene is a separate job.
 
-(`level_mine_blockout.tscn` is the older map the core loop prototype actually
-plays, kept for reference. Every tool takes `-- --level=res://...` to point at it.)
+(`level_core_loop_blockout.tscn` is the small placeholder map the core loop
+prototype actually plays. It is not in the repo - `import_core_loop_layout.gd`
+regenerates it - and it is kept only so the real biomes can be measured against
+something that has been played. Every tool takes `-- --level=res://...`.)
 
-## What is in the asteroid blockout so far
-
-Three biomes hang off one central vertical cavern. Only the **mines** are built.
+## What is in the mine blockout
 
 | | |
 |---|---|
+| **The mines** | Two levels of surveyed workings. Upper level `a_*`, lower level `b_*`. |
 | **Central cavern** | `cavern_ceiling` / `upper` / `lower` / `floor`, a 150 m vertical column at the origin joined by 30 m-wide shafts. Both mine levels open onto it. |
-| **The mines** | Two levels of surveyed workings, west of the cavern. Upper level `a_*`, lower level `b_*`. |
-| **The ravine, the hive** | Not built. `link_ravine` and `link_hive` are stub dead ends marking where the mines hand over, tagged `unbuilt`. |
+| **Handovers** | `link_ravine` and `link_hive` are stub dead ends marking where the mines pass to another biome, tagged `unbuilt`. |
+
+**The cavern is here only because this biome was built before that idea was in
+question.** The ravine and the hive assume nothing about how the biomes join, and
+if the cavern goes, it comes out of this file rather than out of all three.
 
 ### Reading a mine node name
 
@@ -98,7 +102,7 @@ started and is 60 m from it.
 
 1. Project > Project Settings > Plugins, tick **Mine Level Designer**. (It is
    already on in `project.godot`; a running editor needs a restart to notice.)
-2. Open `res://levels/design/level_mine_blockout.tscn`.
+2. Open the biome you want, for example `res://levels/design/level_mine_blockout.tscn`.
 3. The **Mine Level** dock appears on the right.
 
 The diagram you see is drawn at runtime and is never saved. Everything under
@@ -249,8 +253,9 @@ godot --headless --path . --script res://tools/level_design/export_layout_snippe
 godot --headless --path . --script res://tools/level_design/report_sound_reach.gd
 ```
 
-Every tool except the test takes `-- --level=res://...` and defaults to the
-asteroid blockout. Outputs are named after the level they came from.
+Every tool except the test takes `-- --level=res://...` and defaults to the mine
+blockout. Outputs are named after the level they came from, so running one across
+all three biomes does not overwrite anything.
 
 `render_level_maps.gd` also takes `--mode=` and `--tags=`:
 
@@ -278,7 +283,7 @@ sheet; this is how to do that. The elevation panel is fine unfiltered.
   centre of every space and fails on anything that comes back solid. That is the
   failure worth catching - a level that looks carved in the viewport but has a
   plug of rock across one drift. Re-run it after moving anything.
-- `build_asteroid_blockout.gd` is the mines and the cavern **as data** - grid
+- `build_mine_blockout.gd` is the mines and the cavern **as data** - grid
   columns, rows, per-node depths, widths, and the natural tunnels with their
   corners. No logic; `blockout_scaffold.gd` does the building.
   **Change the numbers and re-run with `-- --force` while the layout is still
@@ -312,8 +317,9 @@ sheet; this is how to do that. The elevation panel is fine unfiltered.
   ... check_sightlines.gd -- --level=res://levels/design/level_ravine_blockout.tscn \
       --pairs=rv_north_end,rv_south_end;rv_s1,rv_s3
   ```
-- `import_core_loop_layout.gd` is the equivalent one-off for
-  `level_mine_blockout.tscn`, seeded from the core loop prototype.
+- `import_core_loop_layout.gd` is the equivalent one-off for the core loop
+  prototype's placeholder map, writing `level_core_loop_blockout.tscn`. It is
+  deliberately not named after any biome: it is a yardstick, not a design.
 
 ## Starting a new biome
 
@@ -327,7 +333,7 @@ sheet; this is how to do that. The elevation panel is fine unfiltered.
 To write somewhere else without editing the file, both are overridable:
 
 ```
-... build_asteroid_blockout.gd -- --out=res://levels/design/level_trial.tscn --name=Trial
+... build_mine_blockout.gd -- --out=res://levels/design/level_trial.tscn --name=Trial
 ```
 
 ## Reading it as data

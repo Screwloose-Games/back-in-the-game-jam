@@ -16,7 +16,7 @@ extends SceneTree
 ## Run headless:
 ##   godot --headless --path <root> --script res://tools/level_design/export_layout_snippet.gd
 
-const DEFAULT_LEVEL_PATH := "res://levels/design/level_asteroid_blockout.tscn"
+const DEFAULT_LEVEL_PATH := "res://levels/design/level_mine_blockout.tscn"
 const OUTPUT_PATTERN := "res://documentation/design/%s_layout.gd.txt"
 
 
@@ -190,7 +190,7 @@ func _float_literal(value: float) -> String:
 	return "%.2f" % value
 
 
-## Which level to read. Defaults to the asteroid blockout; `-- --level=res://...`
+## Which level to read. Defaults to the mine blockout; `-- --level=res://...`
 ## points any of these tools at another one.
 func _level_path() -> String:
 	for argument: String in OS.get_cmdline_user_args():

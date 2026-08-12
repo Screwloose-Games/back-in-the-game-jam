@@ -1,7 +1,12 @@
 extends SceneTree
 
-## Builds levels/design/level_mine_blockout.tscn from the core gameplay loop's
-## hand-authored layout, once.
+## Builds levels/design/level_core_loop_blockout.tscn from the core gameplay
+## loop's hand-authored layout, once.
+##
+## THIS IS THE PLACEHOLDER MAP, NOT THE MINES. It is the small level the core loop
+## prototype actually plays - sixteen routes and fourteen chambers - kept only so
+## the real biomes can be measured against something that has been played. The
+## mines are level_mine_blockout.tscn and are built by build_mine_blockout.gd.
 ##
 ## AFTER THIS RUNS, THE SCENE IS THE SOURCE OF TRUTH. This script exists to avoid
 ## re-typing sixteen routes by hand, not to keep two copies in step. Re-running it
@@ -15,7 +20,7 @@ extends SceneTree
 ## Run headless:
 ##   godot --headless --path <root> --script res://tools/level_design/import_core_loop_layout.gd
 
-const OUTPUT_PATH := "res://levels/design/level_mine_blockout.tscn"
+const OUTPUT_PATH := "res://levels/design/level_core_loop_blockout.tscn"
 
 const WIDTH_TRUNK := 10.0
 const WIDTH_CONNECTOR := 8.0

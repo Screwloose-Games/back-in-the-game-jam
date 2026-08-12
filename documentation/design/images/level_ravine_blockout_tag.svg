@@ -1,0 +1,184 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1840" height="1086" viewBox="0 0 1840 1086">
+<rect width="100%" height="100%" fill="#14161a"/>
+<text x="70" y="34" fill="#e8eaf0" font-family="sans-serif" font-size="22">RavineBlockout</text>
+<text x="70" y="58" fill="#8b93a3" font-family="sans-serif" font-size="13">19 spaces, 24 tunnels, 1592 m of centreline. Creature fits down 18 of 24 at 6.4 m.</text>
+<text x="1770" y="58" text-anchor="end" fill="#8b93a3" font-family="sans-serif" font-size="13">colour: tag</text>
+<g id="plan">
+<text x="70" y="112" fill="#e8eaf0" font-family="sans-serif" font-size="15">PLAN - looking down (x / z)</text>
+<polyline points="478.3,228.5 456.3,315.0" fill="none" stroke="#deff4d" stroke-width="18.9" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="467.3" y="267.7" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">rv_run_1  57m</text>
+<polyline points="456.3,315.0 483.0,401.5" fill="none" stroke="#deff4d" stroke-width="18.9" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="469.7" y="354.3" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">rv_run_2  58m</text>
+<polyline points="483.0,401.5 451.6,488.0" fill="none" stroke="#deff4d" stroke-width="18.9" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="467.3" y="440.8" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">rv_run_3  59m</text>
+<polyline points="451.6,488.0 475.2,574.6" fill="none" stroke="#deff4d" stroke-width="18.9" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="463.4" y="527.3" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">rv_run_4  57m</text>
+<polyline points="475.2,574.6 448.4,661.1" fill="none" stroke="#deff4d" stroke-width="18.9" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="461.8" y="613.8" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">rv_run_5  58m</text>
+<polyline points="448.4,661.1 479.9,747.6" fill="none" stroke="#deff4d" stroke-width="18.9" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="464.2" y="700.4" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">rv_run_6  59m</text>
+<polyline points="479.9,747.6 459.4,834.1" fill="none" stroke="#deff4d" stroke-width="18.9" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="469.7" y="786.9" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">rv_run_7  57m</text>
+<polyline points="459.4,834.1 484.6,916.0" fill="none" stroke="#deff4d" stroke-width="18.9" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="472.0" y="871.0" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">rv_run_8  55m</text>
+<polyline points="456.3,315.0 442.7,335.4 423.0,326.4 405.8,332.8 387.1,330.7" fill="none" stroke="#deff4d" stroke-width="8.7" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="427.2" y="324.4" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">side_north_in  55m</text>
+<polyline points="387.1,330.7 387.0,308.7 373.8,298.2 346.5,295.8 346.2,274.1" fill="none" stroke="#deff4d" stroke-width="7.1" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="370.5" y="293.9" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">side_north_pocket  58m</text>
+<polyline points="387.1,330.7 393.1,299.8 415.9,284.2 445.7,274.0 455.5,245.0 478.3,228.5" fill="none" stroke="#deff4d" stroke-width="11.0" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="429.9" y="275.4" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">side_north_return  96m</text>
+<polyline points="387.1,330.7 365.7,347.6 360.7,368.4 377.5,398.4 358.8,415.7" fill="none" stroke="#deff4d" stroke-width="10.7" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="362.7" y="367.9" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">side_west_pocket  72m</text>
+<polyline points="358.8,415.7 398.8,398.7 440.2,393.3 483.0,401.5" fill="none" stroke="#deff4d" stroke-width="11.3" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="419.6" y="392.0" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">side_west_return  82m</text>
+<polyline points="451.6,488.0 470.2,509.5 500.4,509.0 511.4,543.4 544.4,538.4" fill="none" stroke="#deff4d" stroke-width="11.8" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="502.1" y="510.3" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">side_mid_in  82m</text>
+<polyline points="544.4,538.4 527.9,548.6 510.4,557.0 488.4,556.9 475.2,574.6" fill="none" stroke="#deff4d" stroke-width="9.4" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="507.7" y="553.0" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">side_mid_return  54m</text>
+<polyline points="544.4,538.4 554.7,555.4 556.5,575.5 570.1,592.0 552.2,617.9 572.7,632.8" fill="none" stroke="#deff4d" stroke-width="7.9" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="568.3" y="585.8" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">side_mid_pocket  76m</text>
+<polyline points="572.7,632.8 548.3,646.2 531.3,663.2 543.2,703.9 494.0,696.0 480.8,716.9 479.9,747.6" fill="none" stroke="#deff4d" stroke-width="10.4" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="538.7" y="699.2" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">side_east_long  129m</text>
+<polyline points="479.9,747.6 464.0,769.6 439.7,756.1 422.8,773.4 399.7,768.1" fill="none" stroke="#deff4d" stroke-width="11.0" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="442.8" y="753.9" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">side_deep_in  66m</text>
+<polyline points="399.7,768.1 398.2,790.9 370.8,803.3 360.8,820.6 365.0,846.7" fill="none" stroke="#deff4d" stroke-width="7.6" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="372.2" y="798.7" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">side_deep_pocket  66m</text>
+<polyline points="399.7,768.1 426.5,784.2 448.3,804.7 459.4,834.1" fill="none" stroke="#deff4d" stroke-width="10.9" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="437.8" y="790.8" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">side_deep_return  60m</text>
+<polyline points="459.4,834.1 480.2,850.1 510.6,854.3 537.0,864.1 550.7,893.9" fill="none" stroke="#deff4d" stroke-width="8.2" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="511.5" y="850.7" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">side_south_pocket  77m</text>
+<polyline points="550.7,893.9 526.6,895.2 509.0,915.8 484.6,916.0" fill="none" stroke="#deff4d" stroke-width="10.2" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="517.7" y="901.6" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">side_south_return  48m</text>
+<polyline points="346.2,274.1 330.0,257.5 318.8,237.9 326.6,212.2 317.9,192.3" fill="none" stroke="#ffd933" stroke-width="10.7" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="319.1" y="233.0" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">link_to_mines  61m</text>
+<polyline points="550.7,893.9 547.1,916.9 558.9,927.8 570.4,941.0 582.1,953.7" fill="none" stroke="#ffd933" stroke-width="11.0" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="557.2" y="922.2" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">link_to_hive  51m</text>
+<circle cx="317.9" cy="192.3" r="6.3" fill="#ffd933" fill-opacity="0.45" stroke="#ffd933" stroke-width="1.5"/>
+<text x="317.9" y="212.6" fill="#e8eaf0" font-family="sans-serif" font-size="13" text-anchor="middle">link_mines</text>
+<circle cx="582.1" cy="953.7" r="6.3" fill="#ffd933" fill-opacity="0.45" stroke="#ffd933" stroke-width="1.5"/>
+<text x="582.1" y="974.0" fill="#e8eaf0" font-family="sans-serif" font-size="13" text-anchor="middle">link_hive</text>
+<circle cx="387.1" cy="330.7" r="7.1" fill="#deff4d" fill-opacity="0.15" stroke="#deff4d" stroke-width="1.5"/>
+<text x="387.1" y="351.8" fill="#e8eaf0" font-family="sans-serif" font-size="13" text-anchor="middle">knot_north</text>
+<circle cx="544.4" cy="538.4" r="7.1" fill="#deff4d" fill-opacity="0.15" stroke="#deff4d" stroke-width="1.5"/>
+<text x="544.4" y="559.5" fill="#e8eaf0" font-family="sans-serif" font-size="13" text-anchor="middle">knot_mid</text>
+<circle cx="399.7" cy="768.1" r="7.1" fill="#deff4d" fill-opacity="0.15" stroke="#deff4d" stroke-width="1.5"/>
+<text x="399.7" y="789.2" fill="#e8eaf0" font-family="sans-serif" font-size="13" text-anchor="middle">knot_deep</text>
+<circle cx="346.2" cy="274.1" r="9.4" fill="#deff4d" fill-opacity="0.45" stroke="#deff4d" stroke-width="1.5"/>
+<text x="346.2" y="297.5" fill="#e8eaf0" font-family="sans-serif" font-size="13" text-anchor="middle">pocket_north</text>
+<circle cx="358.8" cy="415.7" r="7.9" fill="#deff4d" fill-opacity="0.45" stroke="#deff4d" stroke-width="1.5"/>
+<text x="358.8" y="437.5" fill="#e8eaf0" font-family="sans-serif" font-size="13" text-anchor="middle">pocket_west</text>
+<circle cx="572.7" cy="632.8" r="8.7" fill="#deff4d" fill-opacity="0.45" stroke="#deff4d" stroke-width="1.5"/>
+<text x="572.7" y="655.4" fill="#e8eaf0" font-family="sans-serif" font-size="13" text-anchor="middle">pocket_east</text>
+<circle cx="365.0" cy="846.7" r="7.9" fill="#deff4d" fill-opacity="0.45" stroke="#deff4d" stroke-width="1.5"/>
+<text x="365.0" y="868.6" fill="#e8eaf0" font-family="sans-serif" font-size="13" text-anchor="middle">pocket_deep</text>
+<circle cx="550.7" cy="893.9" r="9.4" fill="#deff4d" fill-opacity="0.45" stroke="#deff4d" stroke-width="1.5"/>
+<text x="550.7" y="917.4" fill="#e8eaf0" font-family="sans-serif" font-size="13" text-anchor="middle">pocket_south</text>
+<circle cx="478.3" cy="228.5" r="14.2" fill="#deff4d" fill-opacity="0.45" stroke="#deff4d" stroke-width="1.5"/>
+<text x="478.3" y="256.6" fill="#e8eaf0" font-family="sans-serif" font-size="13" text-anchor="middle">rv_north_end</text>
+<circle cx="456.3" cy="315.0" r="11.0" fill="#deff4d" fill-opacity="0.15" stroke="#deff4d" stroke-width="1.5"/>
+<text x="456.3" y="340.0" fill="#e8eaf0" font-family="sans-serif" font-size="13" text-anchor="middle">rv_s1</text>
+<circle cx="483.0" cy="401.5" r="11.0" fill="#deff4d" fill-opacity="0.15" stroke="#deff4d" stroke-width="1.5"/>
+<text x="483.0" y="426.5" fill="#e8eaf0" font-family="sans-serif" font-size="13" text-anchor="middle">rv_s2</text>
+<circle cx="451.6" cy="488.0" r="11.0" fill="#deff4d" fill-opacity="0.15" stroke="#deff4d" stroke-width="1.5"/>
+<text x="451.6" y="513.1" fill="#e8eaf0" font-family="sans-serif" font-size="13" text-anchor="middle">rv_s3</text>
+<circle cx="475.2" cy="574.6" r="12.6" fill="#deff4d" fill-opacity="0.15" stroke="#deff4d" stroke-width="1.5"/>
+<text x="475.2" y="601.2" fill="#e8eaf0" font-family="sans-serif" font-size="13" text-anchor="middle">rv_s4</text>
+<circle cx="448.4" cy="661.1" r="11.0" fill="#deff4d" fill-opacity="0.15" stroke="#deff4d" stroke-width="1.5"/>
+<text x="448.4" y="686.1" fill="#e8eaf0" font-family="sans-serif" font-size="13" text-anchor="middle">rv_s5</text>
+<circle cx="479.9" cy="747.6" r="11.0" fill="#deff4d" fill-opacity="0.15" stroke="#deff4d" stroke-width="1.5"/>
+<text x="479.9" y="772.6" fill="#e8eaf0" font-family="sans-serif" font-size="13" text-anchor="middle">rv_s6</text>
+<circle cx="459.4" cy="834.1" r="11.0" fill="#deff4d" fill-opacity="0.15" stroke="#deff4d" stroke-width="1.5"/>
+<text x="459.4" y="859.2" fill="#e8eaf0" font-family="sans-serif" font-size="13" text-anchor="middle">rv_s7</text>
+<circle cx="484.6" cy="916.0" r="14.2" fill="#deff4d" fill-opacity="0.45" stroke="#deff4d" stroke-width="1.5"/>
+<text x="484.6" y="944.1" fill="#e8eaf0" font-family="sans-serif" font-size="13" text-anchor="middle">rv_south_end</text>
+</g>
+<g id="elevation">
+<text x="1010" y="112" fill="#e8eaf0" font-family="sans-serif" font-size="15">ELEVATION - side on (x / depth)</text>
+<polyline points="1418.3,515.6 1396.3,526.6" fill="none" stroke="#deff4d" stroke-width="18.9" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="1407.3" y="517.1" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">rv_run_1  57m</text>
+<polyline points="1396.3,526.6 1423.0,537.6" fill="none" stroke="#deff4d" stroke-width="18.9" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="1409.7" y="528.1" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">rv_run_2  58m</text>
+<polyline points="1423.0,537.6 1391.6,547.0" fill="none" stroke="#deff4d" stroke-width="18.9" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="1407.3" y="538.3" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">rv_run_3  59m</text>
+<polyline points="1391.6,547.0 1415.2,558.1" fill="none" stroke="#deff4d" stroke-width="18.9" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="1403.4" y="548.5" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">rv_run_4  57m</text>
+<polyline points="1415.2,558.1 1388.4,569.1" fill="none" stroke="#deff4d" stroke-width="18.9" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="1401.8" y="559.6" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">rv_run_5  58m</text>
+<polyline points="1388.4,569.1 1419.9,581.7" fill="none" stroke="#deff4d" stroke-width="18.9" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="1404.2" y="571.4" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">rv_run_6  59m</text>
+<polyline points="1419.9,581.7 1399.4,594.2" fill="none" stroke="#deff4d" stroke-width="18.9" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="1409.7" y="583.9" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">rv_run_7  57m</text>
+<polyline points="1399.4,594.2 1424.6,610.0" fill="none" stroke="#deff4d" stroke-width="18.9" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="1412.0" y="598.1" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">rv_run_8  55m</text>
+<polyline points="1396.3,526.6 1382.7,526.6 1363.0,535.8 1345.8,530.6 1327.1,531.3" fill="none" stroke="#deff4d" stroke-width="8.7" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="1367.2" y="529.8" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">side_north_in  55m</text>
+<polyline points="1327.1,531.3 1327.0,532.3 1313.8,520.9 1286.5,522.2 1286.2,521.9" fill="none" stroke="#deff4d" stroke-width="7.1" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="1310.5" y="517.1" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">side_north_pocket  58m</text>
+<polyline points="1327.1,531.3 1333.1,525.2 1355.9,517.2 1385.7,514.4 1395.5,517.8 1418.3,515.6" fill="none" stroke="#deff4d" stroke-width="11.0" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="1369.9" y="511.9" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">side_north_return  96m</text>
+<polyline points="1327.1,531.3 1305.7,529.9 1300.7,543.1 1317.5,537.5 1298.8,540.8" fill="none" stroke="#deff4d" stroke-width="10.7" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="1302.7" y="538.4" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">side_west_pocket  72m</text>
+<polyline points="1298.8,540.8 1338.8,540.6 1380.2,541.1 1423.0,537.6" fill="none" stroke="#deff4d" stroke-width="11.3" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="1359.6" y="536.8" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">side_west_return  82m</text>
+<polyline points="1391.6,547.0 1410.2,545.7 1440.4,548.6 1451.4,554.9 1484.4,553.3" fill="none" stroke="#deff4d" stroke-width="11.8" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="1442.1" y="545.6" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">side_mid_in  82m</text>
+<polyline points="1484.4,553.3 1467.9,557.4 1450.4,560.1 1428.4,563.1 1415.2,558.1" fill="none" stroke="#deff4d" stroke-width="9.4" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="1447.7" y="556.5" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">side_mid_return  54m</text>
+<polyline points="1484.4,553.3 1494.7,560.1 1496.5,561.3 1510.1,563.5 1492.2,565.8 1512.7,562.8" fill="none" stroke="#deff4d" stroke-width="7.9" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="1508.3" y="559.2" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">side_mid_pocket  76m</text>
+<polyline points="1512.7,562.8 1488.3,557.1 1471.3,565.0 1483.2,571.7 1434.0,574.2 1420.8,577.4 1419.9,581.7" fill="none" stroke="#deff4d" stroke-width="10.4" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="1478.7" y="567.9" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">side_east_long  129m</text>
+<polyline points="1419.9,581.7 1404.0,581.3 1379.7,588.9 1362.8,592.0 1339.7,587.9" fill="none" stroke="#deff4d" stroke-width="11.0" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="1382.8" y="583.9" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">side_deep_in  66m</text>
+<polyline points="1339.7,587.9 1338.2,591.9 1310.8,591.1 1300.8,603.8 1305.0,603.7" fill="none" stroke="#deff4d" stroke-width="7.6" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="1312.2" y="587.1" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">side_deep_pocket  66m</text>
+<polyline points="1339.7,587.9 1366.5,586.5 1388.3,586.8 1399.4,594.2" fill="none" stroke="#deff4d" stroke-width="10.9" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="1377.8" y="582.6" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">side_deep_return  60m</text>
+<polyline points="1399.4,594.2 1420.2,605.6 1450.6,607.6 1477.0,611.3 1490.7,613.1" fill="none" stroke="#deff4d" stroke-width="8.2" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="1451.5" y="603.7" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">side_south_pocket  77m</text>
+<polyline points="1490.7,613.1 1466.6,612.8 1449.0,611.0 1424.6,610.0" fill="none" stroke="#deff4d" stroke-width="10.2" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="1457.7" y="607.9" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">side_south_return  48m</text>
+<polyline points="1286.2,521.9 1270.0,514.1 1258.8,515.0 1266.6,512.3 1257.9,509.3" fill="none" stroke="#ffd933" stroke-width="10.7" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="1259.1" y="510.9" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">link_to_mines  61m</text>
+<polyline points="1490.7,613.1 1487.1,614.6 1498.9,625.6 1510.4,631.7 1522.1,638.3" fill="none" stroke="#ffd933" stroke-width="11.0" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="1497.2" y="620.0" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">link_to_hive  51m</text>
+<circle cx="1257.9" cy="509.3" r="6.3" fill="#ffd933" fill-opacity="0.45" stroke="#ffd933" stroke-width="1.5"/>
+<text x="1257.9" y="529.6" fill="#e8eaf0" font-family="sans-serif" font-size="13" text-anchor="middle">link_mines</text>
+<circle cx="1522.1" cy="638.3" r="6.3" fill="#ffd933" fill-opacity="0.45" stroke="#ffd933" stroke-width="1.5"/>
+<text x="1522.1" y="658.6" fill="#e8eaf0" font-family="sans-serif" font-size="13" text-anchor="middle">link_hive</text>
+<circle cx="1327.1" cy="531.3" r="7.1" fill="#deff4d" fill-opacity="0.15" stroke="#deff4d" stroke-width="1.5"/>
+<text x="1327.1" y="552.4" fill="#e8eaf0" font-family="sans-serif" font-size="13" text-anchor="middle">knot_north</text>
+<circle cx="1484.4" cy="553.3" r="7.1" fill="#deff4d" fill-opacity="0.15" stroke="#deff4d" stroke-width="1.5"/>
+<text x="1484.4" y="574.4" fill="#e8eaf0" font-family="sans-serif" font-size="13" text-anchor="middle">knot_mid</text>
+<circle cx="1339.7" cy="587.9" r="7.1" fill="#deff4d" fill-opacity="0.15" stroke="#deff4d" stroke-width="1.5"/>
+<text x="1339.7" y="609.0" fill="#e8eaf0" font-family="sans-serif" font-size="13" text-anchor="middle">knot_deep</text>
+<circle cx="1286.2" cy="521.9" r="9.4" fill="#deff4d" fill-opacity="0.45" stroke="#deff4d" stroke-width="1.5"/>
+<text x="1286.2" y="545.3" fill="#e8eaf0" font-family="sans-serif" font-size="13" text-anchor="middle">pocket_north</text>
+<circle cx="1298.8" cy="540.8" r="7.9" fill="#deff4d" fill-opacity="0.45" stroke="#deff4d" stroke-width="1.5"/>
+<text x="1298.8" y="562.6" fill="#e8eaf0" font-family="sans-serif" font-size="13" text-anchor="middle">pocket_west</text>
+<circle cx="1512.7" cy="562.8" r="8.7" fill="#deff4d" fill-opacity="0.45" stroke="#deff4d" stroke-width="1.5"/>
+<text x="1512.7" y="585.4" fill="#e8eaf0" font-family="sans-serif" font-size="13" text-anchor="middle">pocket_east</text>
+<circle cx="1305.0" cy="603.7" r="7.9" fill="#deff4d" fill-opacity="0.45" stroke="#deff4d" stroke-width="1.5"/>
+<text x="1305.0" y="625.5" fill="#e8eaf0" font-family="sans-serif" font-size="13" text-anchor="middle">pocket_deep</text>
+<circle cx="1490.7" cy="613.1" r="9.4" fill="#deff4d" fill-opacity="0.45" stroke="#deff4d" stroke-width="1.5"/>
+<text x="1490.7" y="636.6" fill="#e8eaf0" font-family="sans-serif" font-size="13" text-anchor="middle">pocket_south</text>
+<circle cx="1418.3" cy="515.6" r="14.2" fill="#deff4d" fill-opacity="0.45" stroke="#deff4d" stroke-width="1.5"/>
+<text x="1418.3" y="543.7" fill="#e8eaf0" font-family="sans-serif" font-size="13" text-anchor="middle">rv_north_end</text>
+<circle cx="1396.3" cy="526.6" r="11.0" fill="#deff4d" fill-opacity="0.15" stroke="#deff4d" stroke-width="1.5"/>
+<text x="1396.3" y="551.6" fill="#e8eaf0" font-family="sans-serif" font-size="13" text-anchor="middle">rv_s1</text>
+<circle cx="1423.0" cy="537.6" r="11.0" fill="#deff4d" fill-opacity="0.15" stroke="#deff4d" stroke-width="1.5"/>
+<text x="1423.0" y="562.6" fill="#e8eaf0" font-family="sans-serif" font-size="13" text-anchor="middle">rv_s2</text>
+<circle cx="1391.6" cy="547.0" r="11.0" fill="#deff4d" fill-opacity="0.15" stroke="#deff4d" stroke-width="1.5"/>
+<text x="1391.6" y="572.1" fill="#e8eaf0" font-family="sans-serif" font-size="13" text-anchor="middle">rv_s3</text>
+<circle cx="1415.2" cy="558.1" r="12.6" fill="#deff4d" fill-opacity="0.15" stroke="#deff4d" stroke-width="1.5"/>
+<text x="1415.2" y="584.6" fill="#e8eaf0" font-family="sans-serif" font-size="13" text-anchor="middle">rv_s4</text>
+<circle cx="1388.4" cy="569.1" r="11.0" fill="#deff4d" fill-opacity="0.15" stroke="#deff4d" stroke-width="1.5"/>
+<text x="1388.4" y="594.1" fill="#e8eaf0" font-family="sans-serif" font-size="13" text-anchor="middle">rv_s5</text>
+<circle cx="1419.9" cy="581.7" r="11.0" fill="#deff4d" fill-opacity="0.15" stroke="#deff4d" stroke-width="1.5"/>
+<text x="1419.9" y="606.7" fill="#e8eaf0" font-family="sans-serif" font-size="13" text-anchor="middle">rv_s6</text>
+<circle cx="1399.4" cy="594.2" r="11.0" fill="#deff4d" fill-opacity="0.15" stroke="#deff4d" stroke-width="1.5"/>
+<text x="1399.4" y="619.2" fill="#e8eaf0" font-family="sans-serif" font-size="13" text-anchor="middle">rv_s7</text>
+<circle cx="1424.6" cy="610.0" r="14.2" fill="#deff4d" fill-opacity="0.45" stroke="#deff4d" stroke-width="1.5"/>
+<text x="1424.6" y="638.1" fill="#e8eaf0" font-family="sans-serif" font-size="13" text-anchor="middle">rv_south_end</text>
+</g>
+</svg>

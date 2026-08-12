@@ -1,7 +1,7 @@
-# Generated from res://levels/design/level_asteroid_blockout.tscn by tools/level_design/export_layout_snippet.gd.
+# Generated from res://levels/design/level_mine_blockout.tscn by tools/level_design/export_layout_snippet.gd.
 # The blockout scene is the source of truth; this is a copy to diff against.
 #
-# 30 spaces, 54 tunnels, 2857 m of centreline. Creature threshold 6.4 m.
+# 30 spaces, 54 tunnels, 2853 m of centreline. Creature threshold 6.4 m.
 
 #region Map - junctions
 ## Where the elevator lands. The run starts and has to end here.
@@ -29,7 +29,7 @@ const FORK_DEEP := Vector3(-30, -138, -55)
 const LINK_RAVINE := Vector3(55, -92, 125)
 
 ## Stub. Where the mines hand over to the hive, again clear of the cavern.
-const LINK_HIVE := Vector3(20, -195, -110)
+const LINK_HIVE := Vector3(20, -185.32, -110)
 
 const A_C1_N := Vector3(-150, -47, -45)
 

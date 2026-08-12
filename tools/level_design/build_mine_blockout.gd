@@ -17,7 +17,7 @@ extends SceneTree
 ## or leave the file alone and pass `--out=` and `--name=` to write elsewhere.
 ##
 ## Run headless:
-##   godot --headless --path <root> --script res://tools/level_design/build_asteroid_blockout.gd
+##   godot --headless --path <root> --script res://tools/level_design/build_mine_blockout.gd
 
 ## tools/ carries a .gdignore, so nothing under it registers a global class name.
 ## The scaffold has to be reached by path rather than by typing BlockoutScaffold.
@@ -444,8 +444,8 @@ const TAG_COLORS := {
 
 ## Everything above, assembled for BlockoutScaffold.
 const SPEC := {
-	"output_path": "res://levels/design/level_asteroid_blockout.tscn",
-	"level_name": "AsteroidBlockout",
+	"output_path": "res://levels/design/level_mine_blockout.tscn",
+	"level_name": "MineBlockout",
 	"creature_min_width": CREATURE_MIN_WIDTH,
 	"tag_colors": TAG_COLORS,
 	"grids": [LEVEL_A, LEVEL_B],

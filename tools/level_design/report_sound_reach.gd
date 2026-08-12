@@ -13,7 +13,7 @@ extends SceneTree
 ## Run headless:
 ##   godot --headless --path <root> --script res://tools/level_design/report_sound_reach.gd
 
-const DEFAULT_LEVEL_PATH := "res://levels/design/level_asteroid_blockout.tscn"
+const DEFAULT_LEVEL_PATH := "res://levels/design/level_mine_blockout.tscn"
 const OUTPUT_PATTERN := "res://documentation/design/%s_sound_reach.md"
 
 ## Metres sampled along a tunnel when measuring straight-line coverage.
@@ -182,7 +182,7 @@ func _straight_line_metres(graph: LevelGraph, origin: Vector3, loudness: float) 
 	return total
 
 
-## Which level to read. Defaults to the asteroid blockout; `-- --level=res://...`
+## Which level to read. Defaults to the mine blockout; `-- --level=res://...`
 ## points any of these tools at another one.
 func _level_path() -> String:
 	for argument: String in OS.get_cmdline_user_args():

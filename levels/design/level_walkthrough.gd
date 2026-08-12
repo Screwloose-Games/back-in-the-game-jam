@@ -31,7 +31,7 @@ const CAMERA_FAR_MARGIN := 1.5
 
 ## The blockout to walk. Point it at any design scene whose root is a MineLevel;
 ## nothing here is wired to a particular one.
-@export var level_scene: PackedScene = preload("res://levels/design/level_asteroid_blockout.tscn")
+@export var level_scene: PackedScene = preload("res://levels/design/level_mine_blockout.tscn")
 
 ## Draws the annotated graph - labels, colour coding, the lot - on top of the
 ## carved rock. The level's own drawing, switched on from here so that walking a
