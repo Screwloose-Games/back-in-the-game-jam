@@ -6,59 +6,57 @@ finished geometry and none tries to be.
 
 | Scene | Biome | Size |
 |---|---|---|
-| `level_mine_blockout.tscn` | The mines, plus the central cavern | 30 spaces, 54 tunnels, 2,853 m |
-| `level_ravine_blockout.tscn` | The ravine | 19 spaces, 24 tunnels, 1,592 m |
-| `level_hive_blockout.tscn` | The hive | 54 spaces, 113 tunnels, 4,426 m |
+| `level_mine_blockout.tscn` | The mines. Where the player starts | 16 spaces, 22 tunnels, 1,303 m |
+| `level_ravine_blockout.tscn` | The ravine | 16 spaces, 23 tunnels, 1,406 m |
+| `level_hive_blockout.tscn` | The hive | 40 spaces, 83 tunnels, 3,429 m |
 
-**Only the mines carry the central cavern**, and only because they were built
-before that idea was in question. The ravine and the hive assume nothing about how
-the biomes join: each has `link_*` dead-end stubs tagged `unbuilt` marking where a
-connection would land. Stitching them into one scene is a separate job.
+**None of them assumes a central cavern.** How the biomes join is still open, so
+each ends at `link_*` dead-end stubs tagged `unbuilt` marking where a connection
+would land. Stitching them into one scene is a separate job.
 
 (`level_core_loop_blockout.tscn` is the small placeholder map the core loop
 prototype actually plays. It is not in the repo - `import_core_loop_layout.gd`
 regenerates it - and it is kept only so the real biomes can be measured against
 something that has been played. Every tool takes `-- --level=res://...`.)
 
-## What is in the mine blockout
+## How the mines are shaped
 
-| | |
+**This is where the player starts, so it teaches the map before it uses it.** The
+biome is a difficulty ramp running east, and every junction the player meets is
+the simplest one they have not already learnt:
+
+| Where | What they meet |
 |---|---|
-| **The mines** | Two levels of surveyed workings. Upper level `a_*`, lower level `b_*`. |
-| **Central cavern** | `cavern_ceiling` / `upper` / `lower` / `floor`, a 150 m vertical column at the origin joined by 30 m-wide shafts. Both mine levels open onto it. |
-| **Handovers** | `link_ravine` and `link_hive` are stub dead ends marking where the mines pass to another biome, tagged `unbuilt`. |
+| The adit | One straight tunnel, 65 m due east, dead level. No choices at all. |
+| `a_c1_m` | Still one tunnel. Nothing branches yet. |
+| `a_c2_m` | The first branch: one cross-cut, perpendicular. A T. |
+| `a_c3` | The second cross-cut closes a loop, so now there are + junctions. |
+| Level `b` | The full two-by-three grid, reached only by a winze. |
 
-**The cavern is here only because this biome was built before that idea was in
-question.** The ravine and the hive assume nothing about how the biomes join, and
-if the cavern goes, it comes out of this file rather than out of all three.
+**Two drifts, three cross-cuts, two levels, and that is the maximum** - reached
+only on the lower level. The upper level never has more than five workings.
 
 ### Reading a mine node name
 
 `a_c3_n` = level **a** (upper), cross-cut column **c3**, drift row **n** (north).
-Rows are `n` / `m` / `s`; columns run `c1` (far from the cavern) to `c4` (nearest).
+Rows are `m` (the one you arrive in) and `n`; columns run `c1` (nearest the
+entrance) to `c3` (deepest).
 
-### How the mines are shaped
-
-- **Drifts** run east-west toward the cavern, 9 m and square. Three of them.
-- **Cross-cuts** ("strip mines") run north-south between the drifts, 7 m and
-  square, crossing every drift. Three are cut to 4.5 m and are refuges.
+- **Drifts** run east, 9 m and square. `a_c1_n` is deliberately never dug, which
+  is what makes the first stretch a corridor rather than a junction.
 - **x and z are exact; y is not.** The workings were surveyed, so they line up in
-  plan, but they follow the seam in section and sag eastward and southward by
-  around 20 m. That is what stops the biome reading as one flat floor, and it is
-  most of why it is disorienting despite being the legible biome.
-- **Natural tunnels** (tagged `natural`, curved, orange) cut diagonally across the
-  grid, ignoring it entirely. **They get denser toward the cavern** - one out at
-  c1-c2, two across c2-c3, three across c3-c4 - so the closer you get to the
-  middle the less the survey grid helps you.
-- **Winzes** are vertical shafts joining the two levels at three junctions:
-  `winze_deep` (by the entrance), `winze_north`, and `winze_south` (5 m, the only
-  way to change level while being chased).
-- Two natural tunnels also fall between levels **without** being winzes
-  (`nat_drop_south`, `nat_drop_mid`). They are not on the survey, and taking one
-  puts you a level down and two columns from where you think you are.
-- `fork_south` and `fork_deep` are natural cavities where a tunnel splits: one
-  branch into the cavern, one branch **around** it to another biome. That is how
-  you leave the mines without ever crossing the middle of the map.
+  plan, but they follow the seam in section. The two drift rows sit at different
+  depths, so the biome is not one flat floor.
+- **Natural tunnels** (tagged `natural`, curved, orange) ignore the grid. There
+  are only three and **none is anywhere near the entrance** - the first one you
+  can meet is at the far end of the upper level.
+- **Winzes** join the levels at two junctions: `winze_deep` (7 m, followable) and
+  `winze_north` (5 m, too narrow for the creature).
+- `nat_drop` falls between levels **without** being a winze. It is not on the
+  survey, and taking it puts you a level down and a column west of where you
+  think you are.
+- `fork_east` and `fork_deep` are natural cavities past the end of the workings,
+  and are how you leave the biome.
 
 Rooms and junctions are nodes, tunnels are edges. That is a real graph, so the
 creature AI and the noise system can walk it, and it is also a real scene, so it
@@ -66,23 +64,28 @@ is authored by dragging things in Godot's 3D viewport.
 
 ## How the ravine is shaped
 
-One chasm, **12 m across and 48 m floor to roof**, running 440 m north to south
-and falling 60 m as it goes. It is a chain of nine stations rather than one space,
+One chasm, **12 m across and 48 m floor to roof**, running 220 m north to south
+and falling 30 m as it goes. It is a chain of six stations rather than one space,
 so where you are along it is something the graph can answer.
 
-The stations drift up to 13 m either side of the axis. Measured on the carved
-rock, that is enough: **you can see the next station 58 m away and never the one
-after it**, and end to end is blocked after 24 m. Relatively straight, and never
-straight enough to see across.
+The stations drift up to 10 m either side of the axis, at around 44 m spacing - so
+the chasm is no more crooked per metre than a longer one would be. Measured on the
+carved rock: **you can see the next station 48 m away and never the one after
+it**, and end to end is blocked after 23 m.
 
-Off its sides, winding tunnels run out to `knot_*` junctions where two or three
-meet, on to `pocket_*` rooms, and back into the chasm further along. Their widths
-sit deliberately either side of the 6.4 m the creature needs, so which of them is
-a refuge and which is a trap is the question the side network exists to ask.
+**Every station has a tunnel off both walls.** Side tunnels clustered on one wall
+at a time give the chasm a handedness, and a handedness is a landmark - you always
+know which way you are facing. Both walls everywhere takes that away, and that is
+what makes the biome disorienting rather than merely long.
+
+Those twelve side tunnels wind out to `knot_*` junctions where several meet, on to
+`pocket_*` rooms, and back into the chasm further along. Their widths sit
+deliberately either side of the 6.4 m the creature needs, so which of them is a
+refuge and which is a trap is the question the side network exists to ask.
 
 ## How the hive is shaped
 
-Seven layers over 150 m. Each is a hub with a ring of cells joined by bores
+Five layers over 120 m. Each is a hub with a ring of cells joined by bores
 **26 m across and 5 m floor to roof** - so a layer is one flat cavity you cross in
 any direction, not a ring of tunnels.
 
@@ -95,7 +98,7 @@ every layer looks like the answer.
 
 Risers between layers are spread round the rim rather than stacked, so leaving a
 layer is a choice of several doors and none is obvious. The `long_*` tunnels skip
-two to four layers; coming up one puts you somewhere that looks like where you
+two or three layers; coming up one puts you somewhere that looks like where you
 started and is 60 m from it.
 
 ## Opening it
@@ -140,7 +143,8 @@ With it loaded:
   normal `W` gizmo. Tunnels follow the rooms they join, so you only ever drag
   rooms and bends.
 - **Overlapping volumes**: click again in the same spot to cycle to the next thing
-  behind. The cavern spheres are 20-25 m across and will take the first click.
+  behind. A hive layer's wide flat bores overlap a lot and will take the first
+  click off anything inside them.
 - **Drag the orange handle** on a selected space to change its `radius`, or on a
   selected tunnel to change its `width`. Both are undoable.
 - **Bends** are `Marker3D`s and were always clickable - drag them like any node.
@@ -261,7 +265,7 @@ all three biomes does not overwrite anything.
 
 ```
 # just the upper mine level, in context
-... render_level_maps.gd -- --tags=mines_a,cavern,entrance,natural,biome_link
+... render_level_maps.gd -- --tags=mines_a,entrance,natural,biome_link
 ```
 
 **Use `--tags=` for anything with stacked levels.** Both mine levels sit on the
@@ -283,7 +287,7 @@ sheet; this is how to do that. The elevation panel is fine unfiltered.
   centre of every space and fails on anything that comes back solid. That is the
   failure worth catching - a level that looks carved in the viewport but has a
   plug of rock across one drift. Re-run it after moving anything.
-- `build_mine_blockout.gd` is the mines and the cavern **as data** - grid
+- `build_mine_blockout.gd` is the mines **as data** - grid
   columns, rows, per-node depths, widths, and the natural tunnels with their
   corners. No logic; `blockout_scaffold.gd` does the building.
   **Change the numbers and re-run with `-- --force` while the layout is still

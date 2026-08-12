@@ -5,7 +5,7 @@
 [ext_resource type="Script" path="res://levels/design/mine_tunnel.gd" id="3_0i7on"]
 [ext_resource type="Script" path="res://levels/design/mine_bend.gd" id="4_aqqjh"]
 
-[node name="HiveBlockout" type="Node3D" unique_id=729157951]
+[node name="HiveBlockout" type="Node3D" unique_id=2124540430]
 script = ExtResource("1_ty05w")
 color_mode = 1
 tag_colors = Dictionary[StringName, Color]({
@@ -18,26 +18,26 @@ tag_colors = Dictionary[StringName, Color]({
 &"unbuilt": Color(0.5, 0.5, 0.55, 1)
 })
 entrance_space = NodePath("Spaces/hive_mouth")
-sound_origin = NodePath("Spaces/hv_l4_hub")
+sound_origin = NodePath("Spaces/hv_l3_hub")
 
-[node name="Spaces" type="Node3D" parent="." unique_id=354871777]
+[node name="Spaces" type="Node3D" parent="." unique_id=601416412]
 
-[node name="hive_mouth" type="Node3D" parent="Spaces" unique_id=899872647]
+[node name="hive_mouth" type="Node3D" parent="Spaces" unique_id=1200455551]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4, 8, -46)
 script = ExtResource("2_7djq8")
 radius = 6.0
 tags = Array[StringName]([&"hive", &"entrance"])
 notes = "Where the hive is entered from above. The only part of it that is not a layer."
 
-[node name="link_mines" type="Node3D" parent="Spaces" unique_id=1803885373]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -88, -142, 64)
+[node name="link_mines" type="Node3D" parent="Spaces" unique_id=1497280918]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -86, -140, 58)
 script = ExtResource("2_7djq8")
 kind = 2
 radius = 4.0
 tags = Array[StringName]([&"biome_link", &"unbuilt"])
 notes = "Stub. Where the hive hands over to the mines."
 
-[node name="link_ravine" type="Node3D" parent="Spaces" unique_id=1764965403]
+[node name="link_ravine" type="Node3D" parent="Spaces" unique_id=1804736677]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 94, -34, 58)
 script = ExtResource("2_7djq8")
 kind = 2
@@ -45,362 +45,266 @@ radius = 4.0
 tags = Array[StringName]([&"biome_link", &"unbuilt"])
 notes = "Stub. Where the hive hands over to the ravine."
 
-[node name="hv_l1_hub" type="Node3D" parent="Spaces" unique_id=1987704255]
+[node name="hv_l1_hub" type="Node3D" parent="Spaces" unique_id=2001651336]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -18, 0)
 script = ExtResource("2_7djq8")
 radius = 4.0
 tags = Array[StringName]([&"hive", &"layer"])
 notes = "Top layer. Widest ceiling in the biome and the only one with a way up."
 
-[node name="hv_l1_c0" type="Node3D" parent="Spaces" unique_id=1736757840]
+[node name="hv_l1_c0" type="Node3D" parent="Spaces" unique_id=1463306165]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 34, -18, 0)
 script = ExtResource("2_7djq8")
 kind = 1
 radius = 3.0
 tags = Array[StringName]([&"hive", &"layer"])
 
-[node name="hv_l1_c1" type="Node3D" parent="Spaces" unique_id=55231448]
+[node name="hv_l1_c1" type="Node3D" parent="Spaces" unique_id=1754984640]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 10.5065775, -18, 27.485533)
 script = ExtResource("2_7djq8")
 kind = 1
 radius = 3.0
 tags = Array[StringName]([&"hive", &"layer"])
 
-[node name="hv_l1_c2" type="Node3D" parent="Spaces" unique_id=1597994868]
+[node name="hv_l1_c2" type="Node3D" parent="Spaces" unique_id=466942402]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -27.506578, -18, 16.986994)
 script = ExtResource("2_7djq8")
 kind = 1
 radius = 3.0
 tags = Array[StringName]([&"hive", &"layer"])
 
-[node name="hv_l1_c3" type="Node3D" parent="Spaces" unique_id=530921258]
+[node name="hv_l1_c3" type="Node3D" parent="Spaces" unique_id=1048085037]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -27.506578, -18, -16.986994)
 script = ExtResource("2_7djq8")
 kind = 1
 radius = 3.0
 tags = Array[StringName]([&"hive", &"layer"])
 
-[node name="hv_l1_c4" type="Node3D" parent="Spaces" unique_id=1961842032]
+[node name="hv_l1_c4" type="Node3D" parent="Spaces" unique_id=643745874]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 10.5065775, -18, -27.485533)
 script = ExtResource("2_7djq8")
 kind = 1
 radius = 3.0
 tags = Array[StringName]([&"hive", &"layer"])
 
-[node name="hv_l2_hub" type="Node3D" parent="Spaces" unique_id=1601184494]
+[node name="hv_l2_hub" type="Node3D" parent="Spaces" unique_id=630512445]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 14, -42, -9)
 script = ExtResource("2_7djq8")
 radius = 4.0
 tags = Array[StringName]([&"hive", &"layer"])
 
-[node name="hv_l2_c0" type="Node3D" parent="Spaces" unique_id=540738918]
+[node name="hv_l2_c0" type="Node3D" parent="Spaces" unique_id=1524557300]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 51.81878, -42, 3.7879868)
 script = ExtResource("2_7djq8")
 kind = 1
 radius = 3.0
 tags = Array[StringName]([&"hive", &"layer"])
 
-[node name="hv_l2_c1" type="Node3D" parent="Spaces" unique_id=829887569]
+[node name="hv_l2_c1" type="Node3D" parent="Spaces" unique_id=1815255859]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 23.296692, -42, 19.670717)
 script = ExtResource("2_7djq8")
 kind = 1
 radius = 3.0
 tags = Array[StringName]([&"hive", &"layer"])
 
-[node name="hv_l2_c2" type="Node3D" parent="Spaces" unique_id=1038025217]
+[node name="hv_l2_c2" type="Node3D" parent="Spaces" unique_id=804950026]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -12.225992, -42, 13.963814)
 script = ExtResource("2_7djq8")
 kind = 1
 radius = 3.0
 tags = Array[StringName]([&"hive", &"layer"])
 
-[node name="hv_l2_c3" type="Node3D" parent="Spaces" unique_id=954721365]
+[node name="hv_l2_c3" type="Node3D" parent="Spaces" unique_id=383406641]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -27.99997, -42, -9.035311)
 script = ExtResource("2_7djq8")
 kind = 1
 radius = 3.0
 tags = Array[StringName]([&"hive", &"layer"])
 
-[node name="hv_l2_c4" type="Node3D" parent="Spaces" unique_id=663153335]
+[node name="hv_l2_c4" type="Node3D" parent="Spaces" unique_id=1908761172]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -12.147114, -42, -32.007843)
 script = ExtResource("2_7djq8")
 kind = 1
 radius = 3.0
 tags = Array[StringName]([&"hive", &"layer"])
 
-[node name="hv_l2_c5" type="Node3D" parent="Spaces" unique_id=1702250404]
+[node name="hv_l2_c5" type="Node3D" parent="Spaces" unique_id=1094401273]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 23.395052, -42, -37.655003)
 script = ExtResource("2_7djq8")
 kind = 1
 radius = 3.0
 tags = Array[StringName]([&"hive", &"layer"])
 
-[node name="hv_l2_c6" type="Node3D" parent="Spaces" unique_id=663416543]
+[node name="hv_l2_c6" type="Node3D" parent="Spaces" unique_id=1604547866]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 51.862553, -42, -21.724358)
 script = ExtResource("2_7djq8")
 kind = 1
 radius = 3.0
 tags = Array[StringName]([&"hive", &"layer"])
 
-[node name="hv_l3_hub" type="Node3D" parent="Spaces" unique_id=1074270037]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -11, -63, 16)
+[node name="hv_l3_hub" type="Node3D" parent="Spaces" unique_id=1601543513]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -11, -68, 16)
 script = ExtResource("2_7djq8")
 radius = 4.0
 tags = Array[StringName]([&"hive", &"layer"])
 
-[node name="hv_l3_c0" type="Node3D" parent="Spaces" unique_id=1747878266]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 10.522274, -63, 46.096375)
+[node name="hv_l3_c0" type="Node3D" parent="Spaces" unique_id=714664135]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 10.522274, -68, 46.096375)
 script = ExtResource("2_7djq8")
 kind = 1
 radius = 3.0
 tags = Array[StringName]([&"hive", &"layer"])
 
-[node name="hv_l3_c1" type="Node3D" parent="Spaces" unique_id=1799308295]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -26.303087, -63, 49.687023)
+[node name="hv_l3_c1" type="Node3D" parent="Spaces" unique_id=1008214120]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -26.303087, -68, 49.687023)
 script = ExtResource("2_7djq8")
 kind = 1
 radius = 3.0
 tags = Array[StringName]([&"hive", &"layer"])
 
-[node name="hv_l3_c2" type="Node3D" parent="Spaces" unique_id=1500000863]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -47.825363, -63, 19.590649)
+[node name="hv_l3_c2" type="Node3D" parent="Spaces" unique_id=1874657303]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -47.825363, -68, 19.590649)
 script = ExtResource("2_7djq8")
 kind = 1
 radius = 3.0
 tags = Array[StringName]([&"hive", &"layer"])
 
-[node name="hv_l3_c3" type="Node3D" parent="Spaces" unique_id=688393891]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -32.522274, -63, -14.0963745)
+[node name="hv_l3_c3" type="Node3D" parent="Spaces" unique_id=1807184186]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -32.522274, -68, -14.0963745)
 script = ExtResource("2_7djq8")
 kind = 1
 radius = 3.0
 tags = Array[StringName]([&"hive", &"layer"])
 
-[node name="hv_l3_c4" type="Node3D" parent="Spaces" unique_id=1358090710]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4.303087, -63, -17.687023)
+[node name="hv_l3_c4" type="Node3D" parent="Spaces" unique_id=1778730711]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4.303087, -68, -17.687023)
 script = ExtResource("2_7djq8")
 kind = 1
 radius = 3.0
 tags = Array[StringName]([&"hive", &"layer"])
 
-[node name="hv_l3_c5" type="Node3D" parent="Spaces" unique_id=1957680462]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 25.825363, -63, 12.40935)
+[node name="hv_l3_c5" type="Node3D" parent="Spaces" unique_id=1746307096]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 25.825363, -68, 12.40935)
 script = ExtResource("2_7djq8")
 kind = 1
 radius = 3.0
 tags = Array[StringName]([&"hive", &"layer"])
 
-[node name="hv_l4_hub" type="Node3D" parent="Spaces" unique_id=421671667]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 20, -88, 7)
+[node name="hv_l4_hub" type="Node3D" parent="Spaces" unique_id=849205503]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 20, -95, 7)
 script = ExtResource("2_7djq8")
 radius = 4.0
 tags = Array[StringName]([&"hive", &"layer"])
 notes = "The big one. Long enough on its wide axis that the far rim is out of sight."
 
-[node name="hv_l4_c0" type="Node3D" parent="Spaces" unique_id=594108132]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 65.08306, -88, 12.66605)
+[node name="hv_l4_c0" type="Node3D" parent="Spaces" unique_id=576389734]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 65.08306, -95, 12.66605)
 script = ExtResource("2_7djq8")
 kind = 1
 radius = 3.0
 tags = Array[StringName]([&"hive", &"layer"])
 
-[node name="hv_l4_c1" type="Node3D" parent="Spaces" unique_id=302090156]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 45.41644, -88, 30.771196)
+[node name="hv_l4_c1" type="Node3D" parent="Spaces" unique_id=355807219]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 45.41644, -95, 30.771196)
 script = ExtResource("2_7djq8")
 kind = 1
 radius = 3.0
 tags = Array[StringName]([&"hive", &"layer"])
 
-[node name="hv_l4_c2" type="Node3D" parent="Spaces" unique_id=291991]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 10.861211, -88, 34.9515)
+[node name="hv_l4_c2" type="Node3D" parent="Spaces" unique_id=1064816980]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 10.861211, -95, 34.9515)
 script = ExtResource("2_7djq8")
 kind = 1
 radius = 3.0
 tags = Array[StringName]([&"hive", &"layer"])
 
-[node name="hv_l4_c3" type="Node3D" parent="Spaces" unique_id=1594778823]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -18.340637, -88, 22.758192)
+[node name="hv_l4_c3" type="Node3D" parent="Spaces" unique_id=618306917]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -18.340637, -95, 22.758192)
 script = ExtResource("2_7djq8")
 kind = 1
 radius = 3.0
 tags = Array[StringName]([&"hive", &"layer"])
 
-[node name="hv_l4_c4" type="Node3D" parent="Spaces" unique_id=285135194]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -25.083061, -88, 1.3339505)
+[node name="hv_l4_c4" type="Node3D" parent="Spaces" unique_id=1095915441]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -25.083061, -95, 1.3339505)
 script = ExtResource("2_7djq8")
 kind = 1
 radius = 3.0
 tags = Array[StringName]([&"hive", &"layer"])
 
-[node name="hv_l4_c5" type="Node3D" parent="Spaces" unique_id=1425017972]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5.416439, -88, -16.771196)
+[node name="hv_l4_c5" type="Node3D" parent="Spaces" unique_id=1891018292]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5.416439, -95, -16.771196)
 script = ExtResource("2_7djq8")
 kind = 1
 radius = 3.0
 tags = Array[StringName]([&"hive", &"layer"])
 
-[node name="hv_l4_c6" type="Node3D" parent="Spaces" unique_id=1040051238]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 29.13879, -88, -20.951498)
+[node name="hv_l4_c6" type="Node3D" parent="Spaces" unique_id=1790430388]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 29.13879, -95, -20.951498)
 script = ExtResource("2_7djq8")
 kind = 1
 radius = 3.0
 tags = Array[StringName]([&"hive", &"layer"])
 
-[node name="hv_l4_c7" type="Node3D" parent="Spaces" unique_id=1481574686]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 58.340637, -88, -8.758192)
+[node name="hv_l4_c7" type="Node3D" parent="Spaces" unique_id=1315334328]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 58.340637, -95, -8.758192)
 script = ExtResource("2_7djq8")
 kind = 1
 radius = 3.0
 tags = Array[StringName]([&"hive", &"layer"])
 
-[node name="hv_l5_hub" type="Node3D" parent="Spaces" unique_id=614093542]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -16, -108, -14)
-script = ExtResource("2_7djq8")
-radius = 4.0
-tags = Array[StringName]([&"hive", &"layer"])
-
-[node name="hv_l5_c0" type="Node3D" parent="Spaces" unique_id=257134849]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -7.1725388, -108, 14.617678)
-script = ExtResource("2_7djq8")
-kind = 1
-radius = 3.0
-tags = Array[StringName]([&"hive", &"layer"])
-
-[node name="hv_l5_c1" type="Node3D" parent="Spaces" unique_id=1081517434]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -39.123642, -108, 7.189165)
-script = ExtResource("2_7djq8")
-kind = 1
-radius = 3.0
-tags = Array[StringName]([&"hive", &"layer"])
-
-[node name="hv_l5_c2" type="Node3D" parent="Spaces" unique_id=916358777]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -47.951103, -108, -21.428514)
-script = ExtResource("2_7djq8")
-kind = 1
-radius = 3.0
-tags = Array[StringName]([&"hive", &"layer"])
-
-[node name="hv_l5_c3" type="Node3D" parent="Spaces" unique_id=1748607397]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -24.827461, -108, -42.617676)
-script = ExtResource("2_7djq8")
-kind = 1
-radius = 3.0
-tags = Array[StringName]([&"hive", &"layer"])
-
-[node name="hv_l5_c4" type="Node3D" parent="Spaces" unique_id=160830078]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 7.123644, -108, -35.189163)
-script = ExtResource("2_7djq8")
-kind = 1
-radius = 3.0
-tags = Array[StringName]([&"hive", &"layer"])
-
-[node name="hv_l5_c5" type="Node3D" parent="Spaces" unique_id=768068515]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 15.951105, -108, -6.571486)
-script = ExtResource("2_7djq8")
-kind = 1
-radius = 3.0
-tags = Array[StringName]([&"hive", &"layer"])
-
-[node name="hv_l6_hub" type="Node3D" parent="Spaces" unique_id=614568625]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8, -131, 19)
-script = ExtResource("2_7djq8")
-radius = 4.0
-tags = Array[StringName]([&"hive", &"layer"])
-
-[node name="hv_l6_c0" type="Node3D" parent="Spaces" unique_id=1839760480]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 38.59369, -131, 38.32653)
-script = ExtResource("2_7djq8")
-kind = 1
-radius = 3.0
-tags = Array[StringName]([&"hive", &"layer"])
-
-[node name="hv_l6_c1" type="Node3D" parent="Spaces" unique_id=134137165]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6.9280653, -131, 48.989227)
-script = ExtResource("2_7djq8")
-kind = 1
-radius = 3.0
-tags = Array[StringName]([&"hive", &"layer"])
-
-[node name="hv_l6_c2" type="Node3D" parent="Spaces" unique_id=1371667125]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -23.930368, -131, 37.06942)
-script = ExtResource("2_7djq8")
-kind = 1
-radius = 3.0
-tags = Array[StringName]([&"hive", &"layer"])
-
-[node name="hv_l6_c3" type="Node3D" parent="Spaces" unique_id=4211910]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -30.744583, -131, 11.542975)
-script = ExtResource("2_7djq8")
-kind = 1
-radius = 3.0
-tags = Array[StringName]([&"hive", &"layer"])
-
-[node name="hv_l6_c4" type="Node3D" parent="Spaces" unique_id=298629880]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8.383337, -131, -8.368179)
-script = ExtResource("2_7djq8")
-kind = 1
-radius = 3.0
-tags = Array[StringName]([&"hive", &"layer"])
-
-[node name="hv_l6_c5" type="Node3D" parent="Spaces" unique_id=1603669334]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 26.314896, -131, -7.670538)
-script = ExtResource("2_7djq8")
-kind = 1
-radius = 3.0
-tags = Array[StringName]([&"hive", &"layer"])
-
-[node name="hv_l6_c6" type="Node3D" parent="Spaces" unique_id=726619729]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 47.221638, -131, 13.110563)
-script = ExtResource("2_7djq8")
-kind = 1
-radius = 3.0
-tags = Array[StringName]([&"hive", &"layer"])
-
-[node name="hv_l7_hub" type="Node3D" parent="Spaces" unique_id=1642981453]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6, -152, -5)
+[node name="hv_l5_hub" type="Node3D" parent="Spaces" unique_id=1425694717]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -16, -122, -14)
 script = ExtResource("2_7djq8")
 radius = 4.0
 tags = Array[StringName]([&"hive", &"layer"])
 notes = "Bottom layer. Nothing below it, which you cannot tell from inside it."
 
-[node name="hv_l7_c0" type="Node3D" parent="Spaces" unique_id=1495640315]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6.8759856, -152, 24.987207)
+[node name="hv_l5_c0" type="Node3D" parent="Spaces" unique_id=275068550]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -7.1725388, -122, 14.617678)
 script = ExtResource("2_7djq8")
 kind = 1
 radius = 3.0
 tags = Array[StringName]([&"hive", &"layer"])
 
-[node name="hv_l7_c1" type="Node3D" parent="Spaces" unique_id=1402019056]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -34.790222, -152, 3.433445)
+[node name="hv_l5_c1" type="Node3D" parent="Spaces" unique_id=1681075279]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -39.123642, -122, 7.189165)
 script = ExtResource("2_7djq8")
 kind = 1
 radius = 3.0
 tags = Array[StringName]([&"hive", &"layer"])
 
-[node name="hv_l7_c2" type="Node3D" parent="Spaces" unique_id=1311479031]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -22.91735, -152, -29.775053)
+[node name="hv_l5_c2" type="Node3D" parent="Spaces" unique_id=2073867493]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -47.951103, -122, -21.428514)
 script = ExtResource("2_7djq8")
 kind = 1
 radius = 3.0
 tags = Array[StringName]([&"hive", &"layer"])
 
-[node name="hv_l7_c3" type="Node3D" parent="Spaces" unique_id=1485936914]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 12.334726, -152, -28.74527)
+[node name="hv_l5_c3" type="Node3D" parent="Spaces" unique_id=1778633363]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -24.827461, -122, -42.617676)
 script = ExtResource("2_7djq8")
 kind = 1
 radius = 3.0
 tags = Array[StringName]([&"hive", &"layer"])
 
-[node name="hv_l7_c4" type="Node3D" parent="Spaces" unique_id=52159543]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 22.248835, -152, 5.0996685)
+[node name="hv_l5_c4" type="Node3D" parent="Spaces" unique_id=851536246]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 7.123644, -122, -35.189163)
 script = ExtResource("2_7djq8")
 kind = 1
 radius = 3.0
 tags = Array[StringName]([&"hive", &"layer"])
 
-[node name="Tunnels" type="Node3D" parent="." unique_id=708075837]
+[node name="hv_l5_c5" type="Node3D" parent="Spaces" unique_id=1384644246]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 15.951105, -122, -6.571486)
+script = ExtResource("2_7djq8")
+kind = 1
+radius = 3.0
+tags = Array[StringName]([&"hive", &"layer"])
 
-[node name="hv_l1_rim0" type="Node3D" parent="Tunnels" unique_id=626055720]
+[node name="Tunnels" type="Node3D" parent="." unique_id=966250216]
+
+[node name="hv_l1_rim0" type="Node3D" parent="Tunnels" unique_id=899317349]
 script = ExtResource("3_0i7on")
 from_space = NodePath("../../Spaces/hv_l1_c0")
 to_space = NodePath("../../Spaces/hv_l1_c1")
@@ -408,7 +312,7 @@ width = 26.0
 height = 5.0
 tags = Array[StringName]([&"hive", &"layer"])
 
-[node name="hv_l1_spoke0" type="Node3D" parent="Tunnels" unique_id=1789750594]
+[node name="hv_l1_spoke0" type="Node3D" parent="Tunnels" unique_id=473326578]
 script = ExtResource("3_0i7on")
 from_space = NodePath("../../Spaces/hv_l1_c0")
 to_space = NodePath("../../Spaces/hv_l1_hub")
@@ -416,7 +320,7 @@ width = 26.0
 height = 5.0
 tags = Array[StringName]([&"hive", &"layer"])
 
-[node name="hv_l1_rim1" type="Node3D" parent="Tunnels" unique_id=790183861]
+[node name="hv_l1_rim1" type="Node3D" parent="Tunnels" unique_id=1556666258]
 script = ExtResource("3_0i7on")
 from_space = NodePath("../../Spaces/hv_l1_c1")
 to_space = NodePath("../../Spaces/hv_l1_c2")
@@ -424,7 +328,7 @@ width = 26.0
 height = 5.0
 tags = Array[StringName]([&"hive", &"layer"])
 
-[node name="hv_l1_spoke1" type="Node3D" parent="Tunnels" unique_id=759954810]
+[node name="hv_l1_spoke1" type="Node3D" parent="Tunnels" unique_id=275136284]
 script = ExtResource("3_0i7on")
 from_space = NodePath("../../Spaces/hv_l1_c1")
 to_space = NodePath("../../Spaces/hv_l1_hub")
@@ -432,7 +336,7 @@ width = 26.0
 height = 5.0
 tags = Array[StringName]([&"hive", &"layer"])
 
-[node name="hv_l1_rim2" type="Node3D" parent="Tunnels" unique_id=293240228]
+[node name="hv_l1_rim2" type="Node3D" parent="Tunnels" unique_id=1091832394]
 script = ExtResource("3_0i7on")
 from_space = NodePath("../../Spaces/hv_l1_c2")
 to_space = NodePath("../../Spaces/hv_l1_c3")
@@ -440,7 +344,7 @@ width = 26.0
 height = 5.0
 tags = Array[StringName]([&"hive", &"layer"])
 
-[node name="hv_l1_spoke2" type="Node3D" parent="Tunnels" unique_id=1621295710]
+[node name="hv_l1_spoke2" type="Node3D" parent="Tunnels" unique_id=626811549]
 script = ExtResource("3_0i7on")
 from_space = NodePath("../../Spaces/hv_l1_c2")
 to_space = NodePath("../../Spaces/hv_l1_hub")
@@ -448,7 +352,7 @@ width = 26.0
 height = 5.0
 tags = Array[StringName]([&"hive", &"layer"])
 
-[node name="hv_l1_rim3" type="Node3D" parent="Tunnels" unique_id=1429615745]
+[node name="hv_l1_rim3" type="Node3D" parent="Tunnels" unique_id=1325070713]
 script = ExtResource("3_0i7on")
 from_space = NodePath("../../Spaces/hv_l1_c3")
 to_space = NodePath("../../Spaces/hv_l1_c4")
@@ -456,7 +360,7 @@ width = 26.0
 height = 5.0
 tags = Array[StringName]([&"hive", &"layer"])
 
-[node name="hv_l1_spoke3" type="Node3D" parent="Tunnels" unique_id=67399880]
+[node name="hv_l1_spoke3" type="Node3D" parent="Tunnels" unique_id=1892117329]
 script = ExtResource("3_0i7on")
 from_space = NodePath("../../Spaces/hv_l1_c3")
 to_space = NodePath("../../Spaces/hv_l1_hub")
@@ -464,7 +368,7 @@ width = 26.0
 height = 5.0
 tags = Array[StringName]([&"hive", &"layer"])
 
-[node name="hv_l1_rim4" type="Node3D" parent="Tunnels" unique_id=876335117]
+[node name="hv_l1_rim4" type="Node3D" parent="Tunnels" unique_id=995784208]
 script = ExtResource("3_0i7on")
 from_space = NodePath("../../Spaces/hv_l1_c4")
 to_space = NodePath("../../Spaces/hv_l1_c0")
@@ -472,7 +376,7 @@ width = 26.0
 height = 5.0
 tags = Array[StringName]([&"hive", &"layer"])
 
-[node name="hv_l1_spoke4" type="Node3D" parent="Tunnels" unique_id=109339832]
+[node name="hv_l1_spoke4" type="Node3D" parent="Tunnels" unique_id=1498534138]
 script = ExtResource("3_0i7on")
 from_space = NodePath("../../Spaces/hv_l1_c4")
 to_space = NodePath("../../Spaces/hv_l1_hub")
@@ -480,7 +384,7 @@ width = 26.0
 height = 5.0
 tags = Array[StringName]([&"hive", &"layer"])
 
-[node name="hv_l2_rim0" type="Node3D" parent="Tunnels" unique_id=882002796]
+[node name="hv_l2_rim0" type="Node3D" parent="Tunnels" unique_id=1534358779]
 script = ExtResource("3_0i7on")
 from_space = NodePath("../../Spaces/hv_l2_c0")
 to_space = NodePath("../../Spaces/hv_l2_c1")
@@ -488,7 +392,7 @@ width = 26.0
 height = 5.0
 tags = Array[StringName]([&"hive", &"layer"])
 
-[node name="hv_l2_spoke0" type="Node3D" parent="Tunnels" unique_id=1450999204]
+[node name="hv_l2_spoke0" type="Node3D" parent="Tunnels" unique_id=307129654]
 script = ExtResource("3_0i7on")
 from_space = NodePath("../../Spaces/hv_l2_c0")
 to_space = NodePath("../../Spaces/hv_l2_hub")
@@ -496,7 +400,7 @@ width = 26.0
 height = 5.0
 tags = Array[StringName]([&"hive", &"layer"])
 
-[node name="hv_l2_rim1" type="Node3D" parent="Tunnels" unique_id=958494065]
+[node name="hv_l2_rim1" type="Node3D" parent="Tunnels" unique_id=440409162]
 script = ExtResource("3_0i7on")
 from_space = NodePath("../../Spaces/hv_l2_c1")
 to_space = NodePath("../../Spaces/hv_l2_c2")
@@ -504,7 +408,7 @@ width = 26.0
 height = 5.0
 tags = Array[StringName]([&"hive", &"layer"])
 
-[node name="hv_l2_spoke1" type="Node3D" parent="Tunnels" unique_id=491364954]
+[node name="hv_l2_spoke1" type="Node3D" parent="Tunnels" unique_id=1236447356]
 script = ExtResource("3_0i7on")
 from_space = NodePath("../../Spaces/hv_l2_c1")
 to_space = NodePath("../../Spaces/hv_l2_hub")
@@ -512,7 +416,7 @@ width = 26.0
 height = 5.0
 tags = Array[StringName]([&"hive", &"layer"])
 
-[node name="hv_l2_rim2" type="Node3D" parent="Tunnels" unique_id=315579438]
+[node name="hv_l2_rim2" type="Node3D" parent="Tunnels" unique_id=1751280271]
 script = ExtResource("3_0i7on")
 from_space = NodePath("../../Spaces/hv_l2_c2")
 to_space = NodePath("../../Spaces/hv_l2_c3")
@@ -520,7 +424,7 @@ width = 26.0
 height = 5.0
 tags = Array[StringName]([&"hive", &"layer"])
 
-[node name="hv_l2_spoke2" type="Node3D" parent="Tunnels" unique_id=311574842]
+[node name="hv_l2_spoke2" type="Node3D" parent="Tunnels" unique_id=757036903]
 script = ExtResource("3_0i7on")
 from_space = NodePath("../../Spaces/hv_l2_c2")
 to_space = NodePath("../../Spaces/hv_l2_hub")
@@ -528,7 +432,7 @@ width = 26.0
 height = 5.0
 tags = Array[StringName]([&"hive", &"layer"])
 
-[node name="hv_l2_rim3" type="Node3D" parent="Tunnels" unique_id=658371163]
+[node name="hv_l2_rim3" type="Node3D" parent="Tunnels" unique_id=300256842]
 script = ExtResource("3_0i7on")
 from_space = NodePath("../../Spaces/hv_l2_c3")
 to_space = NodePath("../../Spaces/hv_l2_c4")
@@ -536,7 +440,7 @@ width = 26.0
 height = 5.0
 tags = Array[StringName]([&"hive", &"layer"])
 
-[node name="hv_l2_spoke3" type="Node3D" parent="Tunnels" unique_id=334323292]
+[node name="hv_l2_spoke3" type="Node3D" parent="Tunnels" unique_id=1178898762]
 script = ExtResource("3_0i7on")
 from_space = NodePath("../../Spaces/hv_l2_c3")
 to_space = NodePath("../../Spaces/hv_l2_hub")
@@ -544,7 +448,7 @@ width = 26.0
 height = 5.0
 tags = Array[StringName]([&"hive", &"layer"])
 
-[node name="hv_l2_rim4" type="Node3D" parent="Tunnels" unique_id=1470889934]
+[node name="hv_l2_rim4" type="Node3D" parent="Tunnels" unique_id=868906562]
 script = ExtResource("3_0i7on")
 from_space = NodePath("../../Spaces/hv_l2_c4")
 to_space = NodePath("../../Spaces/hv_l2_c5")
@@ -552,7 +456,7 @@ width = 26.0
 height = 5.0
 tags = Array[StringName]([&"hive", &"layer"])
 
-[node name="hv_l2_spoke4" type="Node3D" parent="Tunnels" unique_id=1737858517]
+[node name="hv_l2_spoke4" type="Node3D" parent="Tunnels" unique_id=1249320143]
 script = ExtResource("3_0i7on")
 from_space = NodePath("../../Spaces/hv_l2_c4")
 to_space = NodePath("../../Spaces/hv_l2_hub")
@@ -560,7 +464,7 @@ width = 26.0
 height = 5.0
 tags = Array[StringName]([&"hive", &"layer"])
 
-[node name="hv_l2_rim5" type="Node3D" parent="Tunnels" unique_id=2026797590]
+[node name="hv_l2_rim5" type="Node3D" parent="Tunnels" unique_id=82576764]
 script = ExtResource("3_0i7on")
 from_space = NodePath("../../Spaces/hv_l2_c5")
 to_space = NodePath("../../Spaces/hv_l2_c6")
@@ -568,7 +472,7 @@ width = 26.0
 height = 5.0
 tags = Array[StringName]([&"hive", &"layer"])
 
-[node name="hv_l2_spoke5" type="Node3D" parent="Tunnels" unique_id=1991590431]
+[node name="hv_l2_spoke5" type="Node3D" parent="Tunnels" unique_id=20744693]
 script = ExtResource("3_0i7on")
 from_space = NodePath("../../Spaces/hv_l2_c5")
 to_space = NodePath("../../Spaces/hv_l2_hub")
@@ -576,7 +480,7 @@ width = 26.0
 height = 5.0
 tags = Array[StringName]([&"hive", &"layer"])
 
-[node name="hv_l2_rim6" type="Node3D" parent="Tunnels" unique_id=2093076301]
+[node name="hv_l2_rim6" type="Node3D" parent="Tunnels" unique_id=1395842713]
 script = ExtResource("3_0i7on")
 from_space = NodePath("../../Spaces/hv_l2_c6")
 to_space = NodePath("../../Spaces/hv_l2_c0")
@@ -584,7 +488,7 @@ width = 26.0
 height = 5.0
 tags = Array[StringName]([&"hive", &"layer"])
 
-[node name="hv_l2_spoke6" type="Node3D" parent="Tunnels" unique_id=1759204967]
+[node name="hv_l2_spoke6" type="Node3D" parent="Tunnels" unique_id=591252261]
 script = ExtResource("3_0i7on")
 from_space = NodePath("../../Spaces/hv_l2_c6")
 to_space = NodePath("../../Spaces/hv_l2_hub")
@@ -592,7 +496,7 @@ width = 26.0
 height = 5.0
 tags = Array[StringName]([&"hive", &"layer"])
 
-[node name="hv_l3_rim0" type="Node3D" parent="Tunnels" unique_id=1282973955]
+[node name="hv_l3_rim0" type="Node3D" parent="Tunnels" unique_id=2103947991]
 script = ExtResource("3_0i7on")
 from_space = NodePath("../../Spaces/hv_l3_c0")
 to_space = NodePath("../../Spaces/hv_l3_c1")
@@ -600,7 +504,7 @@ width = 26.0
 height = 5.0
 tags = Array[StringName]([&"hive", &"layer"])
 
-[node name="hv_l3_spoke0" type="Node3D" parent="Tunnels" unique_id=946093523]
+[node name="hv_l3_spoke0" type="Node3D" parent="Tunnels" unique_id=1282559535]
 script = ExtResource("3_0i7on")
 from_space = NodePath("../../Spaces/hv_l3_c0")
 to_space = NodePath("../../Spaces/hv_l3_hub")
@@ -608,7 +512,7 @@ width = 26.0
 height = 5.0
 tags = Array[StringName]([&"hive", &"layer"])
 
-[node name="hv_l3_rim1" type="Node3D" parent="Tunnels" unique_id=1579438036]
+[node name="hv_l3_rim1" type="Node3D" parent="Tunnels" unique_id=1141289574]
 script = ExtResource("3_0i7on")
 from_space = NodePath("../../Spaces/hv_l3_c1")
 to_space = NodePath("../../Spaces/hv_l3_c2")
@@ -616,7 +520,7 @@ width = 26.0
 height = 5.0
 tags = Array[StringName]([&"hive", &"layer"])
 
-[node name="hv_l3_spoke1" type="Node3D" parent="Tunnels" unique_id=1999414200]
+[node name="hv_l3_spoke1" type="Node3D" parent="Tunnels" unique_id=1342841485]
 script = ExtResource("3_0i7on")
 from_space = NodePath("../../Spaces/hv_l3_c1")
 to_space = NodePath("../../Spaces/hv_l3_hub")
@@ -624,7 +528,7 @@ width = 26.0
 height = 5.0
 tags = Array[StringName]([&"hive", &"layer"])
 
-[node name="hv_l3_rim2" type="Node3D" parent="Tunnels" unique_id=360330745]
+[node name="hv_l3_rim2" type="Node3D" parent="Tunnels" unique_id=1582994573]
 script = ExtResource("3_0i7on")
 from_space = NodePath("../../Spaces/hv_l3_c2")
 to_space = NodePath("../../Spaces/hv_l3_c3")
@@ -632,7 +536,7 @@ width = 26.0
 height = 5.0
 tags = Array[StringName]([&"hive", &"layer"])
 
-[node name="hv_l3_spoke2" type="Node3D" parent="Tunnels" unique_id=125223665]
+[node name="hv_l3_spoke2" type="Node3D" parent="Tunnels" unique_id=1922412413]
 script = ExtResource("3_0i7on")
 from_space = NodePath("../../Spaces/hv_l3_c2")
 to_space = NodePath("../../Spaces/hv_l3_hub")
@@ -640,7 +544,7 @@ width = 26.0
 height = 5.0
 tags = Array[StringName]([&"hive", &"layer"])
 
-[node name="hv_l3_rim3" type="Node3D" parent="Tunnels" unique_id=1377750010]
+[node name="hv_l3_rim3" type="Node3D" parent="Tunnels" unique_id=694866069]
 script = ExtResource("3_0i7on")
 from_space = NodePath("../../Spaces/hv_l3_c3")
 to_space = NodePath("../../Spaces/hv_l3_c4")
@@ -648,7 +552,7 @@ width = 26.0
 height = 5.0
 tags = Array[StringName]([&"hive", &"layer"])
 
-[node name="hv_l3_spoke3" type="Node3D" parent="Tunnels" unique_id=588589739]
+[node name="hv_l3_spoke3" type="Node3D" parent="Tunnels" unique_id=2115552057]
 script = ExtResource("3_0i7on")
 from_space = NodePath("../../Spaces/hv_l3_c3")
 to_space = NodePath("../../Spaces/hv_l3_hub")
@@ -656,7 +560,7 @@ width = 26.0
 height = 5.0
 tags = Array[StringName]([&"hive", &"layer"])
 
-[node name="hv_l3_rim4" type="Node3D" parent="Tunnels" unique_id=171950770]
+[node name="hv_l3_rim4" type="Node3D" parent="Tunnels" unique_id=272584683]
 script = ExtResource("3_0i7on")
 from_space = NodePath("../../Spaces/hv_l3_c4")
 to_space = NodePath("../../Spaces/hv_l3_c5")
@@ -664,7 +568,7 @@ width = 26.0
 height = 5.0
 tags = Array[StringName]([&"hive", &"layer"])
 
-[node name="hv_l3_spoke4" type="Node3D" parent="Tunnels" unique_id=876929994]
+[node name="hv_l3_spoke4" type="Node3D" parent="Tunnels" unique_id=716720873]
 script = ExtResource("3_0i7on")
 from_space = NodePath("../../Spaces/hv_l3_c4")
 to_space = NodePath("../../Spaces/hv_l3_hub")
@@ -672,7 +576,7 @@ width = 26.0
 height = 5.0
 tags = Array[StringName]([&"hive", &"layer"])
 
-[node name="hv_l3_rim5" type="Node3D" parent="Tunnels" unique_id=696694851]
+[node name="hv_l3_rim5" type="Node3D" parent="Tunnels" unique_id=1127735513]
 script = ExtResource("3_0i7on")
 from_space = NodePath("../../Spaces/hv_l3_c5")
 to_space = NodePath("../../Spaces/hv_l3_c0")
@@ -680,7 +584,7 @@ width = 26.0
 height = 5.0
 tags = Array[StringName]([&"hive", &"layer"])
 
-[node name="hv_l3_spoke5" type="Node3D" parent="Tunnels" unique_id=755621536]
+[node name="hv_l3_spoke5" type="Node3D" parent="Tunnels" unique_id=164072280]
 script = ExtResource("3_0i7on")
 from_space = NodePath("../../Spaces/hv_l3_c5")
 to_space = NodePath("../../Spaces/hv_l3_hub")
@@ -688,7 +592,7 @@ width = 26.0
 height = 5.0
 tags = Array[StringName]([&"hive", &"layer"])
 
-[node name="hv_l4_rim0" type="Node3D" parent="Tunnels" unique_id=1220997838]
+[node name="hv_l4_rim0" type="Node3D" parent="Tunnels" unique_id=5960462]
 script = ExtResource("3_0i7on")
 from_space = NodePath("../../Spaces/hv_l4_c0")
 to_space = NodePath("../../Spaces/hv_l4_c1")
@@ -696,7 +600,7 @@ width = 26.0
 height = 5.0
 tags = Array[StringName]([&"hive", &"layer"])
 
-[node name="hv_l4_spoke0" type="Node3D" parent="Tunnels" unique_id=1410818986]
+[node name="hv_l4_spoke0" type="Node3D" parent="Tunnels" unique_id=1478544331]
 script = ExtResource("3_0i7on")
 from_space = NodePath("../../Spaces/hv_l4_c0")
 to_space = NodePath("../../Spaces/hv_l4_hub")
@@ -704,7 +608,7 @@ width = 26.0
 height = 5.0
 tags = Array[StringName]([&"hive", &"layer"])
 
-[node name="hv_l4_rim1" type="Node3D" parent="Tunnels" unique_id=232746862]
+[node name="hv_l4_rim1" type="Node3D" parent="Tunnels" unique_id=702033093]
 script = ExtResource("3_0i7on")
 from_space = NodePath("../../Spaces/hv_l4_c1")
 to_space = NodePath("../../Spaces/hv_l4_c2")
@@ -712,7 +616,7 @@ width = 26.0
 height = 5.0
 tags = Array[StringName]([&"hive", &"layer"])
 
-[node name="hv_l4_spoke1" type="Node3D" parent="Tunnels" unique_id=1920222137]
+[node name="hv_l4_spoke1" type="Node3D" parent="Tunnels" unique_id=580490309]
 script = ExtResource("3_0i7on")
 from_space = NodePath("../../Spaces/hv_l4_c1")
 to_space = NodePath("../../Spaces/hv_l4_hub")
@@ -720,7 +624,7 @@ width = 26.0
 height = 5.0
 tags = Array[StringName]([&"hive", &"layer"])
 
-[node name="hv_l4_rim2" type="Node3D" parent="Tunnels" unique_id=1712998838]
+[node name="hv_l4_rim2" type="Node3D" parent="Tunnels" unique_id=1431097992]
 script = ExtResource("3_0i7on")
 from_space = NodePath("../../Spaces/hv_l4_c2")
 to_space = NodePath("../../Spaces/hv_l4_c3")
@@ -728,7 +632,7 @@ width = 26.0
 height = 5.0
 tags = Array[StringName]([&"hive", &"layer"])
 
-[node name="hv_l4_spoke2" type="Node3D" parent="Tunnels" unique_id=1238740049]
+[node name="hv_l4_spoke2" type="Node3D" parent="Tunnels" unique_id=1253927281]
 script = ExtResource("3_0i7on")
 from_space = NodePath("../../Spaces/hv_l4_c2")
 to_space = NodePath("../../Spaces/hv_l4_hub")
@@ -736,7 +640,7 @@ width = 26.0
 height = 5.0
 tags = Array[StringName]([&"hive", &"layer"])
 
-[node name="hv_l4_rim3" type="Node3D" parent="Tunnels" unique_id=567209170]
+[node name="hv_l4_rim3" type="Node3D" parent="Tunnels" unique_id=1438123985]
 script = ExtResource("3_0i7on")
 from_space = NodePath("../../Spaces/hv_l4_c3")
 to_space = NodePath("../../Spaces/hv_l4_c4")
@@ -744,7 +648,7 @@ width = 26.0
 height = 5.0
 tags = Array[StringName]([&"hive", &"layer"])
 
-[node name="hv_l4_spoke3" type="Node3D" parent="Tunnels" unique_id=1762833928]
+[node name="hv_l4_spoke3" type="Node3D" parent="Tunnels" unique_id=829914135]
 script = ExtResource("3_0i7on")
 from_space = NodePath("../../Spaces/hv_l4_c3")
 to_space = NodePath("../../Spaces/hv_l4_hub")
@@ -752,7 +656,7 @@ width = 26.0
 height = 5.0
 tags = Array[StringName]([&"hive", &"layer"])
 
-[node name="hv_l4_rim4" type="Node3D" parent="Tunnels" unique_id=173860413]
+[node name="hv_l4_rim4" type="Node3D" parent="Tunnels" unique_id=2075008135]
 script = ExtResource("3_0i7on")
 from_space = NodePath("../../Spaces/hv_l4_c4")
 to_space = NodePath("../../Spaces/hv_l4_c5")
@@ -760,7 +664,7 @@ width = 26.0
 height = 5.0
 tags = Array[StringName]([&"hive", &"layer"])
 
-[node name="hv_l4_spoke4" type="Node3D" parent="Tunnels" unique_id=1860201276]
+[node name="hv_l4_spoke4" type="Node3D" parent="Tunnels" unique_id=2249915]
 script = ExtResource("3_0i7on")
 from_space = NodePath("../../Spaces/hv_l4_c4")
 to_space = NodePath("../../Spaces/hv_l4_hub")
@@ -768,7 +672,7 @@ width = 26.0
 height = 5.0
 tags = Array[StringName]([&"hive", &"layer"])
 
-[node name="hv_l4_rim5" type="Node3D" parent="Tunnels" unique_id=283332661]
+[node name="hv_l4_rim5" type="Node3D" parent="Tunnels" unique_id=830085410]
 script = ExtResource("3_0i7on")
 from_space = NodePath("../../Spaces/hv_l4_c5")
 to_space = NodePath("../../Spaces/hv_l4_c6")
@@ -776,7 +680,7 @@ width = 26.0
 height = 5.0
 tags = Array[StringName]([&"hive", &"layer"])
 
-[node name="hv_l4_spoke5" type="Node3D" parent="Tunnels" unique_id=644101469]
+[node name="hv_l4_spoke5" type="Node3D" parent="Tunnels" unique_id=1039643501]
 script = ExtResource("3_0i7on")
 from_space = NodePath("../../Spaces/hv_l4_c5")
 to_space = NodePath("../../Spaces/hv_l4_hub")
@@ -784,7 +688,7 @@ width = 26.0
 height = 5.0
 tags = Array[StringName]([&"hive", &"layer"])
 
-[node name="hv_l4_rim6" type="Node3D" parent="Tunnels" unique_id=1634734004]
+[node name="hv_l4_rim6" type="Node3D" parent="Tunnels" unique_id=794677857]
 script = ExtResource("3_0i7on")
 from_space = NodePath("../../Spaces/hv_l4_c6")
 to_space = NodePath("../../Spaces/hv_l4_c7")
@@ -792,7 +696,7 @@ width = 26.0
 height = 5.0
 tags = Array[StringName]([&"hive", &"layer"])
 
-[node name="hv_l4_spoke6" type="Node3D" parent="Tunnels" unique_id=1184949069]
+[node name="hv_l4_spoke6" type="Node3D" parent="Tunnels" unique_id=2031216860]
 script = ExtResource("3_0i7on")
 from_space = NodePath("../../Spaces/hv_l4_c6")
 to_space = NodePath("../../Spaces/hv_l4_hub")
@@ -800,7 +704,7 @@ width = 26.0
 height = 5.0
 tags = Array[StringName]([&"hive", &"layer"])
 
-[node name="hv_l4_rim7" type="Node3D" parent="Tunnels" unique_id=954857910]
+[node name="hv_l4_rim7" type="Node3D" parent="Tunnels" unique_id=1517585035]
 script = ExtResource("3_0i7on")
 from_space = NodePath("../../Spaces/hv_l4_c7")
 to_space = NodePath("../../Spaces/hv_l4_c0")
@@ -808,7 +712,7 @@ width = 26.0
 height = 5.0
 tags = Array[StringName]([&"hive", &"layer"])
 
-[node name="hv_l4_spoke7" type="Node3D" parent="Tunnels" unique_id=297986167]
+[node name="hv_l4_spoke7" type="Node3D" parent="Tunnels" unique_id=987841129]
 script = ExtResource("3_0i7on")
 from_space = NodePath("../../Spaces/hv_l4_c7")
 to_space = NodePath("../../Spaces/hv_l4_hub")
@@ -816,7 +720,7 @@ width = 26.0
 height = 5.0
 tags = Array[StringName]([&"hive", &"layer"])
 
-[node name="hv_l5_rim0" type="Node3D" parent="Tunnels" unique_id=357979364]
+[node name="hv_l5_rim0" type="Node3D" parent="Tunnels" unique_id=821279299]
 script = ExtResource("3_0i7on")
 from_space = NodePath("../../Spaces/hv_l5_c0")
 to_space = NodePath("../../Spaces/hv_l5_c1")
@@ -824,7 +728,7 @@ width = 26.0
 height = 5.0
 tags = Array[StringName]([&"hive", &"layer"])
 
-[node name="hv_l5_spoke0" type="Node3D" parent="Tunnels" unique_id=1290738861]
+[node name="hv_l5_spoke0" type="Node3D" parent="Tunnels" unique_id=472481479]
 script = ExtResource("3_0i7on")
 from_space = NodePath("../../Spaces/hv_l5_c0")
 to_space = NodePath("../../Spaces/hv_l5_hub")
@@ -832,7 +736,7 @@ width = 26.0
 height = 5.0
 tags = Array[StringName]([&"hive", &"layer"])
 
-[node name="hv_l5_rim1" type="Node3D" parent="Tunnels" unique_id=270369164]
+[node name="hv_l5_rim1" type="Node3D" parent="Tunnels" unique_id=39212456]
 script = ExtResource("3_0i7on")
 from_space = NodePath("../../Spaces/hv_l5_c1")
 to_space = NodePath("../../Spaces/hv_l5_c2")
@@ -840,7 +744,7 @@ width = 26.0
 height = 5.0
 tags = Array[StringName]([&"hive", &"layer"])
 
-[node name="hv_l5_spoke1" type="Node3D" parent="Tunnels" unique_id=904218277]
+[node name="hv_l5_spoke1" type="Node3D" parent="Tunnels" unique_id=1965747299]
 script = ExtResource("3_0i7on")
 from_space = NodePath("../../Spaces/hv_l5_c1")
 to_space = NodePath("../../Spaces/hv_l5_hub")
@@ -848,7 +752,7 @@ width = 26.0
 height = 5.0
 tags = Array[StringName]([&"hive", &"layer"])
 
-[node name="hv_l5_rim2" type="Node3D" parent="Tunnels" unique_id=1248632925]
+[node name="hv_l5_rim2" type="Node3D" parent="Tunnels" unique_id=1371190261]
 script = ExtResource("3_0i7on")
 from_space = NodePath("../../Spaces/hv_l5_c2")
 to_space = NodePath("../../Spaces/hv_l5_c3")
@@ -856,7 +760,7 @@ width = 26.0
 height = 5.0
 tags = Array[StringName]([&"hive", &"layer"])
 
-[node name="hv_l5_spoke2" type="Node3D" parent="Tunnels" unique_id=1209685368]
+[node name="hv_l5_spoke2" type="Node3D" parent="Tunnels" unique_id=116997765]
 script = ExtResource("3_0i7on")
 from_space = NodePath("../../Spaces/hv_l5_c2")
 to_space = NodePath("../../Spaces/hv_l5_hub")
@@ -864,7 +768,7 @@ width = 26.0
 height = 5.0
 tags = Array[StringName]([&"hive", &"layer"])
 
-[node name="hv_l5_rim3" type="Node3D" parent="Tunnels" unique_id=1174927323]
+[node name="hv_l5_rim3" type="Node3D" parent="Tunnels" unique_id=2077810506]
 script = ExtResource("3_0i7on")
 from_space = NodePath("../../Spaces/hv_l5_c3")
 to_space = NodePath("../../Spaces/hv_l5_c4")
@@ -872,7 +776,7 @@ width = 26.0
 height = 5.0
 tags = Array[StringName]([&"hive", &"layer"])
 
-[node name="hv_l5_spoke3" type="Node3D" parent="Tunnels" unique_id=1135854376]
+[node name="hv_l5_spoke3" type="Node3D" parent="Tunnels" unique_id=1519318334]
 script = ExtResource("3_0i7on")
 from_space = NodePath("../../Spaces/hv_l5_c3")
 to_space = NodePath("../../Spaces/hv_l5_hub")
@@ -880,7 +784,7 @@ width = 26.0
 height = 5.0
 tags = Array[StringName]([&"hive", &"layer"])
 
-[node name="hv_l5_rim4" type="Node3D" parent="Tunnels" unique_id=1712976348]
+[node name="hv_l5_rim4" type="Node3D" parent="Tunnels" unique_id=1066926304]
 script = ExtResource("3_0i7on")
 from_space = NodePath("../../Spaces/hv_l5_c4")
 to_space = NodePath("../../Spaces/hv_l5_c5")
@@ -888,7 +792,7 @@ width = 26.0
 height = 5.0
 tags = Array[StringName]([&"hive", &"layer"])
 
-[node name="hv_l5_spoke4" type="Node3D" parent="Tunnels" unique_id=479320620]
+[node name="hv_l5_spoke4" type="Node3D" parent="Tunnels" unique_id=1913364334]
 script = ExtResource("3_0i7on")
 from_space = NodePath("../../Spaces/hv_l5_c4")
 to_space = NodePath("../../Spaces/hv_l5_hub")
@@ -896,7 +800,7 @@ width = 26.0
 height = 5.0
 tags = Array[StringName]([&"hive", &"layer"])
 
-[node name="hv_l5_rim5" type="Node3D" parent="Tunnels" unique_id=1400793235]
+[node name="hv_l5_rim5" type="Node3D" parent="Tunnels" unique_id=1486565657]
 script = ExtResource("3_0i7on")
 from_space = NodePath("../../Spaces/hv_l5_c5")
 to_space = NodePath("../../Spaces/hv_l5_c0")
@@ -904,7 +808,7 @@ width = 26.0
 height = 5.0
 tags = Array[StringName]([&"hive", &"layer"])
 
-[node name="hv_l5_spoke5" type="Node3D" parent="Tunnels" unique_id=1816020329]
+[node name="hv_l5_spoke5" type="Node3D" parent="Tunnels" unique_id=926228891]
 script = ExtResource("3_0i7on")
 from_space = NodePath("../../Spaces/hv_l5_c5")
 to_space = NodePath("../../Spaces/hv_l5_hub")
@@ -912,199 +816,7 @@ width = 26.0
 height = 5.0
 tags = Array[StringName]([&"hive", &"layer"])
 
-[node name="hv_l6_rim0" type="Node3D" parent="Tunnels" unique_id=816461528]
-script = ExtResource("3_0i7on")
-from_space = NodePath("../../Spaces/hv_l6_c0")
-to_space = NodePath("../../Spaces/hv_l6_c1")
-width = 26.0
-height = 5.0
-tags = Array[StringName]([&"hive", &"layer"])
-
-[node name="hv_l6_spoke0" type="Node3D" parent="Tunnels" unique_id=1700604785]
-script = ExtResource("3_0i7on")
-from_space = NodePath("../../Spaces/hv_l6_c0")
-to_space = NodePath("../../Spaces/hv_l6_hub")
-width = 26.0
-height = 5.0
-tags = Array[StringName]([&"hive", &"layer"])
-
-[node name="hv_l6_rim1" type="Node3D" parent="Tunnels" unique_id=1095698640]
-script = ExtResource("3_0i7on")
-from_space = NodePath("../../Spaces/hv_l6_c1")
-to_space = NodePath("../../Spaces/hv_l6_c2")
-width = 26.0
-height = 5.0
-tags = Array[StringName]([&"hive", &"layer"])
-
-[node name="hv_l6_spoke1" type="Node3D" parent="Tunnels" unique_id=436646707]
-script = ExtResource("3_0i7on")
-from_space = NodePath("../../Spaces/hv_l6_c1")
-to_space = NodePath("../../Spaces/hv_l6_hub")
-width = 26.0
-height = 5.0
-tags = Array[StringName]([&"hive", &"layer"])
-
-[node name="hv_l6_rim2" type="Node3D" parent="Tunnels" unique_id=281421072]
-script = ExtResource("3_0i7on")
-from_space = NodePath("../../Spaces/hv_l6_c2")
-to_space = NodePath("../../Spaces/hv_l6_c3")
-width = 26.0
-height = 5.0
-tags = Array[StringName]([&"hive", &"layer"])
-
-[node name="hv_l6_spoke2" type="Node3D" parent="Tunnels" unique_id=33437619]
-script = ExtResource("3_0i7on")
-from_space = NodePath("../../Spaces/hv_l6_c2")
-to_space = NodePath("../../Spaces/hv_l6_hub")
-width = 26.0
-height = 5.0
-tags = Array[StringName]([&"hive", &"layer"])
-
-[node name="hv_l6_rim3" type="Node3D" parent="Tunnels" unique_id=1605932870]
-script = ExtResource("3_0i7on")
-from_space = NodePath("../../Spaces/hv_l6_c3")
-to_space = NodePath("../../Spaces/hv_l6_c4")
-width = 26.0
-height = 5.0
-tags = Array[StringName]([&"hive", &"layer"])
-
-[node name="hv_l6_spoke3" type="Node3D" parent="Tunnels" unique_id=1713050135]
-script = ExtResource("3_0i7on")
-from_space = NodePath("../../Spaces/hv_l6_c3")
-to_space = NodePath("../../Spaces/hv_l6_hub")
-width = 26.0
-height = 5.0
-tags = Array[StringName]([&"hive", &"layer"])
-
-[node name="hv_l6_rim4" type="Node3D" parent="Tunnels" unique_id=1141872740]
-script = ExtResource("3_0i7on")
-from_space = NodePath("../../Spaces/hv_l6_c4")
-to_space = NodePath("../../Spaces/hv_l6_c5")
-width = 26.0
-height = 5.0
-tags = Array[StringName]([&"hive", &"layer"])
-
-[node name="hv_l6_spoke4" type="Node3D" parent="Tunnels" unique_id=1324294947]
-script = ExtResource("3_0i7on")
-from_space = NodePath("../../Spaces/hv_l6_c4")
-to_space = NodePath("../../Spaces/hv_l6_hub")
-width = 26.0
-height = 5.0
-tags = Array[StringName]([&"hive", &"layer"])
-
-[node name="hv_l6_rim5" type="Node3D" parent="Tunnels" unique_id=607112287]
-script = ExtResource("3_0i7on")
-from_space = NodePath("../../Spaces/hv_l6_c5")
-to_space = NodePath("../../Spaces/hv_l6_c6")
-width = 26.0
-height = 5.0
-tags = Array[StringName]([&"hive", &"layer"])
-
-[node name="hv_l6_spoke5" type="Node3D" parent="Tunnels" unique_id=1827556318]
-script = ExtResource("3_0i7on")
-from_space = NodePath("../../Spaces/hv_l6_c5")
-to_space = NodePath("../../Spaces/hv_l6_hub")
-width = 26.0
-height = 5.0
-tags = Array[StringName]([&"hive", &"layer"])
-
-[node name="hv_l6_rim6" type="Node3D" parent="Tunnels" unique_id=1508048265]
-script = ExtResource("3_0i7on")
-from_space = NodePath("../../Spaces/hv_l6_c6")
-to_space = NodePath("../../Spaces/hv_l6_c0")
-width = 26.0
-height = 5.0
-tags = Array[StringName]([&"hive", &"layer"])
-
-[node name="hv_l6_spoke6" type="Node3D" parent="Tunnels" unique_id=410179661]
-script = ExtResource("3_0i7on")
-from_space = NodePath("../../Spaces/hv_l6_c6")
-to_space = NodePath("../../Spaces/hv_l6_hub")
-width = 26.0
-height = 5.0
-tags = Array[StringName]([&"hive", &"layer"])
-
-[node name="hv_l7_rim0" type="Node3D" parent="Tunnels" unique_id=38753405]
-script = ExtResource("3_0i7on")
-from_space = NodePath("../../Spaces/hv_l7_c0")
-to_space = NodePath("../../Spaces/hv_l7_c1")
-width = 26.0
-height = 5.0
-tags = Array[StringName]([&"hive", &"layer"])
-
-[node name="hv_l7_spoke0" type="Node3D" parent="Tunnels" unique_id=1882660980]
-script = ExtResource("3_0i7on")
-from_space = NodePath("../../Spaces/hv_l7_c0")
-to_space = NodePath("../../Spaces/hv_l7_hub")
-width = 26.0
-height = 5.0
-tags = Array[StringName]([&"hive", &"layer"])
-
-[node name="hv_l7_rim1" type="Node3D" parent="Tunnels" unique_id=382125227]
-script = ExtResource("3_0i7on")
-from_space = NodePath("../../Spaces/hv_l7_c1")
-to_space = NodePath("../../Spaces/hv_l7_c2")
-width = 26.0
-height = 5.0
-tags = Array[StringName]([&"hive", &"layer"])
-
-[node name="hv_l7_spoke1" type="Node3D" parent="Tunnels" unique_id=419474417]
-script = ExtResource("3_0i7on")
-from_space = NodePath("../../Spaces/hv_l7_c1")
-to_space = NodePath("../../Spaces/hv_l7_hub")
-width = 26.0
-height = 5.0
-tags = Array[StringName]([&"hive", &"layer"])
-
-[node name="hv_l7_rim2" type="Node3D" parent="Tunnels" unique_id=1194628315]
-script = ExtResource("3_0i7on")
-from_space = NodePath("../../Spaces/hv_l7_c2")
-to_space = NodePath("../../Spaces/hv_l7_c3")
-width = 26.0
-height = 5.0
-tags = Array[StringName]([&"hive", &"layer"])
-
-[node name="hv_l7_spoke2" type="Node3D" parent="Tunnels" unique_id=1262683645]
-script = ExtResource("3_0i7on")
-from_space = NodePath("../../Spaces/hv_l7_c2")
-to_space = NodePath("../../Spaces/hv_l7_hub")
-width = 26.0
-height = 5.0
-tags = Array[StringName]([&"hive", &"layer"])
-
-[node name="hv_l7_rim3" type="Node3D" parent="Tunnels" unique_id=1159229441]
-script = ExtResource("3_0i7on")
-from_space = NodePath("../../Spaces/hv_l7_c3")
-to_space = NodePath("../../Spaces/hv_l7_c4")
-width = 26.0
-height = 5.0
-tags = Array[StringName]([&"hive", &"layer"])
-
-[node name="hv_l7_spoke3" type="Node3D" parent="Tunnels" unique_id=1022510878]
-script = ExtResource("3_0i7on")
-from_space = NodePath("../../Spaces/hv_l7_c3")
-to_space = NodePath("../../Spaces/hv_l7_hub")
-width = 26.0
-height = 5.0
-tags = Array[StringName]([&"hive", &"layer"])
-
-[node name="hv_l7_rim4" type="Node3D" parent="Tunnels" unique_id=706248269]
-script = ExtResource("3_0i7on")
-from_space = NodePath("../../Spaces/hv_l7_c4")
-to_space = NodePath("../../Spaces/hv_l7_c0")
-width = 26.0
-height = 5.0
-tags = Array[StringName]([&"hive", &"layer"])
-
-[node name="hv_l7_spoke4" type="Node3D" parent="Tunnels" unique_id=1147826899]
-script = ExtResource("3_0i7on")
-from_space = NodePath("../../Spaces/hv_l7_c4")
-to_space = NodePath("../../Spaces/hv_l7_hub")
-width = 26.0
-height = 5.0
-tags = Array[StringName]([&"hive", &"layer"])
-
-[node name="hv_riser_1_0" type="Node3D" parent="Tunnels" unique_id=1519324494]
+[node name="hv_riser_1_0" type="Node3D" parent="Tunnels" unique_id=509333030]
 script = ExtResource("3_0i7on")
 from_space = NodePath("../../Spaces/hv_l1_c0")
 to_space = NodePath("../../Spaces/hv_l2_c0")
@@ -1112,7 +824,7 @@ width = 6.0
 height = 8.0
 tags = Array[StringName]([&"hive", &"riser"])
 
-[node name="hv_riser_1_1" type="Node3D" parent="Tunnels" unique_id=1610491001]
+[node name="hv_riser_1_1" type="Node3D" parent="Tunnels" unique_id=943119571]
 script = ExtResource("3_0i7on")
 from_space = NodePath("../../Spaces/hv_l1_c2")
 to_space = NodePath("../../Spaces/hv_l2_c2")
@@ -1120,7 +832,7 @@ width = 6.0
 height = 8.0
 tags = Array[StringName]([&"hive", &"riser"])
 
-[node name="hv_riser_1_2" type="Node3D" parent="Tunnels" unique_id=1656616499]
+[node name="hv_riser_1_2" type="Node3D" parent="Tunnels" unique_id=926707607]
 script = ExtResource("3_0i7on")
 from_space = NodePath("../../Spaces/hv_l1_c3")
 to_space = NodePath("../../Spaces/hv_l2_c5")
@@ -1128,7 +840,7 @@ width = 6.0
 height = 8.0
 tags = Array[StringName]([&"hive", &"riser"])
 
-[node name="hv_riser_2_0" type="Node3D" parent="Tunnels" unique_id=1536776244]
+[node name="hv_riser_2_0" type="Node3D" parent="Tunnels" unique_id=141404327]
 script = ExtResource("3_0i7on")
 from_space = NodePath("../../Spaces/hv_l2_c0")
 to_space = NodePath("../../Spaces/hv_l3_c0")
@@ -1136,7 +848,7 @@ width = 6.0
 height = 8.0
 tags = Array[StringName]([&"hive", &"riser"])
 
-[node name="hv_riser_2_1" type="Node3D" parent="Tunnels" unique_id=2098940669]
+[node name="hv_riser_2_1" type="Node3D" parent="Tunnels" unique_id=811575499]
 script = ExtResource("3_0i7on")
 from_space = NodePath("../../Spaces/hv_l2_c2")
 to_space = NodePath("../../Spaces/hv_l3_c2")
@@ -1144,7 +856,7 @@ width = 6.0
 height = 8.0
 tags = Array[StringName]([&"hive", &"riser"])
 
-[node name="hv_riser_2_2" type="Node3D" parent="Tunnels" unique_id=863300285]
+[node name="hv_riser_2_2" type="Node3D" parent="Tunnels" unique_id=60545982]
 script = ExtResource("3_0i7on")
 from_space = NodePath("../../Spaces/hv_l2_c5")
 to_space = NodePath("../../Spaces/hv_l3_c4")
@@ -1152,7 +864,7 @@ width = 6.0
 height = 8.0
 tags = Array[StringName]([&"hive", &"riser"])
 
-[node name="hv_riser_3_0" type="Node3D" parent="Tunnels" unique_id=1119070627]
+[node name="hv_riser_3_0" type="Node3D" parent="Tunnels" unique_id=1505452465]
 script = ExtResource("3_0i7on")
 from_space = NodePath("../../Spaces/hv_l3_c0")
 to_space = NodePath("../../Spaces/hv_l4_c0")
@@ -1160,7 +872,7 @@ width = 6.0
 height = 8.0
 tags = Array[StringName]([&"hive", &"riser"])
 
-[node name="hv_riser_3_1" type="Node3D" parent="Tunnels" unique_id=1776518240]
+[node name="hv_riser_3_1" type="Node3D" parent="Tunnels" unique_id=1379178225]
 script = ExtResource("3_0i7on")
 from_space = NodePath("../../Spaces/hv_l3_c2")
 to_space = NodePath("../../Spaces/hv_l4_c3")
@@ -1168,7 +880,7 @@ width = 6.0
 height = 8.0
 tags = Array[StringName]([&"hive", &"riser"])
 
-[node name="hv_riser_3_2" type="Node3D" parent="Tunnels" unique_id=457749991]
+[node name="hv_riser_3_2" type="Node3D" parent="Tunnels" unique_id=1776884912]
 script = ExtResource("3_0i7on")
 from_space = NodePath("../../Spaces/hv_l3_c4")
 to_space = NodePath("../../Spaces/hv_l4_c5")
@@ -1176,7 +888,7 @@ width = 6.0
 height = 8.0
 tags = Array[StringName]([&"hive", &"riser"])
 
-[node name="hv_riser_4_0" type="Node3D" parent="Tunnels" unique_id=1895008449]
+[node name="hv_riser_4_0" type="Node3D" parent="Tunnels" unique_id=1518504357]
 script = ExtResource("3_0i7on")
 from_space = NodePath("../../Spaces/hv_l4_c0")
 to_space = NodePath("../../Spaces/hv_l5_c0")
@@ -1184,7 +896,7 @@ width = 6.0
 height = 8.0
 tags = Array[StringName]([&"hive", &"riser"])
 
-[node name="hv_riser_4_1" type="Node3D" parent="Tunnels" unique_id=999904189]
+[node name="hv_riser_4_1" type="Node3D" parent="Tunnels" unique_id=2079901800]
 script = ExtResource("3_0i7on")
 from_space = NodePath("../../Spaces/hv_l4_c3")
 to_space = NodePath("../../Spaces/hv_l5_c2")
@@ -1192,7 +904,7 @@ width = 6.0
 height = 8.0
 tags = Array[StringName]([&"hive", &"riser"])
 
-[node name="hv_riser_4_2" type="Node3D" parent="Tunnels" unique_id=1721207543]
+[node name="hv_riser_4_2" type="Node3D" parent="Tunnels" unique_id=805099056]
 script = ExtResource("3_0i7on")
 from_space = NodePath("../../Spaces/hv_l4_c5")
 to_space = NodePath("../../Spaces/hv_l5_c4")
@@ -1200,70 +912,22 @@ width = 6.0
 height = 8.0
 tags = Array[StringName]([&"hive", &"riser"])
 
-[node name="hv_riser_5_0" type="Node3D" parent="Tunnels" unique_id=1105366842]
-script = ExtResource("3_0i7on")
-from_space = NodePath("../../Spaces/hv_l5_c0")
-to_space = NodePath("../../Spaces/hv_l6_c0")
-width = 6.0
-height = 8.0
-tags = Array[StringName]([&"hive", &"riser"])
-
-[node name="hv_riser_5_1" type="Node3D" parent="Tunnels" unique_id=241327102]
-script = ExtResource("3_0i7on")
-from_space = NodePath("../../Spaces/hv_l5_c2")
-to_space = NodePath("../../Spaces/hv_l6_c2")
-width = 6.0
-height = 8.0
-tags = Array[StringName]([&"hive", &"riser"])
-
-[node name="hv_riser_5_2" type="Node3D" parent="Tunnels" unique_id=1405126475]
-script = ExtResource("3_0i7on")
-from_space = NodePath("../../Spaces/hv_l5_c4")
-to_space = NodePath("../../Spaces/hv_l6_c5")
-width = 6.0
-height = 8.0
-tags = Array[StringName]([&"hive", &"riser"])
-
-[node name="hv_riser_6_0" type="Node3D" parent="Tunnels" unique_id=842095119]
-script = ExtResource("3_0i7on")
-from_space = NodePath("../../Spaces/hv_l6_c0")
-to_space = NodePath("../../Spaces/hv_l7_c0")
-width = 6.0
-height = 8.0
-tags = Array[StringName]([&"hive", &"riser"])
-
-[node name="hv_riser_6_1" type="Node3D" parent="Tunnels" unique_id=537668487]
-script = ExtResource("3_0i7on")
-from_space = NodePath("../../Spaces/hv_l6_c2")
-to_space = NodePath("../../Spaces/hv_l7_c2")
-width = 6.0
-height = 8.0
-tags = Array[StringName]([&"hive", &"riser"])
-
-[node name="hv_riser_6_2" type="Node3D" parent="Tunnels" unique_id=1139850951]
-script = ExtResource("3_0i7on")
-from_space = NodePath("../../Spaces/hv_l6_c5")
-to_space = NodePath("../../Spaces/hv_l7_c3")
-width = 6.0
-height = 8.0
-tags = Array[StringName]([&"hive", &"riser"])
-
-[node name="entrance_drop" type="Node3D" parent="Tunnels" unique_id=1580345992]
+[node name="entrance_drop" type="Node3D" parent="Tunnels" unique_id=1974714872]
 script = ExtResource("3_0i7on")
 from_space = NodePath("../../Spaces/hive_mouth")
 to_space = NodePath("../../Spaces/hv_l1_c0")
 width = 7.5
 tags = Array[StringName]([&"hive", &"entrance"])
 
-[node name="bend_1" type="Marker3D" parent="Tunnels/entrance_drop" unique_id=212674255]
+[node name="bend_1" type="Marker3D" parent="Tunnels/entrance_drop" unique_id=920051487]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 10.790053, 0.71242905, -31.64128)
 script = ExtResource("4_aqqjh")
 
-[node name="bend_2" type="Marker3D" parent="Tunnels/entrance_drop" unique_id=684552253]
+[node name="bend_2" type="Marker3D" parent="Tunnels/entrance_drop" unique_id=1968621119]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 20.769476, -8.902484, -14.624013)
 script = ExtResource("4_aqqjh")
 
-[node name="long_l1_l4" type="Node3D" parent="Tunnels" unique_id=270527991]
+[node name="long_l1_l4" type="Node3D" parent="Tunnels" unique_id=774995733]
 script = ExtResource("3_0i7on")
 from_space = NodePath("../../Spaces/hv_l1_c2")
 to_space = NodePath("../../Spaces/hv_l4_c5")
@@ -1271,114 +935,114 @@ width = 5.5
 tags = Array[StringName]([&"hive", &"long_link", &"refuge"])
 notes = "Skips two layers. Narrow enough to be a refuge, which is the only reason to remember it."
 
-[node name="bend_1" type="Marker3D" parent="Tunnels/long_l1_l4" unique_id=1132047425]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -24.686674, -36.860424, 9.599875)
+[node name="bend_1" type="Marker3D" parent="Tunnels/long_l1_l4" unique_id=487271747]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -24.71558, -38.51441, 9.644052)
 script = ExtResource("4_aqqjh")
 
-[node name="bend_2" type="Marker3D" parent="Tunnels/long_l1_l4" unique_id=977145585]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -25.173939, -52.185806, -7.281491)
+[node name="bend_2" type="Marker3D" parent="Tunnels/long_l1_l4" unique_id=1736407229]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -25.15664, -55.743267, -7.3079295)
 script = ExtResource("4_aqqjh")
 
-[node name="bend_3" type="Marker3D" parent="Tunnels/long_l1_l4" unique_id=709651642]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -11.741362, -70.4148, -9.033364)
+[node name="bend_3" type="Marker3D" parent="Tunnels/long_l1_l4" unique_id=1352404278]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -11.739552, -75.670815, -9.036131)
 script = ExtResource("4_aqqjh")
 
-[node name="long_l2_l5" type="Node3D" parent="Tunnels" unique_id=325230712]
+[node name="long_l2_l5" type="Node3D" parent="Tunnels" unique_id=2028035578]
 script = ExtResource("3_0i7on")
 from_space = NodePath("../../Spaces/hv_l2_c4")
 to_space = NodePath("../../Spaces/hv_l5_c1")
 width = 7.0
 tags = Array[StringName]([&"hive", &"long_link"])
 
-[node name="bend_1" type="Marker3D" parent="Tunnels/long_l2_l5" unique_id=1378103260]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -20.718197, -61.076828, -27.804823)
+[node name="bend_1" type="Marker3D" parent="Tunnels/long_l2_l5" unique_id=900065106]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -20.59755, -64.25246, -27.980122)
 script = ExtResource("4_aqqjh")
 
-[node name="bend_2" type="Marker3D" parent="Tunnels/long_l2_l5" unique_id=390136213]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -19.052292, -72.9731, -4.465769)
+[node name="bend_2" type="Marker3D" parent="Tunnels/long_l2_l5" unique_id=1476302547]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -19.14719, -80.22825, -4.327881)
 script = ExtResource("4_aqqjh")
 
-[node name="bend_3" type="Marker3D" parent="Tunnels/long_l2_l5" unique_id=1100051169]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -32.119915, -93.83895, -6.369764)
+[node name="bend_3" type="Marker3D" parent="Tunnels/long_l2_l5" unique_id=1187722146]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -32.010406, -104.044525, -6.5288806)
 script = ExtResource("4_aqqjh")
 
-[node name="long_l3_l7" type="Node3D" parent="Tunnels" unique_id=225708731]
+[node name="long_l1_l5" type="Node3D" parent="Tunnels" unique_id=1676556382]
 script = ExtResource("3_0i7on")
-from_space = NodePath("../../Spaces/hv_l3_c3")
-to_space = NodePath("../../Spaces/hv_l7_c2")
+from_space = NodePath("../../Spaces/hv_l1_c4")
+to_space = NodePath("../../Spaces/hv_l5_c3")
 width = 6.8
 tags = Array[StringName]([&"hive", &"long_link"])
-notes = "Four layers in one run. The fastest way out of the bottom and impossible to find by accident."
+notes = "Top to bottom in one run, skipping three layers. The fastest way out of the bottom and impossible to find by accident."
 
-[node name="bend_1" type="Marker3D" parent="Tunnels/long_l3_l7" unique_id=2114584280]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -21.255585, -80.7121, -12.005835)
+[node name="bend_1" type="Marker3D" parent="Tunnels/long_l1_l5" unique_id=9669394]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 7.277207, -38.649376, -40.507725)
 script = ExtResource("4_aqqjh")
 
-[node name="bend_2" type="Marker3D" parent="Tunnels/long_l3_l7" unique_id=906851978]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -28.218224, -98.23067, -22.181337)
+[node name="bend_2" type="Marker3D" parent="Tunnels/long_l1_l5" unique_id=1999566733]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5.418906, -58.96714, -33.70386)
 script = ExtResource("4_aqqjh")
 
-[node name="bend_3" type="Marker3D" parent="Tunnels/long_l3_l7" unique_id=1433981410]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -36.057816, -117.63704, -22.177906)
+[node name="bend_3" type="Marker3D" parent="Tunnels/long_l1_l5" unique_id=1357339053]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8.27073, -82.51965, -27.654976)
 script = ExtResource("4_aqqjh")
 
-[node name="bend_4" type="Marker3D" parent="Tunnels/long_l3_l7" unique_id=1456900018]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -32.22639, -133.20686, -36.802906)
+[node name="bend_4" type="Marker3D" parent="Tunnels/long_l1_l5" unique_id=650213260]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -26.563448, -99.49826, -30.732178)
 script = ExtResource("4_aqqjh")
 
-[node name="long_l4_l6" type="Node3D" parent="Tunnels" unique_id=1557238354]
+[node name="long_l2_l4" type="Node3D" parent="Tunnels" unique_id=1491226683]
 script = ExtResource("3_0i7on")
-from_space = NodePath("../../Spaces/hv_l4_c1")
-to_space = NodePath("../../Spaces/hv_l6_c5")
+from_space = NodePath("../../Spaces/hv_l2_c2")
+to_space = NodePath("../../Spaces/hv_l4_c2")
 width = 4.6
 tags = Array[StringName]([&"hive", &"long_link", &"refuge"])
 
-[node name="bend_1" type="Marker3D" parent="Tunnels/long_l4_l6" unique_id=2101232722]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 44.94806, -96.31085, 16.29226)
+[node name="bend_1" type="Marker3D" parent="Tunnels/long_l2_l4" unique_id=361269265]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8.304481, -53.498516, 25.669127)
 script = ExtResource("4_aqqjh")
 
-[node name="bend_2" type="Marker3D" parent="Tunnels/long_l4_l6" unique_id=2091276891]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 43.582123, -106.927864, 4.838922)
+[node name="bend_2" type="Marker3D" parent="Tunnels/long_l2_l4" unique_id=1110988350]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5.018099, -66.653015, 33.89126)
 script = ExtResource("4_aqqjh")
 
-[node name="bend_3" type="Marker3D" parent="Tunnels/long_l4_l6" unique_id=1311162409]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 24.627476, -116.88895, 1.3916414)
+[node name="bend_3" type="Marker3D" parent="Tunnels/long_l2_l4" unique_id=791050312]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 11.852021, -79.33652, 28.360209)
 script = ExtResource("4_aqqjh")
 
-[node name="link_to_ravine" type="Node3D" parent="Tunnels" unique_id=1037696449]
+[node name="link_to_ravine" type="Node3D" parent="Tunnels" unique_id=2020397179]
 script = ExtResource("3_0i7on")
 from_space = NodePath("../../Spaces/hv_l2_c1")
 to_space = NodePath("../../Spaces/link_ravine")
 width = 7.0
 tags = Array[StringName]([&"biome_link"])
 
-[node name="bend_1" type="Marker3D" parent="Tunnels/link_to_ravine" unique_id=1824299384]
+[node name="bend_1" type="Marker3D" parent="Tunnels/link_to_ravine" unique_id=1430623494]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 38.329433, -42.431736, 34.636097)
 script = ExtResource("4_aqqjh")
 
-[node name="bend_2" type="Marker3D" parent="Tunnels/link_to_ravine" unique_id=387550959]
+[node name="bend_2" type="Marker3D" parent="Tunnels/link_to_ravine" unique_id=314005460]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 63.006233, -34.277355, 30.019691)
 script = ExtResource("4_aqqjh")
 
-[node name="bend_3" type="Marker3D" parent="Tunnels/link_to_ravine" unique_id=2051568937]
+[node name="bend_3" type="Marker3D" parent="Tunnels/link_to_ravine" unique_id=747292384]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 74.05181, -34.873863, 52.374294)
 script = ExtResource("4_aqqjh")
 
-[node name="link_to_mines" type="Node3D" parent="Tunnels" unique_id=932272504]
+[node name="link_to_mines" type="Node3D" parent="Tunnels" unique_id=177330686]
 script = ExtResource("3_0i7on")
-from_space = NodePath("../../Spaces/hv_l6_c3")
+from_space = NodePath("../../Spaces/hv_l5_c4")
 to_space = NodePath("../../Spaces/link_mines")
 width = 6.8
 tags = Array[StringName]([&"biome_link"])
 
-[node name="bend_1" type="Marker3D" parent="Tunnels/link_to_mines" unique_id=1995851438]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -42.11411, -135.6247, 27.47777)
+[node name="bend_1" type="Marker3D" parent="Tunnels/link_to_mines" unique_id=1101601628]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -13.098101, -128.37598, -9.197214)
 script = ExtResource("4_aqqjh")
 
-[node name="bend_2" type="Marker3D" parent="Tunnels/link_to_mines" unique_id=130420764]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -54.563957, -136.9768, 42.91967)
+[node name="bend_2" type="Marker3D" parent="Tunnels/link_to_mines" unique_id=2033880819]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -34.40942, -131.47713, 16.338482)
 script = ExtResource("4_aqqjh")
 
-[node name="bend_3" type="Marker3D" parent="Tunnels/link_to_mines" unique_id=871821473]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -76.87513, -135.44868, 48.20217)
+[node name="bend_3" type="Marker3D" parent="Tunnels/link_to_mines" unique_id=304442162]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -66.00992, -131.69608, 32.14894)
 script = ExtResource("4_aqqjh")

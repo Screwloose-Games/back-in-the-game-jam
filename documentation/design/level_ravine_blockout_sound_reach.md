@@ -9,32 +9,29 @@ Loudness is a radius in metres, matching `core_loop_noise.gd`. **Through tunnels
 | Source | Loudness | Spaces heard | | Tunnel metres heard | | Overstated by |
 |---|---|---|---|---|---|---|
 | | | tunnels | straight | tunnels | straight | |
-| drill / crank | 60 m | 2.5 | 3.2 | 156 | 234 | 50% more tunnel |
-| sprint | 20 m | 1.0 | 1.0 | 51 | 53 | 5% more tunnel |
-| thrust | 12 m | 1.0 | 1.0 | 30 | 30 | -1% more tunnel |
+| drill / crank | 60 m | 2.6 | 3.6 | 196 | 306 | 56% more tunnel |
+| sprint | 20 m | 1.0 | 1.0 | 58 | 65 | 14% more tunnel |
+| thrust | 12 m | 1.0 | 1.0 | 35 | 35 | 1% more tunnel |
 
 ## Per space, drilling (60 m)
 
 | Noise made in | Spaces reached | | Tunnel metres reached | |
 |---|---|---|---|---|
 | | through tunnels | straight line | through tunnels | straight line |
-| `link_mines` | 1 | 2 | 60 | 66 |
-| `link_hive` | 2 | 3 | 69 | 104 |
-| `knot_north` | 3 | 4 | 245 | 392 |
-| `knot_mid` | 2 | 3 | 186 | 259 |
-| `knot_deep` | 2 | 4 | 181 | 306 |
-| `pocket_north` | 2 | 3 | 124 | 231 |
-| `pocket_west` | 1 | 2 | 120 | 149 |
-| `pocket_east` | 1 | 2 | 120 | 159 |
-| `pocket_deep` | 1 | 3 | 60 | 134 |
-| `pocket_south` | 3 | 3 | 171 | 206 |
-| `rv_north_end` | 2 | 2 | 123 | 128 |
-| `rv_s1` | 4 | 4 | 193 | 364 |
-| `rv_s2` | 3 | 3 | 183 | 212 |
-| `rv_s3` | 3 | 3 | 184 | 252 |
-| `rv_s4` | 4 | 4 | 189 | 314 |
-| `rv_s5` | 3 | 3 | 124 | 212 |
-| `rv_s6` | 3 | 4 | 246 | 357 |
-| `rv_s7` | 4 | 5 | 246 | 368 |
-| `rv_south_end` | 3 | 3 | 141 | 231 |
+| `knot_west_a` | 3 | 5 | 207 | 343 |
+| `knot_west_b` | 2 | 4 | 206 | 336 |
+| `knot_east_a` | 2 | 4 | 186 | 438 |
+| `knot_east_b` | 3 | 3 | 211 | 274 |
+| `pocket_west_a` | 3 | 4 | 175 | 225 |
+| `pocket_west_b` | 1 | 3 | 120 | 178 |
+| `pocket_east_a` | 2 | 2 | 186 | 226 |
+| `pocket_east_b` | 3 | 3 | 122 | 164 |
+| `link_mines` | 2 | 3 | 73 | 123 |
+| `link_hive` | 2 | 2 | 60 | 71 |
+| `rv_north_end` | 2 | 3 | 206 | 340 |
+| `rv_s1` | 4 | 6 | 288 | 565 |
+| `rv_s2` | 3 | 4 | 289 | 457 |
+| `rv_s3` | 4 | 4 | 302 | 432 |
+| `rv_s4` | 4 | 5 | 294 | 461 |
+| `rv_south_end` | 2 | 2 | 206 | 263 |
 

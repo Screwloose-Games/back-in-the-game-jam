@@ -2,7 +2,7 @@ extends SceneTree
 
 ## The hive biome, as data. BlockoutScaffold does the building.
 ##
-## A STACK OF WIDE FLAT LAYERS. Each layer is a hub with a ring of cells around
+## A STACK OF FIVE WIDE FLAT LAYERS. Each layer is a hub with a ring of cells around
 ## it, joined by bores 26 m across and 5 m floor to roof - so a layer reads as one
 ## flat cavity you can cross in any direction, not as a ring of tunnels. The
 ## through dimension is the tight one everywhere.
@@ -31,7 +31,7 @@ const CREATURE_MIN_WIDTH := 6.4
 
 #region The stack
 #
-# Seven layers over 150 m. `offset` slides a layer off the stack's axis, `twist`
+# Five layers over 120 m. `offset` slides a layer off the stack's axis, `twist`
 # turns its ring, and `squash` flattens it on z - so no two layers present the
 # same silhouette and the cells never sit on top of one another.
 #
@@ -79,7 +79,7 @@ const STACK := {
 		},
 		{
 			"name": "l3",
-			"y": -63.0,
+			"y": -68.0,
 			"offset": Vector2(-11, 16),
 			"radius": 37.0,
 			"cells": 6,
@@ -88,7 +88,7 @@ const STACK := {
 		},
 		{
 			"name": "l4",
-			"y": -88.0,
+			"y": -95.0,
 			"offset": Vector2(20, 7),
 			"radius": 46.0,
 			"cells": 8,
@@ -98,30 +98,12 @@ const STACK := {
 		},
 		{
 			"name": "l5",
-			"y": -108.0,
+			"y": -122.0,
 			"offset": Vector2(-16, -14),
 			"radius": 33.0,
 			"cells": 6,
 			"twist": 1.3,
 			"squash": 0.9,
-		},
-		{
-			"name": "l6",
-			"y": -131.0,
-			"offset": Vector2(8, 19),
-			"radius": 40.0,
-			"cells": 7,
-			"twist": 0.7,
-			"squash": 0.75,
-		},
-		{
-			"name": "l7",
-			"y": -152.0,
-			"offset": Vector2(-6, -5),
-			"radius": 30.0,
-			"cells": 5,
-			"twist": 1.6,
-			"squash": 1.0,
 			"notes": "Bottom layer. Nothing below it, which you cannot tell from inside it.",
 		},
 	],
@@ -141,7 +123,7 @@ const EXTRA_SPACES := [
 	},
 	{
 		"name": "link_mines",
-		"position": Vector3(-88, -142, 64),
+		"position": Vector3(-86, -140, 58),
 		"radius": 4.0,
 		"kind": "dead_end",
 		"tags": ["biome_link", "unbuilt"],
@@ -198,21 +180,21 @@ const EXTRA_TUNNELS := [
 		"tags": ["hive", "long_link"],
 	},
 	{
-		"name": "long_l3_l7",
-		"from": "hv_l3_c3",
-		"to": "hv_l7_c2",
+		"name": "long_l1_l5",
+		"from": "hv_l1_c4",
+		"to": "hv_l5_c3",
 		"width": 6.8,
 		"bends": 4,
 		"wander": 16.0,
 		"seed": 204,
 		"tags": ["hive", "long_link"],
 		"notes":
-		"Four layers in one run. The fastest way out of the bottom and impossible to find by accident.",
+		"Top to bottom in one run, skipping three layers. The fastest way out of the bottom and impossible to find by accident.",
 	},
 	{
-		"name": "long_l4_l6",
-		"from": "hv_l4_c1",
-		"to": "hv_l6_c5",
+		"name": "long_l2_l4",
+		"from": "hv_l2_c2",
+		"to": "hv_l4_c2",
 		"width": 4.6,
 		"bends": 3,
 		"wander": 12.0,
@@ -231,7 +213,7 @@ const EXTRA_TUNNELS := [
 	},
 	{
 		"name": "link_to_mines",
-		"from": "hv_l6_c3",
+		"from": "hv_l5_c4",
 		"to": "link_mines",
 		"width": 6.8,
 		"bends": 3,
@@ -262,7 +244,7 @@ const SPEC := {
 	"spaces": EXTRA_SPACES,
 	"tunnels": EXTRA_TUNNELS,
 	"entrance": "hive_mouth",
-	"sound_origin": "hv_l4_hub",
+	"sound_origin": "hv_l3_hub",
 }
 
 

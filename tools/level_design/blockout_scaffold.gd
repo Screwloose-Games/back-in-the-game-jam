@@ -190,12 +190,21 @@ func report(level: MineLevel, output_path: String, spec: Dictionary) -> void:
 ##   drift_width, strip_width  metres across.
 ##   narrow_strips           "<column>_<row><row>" -> a narrower width.
 ##   omitted_strips, omitted_drifts  keys to leave undug.
+##   omitted_nodes           "<column>_<row>" keys with no working at all, and so
+##                           no tunnel either. A RAGGED GRID IS THE POINT: a
+##                           biome the player starts in has to be simple where
+##                           they come in and complicated only further along, and
+##                           a fully populated rectangle is uniformly confusing
+##                           from the first junction.
 func _create_grid_spaces(level: MineLevel, parent: Node3D, grid: Dictionary) -> void:
 	var prefix: String = grid["prefix"]
 	var drift_rows: Array = grid["drift_rows"]
+	var missing: Array = grid.get("omitted_nodes", [])
 	for column: String in grid["columns"]:
 		for row: String in grid["rows"]:
 			var key := "%s_%s" % [column, row]
+			if key in missing:
+				continue
 			var position := Vector3(
 				grid["column_x"][column], grid["node_y"][key], grid["row_z"][row]
 			)
@@ -224,11 +233,17 @@ func _create_grid_tunnels(
 	var prefix: String = grid["prefix"]
 	var columns: Array = grid["columns"]
 	var rows: Array = grid["rows"]
+	var missing: Array = grid.get("omitted_nodes", [])
 
 	for row: String in rows:
 		for index: int in columns.size() - 1:
 			var key := "%s_%d" % [row, index + 1]
 			if key in grid["omitted_drifts"]:
+				continue
+			# A drift to a working that was never dug is not a drift.
+			if "%s_%s" % [columns[index], row] in missing:
+				continue
+			if "%s_%s" % [columns[index + 1], row] in missing:
 				continue
 			_add_tunnel(
 				level,
@@ -246,6 +261,10 @@ func _create_grid_tunnels(
 		for index: int in rows.size() - 1:
 			var key := "%s_%s%s" % [column, rows[index], rows[index + 1]]
 			if key in grid["omitted_strips"]:
+				continue
+			if "%s_%s" % [column, rows[index]] in missing:
+				continue
+			if "%s_%s" % [column, rows[index + 1]] in missing:
 				continue
 			var width: float = grid["narrow_strips"].get(key, grid["strip_width"])
 			var tags := ["strip"]
