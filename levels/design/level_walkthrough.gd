@@ -25,22 +25,66 @@ const CAMERA_FAR_MARGIN := 1.5
 ## the assumption you can only ever see a fraction of one drift, and at 20 m that
 ## is true. Wind it up to a few hundred to survey the layout and check the shape
 ## came out right; put it back to 20 to judge whether the layout works.
-@export_range(4.0, 400.0, 1.0, "suffix:m") var view_distance_metres := 100
+## Typed float explicitly rather than inferred: written without a decimal point
+## this becomes an int, and the whole thing is fed to fog and clip distances.
+@export_range(4.0, 400.0, 1.0, "suffix:m") var view_distance_metres: float = 100.0
 
-## The MineLevel being walked. Its entrance_space is where the suit starts.
-@export_node_path("Node3D") var level_path: NodePath
+## The blockout to walk. Point it at any design scene whose root is a MineLevel;
+## nothing here is wired to a particular one.
+@export var level_scene: PackedScene = preload("res://levels/design/level_asteroid_blockout.tscn")
+
+## Draws the annotated graph - labels, colour coding, the lot - on top of the
+## carved rock. The level's own drawing, switched on from here so that walking a
+## different blockout does not mean editing that blockout's file.
+@export var show_design_overlay := false
+
+## The node that carves the rock. Left at its default it finds the one in this
+## scene.
+@export_node_path("Node3D") var geometry_path: NodePath = ^"LevelGeometry"
 
 @export var player_scene: PackedScene = preload("res://prototypes/navigation/zero_g_player.tscn")
 
 
 func _ready() -> void:
 	_install_environment()
-	var level := get_node_or_null(level_path) as MineLevel
+	var level := _mount_level()
 	if level == null:
-		push_warning("LevelWalkthrough found no MineLevel at '%s'; nobody spawned." % level_path)
 		return
+	_carve(level)
 	_spawn_suit(_entrance_position(level))
 	_report(level)
+
+
+## Instances the blockout under a fixed node name.
+##
+## Fixed, because the geometry builder addresses it by NodePath and the name of
+## the root node varies from one blockout to the next.
+func _mount_level() -> MineLevel:
+	if level_scene == null:
+		push_warning("LevelWalkthrough has no level_scene; there is nothing to walk.")
+		return null
+	var level := level_scene.instantiate() as MineLevel
+	if level == null:
+		push_warning("level_scene's root is not a MineLevel; there is nothing to walk.")
+		return null
+	level.name = "Level"
+	level.draw_when_running = show_design_overlay
+	add_child(level)
+	return level
+
+
+## Carves the rock, once the level exists to carve it from.
+##
+## The builder cannot do this on its own here: its _ready runs before this node's,
+## and at that point the level has not been instanced yet. That is what
+## build_on_ready is off for in this scene.
+func _carve(level: MineLevel) -> void:
+	var builder := get_node_or_null(geometry_path) as LevelGeometryBuilder
+	if builder == null:
+		push_warning("LevelWalkthrough found no builder at '%s'; no rock." % geometry_path)
+		return
+	builder.level_path = builder.get_path_to(level)
+	builder.build()
 
 
 ## Total dark with fog, built here rather than saved in the scene so that

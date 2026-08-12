@@ -1,7 +1,7 @@
 extends SceneTree
 
-## Scaffolds levels/design/level_asteroid_blockout.tscn: the central cavern and
-## the mines biome, from the spec below.
+## The central cavern and the mines biome, as data. BlockoutScaffold does the
+## building; everything in this file is numbers.
 ##
 ## THE SCENE IS THE SOURCE OF TRUTH ONCE THIS HAS RUN. This exists so fifty-odd
 ## tunnels do not have to be placed by hand, not to keep a second copy in step.
@@ -13,10 +13,15 @@ extends SceneTree
 ## fall - which is what stops the biome reading as one flat floor and is the main
 ## reason it is disorienting despite being the legible biome.
 ##
+## Copy this file to start another biome. Change the numbers and `output_path`,
+## or leave the file alone and pass `--out=` and `--name=` to write elsewhere.
+##
 ## Run headless:
 ##   godot --headless --path <root> --script res://tools/level_design/build_asteroid_blockout.gd
 
-const OUTPUT_PATH := "res://levels/design/level_asteroid_blockout.tscn"
+## tools/ carries a .gdignore, so nothing under it registers a global class name.
+## The scaffold has to be reached by path rather than by typing BlockoutScaffold.
+const Scaffold := preload("res://tools/level_design/blockout_scaffold.gd")
 
 ## Twice the chase prototype's probe comfort. Anything under this is a refuge.
 const CREATURE_MIN_WIDTH := 6.4
@@ -48,6 +53,9 @@ const LEVEL_A := {
 		"c4_m": -62.0,
 		"c4_s": -68.0,
 	},
+	"drift_rows": ["m"],
+	"drift_junction_radius": 5.0,
+	"strip_junction_radius": 3.5,
 	"drift_width": 9.0,
 	"strip_width": 7.0,
 	# Cross-cuts too tight for the creature. Three of them, so ducking sideways
@@ -82,6 +90,9 @@ const LEVEL_B := {
 		"c3_m": -122.0,
 		"c3_s": -126.0,
 	},
+	"drift_rows": ["m"],
+	"drift_junction_radius": 5.0,
+	"strip_junction_radius": 3.5,
 	"drift_width": 9.0,
 	"strip_width": 7.0,
 	"narrow_strips": {"c1_nm": 4.5},
@@ -93,9 +104,10 @@ const LEVEL_B := {
 #endregion
 
 #region Chamber sizes
+#
+# The two grid radii live in the grids above, because a grid decides its own
+# junction sizes. This one is for the free-form spaces below.
 
-const DRIFT_JUNCTION_RADIUS := 5.0
-const STRIP_JUNCTION_RADIUS := 3.5
 const NATURAL_FORK_RADIUS := 5.0
 #endregion
 
@@ -430,7 +442,18 @@ const TAG_COLORS := {
 	&"unbuilt": Color(0.5, 0.5, 0.55),
 }
 
-var _spaces_by_name: Dictionary = {}
+## Everything above, assembled for BlockoutScaffold.
+const SPEC := {
+	"output_path": "res://levels/design/level_asteroid_blockout.tscn",
+	"level_name": "AsteroidBlockout",
+	"creature_min_width": CREATURE_MIN_WIDTH,
+	"tag_colors": TAG_COLORS,
+	"grids": [LEVEL_A, LEVEL_B],
+	"spaces": EXTRA_SPACES,
+	"tunnels": EXTRA_TUNNELS,
+	"entrance": "mine_mouth",
+	"sound_origin": "a_c3_m",
+}
 
 
 func _initialize() -> void:
@@ -438,228 +461,7 @@ func _initialize() -> void:
 
 
 func _run() -> void:
+	# The scaffold mounts the level to read global transforms, and the SceneTree
+	# root is not ready to take a child on the frame the script starts.
 	await process_frame
-
-	if FileAccess.file_exists(OUTPUT_PATH) and not "--force" in OS.get_cmdline_user_args():
-		printerr(
-			(
-				(
-					"%s already exists. This scaffold overwrites the design; "
-					+ "re-run with `-- --force` if that is what you want."
-				)
-				% OUTPUT_PATH
-			)
-		)
-		quit(1)
-		return
-
-	var level := _build_level()
-	root.add_child(level)
-
-	var packed := PackedScene.new()
-	var pack_result := packed.pack(level)
-	if pack_result != OK:
-		printerr("Could not pack the level scene: error %d" % pack_result)
-		quit(1)
-		return
-	var save_result := ResourceSaver.save(packed, OUTPUT_PATH)
-	if save_result != OK:
-		printerr("Could not save %s: error %d" % [OUTPUT_PATH, save_result])
-		quit(1)
-		return
-
-	_report(level)
-	level.free()
-	quit(0)
-
-
-func _build_level() -> MineLevel:
-	var level := MineLevel.new()
-	level.name = "AsteroidBlockout"
-	level.creature_min_width = CREATURE_MIN_WIDTH
-	level.color_mode = MineLevel.ColorMode.TAG
-	var colors: Dictionary[StringName, Color] = {}
-	for tag: StringName in TAG_COLORS:
-		colors[tag] = TAG_COLORS[tag]
-	level.tag_colors = colors
-
-	var space_root := Node3D.new()
-	space_root.name = "Spaces"
-	level.add_child(space_root)
-	space_root.owner = level
-
-	var tunnel_root := Node3D.new()
-	tunnel_root.name = "Tunnels"
-	level.add_child(tunnel_root)
-	tunnel_root.owner = level
-
-	for entry: Dictionary in EXTRA_SPACES:
-		var space := _make_space(
-			entry["name"],
-			entry["position"],
-			entry["radius"],
-			_kind_from_text(entry["kind"]),
-			_to_tags(entry["tags"]),
-			entry.get("notes", "")
-		)
-		space_root.add_child(space)
-		space.owner = level
-
-	for grid: Dictionary in [LEVEL_A, LEVEL_B]:
-		_create_grid_spaces(level, space_root, grid)
-	for grid: Dictionary in [LEVEL_A, LEVEL_B]:
-		_create_grid_tunnels(level, tunnel_root, grid)
-	_create_extra_tunnels(level, tunnel_root)
-
-	level.entrance_space = level.get_path_to(_spaces_by_name["mine_mouth"])
-	level.sound_origin = level.get_path_to(_spaces_by_name["a_c3_m"])
-	return level
-
-
-## One space per crossing. A crossing of two drifts is a wider junction than a
-## crossing that only a cross-cut passes through, which is what the two radii say.
-func _create_grid_spaces(level: MineLevel, parent: Node3D, grid: Dictionary) -> void:
-	var prefix: String = grid["prefix"]
-	for column: String in grid["columns"]:
-		for row: String in grid["rows"]:
-			var key := "%s_%s" % [column, row]
-			var position := Vector3(
-				grid["column_x"][column], grid["node_y"][key], grid["row_z"][row]
-			)
-			var radius := DRIFT_JUNCTION_RADIUS if row == "m" else STRIP_JUNCTION_RADIUS
-			var space := _make_space(
-				"%s_%s" % [prefix, key],
-				position,
-				radius,
-				LevelGraph.SpaceKind.JUNCTION,
-				[StringName("mines_%s" % prefix)] as Array[StringName],
-				""
-			)
-			parent.add_child(space)
-			space.owner = level
-
-
-## Drifts run along the columns, cross-cuts run along the rows. Both are straight
-## and square, so neither gets a bend.
-func _create_grid_tunnels(level: MineLevel, parent: Node3D, grid: Dictionary) -> void:
-	var prefix: String = grid["prefix"]
-	var columns: Array = grid["columns"]
-	var rows: Array = grid["rows"]
-
-	for row: String in rows:
-		for index: int in columns.size() - 1:
-			var key := "%s_%d" % [row, index + 1]
-			if key in grid["omitted_drifts"]:
-				continue
-			_add_tunnel(
-				level,
-				parent,
-				{
-					"name": "drift_%s_%s" % [prefix, key],
-					"from": "%s_%s_%s" % [prefix, columns[index], row],
-					"to": "%s_%s_%s" % [prefix, columns[index + 1], row],
-					"width": grid["drift_width"],
-					"tags": ["drift"],
-				}
-			)
-
-	for column: String in columns:
-		for index: int in rows.size() - 1:
-			var key := "%s_%s%s" % [column, rows[index], rows[index + 1]]
-			if key in grid["omitted_strips"]:
-				continue
-			var width: float = grid["narrow_strips"].get(key, grid["strip_width"])
-			var tags := ["strip"]
-			if width < CREATURE_MIN_WIDTH:
-				tags.append("refuge")
-			_add_tunnel(
-				level,
-				parent,
-				{
-					"name": "strip_%s_%s" % [prefix, key],
-					"from": "%s_%s_%s" % [prefix, column, rows[index]],
-					"to": "%s_%s_%s" % [prefix, column, rows[index + 1]],
-					"width": width,
-					"tags": tags,
-				}
-			)
-
-
-func _create_extra_tunnels(level: MineLevel, parent: Node3D) -> void:
-	for entry: Dictionary in EXTRA_TUNNELS:
-		_add_tunnel(level, parent, entry)
-
-
-func _add_tunnel(level: MineLevel, parent: Node3D, entry: Dictionary) -> void:
-	var from_space: MineSpace = _spaces_by_name.get(entry["from"])
-	var to_space: MineSpace = _spaces_by_name.get(entry["to"])
-	if from_space == null or to_space == null:
-		printerr("Tunnel '%s' names a space that does not exist; skipped." % entry["name"])
-		return
-
-	var tunnel := MineTunnel.new()
-	tunnel.name = entry["name"]
-	tunnel.width = entry["width"]
-	tunnel.tags = _to_tags(entry.get("tags", []))
-	tunnel.notes = entry.get("notes", "")
-	parent.add_child(tunnel)
-	tunnel.owner = level
-	tunnel.from_space = tunnel.get_path_to(from_space)
-	tunnel.to_space = tunnel.get_path_to(to_space)
-
-	var bends: Array = entry.get("bends", [])
-	for index: int in bends.size():
-		var bend := MineBend.new()
-		bend.name = "bend_%d" % (index + 1)
-		bend.position = bends[index]
-		tunnel.add_child(bend)
-		bend.owner = level
-
-
-func _make_space(
-	space_name: String,
-	position: Vector3,
-	radius: float,
-	kind: LevelGraph.SpaceKind,
-	tags: Array[StringName],
-	notes: String
-) -> MineSpace:
-	var space := MineSpace.new()
-	space.name = space_name
-	space.position = position
-	space.radius = radius
-	space.kind = kind
-	space.tags = tags
-	space.notes = notes
-	_spaces_by_name[space_name] = space
-	return space
-
-
-func _kind_from_text(text: String) -> LevelGraph.SpaceKind:
-	if text == "junction":
-		return LevelGraph.SpaceKind.JUNCTION
-	if text == "dead_end":
-		return LevelGraph.SpaceKind.DEAD_END
-	return LevelGraph.SpaceKind.ROOM
-
-
-func _to_tags(raw: Array) -> Array[StringName]:
-	var tags: Array[StringName] = []
-	for entry: Variant in raw:
-		tags.append(StringName(entry))
-	return tags
-
-
-func _report(level: MineLevel) -> void:
-	var graph := level.build_graph()
-	print("Wrote %s" % OUTPUT_PATH)
-	print("  %d spaces, %d tunnels" % [graph.spaces.size(), graph.tunnels.size()])
-	print("  %.0f m of centreline" % graph.total_length())
-	var passable := graph.passable_tunnel_ids(CREATURE_MIN_WIDTH).size()
-	print("  creature fits down %d, blocked from %d" % [passable, graph.tunnels.size() - passable])
-	var problems := level.validate()
-	if problems.is_empty():
-		print("  validate: clean")
-	else:
-		for problem: String in problems:
-			printerr("  %s" % problem)
+	Scaffold.new().run(self, SPEC)

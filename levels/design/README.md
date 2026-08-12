@@ -147,20 +147,26 @@ does today; the first is what it should do. This is open design question #5.
 
 ## Flying it
 
-`level_walkthrough.tscn` carves the blockout out of solid rock and drops a zero-G
+`level_walkthrough.tscn` carves a blockout out of solid rock and drops a zero-G
 suit in at the entrance. Open it and press play.
 
 WASD + space/ctrl to thrust, mouse to look, Q/E to roll, shift to stabilise, R to
 respawn at the entrance, escape to release the mouse.
 
-Two knobs on the root node:
+Knobs on the root node:
 
-- **`view_distance_metres`** (20 m) is how far you can see. The mines were laid
-  out assuming you only ever see a fraction of one drift, so 20 m is the number
-  to *judge* the layout at. Wind it up to a few hundred to *survey* it and check
-  the shape came out the way the plan says.
-- **`draw_when_running`** on the blockout node overlays the annotated graph -
-  labels, colour coding, the lot - on top of the carved rock.
+- **`level_scene`** is which blockout gets walked. Point it at any design scene
+  whose root is a `MineLevel`; nothing in the scene is wired to a particular one.
+- **`view_distance_metres`** is how far you can see. The mines were laid out
+  assuming you only ever see a fraction of one drift, so **20 m is the number to
+  *judge* the layout at**. A few hundred is the number to *survey* it at and
+  check the shape came out the way the plan says.
+- **`show_design_overlay`** draws the annotated graph - labels, colour coding,
+  the lot - on top of the carved rock.
+
+To start somewhere other than the entrance, change `entrance_space` on the
+blockout. It is the spawn point, so it doubles as a teleport - which is how you
+get to the far end without flying 2,800 m at 4 m/s.
 
 The rock itself comes from `LevelGeometryBuilder`, which carves every span of
 every tunnel as a pair of CSG brushes: a solid hull and a narrower bore that
@@ -221,14 +227,38 @@ sheet; this is how to do that. The elevation panel is fine unfiltered.
   centre of every space and fails on anything that comes back solid. That is the
   failure worth catching - a level that looks carved in the viewport but has a
   plug of rock across one drift. Re-run it after moving anything.
-- `build_asteroid_blockout.gd` is the scaffold that laid out the cavern and the
-  mines from a spec at the top of the file - grid columns, rows, per-node depths,
-  widths, and the natural tunnels with their corners. **Change the spec and
-  re-run with `-- --force` while the layout is still being roughed out**; once you
-  start moving things in the editor, stop, because it overwrites. It refuses to
-  run over an existing scene without `--force` for that reason.
+- `build_asteroid_blockout.gd` is the mines and the cavern **as data** - grid
+  columns, rows, per-node depths, widths, and the natural tunnels with their
+  corners. No logic; `blockout_scaffold.gd` does the building.
+  **Change the numbers and re-run with `-- --force` while the layout is still
+  being roughed out**; once you start moving things in the editor, stop, because
+  it overwrites. It refuses to run over an existing scene without `--force` for
+  that reason.
+- `blockout_scaffold.gd` is the builder every biome file shares. It knows exactly
+  one shape: a rectangle of drifts crossed by cross-cuts, plus free-form spaces
+  and tunnels that can say anything at all. A biome whose structure is a
+  different *idea* - the ravine's fissure, the hive's cells - needs either its own
+  generator or to be drawn in the viewport, and for something irregular the
+  viewport is the better answer.
 - `import_core_loop_layout.gd` is the equivalent one-off for
   `level_mine_blockout.tscn`, seeded from the core loop prototype.
+
+## Starting a new biome
+
+Only if its structure is a **grid of drifts and cross-cuts**. Anything else wants
+the viewport, or a new generator.
+
+1. Copy `tools/level_design/build_asteroid_blockout.gd` next to itself and rename
+   it for the biome.
+2. Change the numbers, and `output_path` and `level_name` in `SPEC` at the bottom.
+3. Run it. Nothing is shared with the mines except `blockout_scaffold.gd`.
+4. Point a walkthrough's `level_scene` at the result.
+
+To write somewhere else without editing the file, both are overridable:
+
+```
+... build_asteroid_blockout.gd -- --out=res://levels/design/level_trial.tscn --name=Trial
+```
 
 ## Reading it as data
 

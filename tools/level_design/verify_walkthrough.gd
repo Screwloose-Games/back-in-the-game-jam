@@ -77,7 +77,7 @@ func _check_carve(walkthrough: Node3D) -> PackedStringArray:
 ## Every bore and every chamber got cut.
 func _check_hollow(walkthrough: Node3D) -> PackedStringArray:
 	var failures := PackedStringArray()
-	var level := walkthrough.get_node_or_null("AsteroidBlockout") as MineLevel
+	var level := walkthrough.get_node_or_null("Level") as MineLevel
 	if level == null:
 		failures.append("no MineLevel in the walkthrough scene")
 		return failures

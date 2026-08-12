@@ -1,15 +1,11 @@
-[gd_scene format=3 uid="uid://c4d6llbhxnbm7"]
+[gd_scene load_steps=3 format=3]
 
 [ext_resource type="Script" uid="uid://cj3q20kvsqcji" path="res://levels/design/level_walkthrough.gd" id="1_walkthrough"]
-[ext_resource type="PackedScene" uid="uid://brerxroy2n437" path="res://levels/design/level_asteroid_blockout.tscn" id="2_blockout"]
-[ext_resource type="Script" uid="uid://dqak1y4u3bt1o" path="res://levels/design/level_geometry_builder.gd" id="3_builder"]
+[ext_resource type="Script" uid="uid://dqak1y4u3bt1o" path="res://levels/design/level_geometry_builder.gd" id="2_builder"]
 
-[node name="LevelWalkthrough" type="Node3D" unique_id=1527071067]
+[node name="LevelWalkthrough" type="Node3D"]
 script = ExtResource("1_walkthrough")
-level_path = NodePath("AsteroidBlockout")
 
-[node name="AsteroidBlockout" parent="." unique_id=1867991586 instance=ExtResource("2_blockout")]
-
-[node name="LevelGeometry" type="Node3D" parent="." unique_id=915788472]
-script = ExtResource("3_builder")
-level_path = NodePath("../AsteroidBlockout")
+[node name="LevelGeometry" type="Node3D" parent="."]
+script = ExtResource("2_builder")
+build_on_ready = false
