@@ -1,13 +1,13 @@
-[gd_scene format=3]
+[gd_scene format=3 uid="uid://ce0x1h0y7nj8q"]
 
-[ext_resource type="Script" path="res://levels/design/mine_level.gd" id="1_ty05w"]
-[ext_resource type="Script" path="res://levels/design/mine_space.gd" id="2_7djq8"]
-[ext_resource type="Script" path="res://levels/design/mine_tunnel.gd" id="3_0i7on"]
-[ext_resource type="Script" path="res://levels/design/mine_bend.gd" id="4_aqqjh"]
+[ext_resource type="Script" uid="uid://dgo34fmrn1qnh" path="res://levels/design/mine_level.gd" id="1_ty05w"]
+[ext_resource type="Script" uid="uid://blil1jlmg7kau" path="res://levels/design/mine_space.gd" id="2_7djq8"]
+[ext_resource type="Script" uid="uid://dbg375tvjakbe" path="res://levels/design/mine_tunnel.gd" id="3_0i7on"]
+[ext_resource type="Script" uid="uid://da631uj74eenu" path="res://levels/design/mine_bend.gd" id="4_aqqjh"]
 
 [node name="HiveBlockout" type="Node3D" unique_id=2124540430]
 script = ExtResource("1_ty05w")
-color_mode = 1
+color_mode = 4
 tag_colors = Dictionary[StringName, Color]({
 &"biome_link": Color(1, 0.85, 0.2, 1),
 &"entrance": Color(0.95, 0.95, 0.5, 1),
@@ -27,7 +27,6 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4, 8, -46)
 script = ExtResource("2_7djq8")
 radius = 6.0
 tags = Array[StringName]([&"hive", &"entrance"])
-notes = "Where the hive is entered from above. The only part of it that is not a layer."
 
 [node name="link_mines" type="Node3D" parent="Spaces" unique_id=1497280918]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -86, -140, 58)
@@ -35,7 +34,6 @@ script = ExtResource("2_7djq8")
 kind = 2
 radius = 4.0
 tags = Array[StringName]([&"biome_link", &"unbuilt"])
-notes = "Stub. Where the hive hands over to the mines."
 
 [node name="link_ravine" type="Node3D" parent="Spaces" unique_id=1804736677]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 94, -34, 58)
@@ -43,14 +41,12 @@ script = ExtResource("2_7djq8")
 kind = 2
 radius = 4.0
 tags = Array[StringName]([&"biome_link", &"unbuilt"])
-notes = "Stub. Where the hive hands over to the ravine."
 
 [node name="hv_l1_hub" type="Node3D" parent="Spaces" unique_id=2001651336]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -18, 0)
 script = ExtResource("2_7djq8")
 radius = 4.0
 tags = Array[StringName]([&"hive", &"layer"])
-notes = "Top layer. Widest ceiling in the biome and the only one with a way up."
 
 [node name="hv_l1_c0" type="Node3D" parent="Spaces" unique_id=1463306165]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 34, -18, 0)
@@ -195,7 +191,6 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 20, -95, 7)
 script = ExtResource("2_7djq8")
 radius = 4.0
 tags = Array[StringName]([&"hive", &"layer"])
-notes = "The big one. Long enough on its wide axis that the far rim is out of sight."
 
 [node name="hv_l4_c0" type="Node3D" parent="Spaces" unique_id=576389734]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 65.08306, -95, 12.66605)
@@ -258,7 +253,6 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -16, -122, -14)
 script = ExtResource("2_7djq8")
 radius = 4.0
 tags = Array[StringName]([&"hive", &"layer"])
-notes = "Bottom layer. Nothing below it, which you cannot tell from inside it."
 
 [node name="hv_l5_c0" type="Node3D" parent="Spaces" unique_id=275068550]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -7.1725388, -122, 14.617678)
@@ -820,7 +814,7 @@ tags = Array[StringName]([&"hive", &"layer"])
 script = ExtResource("3_0i7on")
 from_space = NodePath("../../Spaces/hv_l1_c0")
 to_space = NodePath("../../Spaces/hv_l2_c0")
-width = 6.0
+width = 6.5
 height = 8.0
 tags = Array[StringName]([&"hive", &"riser"])
 
@@ -828,7 +822,7 @@ tags = Array[StringName]([&"hive", &"riser"])
 script = ExtResource("3_0i7on")
 from_space = NodePath("../../Spaces/hv_l1_c2")
 to_space = NodePath("../../Spaces/hv_l2_c2")
-width = 6.0
+width = 6.5
 height = 8.0
 tags = Array[StringName]([&"hive", &"riser"])
 
@@ -844,7 +838,7 @@ tags = Array[StringName]([&"hive", &"riser"])
 script = ExtResource("3_0i7on")
 from_space = NodePath("../../Spaces/hv_l2_c0")
 to_space = NodePath("../../Spaces/hv_l3_c0")
-width = 6.0
+width = 6.5
 height = 8.0
 tags = Array[StringName]([&"hive", &"riser"])
 
@@ -852,7 +846,7 @@ tags = Array[StringName]([&"hive", &"riser"])
 script = ExtResource("3_0i7on")
 from_space = NodePath("../../Spaces/hv_l2_c2")
 to_space = NodePath("../../Spaces/hv_l3_c2")
-width = 6.0
+width = 6.5
 height = 8.0
 tags = Array[StringName]([&"hive", &"riser"])
 
@@ -868,7 +862,7 @@ tags = Array[StringName]([&"hive", &"riser"])
 script = ExtResource("3_0i7on")
 from_space = NodePath("../../Spaces/hv_l3_c0")
 to_space = NodePath("../../Spaces/hv_l4_c0")
-width = 6.0
+width = 6.5
 height = 8.0
 tags = Array[StringName]([&"hive", &"riser"])
 
@@ -884,7 +878,7 @@ tags = Array[StringName]([&"hive", &"riser"])
 script = ExtResource("3_0i7on")
 from_space = NodePath("../../Spaces/hv_l3_c4")
 to_space = NodePath("../../Spaces/hv_l4_c5")
-width = 6.0
+width = 6.5
 height = 8.0
 tags = Array[StringName]([&"hive", &"riser"])
 
@@ -900,7 +894,7 @@ tags = Array[StringName]([&"hive", &"riser"])
 script = ExtResource("3_0i7on")
 from_space = NodePath("../../Spaces/hv_l4_c3")
 to_space = NodePath("../../Spaces/hv_l5_c2")
-width = 6.0
+width = 6.5
 height = 8.0
 tags = Array[StringName]([&"hive", &"riser"])
 
@@ -931,9 +925,8 @@ script = ExtResource("4_aqqjh")
 script = ExtResource("3_0i7on")
 from_space = NodePath("../../Spaces/hv_l1_c2")
 to_space = NodePath("../../Spaces/hv_l4_c5")
-width = 5.5
+width = 6.5
 tags = Array[StringName]([&"hive", &"long_link", &"refuge"])
-notes = "Skips two layers. Narrow enough to be a refuge, which is the only reason to remember it."
 
 [node name="bend_1" type="Marker3D" parent="Tunnels/long_l1_l4" unique_id=487271747]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -24.71558, -38.51441, 9.644052)
@@ -972,7 +965,6 @@ from_space = NodePath("../../Spaces/hv_l1_c4")
 to_space = NodePath("../../Spaces/hv_l5_c3")
 width = 6.8
 tags = Array[StringName]([&"hive", &"long_link"])
-notes = "Top to bottom in one run, skipping three layers. The fastest way out of the bottom and impossible to find by accident."
 
 [node name="bend_1" type="Marker3D" parent="Tunnels/long_l1_l5" unique_id=9669394]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 7.277207, -38.649376, -40.507725)

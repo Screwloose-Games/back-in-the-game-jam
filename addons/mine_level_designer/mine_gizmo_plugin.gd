@@ -226,10 +226,7 @@ func _tube_triangle_mesh(
 		# Matches the drawn bore, so a flat hive layer is not a fat click target
 		# that swallows everything stacked above and below it.
 		var placement := Transform3D(
-			(
-				LevelGraph.bore_basis(direction)
-				* Basis.from_scale(Vector3(1.0, 1.0, height_ratio))
-			),
+			LevelGraph.bore_basis(direction) * Basis.from_scale(Vector3(1.0, 1.0, height_ratio)),
 			(start + finish) * 0.5
 		)
 		for corner: Vector3 in cylinder.get_faces():

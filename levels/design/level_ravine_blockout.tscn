@@ -1,13 +1,13 @@
-[gd_scene format=3]
+[gd_scene format=3 uid="uid://ch45hpbhbpep"]
 
-[ext_resource type="Script" path="res://levels/design/mine_level.gd" id="1_1cf0o"]
-[ext_resource type="Script" path="res://levels/design/mine_space.gd" id="2_dei6f"]
-[ext_resource type="Script" path="res://levels/design/mine_tunnel.gd" id="3_tcvyp"]
-[ext_resource type="Script" path="res://levels/design/mine_bend.gd" id="4_sfcfj"]
+[ext_resource type="Script" uid="uid://dgo34fmrn1qnh" path="res://levels/design/mine_level.gd" id="1_1cf0o"]
+[ext_resource type="Script" uid="uid://blil1jlmg7kau" path="res://levels/design/mine_space.gd" id="2_dei6f"]
+[ext_resource type="Script" uid="uid://dbg375tvjakbe" path="res://levels/design/mine_tunnel.gd" id="3_tcvyp"]
+[ext_resource type="Script" uid="uid://da631uj74eenu" path="res://levels/design/mine_bend.gd" id="4_sfcfj"]
 
 [node name="RavineBlockout" type="Node3D" unique_id=32552392]
 script = ExtResource("1_1cf0o")
-color_mode = 1
+color_mode = 4
 tag_colors = Dictionary[StringName, Color]({
 &"biome_link": Color(1, 0.85, 0.2, 1),
 &"chasm": Color(0.35, 0.72, 1, 1),
@@ -28,7 +28,6 @@ script = ExtResource("2_dei6f")
 kind = 1
 radius = 4.5
 tags = Array[StringName]([&"ravine", &"warren"])
-notes = "Three tunnels meet here and none of them looks like the way back."
 
 [node name="knot_west_b" type="Node3D" parent="Spaces" unique_id=1308497787]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -46, -56, 44)
@@ -56,7 +55,6 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -72, -44, -50)
 script = ExtResource("2_dei6f")
 radius = 6.0
 tags = Array[StringName]([&"ravine", &"pocket"])
-notes = "Big enough to stop in and small enough to be cornered in."
 
 [node name="pocket_west_b" type="Node3D" parent="Spaces" unique_id=1112761502]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -70, -62, 86)
@@ -82,7 +80,6 @@ script = ExtResource("2_dei6f")
 kind = 2
 radius = 4.0
 tags = Array[StringName]([&"biome_link", &"unbuilt"])
-notes = "Stub. Where the ravine hands over to the mines."
 
 [node name="link_hive" type="Node3D" parent="Spaces" unique_id=1868474504]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 96, -74, 128)
@@ -90,14 +87,12 @@ script = ExtResource("2_dei6f")
 kind = 2
 radius = 4.0
 tags = Array[StringName]([&"biome_link", &"unbuilt"])
-notes = "Stub. Where the ravine hands over to the hive."
 
 [node name="rv_north_end" type="Node3D" parent="Spaces" unique_id=1589807128]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6, -34, -110)
 script = ExtResource("2_dei6f")
 radius = 9.0
 tags = Array[StringName]([&"ravine", &"chasm"])
-notes = "Blind north end. The only part of the ravine with a wall you can put your back to."
 
 [node name="rv_s1" type="Node3D" parent="Spaces" unique_id=139540895]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -9, -40, -66)
@@ -132,7 +127,6 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8, -64, 110)
 script = ExtResource("2_dei6f")
 radius = 9.0
 tags = Array[StringName]([&"ravine", &"chasm"])
-notes = "Where the floor of the chasm finally closes. Deepest point in the biome."
 
 [node name="Tunnels" type="Node3D" parent="." unique_id=816604611]
 
@@ -140,46 +134,41 @@ notes = "Where the floor of the chasm finally closes. Deepest point in the biome
 script = ExtResource("3_tcvyp")
 from_space = NodePath("../../Spaces/rv_north_end")
 to_space = NodePath("../../Spaces/rv_s1")
-width = 12.0
-height = 48.0
+width = 10.0
+height = 36.0
 tags = Array[StringName]([&"ravine", &"chasm"])
-notes = "The chasm itself. Wide open vertically, close on both sides."
 
 [node name="rv_run_2" type="Node3D" parent="Tunnels" unique_id=2090335048]
 script = ExtResource("3_tcvyp")
 from_space = NodePath("../../Spaces/rv_s1")
 to_space = NodePath("../../Spaces/rv_s2")
-width = 12.0
-height = 48.0
+width = 15.0
+height = 42.0
 tags = Array[StringName]([&"ravine", &"chasm"])
-notes = "The chasm itself. Wide open vertically, close on both sides."
 
 [node name="rv_run_3" type="Node3D" parent="Tunnels" unique_id=1616929015]
 script = ExtResource("3_tcvyp")
 from_space = NodePath("../../Spaces/rv_s2")
 to_space = NodePath("../../Spaces/rv_s3")
-width = 12.0
+width = 18.0
 height = 48.0
 tags = Array[StringName]([&"ravine", &"chasm"])
-notes = "The chasm itself. Wide open vertically, close on both sides."
 
 [node name="rv_run_4" type="Node3D" parent="Tunnels" unique_id=1304781401]
 script = ExtResource("3_tcvyp")
 from_space = NodePath("../../Spaces/rv_s3")
 to_space = NodePath("../../Spaces/rv_s4")
-width = 12.0
-height = 48.0
+width = 15.0
+height = 42.0
 tags = Array[StringName]([&"ravine", &"chasm"])
-notes = "The chasm itself. Wide open vertically, close on both sides."
 
 [node name="rv_run_5" type="Node3D" parent="Tunnels" unique_id=435334687]
 script = ExtResource("3_tcvyp")
 from_space = NodePath("../../Spaces/rv_s4")
 to_space = NodePath("../../Spaces/rv_south_end")
-width = 12.0
-height = 48.0
+width = 10.0
+height = 36.0
 tags = Array[StringName]([&"ravine", &"chasm"])
-notes = "The chasm itself. Wide open vertically, close on both sides."
 
 [node name="side_north_west" type="Node3D" parent="Tunnels" unique_id=434963850]
 script = ExtResource("3_tcvyp")
@@ -324,7 +313,6 @@ from_space = NodePath("../../Spaces/rv_s3")
 to_space = NodePath("../../Spaces/knot_east_a")
 width = 5.0
 tags = Array[StringName]([&"ravine", &"winding", &"refuge"])
-notes = "Runs 70 m back north behind the east wall. Comes out well short of where it went in, which is how you lose a hundred metres without ever turning round."
 
 [node name="bend_1" type="Marker3D" parent="Tunnels/side_s3_east" unique_id=1898891293]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.2063129, -53.72693, 6.355016)

@@ -116,7 +116,6 @@ const EXTRA_SPACES := [
 		"radius": 7.0,
 		"kind": "room",
 		"tags": ["entrance"],
-		"notes": "Where the elevator lands. The run starts and has to end here.",
 	},
 	{
 		"name": "fork_east",
@@ -124,8 +123,6 @@ const EXTRA_SPACES := [
 		"radius": NATURAL_FORK_RADIUS,
 		"kind": "junction",
 		"tags": ["natural"],
-		"notes":
-		"A natural cavity past the end of the workings. The way out of the biome that is not the way you came in.",
 	},
 	{
 		"name": "fork_deep",
@@ -133,8 +130,6 @@ const EXTRA_SPACES := [
 		"radius": NATURAL_FORK_RADIUS,
 		"kind": "junction",
 		"tags": ["natural"],
-		"notes":
-		"The lower level's equivalent, and the only thing down there that is not on the survey.",
 	},
 	{
 		"name": "link_ravine",
@@ -142,7 +137,6 @@ const EXTRA_SPACES := [
 		"radius": 4.0,
 		"kind": "dead_end",
 		"tags": ["biome_link", "unbuilt"],
-		"notes": "Stub. Where the mines hand over to the ravine.",
 	},
 	{
 		"name": "link_hive",
@@ -150,7 +144,6 @@ const EXTRA_SPACES := [
 		"radius": 4.0,
 		"kind": "dead_end",
 		"tags": ["biome_link", "unbuilt"],
-		"notes": "Stub. Where the mines hand over to the hive.",
 	},
 ]
 #endregion
@@ -169,8 +162,6 @@ const EXTRA_TUNNELS := [
 		"width": 10.0,
 		"bends": [],
 		"tags": ["drift", "entrance"],
-		"notes":
-		"Dead straight and dead level, 65 m due east. The first thing the player learns is that this place has a direction, and this is the only tunnel that promises it without qualification.",
 	},
 	# The first branch the player ever sees is a_c2's cross-cut, which the grid
 	# generates. Nothing below is reachable before then.
@@ -181,8 +172,9 @@ const EXTRA_TUNNELS := [
 		"width": 7.0,
 		"bends": [],
 		"tags": ["winze"],
-		"notes": "The way down, at the far end of the upper level. Wide enough to be followed.",
 	},
+	# Too narrow for the creature: the one route between levels that is a way
+	# out rather than a risk.
 	{
 		"name": "winze_north",
 		"from": "a_c2_n",
@@ -190,8 +182,6 @@ const EXTRA_TUNNELS := [
 		"width": 5.0,
 		"bends": [],
 		"tags": ["winze", "refuge"],
-		"notes":
-		"The other way down, and too narrow for the creature. The one route between levels that is a way out rather than a risk.",
 	},
 	{
 		"name": "nat_a_deep",
@@ -202,9 +192,9 @@ const EXTRA_TUNNELS := [
 		"wander": 9.0,
 		"seed": 301,
 		"tags": ["natural", "refuge"],
-		"notes":
-		"Cuts the corner of the upper level's only loop. The first tunnel in the biome that does not run square, and it is deliberately the last thing you meet up here.",
 	},
+	# Not a winze and not on the survey. Taking it puts you a level down and a
+	# column west of where you think you are.
 	{
 		"name": "nat_drop",
 		"from": "a_c3_n",
@@ -214,8 +204,6 @@ const EXTRA_TUNNELS := [
 		"wander": 13.0,
 		"seed": 302,
 		"tags": ["natural"],
-		"notes":
-		"Not a winze and not on the survey. Taking it puts you a level down and a column west of where you think you are.",
 	},
 	{
 		"name": "nat_b_cross",
@@ -226,7 +214,6 @@ const EXTRA_TUNNELS := [
 		"wander": 11.0,
 		"seed": 303,
 		"tags": ["natural"],
-		"notes": "The lower level's diagonal. Down here the grid has stopped helping.",
 	},
 	{
 		"name": "fork_from_mines",

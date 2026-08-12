@@ -42,7 +42,6 @@ const CHASM := {
 	"width": 12.0,
 	"height": 48.0,
 	"tags": ["ravine", "chasm"],
-	"notes": "The chasm itself. Wide open vertically, close on both sides.",
 	"stations":
 	[
 		{
@@ -50,8 +49,6 @@ const CHASM := {
 			"position": Vector3(6, -34, -110),
 			"radius": 9.0,
 			"kind": "room",
-			"notes":
-			"Blind north end. The only part of the ravine with a wall you can put your back to.",
 		},
 		{"name": "s1", "position": Vector3(-9, -40, -66), "radius": 7.0},
 		{"name": "s2", "position": Vector3(8, -46, -22), "radius": 7.0},
@@ -62,7 +59,6 @@ const CHASM := {
 			"position": Vector3(-8, -64, 110),
 			"radius": 9.0,
 			"kind": "room",
-			"notes": "Where the floor of the chasm finally closes. Deepest point in the biome.",
 		},
 	],
 }
@@ -81,7 +77,6 @@ const EXTRA_SPACES := [
 		"radius": 4.5,
 		"kind": "junction",
 		"tags": ["ravine", "warren"],
-		"notes": "Three tunnels meet here and none of them looks like the way back.",
 	},
 	{
 		"name": "knot_west_b",
@@ -110,7 +105,6 @@ const EXTRA_SPACES := [
 		"radius": 6.0,
 		"kind": "room",
 		"tags": ["ravine", "pocket"],
-		"notes": "Big enough to stop in and small enough to be cornered in.",
 	},
 	{
 		"name": "pocket_west_b",
@@ -139,7 +133,6 @@ const EXTRA_SPACES := [
 		"radius": 4.0,
 		"kind": "dead_end",
 		"tags": ["biome_link", "unbuilt"],
-		"notes": "Stub. Where the ravine hands over to the mines.",
 	},
 	{
 		"name": "link_hive",
@@ -147,7 +140,6 @@ const EXTRA_SPACES := [
 		"radius": 4.0,
 		"kind": "dead_end",
 		"tags": ["biome_link", "unbuilt"],
-		"notes": "Stub. Where the ravine hands over to the hive.",
 	},
 ]
 #endregion
@@ -241,6 +233,8 @@ const SIDE_TUNNELS := [
 		"seed": 107,
 		"tags": ["ravine", "winding", "refuge"],
 	},
+	# Runs 70 m back north behind the east wall, coming out well short of where
+	# it went in. How you lose a hundred metres without ever turning round.
 	{
 		"name": "side_s3_east",
 		"from": "rv_s3",
@@ -250,8 +244,6 @@ const SIDE_TUNNELS := [
 		"wander": 13.0,
 		"seed": 108,
 		"tags": ["ravine", "winding", "refuge"],
-		"notes":
-		"Runs 70 m back north behind the east wall. Comes out well short of where it went in, which is how you lose a hundred metres without ever turning round.",
 	},
 	# s4, both walls.
 	{

@@ -1,11 +1,13 @@
-[gd_scene load_steps=3 format=3]
+[gd_scene format=3 uid="uid://blti7ednnxqe1"]
 
 [ext_resource type="Script" uid="uid://cj3q20kvsqcji" path="res://levels/design/level_walkthrough.gd" id="1_walkthrough"]
+[ext_resource type="PackedScene" path="res://levels/design/level_ravine_blockout.tscn" id="2_7fppn"]
 [ext_resource type="Script" uid="uid://dqak1y4u3bt1o" path="res://levels/design/level_geometry_builder.gd" id="2_builder"]
 
-[node name="LevelWalkthrough" type="Node3D"]
+[node name="LevelWalkthrough" type="Node3D" unique_id=1743235473]
 script = ExtResource("1_walkthrough")
+level_scene = ExtResource("2_7fppn")
 
-[node name="LevelGeometry" type="Node3D" parent="."]
+[node name="LevelGeometry" type="Node3D" parent="." unique_id=308703635]
 script = ExtResource("2_builder")
 build_on_ready = false

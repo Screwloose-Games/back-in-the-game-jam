@@ -162,6 +162,13 @@ and spheres, and all the text, are the level's own drawing and are not clickable
   This is the main way to build - you should never type a NodePath.
 - **Add bend** drops a corner at the midpoint of the selected tunnel, inserted at
   the right point in the run. Drag it like anything else.
+- **Split tunnel** cuts the selected tunnel in two at a new junction in the
+  middle, in one undoable step. Both halves keep the original's width, height,
+  tags and colour, and the corners go to whichever half they fall in - so
+  splitting a winding tunnel leaves its shape exactly where it was. **The new
+  junction has no radius, so the carved geometry does not change**: a split is a
+  statement about the graph, not about the shape of the level. Give it a radius
+  afterwards if you want a chamber there.
 - Rough it in with the gizmo, then type exact numbers in the Inspector when a
   length matters.
 - **Validate** reports duplicate names, half-wired tunnels, and any space with no
@@ -170,6 +177,12 @@ and spheres, and all the text, are the level's own drawing and are not clickable
 Annotate with `notes` (free text) and `tags`. Tags drive colour: set colours for
 named tags on the level root, and any tag without one gets a stable colour from
 its own name, so colour coding works before anything is configured.
+
+**`notes` belongs to whoever is designing the level.** The generators do not
+write it and nothing regenerates it, so a note on a space or a tunnel is a
+message to the team and stays that way. Reasoning that belongs to the generator
+lives in comments in the `build_*_blockout.gd` files instead, where it never
+reaches the scene.
 
 ## Colour modes
 

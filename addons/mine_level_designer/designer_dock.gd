@@ -103,6 +103,11 @@ func _build_ui() -> void:
 	var bend_button := _add_button(connect_row, "Add bend", _on_add_bend_pressed)
 	bend_button.tooltip_text = ("With a tunnel selected, drops a corner at its midpoint. Drag it like any other node.")
 
+	var split_row := HBoxContainer.new()
+	_content.add_child(split_row)
+	var split_button := _add_button(split_row, "Split tunnel", _on_split_pressed)
+	split_button.tooltip_text = ("With a tunnel selected, cuts it in two at a new junction in the middle. The carved shape does not change.")
+
 	_add_separator()
 	_add_heading("View")
 	_color_mode_picker = OptionButton.new()
@@ -344,6 +349,154 @@ func _on_add_bend_pressed() -> void:
 	bend.name = _unique_name(tunnel, "bend")
 	_commit_add(level, tunnel, bend, "Add bend", _midpoint_of(points, half))
 	tunnel.move_child(bend, _segment_index_at(points, half))
+	level.mark_visuals_dirty()
+
+
+## Cuts the selected tunnel in two, with a new junction where the halves meet.
+##
+## THE MANUAL VERSION IS FOUR STEPS AND EVERY ONE OF THEM CAN GO WRONG: create a
+## space, drag it onto the centreline, duplicate the tunnel, then rewire one end
+## of each and remember which. This is that, in one undoable step.
+##
+## THE NEW SPACE HAS NO RADIUS, so the carved geometry is unchanged: a split is a
+## statement about the graph, not about the shape of the level. Give it a radius
+## afterwards if you actually want a chamber there.
+##
+## Both halves keep the original's width, height, tags and colour, and the
+## corners are handed to whichever half they fall in - so splitting a winding
+## tunnel leaves its shape exactly where it was.
+func _on_split_pressed() -> void:
+	var level := _current_level()
+	if level == null:
+		return
+	var tunnel := _selected_tunnel()
+	if tunnel == null:
+		_problem_report.text = "Select a tunnel (or one of its bends) to split."
+		return
+	var problem := tunnel.describe_problem()
+	if not problem.is_empty():
+		_problem_report.text = "Cannot split '%s': %s" % [tunnel.name, problem]
+		return
+
+	var points := tunnel.build_polyline()
+	var half := tunnel.length() * 0.5
+	var bends := tunnel.bend_markers()
+	# Polyline point 0 is the `from` space and bend j is point j+1, so a split in
+	# segment s leaves bends 0..s-1 behind and takes the rest.
+	var first_moving := _segment_index_at(points, half)
+
+	var moving: Array = []
+	for index: int in range(first_moving, bends.size()):
+		moving.append(bends[index])
+
+	var plan := {
+		"level": level,
+		"original": tunnel,
+		"space": _make_split_space(level, tunnel),
+		"second": _make_split_tunnel(tunnel),
+		"far_end": tunnel.resolve_to(),
+		"moving": moving,
+		"where": _midpoint_of(points, half),
+		"old_to": tunnel.to_space,
+	}
+
+	_apply_split(plan)
+	# The context has to be named: every method in this action belongs to the
+	# dock rather than to the scene, and without it the step would land on the
+	# editor's global undo history instead of this scene's.
+	_undo_redo.create_action("Split tunnel", UndoRedo.MERGE_DISABLE, level)
+	_undo_redo.add_do_method(self, &"_apply_split", plan)
+	_undo_redo.add_undo_method(self, &"_revert_split", plan)
+	_undo_redo.add_do_reference(plan["space"])
+	_undo_redo.add_do_reference(plan["second"])
+	# The work is already done, so committing must not do it a second time.
+	_undo_redo.commit_action(false)
+
+	var selection := EditorInterface.get_selection()
+	selection.clear()
+	selection.add_node(plan["space"])
+	_problem_report.text = (
+		"Split %s into %s (%.0f m) and %s (%.0f m)."
+		% [
+			tunnel.name,
+			tunnel.name,
+			tunnel.length(),
+			plan["second"].name,
+			plan["second"].length(),
+		]
+	)
+
+
+func _make_split_space(level: MineLevel, tunnel: MineTunnel) -> MineSpace:
+	var space := MineSpace.new()
+	space.name = _unique_name(_container_for(level, "Spaces"), "%s_mid" % tunnel.name)
+	space.kind = LevelGraph.SpaceKind.JUNCTION
+	space.radius = 0.0
+	return space
+
+
+## The far half. Everything that describes the bore is copied; the notes are not,
+## because a note is written about a tunnel and there are now two of them.
+func _make_split_tunnel(tunnel: MineTunnel) -> MineTunnel:
+	var second := MineTunnel.new()
+	second.name = _unique_name(tunnel.get_parent(), tunnel.name)
+	second.width = tunnel.width
+	second.height = tunnel.height
+	second.tags = tunnel.tags.duplicate()
+	second.display_color = tunnel.display_color
+	return second
+
+
+## Mounts both new nodes, hands over the far corners, and rewires the ends.
+##
+## Also the redo: it runs again on redo with the same plan, which is why it takes
+## everything it needs as arguments rather than recomputing anything.
+func _apply_split(plan: Dictionary) -> void:
+	var level: MineLevel = plan["level"]
+	var original: MineTunnel = plan["original"]
+	var second: MineTunnel = plan["second"]
+	var space: MineSpace = plan["space"]
+	var root := EditorInterface.get_edited_scene_root()
+
+	_container_for(level, "Spaces").add_child(space)
+	space.owner = root
+	space.global_position = plan["where"]
+
+	original.get_parent().add_child(second)
+	second.owner = root
+
+	for bend: Marker3D in plan["moving"]:
+		var was := bend.global_position
+		original.remove_child(bend)
+		second.add_child(bend)
+		bend.owner = root
+		bend.global_position = was
+
+	original.to_space = original.get_path_to(space)
+	second.from_space = second.get_path_to(space)
+	second.to_space = second.get_path_to(plan["far_end"])
+	level.mark_visuals_dirty()
+
+
+func _revert_split(plan: Dictionary) -> void:
+	var level: MineLevel = plan["level"]
+	var original: MineTunnel = plan["original"]
+	var second: MineTunnel = plan["second"]
+	var space: MineSpace = plan["space"]
+	var root := EditorInterface.get_edited_scene_root()
+
+	# The moved corners were the tail of the original's children, so appending
+	# them in order is what puts the run back the way it was.
+	for bend: Marker3D in plan["moving"]:
+		var was := bend.global_position
+		second.remove_child(bend)
+		original.add_child(bend)
+		bend.owner = root
+		bend.global_position = was
+
+	original.to_space = plan["old_to"]
+	second.get_parent().remove_child(second)
+	space.get_parent().remove_child(space)
 	level.mark_visuals_dirty()
 
 

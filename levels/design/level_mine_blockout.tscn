@@ -19,30 +19,27 @@ tag_colors = Dictionary[StringName, Color]({
 &"winze": Color(0.85, 0.35, 0.9, 1)
 })
 entrance_space = NodePath("Spaces/mine_mouth")
-sound_origin = NodePath("Spaces/a_c2_m")
+sound_origin = NodePath("Spaces/pocket")
 
 [node name="Spaces" type="Node3D" parent="." unique_id=179536954]
 
 [node name="mine_mouth" type="Node3D" parent="Spaces" unique_id=506200350]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -135.57819, -53.002308, 2.9004655)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -126.37373, -53.002308, 2.9004655)
 script = ExtResource("2_6b4y6")
 radius = 7.0
 tags = Array[StringName]([&"entrance"])
-notes = "Where the elevator lands. The run starts and has to end here."
 
 [node name="fork_east" type="Node3D" parent="Spaces" unique_id=875599785]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8, -72, 40)
 script = ExtResource("2_6b4y6")
 kind = 1
 tags = Array[StringName]([&"natural"])
-notes = "A natural cavity past the end of the workings. The way out of the biome that is not the way you came in."
 
 [node name="fork_deep" type="Node3D" parent="Spaces" unique_id=1868174092]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -14, -124, -70)
 script = ExtResource("2_6b4y6")
 kind = 1
 tags = Array[StringName]([&"natural"])
-notes = "The lower level's equivalent, and the only thing down there that is not on the survey."
 
 [node name="link_ravine" type="Node3D" parent="Spaces" unique_id=1134115373]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 58, -84, 118)
@@ -50,7 +47,6 @@ script = ExtResource("2_6b4y6")
 kind = 2
 radius = 4.0
 tags = Array[StringName]([&"biome_link", &"unbuilt"])
-notes = "Stub. Where the mines hand over to the ravine."
 
 [node name="link_hive" type="Node3D" parent="Spaces" unique_id=751968340]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 34, -152, -112)
@@ -58,7 +54,6 @@ script = ExtResource("2_6b4y6")
 kind = 2
 radius = 4.0
 tags = Array[StringName]([&"biome_link", &"unbuilt"])
-notes = "Stub. Where the mines hand over to the hive."
 
 [node name="a_c2_m" type="Node3D" parent="Spaces" unique_id=1915479047]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -95.1062, -58, 0)
@@ -69,8 +64,8 @@ tags = Array[StringName]([&"mines_a"])
 [node name="pocket" type="Node3D" parent="Spaces" unique_id=1009364138]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -78.6671, -90.11066, -24.893763)
 script = ExtResource("2_6b4y6")
-radius = 7.5
-tags = Array[StringName]([&"mines_a"])
+radius = 9.0
+tags = Array[StringName]([&"cavern"])
 
 [node name="a_c2_n" type="Node3D" parent="Spaces" unique_id=692606043]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -93.74311, -55, -48)
@@ -98,16 +93,10 @@ kind = 1
 radius = 3.5
 tags = Array[StringName]([&"mines_a"])
 
-[node name="b_c1_m" type="Node3D" parent="Spaces" unique_id=392222915]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -135.35074, -105, 0)
-script = ExtResource("2_6b4y6")
-kind = 1
-tags = Array[StringName]([&"mines_b"])
-
 [node name="b_c1_n" type="Node3D" parent="Spaces" unique_id=26109659]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -132.60904, -103, -48)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -127.42596, -103, -48)
 script = ExtResource("2_6b4y6")
-kind = 1
+kind = 2
 radius = 3.5
 tags = Array[StringName]([&"mines_b"])
 
@@ -132,6 +121,20 @@ tags = Array[StringName]([&"mines_b"])
 
 [node name="b_c3_n" type="Node3D" parent="Spaces" unique_id=97737533]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -50, -114, -48)
+script = ExtResource("2_6b4y6")
+kind = 1
+radius = 3.5
+tags = Array[StringName]([&"mines_b"])
+
+[node name="strip_a_c3_mn_mid" type="Node3D" parent="Spaces" unique_id=851872034]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -50, -64, -24)
+script = ExtResource("2_6b4y6")
+kind = 1
+radius = 3.5
+tags = Array[StringName]([&"mines_a"])
+
+[node name="drift_b_n_1_mid" type="Node3D" parent="Spaces" unique_id=1843278160]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -112.19321, -105.5, -48)
 script = ExtResource("2_6b4y6")
 kind = 1
 radius = 3.5
@@ -177,16 +180,9 @@ tags = Array[StringName]([&"strip"])
 [node name="strip_a_c3_mn" type="Node3D" parent="Tunnels" unique_id=1119456814]
 script = ExtResource("3_smlkf")
 from_space = NodePath("../../Spaces/a_c3_m")
-to_space = NodePath("../../Spaces/a_c3_n")
+to_space = NodePath("../../Spaces/strip_a_c3_mn_mid")
 width = 4.5
 tags = Array[StringName]([&"strip", &"refuge"])
-
-[node name="drift_b_m_1" type="Node3D" parent="Tunnels" unique_id=1997194120]
-script = ExtResource("3_smlkf")
-from_space = NodePath("../../Spaces/b_c1_m")
-to_space = NodePath("../../Spaces/b_c2_m")
-width = 9.0
-tags = Array[StringName]([&"drift"])
 
 [node name="drift_b_m_2" type="Node3D" parent="Tunnels" unique_id=1997387097]
 script = ExtResource("3_smlkf")
@@ -198,7 +194,7 @@ tags = Array[StringName]([&"drift"])
 [node name="drift_b_n_1" type="Node3D" parent="Tunnels" unique_id=76949599]
 script = ExtResource("3_smlkf")
 from_space = NodePath("../../Spaces/b_c1_n")
-to_space = NodePath("../../Spaces/b_c2_n")
+to_space = NodePath("../../Spaces/drift_b_n_1_mid")
 width = 9.0
 tags = Array[StringName]([&"drift"])
 
@@ -208,13 +204,6 @@ from_space = NodePath("../../Spaces/b_c2_n")
 to_space = NodePath("../../Spaces/b_c3_n")
 width = 9.0
 tags = Array[StringName]([&"drift"])
-
-[node name="strip_b_c1_mn" type="Node3D" parent="Tunnels" unique_id=1793680189]
-script = ExtResource("3_smlkf")
-from_space = NodePath("../../Spaces/b_c1_m")
-to_space = NodePath("../../Spaces/b_c1_n")
-width = 4.5
-tags = Array[StringName]([&"strip", &"refuge"])
 
 [node name="strip_b_c2_mn" type="Node3D" parent="Tunnels" unique_id=872320932]
 script = ExtResource("3_smlkf")
@@ -236,7 +225,6 @@ from_space = NodePath("../../Spaces/a_c3_m")
 to_space = NodePath("../../Spaces/b_c3_m")
 width = 7.0
 tags = Array[StringName]([&"winze"])
-notes = "The way down, at the far end of the upper level. Wide enough to be followed."
 
 [node name="winze_north" type="Node3D" parent="Tunnels" unique_id=1930698239]
 script = ExtResource("3_smlkf")
@@ -244,7 +232,6 @@ from_space = NodePath("../../Spaces/a_c2_n")
 to_space = NodePath("../../Spaces/b_c2_n")
 width = 5.0
 tags = Array[StringName]([&"winze", &"refuge"])
-notes = "The other way down, and too narrow for the creature. The one route between levels that is a way out rather than a risk."
 
 [node name="nat_a_deep" type="Node3D" parent="Tunnels" unique_id=331667025]
 script = ExtResource("3_smlkf")
@@ -252,7 +239,6 @@ from_space = NodePath("../../Spaces/a_c2_2_n")
 to_space = NodePath("../../Spaces/a_c3_m")
 width = 5.5
 tags = Array[StringName]([&"natural", &"refuge"])
-notes = "Cuts the corner of the upper level's only loop. The first tunnel in the biome that does not run square, and it is deliberately the last thing you meet up here."
 
 [node name="bend_1" type="Marker3D" parent="Tunnels/nat_a_deep" unique_id=1093551377]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -86.40798, -56.652668, -36.886044)
@@ -263,7 +249,7 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -77.87913, -59.63267, -20.802
 script = ExtResource("4_ghrrc")
 
 [node name="bend_3" type="Marker3D" parent="Tunnels/nat_a_deep" unique_id=1144708642]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -68.3524, -66.05285, -6.546067)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -62.60041, -66.05285, -18.296738)
 script = ExtResource("4_ghrrc")
 
 [node name="nat_drop_part1" type="Node3D" parent="Tunnels" unique_id=784855373]
@@ -272,7 +258,6 @@ from_space = NodePath("../../Spaces/a_c3_n")
 to_space = NodePath("../../Spaces/pocket")
 width = 6.8
 tags = Array[StringName]([&"natural"])
-notes = "Not a winze and not on the survey. Taking it puts you a level down and a column west of where you think you are."
 
 [node name="bend_1" type="Marker3D" parent="Tunnels/nat_drop_part1" unique_id=1833824498]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -57.864704, -71.026955, -35.823227)
@@ -288,10 +273,9 @@ from_space = NodePath("../../Spaces/pocket")
 to_space = NodePath("../../Spaces/b_c2_m")
 width = 6.8
 tags = Array[StringName]([&"natural"])
-notes = "Not a winze and not on the survey. Taking it puts you a level down and a column west of where you think you are."
 
 [node name="bend_3" type="Marker3D" parent="Tunnels/nat_drop_part2" unique_id=889766147]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -84.99757, -95.0586, -13.976017)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -77.53714, -96.63698, -10.547443)
 script = ExtResource("4_ghrrc")
 
 [node name="bend_4" type="Marker3D" parent="Tunnels/nat_drop_part2" unique_id=1681915990]
@@ -300,27 +284,26 @@ script = ExtResource("4_ghrrc")
 
 [node name="nat_b_cross" type="Node3D" parent="Tunnels" unique_id=1614276481]
 script = ExtResource("3_smlkf")
-from_space = NodePath("../../Spaces/b_c1_m")
+from_space = NodePath("../../Spaces/drift_b_n_1_mid")
 to_space = NodePath("../../Spaces/pocket")
 width = 7.2
 tags = Array[StringName]([&"natural"])
-notes = "The lower level's diagonal. Down here the grid has stopped helping."
 
 [node name="bend_1" type="Marker3D" parent="Tunnels/nat_b_cross" unique_id=233245524]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -121.39481, -99.595215, -11.890076)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -121.39481, -91.06267, -36.24086)
 script = ExtResource("4_ghrrc")
 
 [node name="bend_2" type="Marker3D" parent="Tunnels/nat_b_cross" unique_id=601537302]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -109.2638, -93.77644, -17.396263)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -111.9374, -76.4176, -28.69992)
 script = ExtResource("4_ghrrc")
 
 [node name="bend_3" type="Marker3D" parent="Tunnels/nat_b_cross" unique_id=461952208]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -96.91118, -87.88474, -26.836748)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -95.711845, -74.50293, -34.898567)
 script = ExtResource("4_ghrrc")
 
 [node name="fork_from_mines" type="Node3D" parent="Tunnels" unique_id=1319019665]
 script = ExtResource("3_smlkf")
-from_space = NodePath("../../Spaces/a_c3_m")
+from_space = NodePath("../../Spaces/strip_a_c3_mn_mid")
 to_space = NodePath("../../Spaces/fork_east")
 width = 7.5
 tags = Array[StringName]([&"natural"])
@@ -385,3 +368,17 @@ script = ExtResource("4_ghrrc")
 [node name="bend_3" type="Marker3D" parent="Tunnels/link_to_hive" unique_id=150689012]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 19.722048, -141.65192, -106.335434)
 script = ExtResource("4_ghrrc")
+
+[node name="strip_a_c3_mn_2" type="Node3D" parent="Tunnels" unique_id=742723724]
+script = ExtResource("3_smlkf")
+from_space = NodePath("../../Spaces/strip_a_c3_mn_mid")
+to_space = NodePath("../../Spaces/a_c3_n")
+width = 4.5
+tags = Array[StringName]([&"strip", &"refuge"])
+
+[node name="drift_b_n_1_2" type="Node3D" parent="Tunnels" unique_id=995227734]
+script = ExtResource("3_smlkf")
+from_space = NodePath("../../Spaces/drift_b_n_1_mid")
+to_space = NodePath("../../Spaces/b_c2_n")
+width = 9.0
+tags = Array[StringName]([&"drift"])

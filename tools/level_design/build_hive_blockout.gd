@@ -66,7 +66,6 @@ const STACK := {
 			"cells": 5,
 			"twist": 0.0,
 			"squash": 0.85,
-			"notes": "Top layer. Widest ceiling in the biome and the only one with a way up.",
 		},
 		{
 			"name": "l2",
@@ -94,7 +93,6 @@ const STACK := {
 			"cells": 8,
 			"twist": 0.2,
 			"squash": 0.62,
-			"notes": "The big one. Long enough on its wide axis that the far rim is out of sight.",
 		},
 		{
 			"name": "l5",
@@ -104,7 +102,6 @@ const STACK := {
 			"cells": 6,
 			"twist": 1.3,
 			"squash": 0.9,
-			"notes": "Bottom layer. Nothing below it, which you cannot tell from inside it.",
 		},
 	],
 }
@@ -119,7 +116,6 @@ const EXTRA_SPACES := [
 		"radius": 6.0,
 		"kind": "room",
 		"tags": ["hive", "entrance"],
-		"notes": "Where the hive is entered from above. The only part of it that is not a layer.",
 	},
 	{
 		"name": "link_mines",
@@ -127,7 +123,6 @@ const EXTRA_SPACES := [
 		"radius": 4.0,
 		"kind": "dead_end",
 		"tags": ["biome_link", "unbuilt"],
-		"notes": "Stub. Where the hive hands over to the mines.",
 	},
 	{
 		"name": "link_ravine",
@@ -135,7 +130,6 @@ const EXTRA_SPACES := [
 		"radius": 4.0,
 		"kind": "dead_end",
 		"tags": ["biome_link", "unbuilt"],
-		"notes": "Stub. Where the hive hands over to the ravine.",
 	},
 ]
 #endregion
@@ -166,8 +160,6 @@ const EXTRA_TUNNELS := [
 		"wander": 13.0,
 		"seed": 202,
 		"tags": ["hive", "long_link", "refuge"],
-		"notes":
-		"Skips two layers. Narrow enough to be a refuge, which is the only reason to remember it.",
 	},
 	{
 		"name": "long_l2_l5",
@@ -188,8 +180,6 @@ const EXTRA_TUNNELS := [
 		"wander": 16.0,
 		"seed": 204,
 		"tags": ["hive", "long_link"],
-		"notes":
-		"Top to bottom in one run, skipping three layers. The fastest way out of the bottom and impossible to find by accident.",
 	},
 	{
 		"name": "long_l2_l4",
