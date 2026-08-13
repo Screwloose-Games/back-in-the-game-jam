@@ -2,14 +2,288 @@
 
 [ext_resource type="PackedScene" uid="uid://ce0x1h0y7nj8q" path="res://levels/design/level_hive_blockout.tscn" id="1_os4hd"]
 [ext_resource type="PackedScene" uid="uid://ck4vkd4rn1wtp" path="res://levels/design/level_mine_blockout.tscn" id="2_3pujb"]
+[ext_resource type="Script" uid="uid://blil1jlmg7kau" path="res://levels/design/mine_space.gd" id="2_t8gq3"]
+[ext_resource type="Script" uid="uid://dbg375tvjakbe" path="res://levels/design/mine_tunnel.gd" id="3_3pujb"]
 [ext_resource type="PackedScene" uid="uid://ch45hpbhbpep" path="res://levels/design/level_ravine_blockout.tscn" id="3_wssbe"]
+[ext_resource type="Script" uid="uid://da631uj74eenu" path="res://levels/design/mine_bend.gd" id="4_kt3w3"]
 
 [node name="LevelFullBlockout" type="Node3D" unique_id=749874247]
 
 [node name="HiveBlockout" parent="." unique_id=861621170 instance=ExtResource("1_os4hd")]
-transform = Transform3D(-0.43631002, 0, 0.8997964, 0, 1, 0, -0.8997964, 0, -0.43631002, 73.81131, 0.6181879, -26.768837)
+transform = Transform3D(-0.14779529, 0, 0.989018, 0, 1, 0, -0.989018, 0, -0.14779529, 67.91356, 0.6181879, -4.6477146)
+
+[node name="hv_s1_b00" parent="HiveBlockout/Spaces" parent_id_path=PackedInt32Array(861621170, 1125778322) index="0" unique_id=1162117019]
+on_tunnel = NodePath("")
+
+[node name="hv_s1_b01" parent="HiveBlockout/Spaces" parent_id_path=PackedInt32Array(861621170, 1125778322) index="1" unique_id=1834022983]
+on_tunnel = NodePath("")
+
+[node name="hv_s1_b02" parent="HiveBlockout/Spaces" parent_id_path=PackedInt32Array(861621170, 1125778322) index="2" unique_id=153344543]
+on_tunnel = NodePath("")
+
+[node name="hv_s1_b03" parent="HiveBlockout/Spaces" parent_id_path=PackedInt32Array(861621170, 1125778322) index="3" unique_id=1560237493]
+on_tunnel = NodePath("")
+
+[node name="hv_s1_b04" parent="HiveBlockout/Spaces" parent_id_path=PackedInt32Array(861621170, 1125778322) index="4" unique_id=1274845851]
+on_tunnel = NodePath("")
+
+[node name="hv_s1_b05" parent="HiveBlockout/Spaces" parent_id_path=PackedInt32Array(861621170, 1125778322) index="5" unique_id=1279872437]
+on_tunnel = NodePath("")
+
+[node name="hv_s1_b06" parent="HiveBlockout/Spaces" parent_id_path=PackedInt32Array(861621170, 1125778322) index="6" unique_id=341932991]
+on_tunnel = NodePath("")
+
+[node name="hv_s1_b08" parent="HiveBlockout/Spaces" parent_id_path=PackedInt32Array(861621170, 1125778322) index="7" unique_id=2092584732]
+on_tunnel = NodePath("")
+
+[node name="hv_s1_b10" parent="HiveBlockout/Spaces" parent_id_path=PackedInt32Array(861621170, 1125778322) index="8" unique_id=1145450628]
+on_tunnel = NodePath("")
+
+[node name="hv_s2_b00" parent="HiveBlockout/Spaces" parent_id_path=PackedInt32Array(861621170, 1125778322) index="9" unique_id=1749370768]
+on_tunnel = NodePath("")
+
+[node name="hv_s2_b01" parent="HiveBlockout/Spaces" parent_id_path=PackedInt32Array(861621170, 1125778322) index="10" unique_id=1496623621]
+on_tunnel = NodePath("")
+
+[node name="hv_s2_b02" parent="HiveBlockout/Spaces" parent_id_path=PackedInt32Array(861621170, 1125778322) index="11" unique_id=2013721084]
+on_tunnel = NodePath("")
+
+[node name="hv_s2_b03" parent="HiveBlockout/Spaces" parent_id_path=PackedInt32Array(861621170, 1125778322) index="12" unique_id=1145915483]
+on_tunnel = NodePath("")
+
+[node name="hv_s2_b04" parent="HiveBlockout/Spaces" parent_id_path=PackedInt32Array(861621170, 1125778322) index="13" unique_id=974285616]
+on_tunnel = NodePath("")
+
+[node name="hv_s2_b05" parent="HiveBlockout/Spaces" parent_id_path=PackedInt32Array(861621170, 1125778322) index="14" unique_id=1972800108]
+on_tunnel = NodePath("")
+
+[node name="hv_s2_b06" parent="HiveBlockout/Spaces" parent_id_path=PackedInt32Array(861621170, 1125778322) index="15" unique_id=990066088]
+on_tunnel = NodePath("")
+
+[node name="hv_s2_b07" parent="HiveBlockout/Spaces" parent_id_path=PackedInt32Array(861621170, 1125778322) index="16" unique_id=474555427]
+on_tunnel = NodePath("")
+
+[node name="hv_s2_b08" parent="HiveBlockout/Spaces" parent_id_path=PackedInt32Array(861621170, 1125778322) index="17" unique_id=466339574]
+on_tunnel = NodePath("")
+
+[node name="hv_s2_b09" parent="HiveBlockout/Spaces" parent_id_path=PackedInt32Array(861621170, 1125778322) index="18" unique_id=392903088]
+on_tunnel = NodePath("")
+
+[node name="hv_s2_b10" parent="HiveBlockout/Spaces" parent_id_path=PackedInt32Array(861621170, 1125778322) index="19" unique_id=472858255]
+on_tunnel = NodePath("")
+
+[node name="hv_s2_b11" parent="HiveBlockout/Spaces" parent_id_path=PackedInt32Array(861621170, 1125778322) index="20" unique_id=1553400690]
+on_tunnel = NodePath("")
+
+[node name="hv_s2_b14" parent="HiveBlockout/Spaces" parent_id_path=PackedInt32Array(861621170, 1125778322) index="21" unique_id=1534828655]
+on_tunnel = NodePath("")
+
+[node name="hv_s2_b15" parent="HiveBlockout/Spaces" parent_id_path=PackedInt32Array(861621170, 1125778322) index="22" unique_id=1429195877]
+on_tunnel = NodePath("")
+
+[node name="hv_s3_b00" parent="HiveBlockout/Spaces" parent_id_path=PackedInt32Array(861621170, 1125778322) index="23" unique_id=2128132911]
+on_tunnel = NodePath("")
+
+[node name="hv_s3_b01" parent="HiveBlockout/Spaces" parent_id_path=PackedInt32Array(861621170, 1125778322) index="24" unique_id=144685701]
+on_tunnel = NodePath("")
+
+[node name="hv_s3_b02" parent="HiveBlockout/Spaces" parent_id_path=PackedInt32Array(861621170, 1125778322) index="25" unique_id=1617354049]
+on_tunnel = NodePath("")
+
+[node name="hv_s3_b03" parent="HiveBlockout/Spaces" parent_id_path=PackedInt32Array(861621170, 1125778322) index="26" unique_id=2127814431]
+on_tunnel = NodePath("")
+
+[node name="hv_s3_b04" parent="HiveBlockout/Spaces" parent_id_path=PackedInt32Array(861621170, 1125778322) index="27" unique_id=828127812]
+on_tunnel = NodePath("")
+
+[node name="hv_s3_b05" parent="HiveBlockout/Spaces" parent_id_path=PackedInt32Array(861621170, 1125778322) index="28" unique_id=1103111302]
+on_tunnel = NodePath("")
+
+[node name="hv_s3_b06" parent="HiveBlockout/Spaces" parent_id_path=PackedInt32Array(861621170, 1125778322) index="29" unique_id=560976236]
+on_tunnel = NodePath("")
+
+[node name="hv_s3_b08" parent="HiveBlockout/Spaces" parent_id_path=PackedInt32Array(861621170, 1125778322) index="30" unique_id=1138834105]
+on_tunnel = NodePath("")
+
+[node name="hv_s3_b09" parent="HiveBlockout/Spaces" parent_id_path=PackedInt32Array(861621170, 1125778322) index="31" unique_id=588008584]
+on_tunnel = NodePath("")
+
+[node name="hv_s3_b10" parent="HiveBlockout/Spaces" parent_id_path=PackedInt32Array(861621170, 1125778322) index="32" unique_id=2084329599]
+on_tunnel = NodePath("")
+
+[node name="hv_s4_b00" parent="HiveBlockout/Spaces" parent_id_path=PackedInt32Array(861621170, 1125778322) index="33" unique_id=367105987]
+on_tunnel = NodePath("")
+
+[node name="hv_s4_b01" parent="HiveBlockout/Spaces" parent_id_path=PackedInt32Array(861621170, 1125778322) index="34" unique_id=24577855]
+on_tunnel = NodePath("")
+
+[node name="hv_s4_b02" parent="HiveBlockout/Spaces" parent_id_path=PackedInt32Array(861621170, 1125778322) index="35" unique_id=1764735877]
+on_tunnel = NodePath("")
+
+[node name="hv_s4_b03" parent="HiveBlockout/Spaces" parent_id_path=PackedInt32Array(861621170, 1125778322) index="36" unique_id=1682352742]
+on_tunnel = NodePath("")
+
+[node name="hv_s4_b04" parent="HiveBlockout/Spaces" parent_id_path=PackedInt32Array(861621170, 1125778322) index="37" unique_id=1683826122]
+on_tunnel = NodePath("")
+
+[node name="hv_s4_b05" parent="HiveBlockout/Spaces" parent_id_path=PackedInt32Array(861621170, 1125778322) index="38" unique_id=1070093023]
+on_tunnel = NodePath("")
+
+[node name="hv_s4_b06" parent="HiveBlockout/Spaces" parent_id_path=PackedInt32Array(861621170, 1125778322) index="39" unique_id=581750804]
+on_tunnel = NodePath("")
+
+[node name="hv_s4_b07" parent="HiveBlockout/Spaces" parent_id_path=PackedInt32Array(861621170, 1125778322) index="40" unique_id=740474848]
+on_tunnel = NodePath("")
+
+[node name="hv_s4_b08" parent="HiveBlockout/Spaces" parent_id_path=PackedInt32Array(861621170, 1125778322) index="41" unique_id=1864495939]
+on_tunnel = NodePath("")
+
+[node name="hv_s4_b10" parent="HiveBlockout/Spaces" parent_id_path=PackedInt32Array(861621170, 1125778322) index="42" unique_id=965056160]
+on_tunnel = NodePath("")
+
+[node name="hv_s5_b00" parent="HiveBlockout/Spaces" parent_id_path=PackedInt32Array(861621170, 1125778322) index="43" unique_id=644201444]
+on_tunnel = NodePath("")
+
+[node name="hv_s5_b01" parent="HiveBlockout/Spaces" parent_id_path=PackedInt32Array(861621170, 1125778322) index="44" unique_id=924686699]
+on_tunnel = NodePath("")
+
+[node name="hv_s5_b02" parent="HiveBlockout/Spaces" parent_id_path=PackedInt32Array(861621170, 1125778322) index="45" unique_id=1916265049]
+on_tunnel = NodePath("")
+
+[node name="hv_s5_b03" parent="HiveBlockout/Spaces" parent_id_path=PackedInt32Array(861621170, 1125778322) index="46" unique_id=715460801]
+on_tunnel = NodePath("")
+
+[node name="hv_s5_b05" parent="HiveBlockout/Spaces" parent_id_path=PackedInt32Array(861621170, 1125778322) index="47" unique_id=259983059]
+on_tunnel = NodePath("")
+
+[node name="hv_s5_b06" parent="HiveBlockout/Spaces" parent_id_path=PackedInt32Array(861621170, 1125778322) index="48" unique_id=767221875]
+on_tunnel = NodePath("")
+
+[node name="hv_s5_b07" parent="HiveBlockout/Spaces" parent_id_path=PackedInt32Array(861621170, 1125778322) index="49" unique_id=924579548]
+on_tunnel = NodePath("")
+
+[node name="hv_s5_b08" parent="HiveBlockout/Spaces" parent_id_path=PackedInt32Array(861621170, 1125778322) index="50" unique_id=1217023849]
+on_tunnel = NodePath("")
+
+[node name="hv_s5_b12" parent="HiveBlockout/Spaces" parent_id_path=PackedInt32Array(861621170, 1125778322) index="51" unique_id=982297692]
+on_tunnel = NodePath("")
+
+[node name="pocket_east_6_to_hv_s2_b03" type="Node3D" parent="HiveBlockout/Tunnels" parent_id_path=PackedInt32Array(861621170, 545605888) index="92" unique_id=1962515754]
+transform = Transform3D(0.99999994, 0, -1.4901161e-08, 0, 1, 0, 1.4901161e-08, 0, 0.99999994, 0, 0, 0)
+script = ExtResource("3_3pujb")
+from_space = NodePath("../../../RavineBlockout/Spaces/pocket_east_6")
+to_space = NodePath("../../Spaces/hv_s2_b03")
+width = 3.0
+
+[node name="bend" type="Marker3D" parent="HiveBlockout/Tunnels/pocket_east_6_to_hv_s2_b03" unique_id=11895611]
+transform = Transform3D(1.0000004, 0, 0, 0, 1, 0, 0, 0, 1.0000004, -41.99373, -50.69128, -31.641083)
+script = ExtResource("4_kt3w3")
+
+[node name="pocket_east_3_to_hv_s3_b05" type="Node3D" parent="HiveBlockout/Tunnels" parent_id_path=PackedInt32Array(861621170, 545605888) index="93" unique_id=893021312]
+transform = Transform3D(0.99999994, 0, -1.4901161e-08, 0, 1, 0, 1.4901161e-08, 0, 0.99999994, 0, 0, 0)
+script = ExtResource("3_3pujb")
+from_space = NodePath("../../../RavineBlockout/Spaces/pocket_east_3")
+to_space = NodePath("../../Spaces/hv_s3_b05")
+width = 3.0
+
+[node name="hv_s4_b04_to_pocket_east_4" type="Node3D" parent="HiveBlockout/Tunnels" parent_id_path=PackedInt32Array(861621170, 545605888) index="94" unique_id=307447133]
+transform = Transform3D(0.99999994, 0, -1.4901161e-08, 0, 1, 0, 1.4901161e-08, 0, 0.99999994, 0, 0, 0)
+script = ExtResource("3_3pujb")
+from_space = NodePath("../../Spaces/hv_s4_b04")
+to_space = NodePath("../../../RavineBlockout/Spaces/pocket_east_4")
+width = 3.0
+
+[node name="hv_s1_b05_to_pocket_east_1" type="Node3D" parent="HiveBlockout/Tunnels" parent_id_path=PackedInt32Array(861621170, 545605888) index="95" unique_id=936269554]
+transform = Transform3D(0.99999994, 0, -1.4901161e-08, 0, 1, 0, 1.4901161e-08, 0, 0.99999994, 0, 0, 0)
+script = ExtResource("3_3pujb")
+from_space = NodePath("../../Spaces/hv_s1_b05")
+to_space = NodePath("../../../RavineBlockout/Spaces/pocket_east_1")
+width = 3.0
+
+[node name="bend" type="Marker3D" parent="HiveBlockout/Tunnels/hv_s1_b05_to_pocket_east_1" unique_id=1694670792]
+transform = Transform3D(1.0000007, 0, 0, 0, 1, 0, 0, 0, 1.0000007, 39.76733, -26.375183, -36.54783)
+script = ExtResource("4_kt3w3")
 
 [node name="MineBlockout" parent="." unique_id=1601177174 instance=ExtResource("2_3pujb")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8.61203, 10.89016, 60.51145)
+transform = Transform3D(0.75, 0, 0, 0, 0.75, 0, 0, 0, 0.75, 4.0004406, 6.928627, 33.24968)
+
+[node name="winze_deep_mid" type="Node3D" parent="MineBlockout/Spaces" parent_id_path=PackedInt32Array(1601177174, 179536954) index="0" unique_id=1483379126]
+transform = Transform3D(-0.5817467, 0, 1.1997287, 0, 1.3333334, 0, -1.1997287, 0, -0.5817467, -50.00002, -99.14629, 1.9073486e-05)
+script = ExtResource("2_t8gq3")
+kind = 1
+radius = 0.0
+
+[node name="drift_b_n_2_mid" type="Node3D" parent="MineBlockout/Spaces" parent_id_path=PackedInt32Array(1601177174, 179536954) index="1" unique_id=422810465]
+transform = Transform3D(-0.5817467, 0, 1.1997287, 0, 1.3333334, 0, -1.1997287, 0, -0.5817467, -67.59603, -111, -48.000004)
+script = ExtResource("2_t8gq3")
+kind = 1
+radius = 0.0
+
+[node name="winze_deep_mid_to_pocket_west_7" type="Node3D" parent="MineBlockout/Tunnels" parent_id_path=PackedInt32Array(1601177174, 855103381) index="0" unique_id=1781708334]
+transform = Transform3D(-0.5817467, 0, 1.1997286, 0, 1.3333334, 0, -1.1997286, 0, -0.5817467, 0, 0, 0)
+script = ExtResource("3_3pujb")
+from_space = NodePath("../../Spaces/winze_deep_mid")
+to_space = NodePath("../../../RavineBlockout/Spaces/pocket_west_7")
+width = 5.0
+
+[node name="bend" type="Marker3D" parent="MineBlockout/Tunnels/winze_deep_mid_to_pocket_west_7" unique_id=875532720]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.4220581, -79.48555, -30.524925)
+script = ExtResource("4_kt3w3")
+
+[node name="strip_a_c3_mn_mid_to_pocket_west_4" type="Node3D" parent="MineBlockout/Tunnels" parent_id_path=PackedInt32Array(1601177174, 855103381) index="1" unique_id=1350941429]
+transform = Transform3D(-0.5817467, 0, 1.1997286, 0, 1.3333334, 0, -1.1997286, 0, -0.5817467, 0, 0, 0)
+script = ExtResource("3_3pujb")
+from_space = NodePath("../../Spaces/strip_a_c3_mn_mid")
+to_space = NodePath("../../../RavineBlockout/Spaces/pocket_west_4")
+width = 4.0
+
+[node name="bend" type="Marker3D" parent="MineBlockout/Tunnels/strip_a_c3_mn_mid_to_pocket_west_4" unique_id=82420310]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 29.887957, -50.898804, -11.500847)
+script = ExtResource("4_kt3w3")
+
+[node name="drift_b_n_2_mid_to_pocket_west_2" type="Node3D" parent="MineBlockout/Tunnels" parent_id_path=PackedInt32Array(1601177174, 855103381) index="2" unique_id=1944923616]
+transform = Transform3D(-0.5817467, 0, 1.1997286, 0, 1.3333334, 0, -1.1997286, 0, -0.5817467, 0, 0, 0)
+script = ExtResource("3_3pujb")
+from_space = NodePath("../../Spaces/drift_b_n_2_mid")
+to_space = NodePath("../../../RavineBlockout/Spaces/pocket_west_2")
+width = 4.0
+
+[node name="bend" type="Marker3D" parent="MineBlockout/Tunnels/drift_b_n_2_mid_to_pocket_west_2" unique_id=1222894203]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 55.48124, -67.45795, -21.46751)
+script = ExtResource("4_kt3w3")
+
+[node name="bend_2" type="Marker3D" parent="MineBlockout/Tunnels/drift_b_n_2_mid_to_pocket_west_2" unique_id=395986259]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 56.75829, -60.455036, -10.57589)
+script = ExtResource("4_kt3w3")
+
+[node name="drift_b_n_2" parent="MineBlockout/Tunnels" parent_id_path=PackedInt32Array(1601177174, 855103381) index="10" unique_id=830088621]
+to_space = NodePath("../../Spaces/drift_b_n_2_mid")
+
+[node name="winze_deep" parent="MineBlockout/Tunnels" parent_id_path=PackedInt32Array(1601177174, 855103381) index="13" unique_id=788668638]
+to_space = NodePath("../../Spaces/winze_deep_mid")
+
+[node name="winze_deep_2" type="Node3D" parent="MineBlockout/Tunnels" parent_id_path=PackedInt32Array(1601177174, 855103381) index="22" unique_id=826531398]
+script = ExtResource("3_3pujb")
+from_space = NodePath("../../Spaces/winze_deep_mid")
+to_space = NodePath("../../Spaces/b_c3_m")
+width = 7.0
+tags = Array[StringName]([&"winze"])
+
+[node name="drift_b_n_2_2" type="Node3D" parent="MineBlockout/Tunnels" parent_id_path=PackedInt32Array(1601177174, 855103381) index="23" unique_id=1757141805]
+script = ExtResource("3_3pujb")
+from_space = NodePath("../../Spaces/drift_b_n_2_mid")
+to_space = NodePath("../../Spaces/b_c3_n")
+width = 9.0
+tags = Array[StringName]([&"drift"])
 
 [node name="RavineBlockout" parent="." unique_id=32552392 instance=ExtResource("3_wssbe")]
+
+[node name="link_east_5_east_6" parent="RavineBlockout/Tunnels" parent_id_path=PackedInt32Array(32552392, 816604611) index="22" unique_id=358221806]
+to_space = NodePath("../../../HiveBlockout/Spaces/hv_s2_b04")
+
+[node name="bend_1" parent="RavineBlockout/Tunnels/link_east_5_east_6" index="0" unique_id=532181292]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 31.413439, -48.179604, 25.975155)
+
+[editable path="HiveBlockout"]
+[editable path="MineBlockout"]
+[editable path="RavineBlockout"]
