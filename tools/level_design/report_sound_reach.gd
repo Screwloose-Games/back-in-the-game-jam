@@ -63,7 +63,10 @@ func _run() -> void:
 
 func _render_report(graph: LevelGraph) -> String:
 	var lines := PackedStringArray()
-	lines.append("# How far noise carries in the mine blockout")
+	# Named for the level actually read, because `--level=` points this at any of
+	# the three and a fixed title puts the wrong biome at the top of two of them.
+	var biome := _level_path().get_file().trim_prefix("level_").trim_suffix("_blockout.tscn")
+	lines.append("# How far noise carries in the %s blockout" % biome)
 	lines.append("")
 	lines.append(
 		(

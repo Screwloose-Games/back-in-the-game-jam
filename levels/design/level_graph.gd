@@ -88,7 +88,10 @@ func bounds() -> AABB:
 	var box := AABB()
 	var started := false
 	for space: Space in spaces:
-		var piece := AABB(space.position, Vector3.ZERO).grow(space.radius)
+		# Not AABB.grow, which is uniform: a chamber with a vertical_scale above 1.0
+		# reaches further up and down than it does across.
+		var extents := Vector3(space.radius, space.radius * space.vertical_scale, space.radius)
+		var piece := AABB(space.position - extents, extents * 2.0)
 		box = piece if not started else box.merge(piece)
 		started = true
 	for tunnel: Tunnel in tunnels:
@@ -350,9 +353,17 @@ class Space:
 	var kind: LevelGraph.SpaceKind = LevelGraph.SpaceKind.ROOM
 	var position := Vector3.ZERO
 
-	## Metres. Zero is legal and means a junction with no chamber cut at it - two
-	## tunnels simply meeting at a corner.
+	## Horizontal radius, metres. Zero is legal and means a junction with no
+	## chamber cut at it - two tunnels simply meeting at a corner.
 	var radius := 0.0
+
+	## Vertical radius as a fraction of `radius`. 1.0 is a sphere; below 1.0 is an
+	## oblate blob, wide across and short floor to roof.
+	##
+	## Radius still decides how far across a chamber is and is still what the
+	## straight-line hearing model measures against. This is shape only, in the
+	## same way Tunnel.height is.
+	var vertical_scale := 1.0
 
 	var tags: Array[StringName] = []
 	var notes := ""

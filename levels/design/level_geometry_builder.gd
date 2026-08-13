@@ -47,8 +47,9 @@ const COMBINER_NAME := "HullCombiner"
 ## Tunnels carrying any of these tags get a round bore; every other tunnel gets a
 ## square one. The mines were cut by machine and the natural tunnels were not,
 ## and from the inside that difference is most of what tells you which one you
-## are in.
-@export var round_profile_tags: Array[StringName] = [&"natural"]
+## are in. The hive was dug, so it rounds too - a square-edged slab reads as
+## something with a plan, which is the one thing the hive is not.
+@export var round_profile_tags: Array[StringName] = [&"natural", &"hive"]
 
 ## The rock. Left unset, a plain grey material is built instead, so this scene
 ## depends on nothing outside levels/.
@@ -196,15 +197,29 @@ func _span_brush(
 ##
 ## Null on both passes or neither: skipping only the bore would leave the hull
 ## standing as a plug of solid rock across the junction.
+##
+## THE TWO SEMI-AXES GROW BY THE WALL SEPARATELY. Scaling a hull sphere as a unit
+## would leave only `wall_thickness * vertical_scale` of rock above a flat chamber,
+## so a stratum of them would carve through to whatever sits above.
 func _chamber_brush(space: LevelGraph.Space, is_hull: bool) -> CSGSphere3D:
 	if space.radius <= 0.0:
 		return null
+	var horizontal := space.radius
+	var vertical := space.radius * space.vertical_scale
+	if is_hull:
+		horizontal += wall_thickness
+		vertical += wall_thickness
+
 	var brush := CSGSphere3D.new()
-	brush.radius = space.radius + wall_thickness if is_hull else space.radius
+	brush.radius = horizontal
 	brush.radial_segments = CHAMBER_SEGMENTS
 	brush.rings = CHAMBER_RINGS
 	brush.operation = CSGShape3D.OPERATION_UNION if is_hull else CSGShape3D.OPERATION_SUBTRACTION
-	brush.position = to_local(space.position)
+	# Exactly the identity at vertical_scale 1.0, which is what leaves every
+	# spherical chamber in the mines and the ravine where it was.
+	brush.transform = Transform3D(
+		Basis.from_scale(Vector3(1.0, vertical / horizontal, 1.0)), to_local(space.position)
+	)
 	return brush
 
 

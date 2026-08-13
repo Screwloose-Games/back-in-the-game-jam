@@ -1,7 +1,7 @@
 [gd_scene format=3 uid="uid://blti7ednnxqe1"]
 
 [ext_resource type="Script" uid="uid://cj3q20kvsqcji" path="res://levels/design/level_walkthrough.gd" id="1_walkthrough"]
-[ext_resource type="PackedScene" path="res://levels/design/level_ravine_blockout.tscn" id="2_7fppn"]
+[ext_resource type="PackedScene" uid="uid://ch45hpbhbpep" path="res://levels/design/level_ravine_blockout.tscn" id="2_7fppn"]
 [ext_resource type="Script" uid="uid://dqak1y4u3bt1o" path="res://levels/design/level_geometry_builder.gd" id="2_builder"]
 
 [node name="LevelWalkthrough" type="Node3D" unique_id=1743235473]

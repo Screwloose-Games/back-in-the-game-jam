@@ -193,6 +193,7 @@ func build_graph() -> LevelGraph:
 		record.kind = space.kind
 		record.position = space.global_position
 		record.radius = space.radius
+		record.vertical_scale = space.vertical_scale
 		record.tags = space.tags
 		record.notes = space.notes
 		graph.add_space(record)
@@ -380,7 +381,9 @@ func _draw_space(space: MineSpace) -> void:
 	var draw_radius := maxf(space.radius, MARKER_RADIUS)
 	var sphere := SphereMesh.new()
 	sphere.radius = draw_radius
-	sphere.height = draw_radius * 2.0
+	# A SphereMesh takes its radius and its floor-to-roof height separately, so an
+	# oblate chamber needs no transform of its own.
+	sphere.height = draw_radius * 2.0 * space.vertical_scale
 	sphere.radial_segments = SPHERE_SEGMENTS
 	sphere.rings = SPHERE_RINGS
 
@@ -391,7 +394,8 @@ func _draw_space(space: MineSpace) -> void:
 	_visuals.add_child(mesh_instance)
 
 	if show_labels:
-		_draw_label(_describe_space(space), space.global_position + Vector3.UP * draw_radius, color)
+		var roof := Vector3.UP * draw_radius * space.vertical_scale
+		_draw_label(_describe_space(space), space.global_position + roof, color)
 
 
 func _draw_tunnel(tunnel: MineTunnel) -> void:

@@ -8,11 +8,11 @@ extends RefCounted
 ## design in step with the first. It refuses to overwrite without `--force`, and
 ## once you start moving things in the viewport you should stop running it.
 ##
-## IT KNOWS EXACTLY ONE SHAPE: a rectangle of drifts crossed by cross-cuts, plus
-## free-form spaces and tunnels that can say anything at all. That covers the
-## mines. A biome whose structure is a different idea - the ravine's fissure, the
-## hive's cells - needs either its own generator or to be drawn in the viewport,
-## and for something irregular the viewport is the better answer anyway.
+## IT KNOWS THREE SHAPES, one per biome: a rectangle of drifts crossed by
+## cross-cuts for the mines, a line of stations for the ravine's chasm, and a
+## stack of scattered strata for the hive. Anything else is a free-form space or
+## tunnel, which can say whatever it likes, or is drawn in the viewport - and for
+## a one-off irregularity the viewport is the better answer anyway.
 ##
 ## A spec is a Dictionary:
 ##
@@ -22,7 +22,7 @@ extends RefCounted
 ##   tag_colors          StringName -> Color, for the level's colour coding.
 ##   grids               Array of grid dictionaries. See _create_grid_spaces.
 ##   chains              Array of chain dictionaries. See _create_chain.
-##   layer_stacks        Array of stack dictionaries. See _create_layer_stack.
+##   strata              Array of strata dictionaries. See strata_layout.gd.
 ##   spaces              Array of free-form space entries.
 ##   tunnels             Array of free-form tunnel entries. An entry carrying
 ##                       `bends` as an int rather than an array gets that many
@@ -40,7 +40,21 @@ extends RefCounted
 ##   const Scaffold := preload("res://tools/level_design/blockout_scaffold.gd")
 ##   Scaffold.new().run(self, SPEC)
 
+## The hive's shape, kept apart because it is geometry rather than scene building
+## and is worth being able to re-roll and measure without a level being made.
+const StrataLayout := preload("res://tools/level_design/strata_layout.gd")
+
 var _spaces_by_name: Dictionary = {}
+
+## prefix -> the layout StrataLayout returned. Carried between the two passes
+## because the tunnels need the exact chambers the scatter produced, and running
+## it a second time would draw a different set.
+var _strata_layouts: Dictionary = {}
+
+## Chamber names an anchor points at. Excluded from the dead-end sweep, because
+## the free-form tunnels that reach them are added after this runs and their
+## arrivals cannot be counted here.
+var _anchored_names: Dictionary = {}
 
 
 ## The whole command-line job: build, save, report, set the exit code.
@@ -91,6 +105,8 @@ static func argument_value(
 
 func build(spec: Dictionary, level_name: String) -> MineLevel:
 	_spaces_by_name.clear()
+	_strata_layouts.clear()
+	_anchored_names.clear()
 
 	var level := MineLevel.new()
 	level.name = level_name
@@ -125,17 +141,17 @@ func build(spec: Dictionary, level_name: String) -> MineLevel:
 	var chains: Array = spec.get("chains", [])
 	for chain: Dictionary in chains:
 		_create_chain_spaces(level, space_root, chain)
-	var stacks: Array = spec.get("layer_stacks", [])
-	for stack: Dictionary in stacks:
-		_create_layer_stack_spaces(level, space_root, stack)
+	var all_strata: Array = spec.get("strata", [])
+	for strata: Dictionary in all_strata:
+		_create_strata_spaces(level, space_root, strata)
 
 	# Tunnels only after every space exists, so any of them can name any of them.
 	for grid: Dictionary in grids:
 		_create_grid_tunnels(level, tunnel_root, grid, spec["creature_min_width"])
 	for chain: Dictionary in chains:
 		_create_chain_tunnels(level, tunnel_root, chain)
-	for stack: Dictionary in stacks:
-		_create_layer_stack_tunnels(level, tunnel_root, stack)
+	for strata: Dictionary in all_strata:
+		_create_strata_tunnels(level, tunnel_root, strata, spec["creature_min_width"])
 	for entry: Dictionary in spec.get("tunnels", []):
 		_add_tunnel(level, tunnel_root, entry)
 
@@ -145,7 +161,14 @@ func build(spec: Dictionary, level_name: String) -> MineLevel:
 
 
 ## Empty on success, otherwise why it failed.
+##
+## THE UID OF THE SCENE BEING REPLACED IS CARRIED OVER. A .tscn written from code
+## gets no `uid=` in its header, and a level that loses the one it had breaks
+## every `uid://` reference to it - level_walkthrough.tscn points at the blockouts
+## that way, and it only keeps working because Godot warns and falls back to the
+## text path. Re-rolling a biome must not cost it its identity.
 func save(level: MineLevel, output_path: String) -> String:
+	var carried := _scene_uid(output_path)
 	var packed := PackedScene.new()
 	var pack_result := packed.pack(level)
 	if pack_result != OK:
@@ -153,7 +176,45 @@ func save(level: MineLevel, output_path: String) -> String:
 	var save_result := ResourceSaver.save(packed, output_path)
 	if save_result != OK:
 		return "Could not save %s: error %d" % [output_path, save_result]
+	if not carried.is_empty():
+		_restore_scene_uid(output_path, carried)
 	return ""
+
+
+## The `uid="uid://..."` out of a scene file's header, or empty when it has none.
+func _scene_uid(path: String) -> String:
+	if not FileAccess.file_exists(path):
+		return ""
+	var file := FileAccess.open(path, FileAccess.READ)
+	if file == null:
+		return ""
+	var header := file.get_line()
+	file.close()
+	var opening := header.find('uid="')
+	if opening < 0:
+		return ""
+	var closing := header.find('"', opening + 5)
+	return "" if closing < 0 else header.substr(opening, closing - opening + 1)
+
+
+## Puts a carried-over uid back into a header the saver wrote without one.
+func _restore_scene_uid(path: String, uid: String) -> void:
+	var file := FileAccess.open(path, FileAccess.READ)
+	if file == null:
+		return
+	var text := file.get_as_text()
+	file.close()
+	var newline := text.find("\n")
+	var header := text.substr(0, newline)
+	if newline < 0 or header.contains('uid="') or not header.ends_with("]"):
+		return
+
+	var rewritten := FileAccess.open(path, FileAccess.WRITE)
+	if rewritten == null:
+		printerr("Could not restore the uid on %s; references to it will warn." % path)
+		return
+	rewritten.store_string(header.insert(header.length() - 1, " %s" % uid) + text.substr(newline))
+	rewritten.close()
 
 
 func report(level: MineLevel, output_path: String, spec: Dictionary) -> void:
@@ -333,151 +394,88 @@ func _create_chain_tunnels(level: MineLevel, parent: Node3D, chain: Dictionary) 
 		)
 
 
-## A stack of wide flat layers joined by short risers.
+## A stack of strata: mostly horizontal sheets of blobby chambers, staggered and
+## breached into one another. StrataLayout works out where they go; this turns
+## that into chambers and registers the anchors that let a hand-written tunnel
+## name one.
 ##
-## Each layer is a hub with a ring of cells around it, all joined by bores that
-## are wide and shallow - which is what makes a layer read as one flat cavity
-## rather than as a ring of tunnels. Layers are offset and turned relative to one
-## another so the stack never lines up into a shaft you can see down.
-##
-## A stack dictionary is:
-##
-##   prefix        name prefix for every node it creates.
-##   center        x and z the whole stack is built around.
-##   layers        Array of {name, y, offset: Vector2, radius, cells, twist,
-##                 squash}. `twist` turns the ring, `squash` flattens it on z so
-##                 a layer is not a perfect circle.
-##   gap_width     in-plane bore, across. Wide.
-##   gap_height    in-plane bore, floor to roof. Thin. This is the whole idea.
-##   hub_radius, cell_radius
-##   riser_width, riser_height
-##   risers_per_gap  how many cells are joined to the layer below.
-##   layer_tags, riser_tags
-func _create_layer_stack_spaces(level: MineLevel, parent: Node3D, stack: Dictionary) -> void:
-	var prefix: String = stack["prefix"]
-	var tags := _to_tags(stack.get("layer_tags", []))
-	for layer: Dictionary in stack["layers"]:
-		var hub := _make_space(
-			"%s_%s_hub" % [prefix, layer["name"]],
-			_layer_center(stack, layer),
-			stack["hub_radius"],
-			LevelGraph.SpaceKind.ROOM,
-			tags,
-			layer.get("notes", "")
-		)
-		parent.add_child(hub)
-		hub.owner = level
-		for cell: int in layer["cells"]:
+## See strata_layout.gd for what a strata dictionary holds and why.
+func _create_strata_spaces(level: MineLevel, parent: Node3D, strata: Dictionary) -> void:
+	var layout: Dictionary = StrataLayout.new().build(strata)
+	var tags := _to_tags(strata.get("stratum_tags", []))
+	for stratum: Array in layout["chambers"] as Array:
+		for chamber: Dictionary in stratum:
 			var space := _make_space(
-				"%s_%s_c%d" % [prefix, layer["name"], cell],
-				_cell_position(stack, layer, cell),
-				stack["cell_radius"],
-				LevelGraph.SpaceKind.JUNCTION,
+				chamber["name"],
+				chamber["position"],
+				chamber["radius"],
+				_kind_from_text(chamber["kind"]),
 				tags,
 				""
 			)
+			space.vertical_scale = chamber["vertical_scale"]
 			parent.add_child(space)
 			space.owner = level
 
-
-func _create_layer_stack_tunnels(level: MineLevel, parent: Node3D, stack: Dictionary) -> void:
-	var prefix: String = stack["prefix"]
-	var layers: Array = stack["layers"]
-	for layer: Dictionary in layers:
-		var cells: int = layer["cells"]
-		for cell: int in cells:
-			var here := "%s_%s_c%d" % [prefix, layer["name"], cell]
-			# Round the rim, then in to the hub: a disc, not a ring.
-			_add_layer_tunnel(
-				level,
-				parent,
-				stack,
-				layer,
-				here,
-				"%s_%s_c%d" % [prefix, layer["name"], (cell + 1) % cells],
-				"rim%d" % cell
-			)
-			_add_layer_tunnel(
-				level,
-				parent,
-				stack,
-				layer,
-				here,
-				"%s_%s_hub" % [prefix, layer["name"]],
-				"spoke%d" % cell
-			)
-
-	for index: int in layers.size() - 1:
-		_add_risers(level, parent, stack, layers[index], layers[index + 1], index + 1)
+	var anchors: Dictionary = layout["anchors"]
+	for alias: String in anchors:
+		_spaces_by_name[alias] = _spaces_by_name[anchors[alias]]
+		_anchored_names[anchors[alias]] = true
+	_strata_layouts[strata["prefix"]] = layout
 
 
-func _add_layer_tunnel(
-	level: MineLevel,
-	parent: Node3D,
-	stack: Dictionary,
-	layer: Dictionary,
-	from_name: String,
-	to_name: String,
-	suffix: String
+func _create_strata_tunnels(
+	level: MineLevel, parent: Node3D, strata: Dictionary, creature_min_width: float
 ) -> void:
-	_add_tunnel(
-		level,
-		parent,
-		{
-			"name": "%s_%s_%s" % [stack["prefix"], layer["name"], suffix],
-			"from": from_name,
-			"to": to_name,
-			"width": stack["gap_width"],
-			"height": stack["gap_height"],
-			"tags": stack.get("layer_tags", []),
-		}
-	)
+	var layout: Dictionary = _strata_layouts[strata["prefix"]]
 
+	for bore: Dictionary in layout["bores"] as Array:
+		var bore_tags: Array = (strata.get("bore_tags", []) as Array).duplicate()
+		if bore["width"] < creature_min_width:
+			bore_tags.append("refuge")
+		_add_tunnel(level, parent, _tagged(bore, bore_tags))
 
-## The short tunnels between one layer and the next.
-##
-## Spread evenly round the ring rather than stacked, so leaving a layer is a
-## choice of several doors and none of them is the obvious one.
-func _add_risers(
-	level: MineLevel,
-	parent: Node3D,
-	stack: Dictionary,
-	lower: Dictionary,
-	upper: Dictionary,
-	index: int
-) -> void:
-	var count: int = mini(stack["risers_per_gap"], mini(lower["cells"], upper["cells"]))
-	for riser: int in count:
-		var from_cell := int(round(float(riser) * float(lower["cells"]) / float(count)))
-		var to_cell := int(round(float(riser) * float(upper["cells"]) / float(count)))
-		_add_tunnel(
-			level,
-			parent,
-			{
-				"name": "%s_riser_%d_%d" % [stack["prefix"], index, riser],
-				"from":
-				"%s_%s_c%d" % [stack["prefix"], lower["name"], from_cell % int(lower["cells"])],
-				"to": "%s_%s_c%d" % [stack["prefix"], upper["name"], to_cell % int(upper["cells"])],
-				"width": stack["riser_width"],
-				"height": stack.get("riser_height", 0.0),
-				"tags": stack.get("riser_tags", []),
-			}
+	for breach: Dictionary in layout["breaches"] as Array:
+		var breach_tags: Array = (strata.get("breach_tags", []) as Array).duplicate()
+		if breach["merged"]:
+			breach_tags.append("merged")
+		_add_tunnel(level, parent, _tagged(breach, breach_tags))
+
+	for link: Dictionary in layout["long_links"] as Array:
+		_add_tunnel(level, parent, _tagged(link, strata.get("long_link_tags", [])))
+
+	# Printed because it is the one thing you re-roll the seed over and the one
+	# thing no other report shows: a stack whose strata never reach each other is
+	# the flat stack this replaced, and it looks perfectly healthy in every count.
+	print(
+		(
+			"  %d breaches between strata, %d of them where the two merge"
+			% [(layout["breaches"] as Array).size(), layout["merges"]]
 		)
+	)
+	_mark_dead_ends(layout["arrivals"])
 
 
-func _layer_center(stack: Dictionary, layer: Dictionary) -> Vector3:
-	var origin: Vector3 = stack["center"]
-	var offset: Vector2 = layer.get("offset", Vector2.ZERO)
-	return Vector3(origin.x + offset.x, layer["y"], origin.z + offset.y)
+## A chamber with one way in is a pocket, and saying so is most of what makes the
+## colour coding worth reading.
+##
+## Anchored chambers are skipped: the free-form tunnels that reach them are added
+## after this runs, so their real arrival count is not known here.
+func _mark_dead_ends(arrivals: Dictionary) -> void:
+	for space_name: String in arrivals:
+		if arrivals[space_name] != 1 or _anchored_names.has(space_name):
+			continue
+		var space: MineSpace = _spaces_by_name.get(space_name)
+		if space != null:
+			space.kind = LevelGraph.SpaceKind.DEAD_END
 
 
-func _cell_position(stack: Dictionary, layer: Dictionary, cell: int) -> Vector3:
-	var middle := _layer_center(stack, layer)
-	var cells: int = layer["cells"]
-	var angle: float = layer.get("twist", 0.0) + TAU * float(cell) / float(cells)
-	var radius: float = layer["radius"]
-	var squash: float = layer.get("squash", 1.0)
-	return middle + Vector3(cos(angle) * radius, 0.0, sin(angle) * radius * squash)
+## A layout record as a tunnel entry. The layout works in numbers and leaves the
+## labelling to whoever knows the level's creature width.
+func _tagged(record: Dictionary, tags: Array) -> Dictionary:
+	var entry := record.duplicate()
+	entry["tags"] = tags
+	return entry
 
 
 func _add_tunnel(level: MineLevel, parent: Node3D, entry: Dictionary) -> void:

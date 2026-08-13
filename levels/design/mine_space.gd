@@ -24,10 +24,25 @@ extends Node3D
 		kind = value
 		_mark_level_dirty()
 
-## Metres. Zero draws a marker dot and means there is no chamber here at all.
+## Horizontal radius, metres. Zero draws a marker dot and means there is no
+## chamber here at all.
 @export_range(0.0, 30.0, 0.1, "or_greater", "suffix:m") var radius := 5.0:
 	set(value):
 		radius = maxf(value, 0.0)
+		_mark_level_dirty()
+
+## Vertical radius as a fraction of `radius`, making the chamber an oblate
+## spheroid. 1.0 is a sphere - a chamber cut by something that did not care which
+## way was up.
+##
+## BELOW 1.0 IS WHAT LETS A CHAMBER BE WIDE AND FLAT AT THE SAME TIME. A sphere
+## big enough to read as a room in a hive stratum domes through the roof and floor
+## either side of it, which is why the hive's cells used to be capped at a radius
+## far below the size the space wanted to be. Radius still decides how far across
+## a chamber is and is still what the gizmo handle drags; this is shape only.
+@export_range(0.1, 2.0, 0.05, "or_greater") var vertical_scale := 1.0:
+	set(value):
+		vertical_scale = maxf(value, 0.01)
 		_mark_level_dirty()
 
 ## Free-form labels used for colour coding and for filtering. Nothing validates

@@ -4,9 +4,10 @@ extends SceneTree
 ##
 ## Sightline is a design property in every biome here and it is the one thing a
 ## coordinate table cannot tell you: the ravine is meant to be too crooked to see
-## end to end, a hive layer is meant to be open right across, and the mines are
-## meant to be legible until they are not. All three are claims about geometry,
-## and this measures them instead of taking their word for it.
+## end to end, a hive stratum is meant to carry sight a long way across itself and
+## never out of itself, and the mines are meant to be legible until they are not.
+## All three are claims about geometry, and this measures them instead of taking
+## their word for it.
 ##
 ##     godot --headless --path . --script res://tools/level_design/check_sightlines.gd -- \
 ##         --level=res://levels/design/level_ravine_blockout.tscn \

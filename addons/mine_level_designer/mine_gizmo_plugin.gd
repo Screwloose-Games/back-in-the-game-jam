@@ -114,14 +114,17 @@ func _commit_handle(
 
 func _redraw_space(gizmo: EditorNode3DGizmo, space: MineSpace) -> void:
 	var radius := maxf(space.radius, MineLevel.MARKER_RADIUS)
-	gizmo.add_lines(_sphere_wireframe(radius), get_material("space", gizmo), false)
+	var vertical := radius * space.vertical_scale
+	gizmo.add_lines(_sphere_wireframe(radius, vertical), get_material("space", gizmo), false)
 
 	var sphere := SphereMesh.new()
 	sphere.radius = radius
-	sphere.height = radius * 2.0
+	sphere.height = vertical * 2.0
 	sphere.radial_segments = 12
 	sphere.rings = 6
 	gizmo.add_collision_triangles(sphere.generate_triangle_mesh())
+	# The handle stays on the horizontal axis, because radius is the number it
+	# drags and vertical_scale is typed in the Inspector.
 	gizmo.add_handles([Vector3(radius, 0.0, 0.0)], get_material("handles", gizmo), [0])
 
 
@@ -182,25 +185,31 @@ func _distance_along_axis(
 	return origin.distance_to(closest[0])
 
 
-## Three great circles. Enough to read a sphere's size without filling the view
+## Three great circles. Enough to read a chamber's size without filling the view
 ## with wireframe on a level that has thirty of them.
-func _sphere_wireframe(radius: float) -> PackedVector3Array:
+##
+## Two of the three run vertically, so a flat chamber has to draw them as ellipses
+## or the wireframe claims a sphere the carve will not produce.
+func _sphere_wireframe(radius: float, vertical: float) -> PackedVector3Array:
 	var lines := PackedVector3Array()
 	for plane: int in 3:
 		for step: int in WIREFRAME_STEPS:
-			lines.append(_circle_point(plane, TAU * float(step) / WIREFRAME_STEPS, radius))
-			lines.append(_circle_point(plane, TAU * float(step + 1) / WIREFRAME_STEPS, radius))
+			lines.append(
+				_circle_point(plane, TAU * float(step) / WIREFRAME_STEPS, radius, vertical)
+			)
+			lines.append(
+				_circle_point(plane, TAU * float(step + 1) / WIREFRAME_STEPS, radius, vertical)
+			)
 	return lines
 
 
-func _circle_point(plane: int, angle: float, radius: float) -> Vector3:
+func _circle_point(plane: int, angle: float, radius: float, vertical: float) -> Vector3:
 	var across := cos(angle) * radius
-	var up := sin(angle) * radius
 	if plane == 0:
-		return Vector3(across, up, 0.0)
+		return Vector3(across, sin(angle) * vertical, 0.0)
 	if plane == 1:
-		return Vector3(across, 0.0, up)
-	return Vector3(0.0, across, up)
+		return Vector3(across, 0.0, sin(angle) * radius)
+	return Vector3(0.0, cos(angle) * vertical, sin(angle) * radius)
 
 
 ## A tube along the polyline, purely as something for a click ray to hit. Built

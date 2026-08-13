@@ -325,19 +325,24 @@ func _render_space(
 	var color := level.color_for_space(node) if node != null else Color(0.6, 0.8, 1.0)
 	var flat := _project(space.position, origin, scale, is_plan)
 	var radius := maxf(space.radius * scale, MIN_SPACE_RADIUS)
+	# Plan looks down, so a chamber is as wide as it is deep whatever its shape.
+	# The elevation is the view that has to show a flat chamber as flat, and it is
+	# the view the hive is read in.
+	var vertical := radius if is_plan else maxf(radius * space.vertical_scale, MIN_SPACE_RADIUS)
 	# A junction reads as a ring and a room as a disc, so the two are still told
 	# apart in a printout with no colour.
 	var is_junction := space.kind == LevelGraph.SpaceKind.JUNCTION
 	return (
 		(
 			(
-				'<circle cx="%.1f" cy="%.1f" r="%.1f" fill="%s" fill-opacity="%s" stroke="%s"'
-				+ ' stroke-width="1.5"/>'
+				'<ellipse cx="%.1f" cy="%.1f" rx="%.1f" ry="%.1f" fill="%s" fill-opacity="%s"'
+				+ ' stroke="%s" stroke-width="1.5"/>'
 			)
 			% [
 				flat.x,
 				flat.y,
 				radius,
+				vertical,
 				_hex(color),
 				"0.15" if is_junction else "0.45",
 				_hex(color),
@@ -348,7 +353,7 @@ func _render_space(
 				'\n<text x="%.1f" y="%.1f" fill="%s" font-family="sans-serif" font-size="%.0f"'
 				+ ' text-anchor="middle">%s</text>'
 			)
-			% [flat.x, flat.y + radius + 14.0, FOREGROUND, SPACE_LABEL_SIZE, _escape(space.id)]
+			% [flat.x, flat.y + vertical + 14.0, FOREGROUND, SPACE_LABEL_SIZE, _escape(space.id)]
 		)
 	)
 

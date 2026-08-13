@@ -4,11 +4,12 @@
 biome, annotated, as a graph that keeps its 3D coordinates. None of them is
 finished geometry and none tries to be.
 
+**OUTDATED**
 | Scene | Biome | Size |
 |---|---|---|
 | `level_mine_blockout.tscn` | The mines. Where the player starts | 16 spaces, 22 tunnels, 1,303 m |
 | `level_ravine_blockout.tscn` | The ravine | 16 spaces, 23 tunnels, 1,406 m |
-| `level_hive_blockout.tscn` | The hive | 40 spaces, 83 tunnels, 3,429 m |
+| `level_hive_blockout.tscn` | The hive | 115 spaces, 184 tunnels, 3,250 m |
 
 **None of them assumes a central cavern.** How the biomes join is still open, so
 each ends at `link_*` dead-end stubs tagged `unbuilt` marking where a connection
@@ -85,21 +86,42 @@ refuge and which is a trap is the question the side network exists to ask.
 
 ## How the hive is shaped
 
-Five layers over 120 m. Each is a hub with a ring of cells joined by bores
-**26 m across and 5 m floor to roof** - so a layer is one flat cavity you cross in
-any direction, not a ring of tunnels.
+**An anthill in section**, after `anthill_internal_sideprofile.jpg`. Eight strata
+over about 110 m. A stratum is horizontal and nothing about it is flat: its
+chambers sit on a noise-warped surface rather than at one depth, and each is a
+different width and a different thickness, so crossing one opens into a room,
+pinches to a squeeze, and opens again.
 
-No layer sits squarely on the one below: every one is offset, turned, and a
-different size and squash. Measured on the carved rock, there is **no sightline
-between any two layers at all**, while layer 4 is **91 m clear across its wide
-axis**. That is the pancake, and it is why this is the most disorienting biome -
-in the mines you are lost about where, here you are lost about which layer, and
-every layer looks like the answer.
+**A stratum is one continuous void with pillars in it**, not rooms joined by
+corridors. Most bores are wide enough to merge with the chambers at either end, so
+what blocks you is whatever rock the scatter left standing. Measured on the carved
+rock across the widest axis of each of the eight, a sightline runs **7 to 30 m of
+the 63 to 89 m** available before a pillar stops it. Never far enough to see out,
+and how far varies enough between strata that it is not a cue to where you are.
 
-Risers between layers are spread round the rim rather than stacked, so leaving a
-layer is a choice of several doors and none is obvious. The `long_*` tunnels skip
-two or three layers; coming up one puts you somewhere that looks like where you
-started and is 60 m from it.
+**The strata are not separate floors.** Each is offset sideways from the one above
+and warps independently of it, so two of them converge in one corner of the biome
+and separate in another. Where they come close they are breached straight through
+the floor - **31 of those, and 23 chamber pairs that intersect outright**, so one
+cavity spans two strata with nothing to mark where one ended. Measured on the
+carved rock, every stratum boundary has at least one breach that is a **clear line
+into the stratum below**, 5 to 19 m of it.
+
+That last part is a deliberate reversal. The previous hive guaranteed no sightline
+between any two layers; this one does the opposite, because a glimpse of something
+moving one stratum down through a hole in the floor is worse than never seeing it.
+It is still the most disorienting biome, and for a stronger reason - in the mines
+you are lost about where, here you are lost about which stratum, and the stack no
+longer promises that there is a definite answer.
+
+Five `hv_long_*` tunnels skip two or more strata; coming up one puts you somewhere
+that looks like where you started and is a long way from it.
+
+**It is generated, not typed.** `build_hive_blockout.gd` holds ranges and a
+`seed`; `strata_layout.gd` turns those into the layout. Re-roll the seed rather
+than moving chambers, and read the build's `N breaches between strata, M of them
+where the two merge` line - a stack reporting no merges is a stack of pancakes
+again, and it looks perfectly healthy in every other number.
 
 ## Opening it
 
@@ -116,7 +138,7 @@ you cannot damage the design by deleting it.
 
 | Node | Is | Notes |
 |---|---|---|
-| `MineSpace` | a graph node | `kind` says whether it is a room, a junction, or a dead-end pocket. `radius` 0 means a bare corner with no chamber - a decision point that is not a place. |
+| `MineSpace` | a graph node | `kind` says whether it is a room, a junction, or a dead-end pocket. `radius` 0 means a bare corner with no chamber - a decision point that is not a place. `vertical_scale` 1.0 is a sphere; below it the chamber is an oblate blob, `radius` across and `radius * vertical_scale` from centre to roof. |
 | `MineTunnel` | a graph edge | Names its two ends. It does **not** store their coordinates, so dragging a room drags every tunnel attached to it and the two can never disagree. `height` 0 means square; set it and the bore is `width` across by `height` tall. |
 | `MineBend` | a corner | A `Marker3D` child of a tunnel. Deliberately not a graph node: a corner you fly round is not a route choice. Child order is the order the tunnel runs through them. |
 
@@ -126,9 +148,17 @@ drifted from the geometry would quietly corrupt every sound answer.
 
 **`width` is the load-bearing number; `height` is shape only.** Creature fit and
 the width colour mode both read `width` and ignore `height` - a creature that fits
-through the width of a 26 x 5 hive layer is not helped by it being 26 wide. Height
-exists because the ravine is a tall slot and a hive layer is a flat one, and
+through the width of a 20 x 3 hive bore is not helped by it being 20 wide. Height
+exists because the ravine is a tall slot and a hive stratum is a flat one, and
 neither reads as itself with a square bore.
+
+**`vertical_scale` on a space is the same distinction, for chambers.** `radius`
+stays the horizontal one and is still what the gizmo handle drags and what the
+straight-line hearing model measures; `vertical_scale` only squashes the chamber
+towards its own floor. It exists because a hive chamber has to be wide *and* flat,
+and a sphere large enough to read as a room in a 6 m stratum domes through the
+roof and floor either side of it. The mines and the ravine leave it at 1.0, where
+it is exactly the sphere it always was.
 
 ## Selecting and moving things in the viewport
 
@@ -143,8 +173,8 @@ With it loaded:
   normal `W` gizmo. Tunnels follow the rooms they join, so you only ever drag
   rooms and bends.
 - **Overlapping volumes**: click again in the same spot to cycle to the next thing
-  behind. A hive layer's wide flat bores overlap a lot and will take the first
-  click off anything inside them.
+  behind. A hive stratum's wide flat bores overlap a great deal and will take the
+  first click off anything inside them.
 - **Drag the orange handle** on a selected space to change its `radius`, or on a
   selected tunnel to change its `width`. Both are undoable.
 - **Bends** are `Marker3D`s and were always clickable - drag them like any node.
@@ -316,7 +346,13 @@ sheet; this is how to do that. The elevation panel is fine unfiltered.
   |---|---|---|
   | `grids` | a rectangle of drifts crossed by cross-cuts | the mines |
   | `chains` | spaces in a line, each joined to the next | the ravine's chasm |
-  | `layer_stacks` | offset flat layers of hub-and-ring, joined by risers | the hive |
+  | `strata` | staggered sheets of scattered blobs, breached into each other | the hive |
+
+  `strata` is the one that is generated rather than laid out: the spec gives
+  ranges and a seed and `strata_layout.gd` works out the chambers, which is why
+  the hive file has no coordinates in it. That module returns plain records and
+  never touches the scene tree, so a layout can be re-rolled and measured without
+  a level being built.
 
   A free-form tunnel whose `bends` is a **number** rather than an array gets that
   many generated corners, straying `wander` metres from `seed`. That is how the
