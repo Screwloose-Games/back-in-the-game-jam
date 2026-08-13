@@ -1,0 +1,13 @@
+{
+  "dirs": [
+    "res://gameplay/creature/navigation/tests",
+    "res://gameplay/creature/perception/tests",
+    "res://gameplay/creature/suspicion/tests"
+  ],
+  "include_subdirs": true,
+  "log_level": 1,
+  "prefix": "test_",
+  "should_exit": true,
+  "should_maximize": false,
+  "suffix": ".gd"
+}

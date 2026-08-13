@@ -1,0 +1,45 @@
+[gd_scene format=3 uid="uid://cc46kgq5blbx4"]
+
+[ext_resource type="Script" uid="uid://dkd33de67fx66" path="res://prototypes/creature_navigation/creature_nav_demo_prototype.gd" id="1"]
+[ext_resource type="Script" uid="uid://dogb6y8opljh7" path="res://prototypes/creature_navigation/creature_nav_demo_hud.gd" id="2"]
+[ext_resource type="Resource" path="res://prototypes/creature_navigation/creature_nav_demo_settings.tres" id="3"]
+[ext_resource type="Script" uid="uid://d3fll4pyijab8" path="res://prototypes/shared/prototype_tuning_panel.gd" id="4"]
+
+[sub_resource type="Environment" id="Environment_cave"]
+background_mode = 1
+background_color = Color(0.05, 0.05, 0.07, 1)
+ambient_light_source = 2
+ambient_light_color = Color(0.45, 0.47, 0.55, 1)
+ambient_light_energy = 0.6
+tonemap_mode = 2
+
+[node name="CreatureNavDemo" type="Node3D" unique_id=635363917]
+script = ExtResource("1")
+settings = ExtResource("3")
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="." unique_id=1475501718]
+environment = SubResource("Environment_cave")
+
+[node name="KeyLight" type="DirectionalLight3D" parent="." unique_id=536060183]
+transform = Transform3D(0.86, -0.35, 0.37, 0, 0.72, 0.69, -0.51, -0.6, 0.62, 0, 0, 0)
+light_energy = 0.8
+shadow_enabled = true
+
+[node name="HUD" type="CanvasLayer" parent="." unique_id=1965383629]
+script = ExtResource("2")
+
+[node name="Readout" type="Label" parent="HUD" unique_id=1897734803]
+offset_left = 16.0
+offset_top = 12.0
+offset_right = 900.0
+offset_bottom = 300.0
+theme_override_font_sizes/font_size = 14
+
+[node name="Tuning" type="PanelContainer" parent="HUD" unique_id=159029553]
+anchors_preset = 2
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_left = 16.0
+offset_bottom = -16.0
+grow_vertical = 0
+script = ExtResource("4")

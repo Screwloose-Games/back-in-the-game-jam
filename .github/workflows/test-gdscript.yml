@@ -1,0 +1,255 @@
+name: "Test GDScript"
+
+# The first workflow in this repo that actually LOADS the project in Godot on a PR.
+#
+# Until now the only GDScript gates were gdlint and gdformat, neither of which
+# executes anything -- so a script that lints perfectly, fails to parse, and takes
+# an entire subsystem down with it sailed through every check. Several of the bugs
+# this suite caught while it was being written were exactly that shape.
+#
+# Set the repo variable GODOT_VERSION to bump the engine for every workflow at
+# once. The literal fallback matters: a bare ${{ vars.GODOT_VERSION }} in an
+# unconfigured fork resolves to an empty string and yields the image tag
+# "barichello/godot-ci:", which fails to pull with a confusing error.
+env:
+  GODOT_VERSION: ${{ vars.GODOT_VERSION || '4.7.1' }}
+
+on:
+  pull_request:
+    paths:
+      - "gameplay/**"
+      - "addons/gut/**"
+      - ".gutconfig.json"
+      - ".github/workflows/test-gdscript.yml"
+  workflow_dispatch:
+
+# No `branches:` filter on purpose -- a suite that only runs on PRs into main
+# silently skips PRs into a jam or feature branch, which is where the work happens.
+
+jobs:
+  perception:
+    runs-on: ubuntu-latest
+    container:
+      image: barichello/godot-ci:${{ vars.GODOT_VERSION || '4.7.1' }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      # A cold checkout has no .godot/ import cache, and a new class_name does not
+      # resolve until the project is re-imported -- every file referring to one
+      # fails with "Could not find type" until this runs.
+      - name: Import resources
+        run: godot --headless --path . --import
+        continue-on-error: true
+
+      # `-s <script>` with an unresolvable path prints one ERROR line and EXITS 0.
+      # Verified against 4.7.1. So the exit code alone cannot tell a green run from
+      # a run that never happened, and the grep below is not belt-and-braces --
+      # it is the only thing standing between a typo'd -gdir and a silent pass.
+      - name: Unit tests (GUT)
+        run: |
+          set -o pipefail
+          godot --headless --path . -s addons/gut/gut_cmdln.gd \
+            -gconfig=res://.gutconfig.json -glog=1 -gexit | tee gut.log
+          if ! grep -q "All tests passed" gut.log; then
+            echo "::error::GUT did not report a green run"
+            exit 1
+          fi
+          if ! grep -qE "Scripts +[1-9]" gut.log; then
+            echo "::error::GUT collected no test scripts -- check .gutconfig.json dirs"
+            exit 1
+          fi
+
+      # Structural rules: the physics seam, the no-wall-clock rule, .uid sidecars,
+      # and the renderer bans. See the file's own docstring for why each exists.
+      - name: Static checks
+        run: |
+          set -o pipefail
+          godot --headless --path . \
+            --script res://gameplay/creature/perception/tools/verify_perception_static.gd \
+            | tee static.log
+          grep -q "all checks passed" static.log || {
+            echo "::error::perception static checks failed"; exit 1; }
+
+      # Real Jolt queries, a real Area3D overlap, and the one thing no unit test can
+      # see: that _physics_process is genuinely wired to advance().
+      #
+      # A .tscn wrapper, NOT --script. A node added during SceneTree._initialize()
+      # never receives _ready(), so the bare-script form runs nothing, prints
+      # nothing and exits 0 -- which looks exactly like a pass.
+      - name: Runtime checks
+        run: |
+          set -o pipefail
+          godot --headless --path . \
+            res://gameplay/creature/perception/tools/verify_perception_runtime.tscn \
+            | tee runtime.log
+          grep -q "all checks passed" runtime.log || {
+            echo "::error::perception runtime checks failed"; exit 1; }
+
+      - name: Upload logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: perception-test-logs
+          path: |
+            gut.log
+            static.log
+            runtime.log
+          if-no-files-found: ignore
+
+  # A separate job rather than more steps on `perception`, so a failure names the
+  # module that broke. The GUT step above already runs EVERY suite -- .gutconfig.json
+  # lists all three directories -- so this job's own GUT run is redundant on purpose: it
+  # is what makes the suspicion job meaningful when someone reads it in isolation, and it
+  # costs one container start.
+  suspicion:
+    runs-on: ubuntu-latest
+    container:
+      image: barichello/godot-ci:${{ vars.GODOT_VERSION || '4.7.1' }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Import resources
+        run: godot --headless --path . --import
+        continue-on-error: true
+
+      - name: Unit tests (GUT)
+        run: |
+          set -o pipefail
+          godot --headless --path . -s addons/gut/gut_cmdln.gd \
+            -gconfig=res://.gutconfig.json -gdir=res://gameplay/creature/suspicion/tests \
+            -glog=1 -gexit | tee gut.log
+          if ! grep -q "All tests passed" gut.log; then
+            echo "::error::GUT did not report a green run"
+            exit 1
+          fi
+          if ! grep -qE "Scripts +[1-9]" gut.log; then
+            echo "::error::GUT collected no test scripts -- check .gutconfig.json dirs"
+            exit 1
+          fi
+
+      # The no-world-reads rule, the no-physics rule, the no-wall-clock rule, the
+      # write-API bans and the .uid sidecars. See the file's own docstring for why each
+      # exists; every one of them passes the unit suite while breaking the design.
+      - name: Static checks
+        run: |
+          set -o pipefail
+          godot --headless --path . \
+            --script res://gameplay/creature/suspicion/tools/verify_suspicion_static.gd \
+            | tee static.log
+          grep -q "all checks passed" static.log || {
+            echo "::error::suspicion static checks failed"; exit 1; }
+
+      # Real Jolt geometry, both modules in one tree, and the one thing no unit test can
+      # see: that _physics_process is genuinely wired to advance().
+      #
+      # A .tscn wrapper, NOT --script. A node added during SceneTree._initialize() never
+      # receives _ready(), so the bare-script form runs nothing, prints nothing and
+      # exits 0 -- which looks exactly like a pass.
+      - name: Runtime checks
+        run: |
+          set -o pipefail
+          godot --headless --path . \
+            res://gameplay/creature/suspicion/tools/verify_suspicion_runtime.tscn \
+            | tee runtime.log
+          grep -q "all checks passed" runtime.log || {
+            echo "::error::suspicion runtime checks failed"; exit 1; }
+
+      - name: Upload logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: suspicion-test-logs
+          path: |
+            gut.log
+            static.log
+            runtime.log
+          if-no-files-found: ignore
+
+  # Phases 1-9 of documentation/design/alien/navigation.md. Needs no voxel extension:
+  # the module reaches the world only through NavigationProbe, and the runtime suite
+  # builds its cave from StaticBody3D boxes. `verify_navigation_static.gd` is what keeps
+  # that true -- it fails the build if any file outside the probe names VoxelTool.
+  navigation:
+    runs-on: ubuntu-latest
+    container:
+      image: barichello/godot-ci:${{ vars.GODOT_VERSION || '4.7.1' }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Import resources
+        run: godot --headless --path . --import
+        continue-on-error: true
+
+      - name: Unit tests (GUT)
+        run: |
+          set -o pipefail
+          godot --headless --path . -s addons/gut/gut_cmdln.gd \
+            -gconfig=res://.gutconfig.json -gdir=res://gameplay/creature/navigation/tests \
+            -glog=1 -gexit | tee gut.log
+          if ! grep -q "All tests passed" gut.log; then
+            echo "::error::GUT did not report a green run"
+            exit 1
+          fi
+          if ! grep -qE "Scripts +[1-9]" gut.log; then
+            echo "::error::GUT collected no test scripts -- check .gutconfig.json dirs"
+            exit 1
+          fi
+
+      # The world seam, the graph/route purity rules, the no-wall-clock rule, the
+      # no-engine-navigation rule, .uid sidecars and the renderer bans. See the file's
+      # own docstring for why each exists; every one of them passes the unit suite while
+      # breaking the design.
+      - name: Static checks
+        run: |
+          set -o pipefail
+          godot --headless --path . \
+            --script res://gameplay/creature/navigation/tools/verify_navigation_static.gd \
+            | tee static.log
+          grep -q "all checks passed" static.log || {
+            echo "::error::navigation static checks failed"; exit 1; }
+
+      # Real Jolt shape casts through a real cave, which is the only thing that can
+      # check section 13.2 at all -- the unit suite proves the builder does the right
+      # thing with the answers it is given, not that swept collision shapes give those
+      # answers.
+      #
+      # A .tscn wrapper, NOT --script. A node added during SceneTree._initialize() never
+      # receives _ready(), so the bare-script form runs nothing, prints nothing and exits
+      # 0 -- which looks exactly like a pass.
+      - name: Runtime checks
+        run: |
+          set -o pipefail
+          godot --headless --path . \
+            res://gameplay/creature/navigation/tools/verify_navigation_runtime.tscn \
+            | tee runtime.log
+          grep -q "all checks passed" runtime.log || {
+            echo "::error::navigation runtime checks failed"; exit 1; }
+
+      # What is_solid can and cannot answer, against a real CSG collider. The sandbox and
+      # every unit fixture are convex boxes, so without this the concave branch -- the one
+      # every greybox and all voxel terrain takes -- is never executed anywhere in CI.
+      - name: CSG solidity checks
+        run: |
+          set -o pipefail
+          godot --headless --path . \
+            res://gameplay/creature/navigation/tools/verify_navigation_csg.tscn \
+            | tee csg.log
+          grep -q "all checks passed" csg.log || {
+            echo "::error::navigation CSG solidity checks failed"; exit 1; }
+
+      - name: Upload logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: navigation-test-logs
+          path: |
+            gut.log
+            static.log
+            runtime.log
+          if-no-files-found: ignore

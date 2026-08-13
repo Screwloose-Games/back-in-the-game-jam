@@ -1,0 +1,11 @@
+[gd_scene load_steps=2 format=3]
+
+; The whole cave is built by the script, so this file stays a two-line wrapper on
+; purpose. See navigation_sandbox.gd for the keybindings, and
+; navigation_sandbox_geometry.gd for why the geometry is generated rather than saved
+; here.
+
+[ext_resource type="Script" path="navigation_sandbox.gd" id="1"]
+
+[node name="NavigationSandbox" type="Node3D"]
+script = ExtResource("1")

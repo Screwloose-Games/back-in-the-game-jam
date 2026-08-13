@@ -1,0 +1,10 @@
+[gd_scene load_steps=2 format=3]
+
+; Everything in this room is built by the script, so this file stays a two-line
+; wrapper on purpose. See perception_sandbox.gd for the keybindings and for why the
+; geometry is generated rather than saved here.
+
+[ext_resource type="Script" path="perception_sandbox.gd" id="1"]
+
+[node name="PerceptionSandbox" type="Node3D"]
+script = ExtResource("1")

@@ -1,0 +1,11 @@
+[gd_scene load_steps=2 format=3]
+
+; A .tscn wrapper, and not a convenience one. A node added during
+; SceneTree._initialize() never receives _ready(), so running the script directly with
+; --script executes nothing, prints nothing and exits 0 -- which is indistinguishable
+; from a pass. See verify_navigation_runtime.gd.
+
+[ext_resource type="Script" path="verify_navigation_runtime.gd" id="1"]
+
+[node name="VerifyNavigationRuntime" type="Node3D"]
+script = ExtResource("1")
