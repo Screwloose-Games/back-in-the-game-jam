@@ -1,0 +1,505 @@
+[gd_scene load_steps=9 format=3]
+
+[ext_resource type="Script" path="res://prototypes/power_and_lighting/power_and_lighting_multiplayer_demo.gd" id="1_demo"]
+[ext_resource type="Script" path="res://prototypes/power_and_lighting/multiplayer_chamber.gd" id="2_chamber"]
+[ext_resource type="PackedScene" path="res://prototypes/power_and_lighting/multiplayer_power_cube.tscn" id="3_cube"]
+[ext_resource type="Script" path="res://common/network/network_session.gd" id="4_network"]
+[ext_resource type="Theme" path="res://common/themes/theme.tres" id="5_theme"]
+
+[sub_resource type="Environment" id="Environment_void"]
+background_mode = 1
+ambient_light_source = 2
+ambient_light_color = Color(0.42, 0.48, 0.56, 1)
+ambient_light_energy = 0.02
+tonemap_mode = 4
+glow_enabled = true
+glow_intensity = 0.45
+glow_bloom = 0.05
+fog_enabled = true
+fog_mode = 1
+fog_light_color = Color(0.02, 0.024, 0.03, 1)
+fog_light_energy = 0.6
+fog_density = 1.0
+fog_depth_begin = 2.0
+fog_depth_end = 24.0
+
+[sub_resource type="StyleBoxFlat" id="StyleBox_lobby"]
+content_margin_left = 28.0
+content_margin_top = 24.0
+content_margin_right = 28.0
+content_margin_bottom = 24.0
+bg_color = Color(0.035, 0.045, 0.065, 0.97)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.3, 0.46, 0.58, 0.85)
+corner_radius_top_left = 8
+corner_radius_top_right = 8
+corner_radius_bottom_right = 8
+corner_radius_bottom_left = 8
+
+[sub_resource type="StyleBoxFlat" id="StyleBox_hud"]
+content_margin_left = 16.0
+content_margin_top = 12.0
+content_margin_right = 16.0
+content_margin_bottom = 12.0
+bg_color = Color(0.025, 0.032, 0.05, 0.88)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.2, 0.34, 0.44, 0.75)
+corner_radius_top_left = 6
+corner_radius_top_right = 6
+corner_radius_bottom_right = 6
+corner_radius_bottom_left = 6
+
+[node name="PowerAndLightingMultiplayerDemo" type="Node3D"]
+script = ExtResource("1_demo")
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = SubResource("Environment_void")
+
+[node name="Chamber" type="Node3D" parent="."]
+script = ExtResource("2_chamber")
+
+[node name="PowerCube" parent="." instance=ExtResource("3_cube")]
+
+[node name="Players" type="Node3D" parent="."]
+
+[node name="PlayerSpawner" type="MultiplayerSpawner" parent="."]
+spawn_path = NodePath("../Players")
+spawn_limit = 2
+
+[node name="NetworkSession" type="Node" parent="."]
+script = ExtResource("4_network")
+
+[node name="Lobby" type="CanvasLayer" parent="."]
+layer = 20
+
+[node name="Backdrop" type="ColorRect" parent="Lobby"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+color = Color(0.004, 0.007, 0.012, 0.82)
+
+[node name="Panel" type="PanelContainer" parent="Lobby"]
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -310.0
+offset_top = -320.0
+offset_right = 310.0
+offset_bottom = 320.0
+grow_horizontal = 2
+grow_vertical = 2
+theme = ExtResource("5_theme")
+theme_override_styles/panel = SubResource("StyleBox_lobby")
+
+[node name="Layout" type="VBoxContainer" parent="Lobby/Panel"]
+layout_mode = 2
+theme_override_constants/separation = 13
+
+[node name="Title" type="Label" parent="Lobby/Panel/Layout"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.68, 0.86, 1, 1)
+theme_override_font_sizes/font_size = 30
+text = "POWER LINK"
+horizontal_alignment = 1
+
+[node name="Subtitle" type="Label" parent="Lobby/Panel/Layout"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.62, 0.72, 0.8, 1)
+text = "Keep one shared power cube charged in a zero-g room."
+horizontal_alignment = 1
+
+[node name="Flow" type="Label" parent="Lobby/Panel/Layout"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.82, 0.88, 0.94, 1)
+text = "PLAYER 1  Host and share the six-character code.\nPLAYER 2  Enter that code below and join."
+horizontal_alignment = 1
+
+[node name="EndpointLabel" type="Label" parent="Lobby/Panel/Layout"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.72, 0.76, 0.8, 1)
+text = "Advanced · signaling server (leave unchanged)"
+
+[node name="SignalingEndpointInput" type="LineEdit" parent="Lobby/Panel/Layout"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "wss://signaling.screwloose.workers.dev"
+placeholder_text = "ws://localhost:8787"
+
+[node name="HostButton" type="Button" parent="Lobby/Panel/Layout"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 52)
+layout_mode = 2
+text = "HOST & GET CODE"
+
+[node name="Divider" type="HSeparator" parent="Lobby/Panel/Layout"]
+layout_mode = 2
+
+[node name="JoinLabel" type="Label" parent="Lobby/Panel/Layout"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.72, 0.76, 0.8, 1)
+text = "Join the host's room"
+
+[node name="SessionCodeInput" type="LineEdit" parent="Lobby/Panel/Layout"]
+unique_name_in_owner = true
+layout_mode = 2
+placeholder_text = "SIX-CHARACTER CODE"
+alignment = 1
+max_length = 6
+
+[node name="JoinButton" type="Button" parent="Lobby/Panel/Layout"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 52)
+layout_mode = 2
+text = "JOIN HOST SESSION"
+
+[node name="LobbyStatus" type="Label" parent="Lobby/Panel/Layout"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_color = Color(0.95, 0.76, 0.38, 1)
+text = "Choose Host or enter a six-character code."
+horizontal_alignment = 1
+autowrap_mode = 2
+
+[node name="ConnectionDetail" type="Label" parent="Lobby/Panel/Layout"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_color = Color(0.58, 0.66, 0.74, 1)
+theme_override_font_sizes/font_size = 13
+horizontal_alignment = 1
+autowrap_mode = 2
+
+[node name="GameHud" type="CanvasLayer" parent="."]
+layer = 10
+
+[node name="StatusPanel" type="PanelContainer" parent="GameHud"]
+offset_left = 18.0
+offset_top = 18.0
+offset_right = 650.0
+offset_bottom = 214.0
+theme = ExtResource("5_theme")
+theme_override_styles/panel = SubResource("StyleBox_hud")
+
+[node name="Layout" type="VBoxContainer" parent="GameHud/StatusPanel"]
+layout_mode = 2
+theme_override_constants/separation = 5
+
+[node name="SessionCode" type="Label" parent="GameHud/StatusPanel/Layout"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_color = Color(0.68, 0.86, 1, 1)
+theme_override_font_sizes/font_size = 19
+text = "SESSION"
+
+[node name="SessionStatus" type="Label" parent="GameHud/StatusPanel/Layout"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_color = Color(0.42, 1, 0.7, 1)
+text = "Connecting"
+
+[node name="TestGoal" type="Label" parent="GameHud/StatusPanel/Layout"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.64, 0.72, 0.8, 1)
+theme_override_font_sizes/font_size = 14
+text = "TEST  Other suit moves · cube % matches · host survives guest exit"
+
+[node name="SharedPowerReadout" type="Label" parent="GameHud/StatusPanel/Layout"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_color = Color(0.82, 0.88, 1, 1)
+text = "SHARED CUBE POWER"
+
+[node name="SharedPowerBar" type="ProgressBar" parent="GameHud/StatusPanel/Layout"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 18)
+layout_mode = 2
+value = 50.0
+show_percentage = false
+
+[node name="Controls" type="Label" parent="GameHud"]
+anchors_preset = 3
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -470.0
+offset_top = -124.0
+offset_right = -18.0
+offset_bottom = -18.0
+grow_horizontal = 0
+grow_vertical = 0
+theme_override_colors/font_color = Color(0.72, 0.8, 0.88, 0.9)
+theme_override_font_sizes/font_size = 15
+text = "ZERO-G KEEPS YOUR MOMENTUM\nWASD  THRUST    SPACE / SHIFT  UP / DOWN\nTRACKPAD / MOUSE  LOOK    Q / E  ROLL\nHOLD R  BRAKE DRIFT    ESC  RELEASE MOUSE"
+horizontal_alignment = 2
+
+[node name="ActionPrompt" type="Label" parent="GameHud"]
+unique_name_in_owner = true
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -420.0
+offset_top = 58.0
+offset_right = 420.0
+offset_bottom = 92.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_colors/font_color = Color(0.68, 0.86, 1, 0.95)
+theme_override_font_sizes/font_size = 18
+text = "FOLLOW THE BLUE TETHER · REACH THE POWER CUBE"
+horizontal_alignment = 1
+
+[node name="Crosshair" type="ColorRect" parent="GameHud"]
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -2.0
+offset_top = -2.0
+offset_right = 2.0
+offset_bottom = 2.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+color = Color(0.76, 0.9, 1, 0.7)
+
+[node name="CapturePrompt" type="PanelContainer" parent="GameHud"]
+unique_name_in_owner = true
+visible = false
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -245.0
+offset_top = -80.0
+offset_right = 245.0
+offset_bottom = 80.0
+grow_horizontal = 2
+grow_vertical = 2
+theme = ExtResource("5_theme")
+theme_override_styles/panel = SubResource("StyleBox_hud")
+
+[node name="Layout" type="VBoxContainer" parent="GameHud/CapturePrompt"]
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="Title" type="Label" parent="GameHud/CapturePrompt/Layout"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.68, 0.86, 1, 1)
+theme_override_font_sizes/font_size = 22
+text = "SUIT CONTROLS PAUSED"
+horizontal_alignment = 1
+
+[node name="Hint" type="Label" parent="GameHud/CapturePrompt/Layout"]
+layout_mode = 2
+text = "Click below to capture your trackpad or mouse."
+horizontal_alignment = 1
+
+[node name="CaptureButton" type="Button" parent="GameHud/CapturePrompt/Layout"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 48)
+layout_mode = 2
+text = "RESUME SUIT CONTROL"
+
+[node name="Briefing" type="CanvasLayer" parent="."]
+visible = false
+layer = 30
+
+[node name="Backdrop" type="ColorRect" parent="Briefing"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.004, 0.007, 0.012, 0.78)
+
+[node name="Panel" type="PanelContainer" parent="Briefing"]
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -430.0
+offset_top = -310.0
+offset_right = 430.0
+offset_bottom = 310.0
+grow_horizontal = 2
+grow_vertical = 2
+theme = ExtResource("5_theme")
+theme_override_styles/panel = SubResource("StyleBox_lobby")
+
+[node name="Layout" type="VBoxContainer" parent="Briefing/Panel"]
+layout_mode = 2
+theme_override_constants/separation = 11
+
+[node name="Eyebrow" type="Label" parent="Briefing/Panel/Layout"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.42, 1, 0.7, 1)
+text = "TWO-PLAYER NETWORKING PROOF"
+horizontal_alignment = 1
+
+[node name="Title" type="Label" parent="Briefing/Panel/Layout"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.68, 0.86, 1, 1)
+theme_override_font_sizes/font_size = 30
+text = "ZERO-G POWER LINK"
+horizontal_alignment = 1
+
+[node name="BriefingSession" type="Label" parent="Briefing/Panel/Layout"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_color = Color(0.95, 0.76, 0.38, 1)
+text = "SESSION"
+horizontal_alignment = 1
+
+[node name="Intro" type="Label" parent="Briefing/Panel/Layout"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.8, 0.86, 0.92, 1)
+text = "Both survivors float in the same room, tethered to one shared battery.\nThe host simulates the suits, cube, and power; each player controls only their suit."
+horizontal_alignment = 1
+
+[node name="Divider" type="HSeparator" parent="Briefing/Panel/Layout"]
+layout_mode = 2
+
+[node name="ObjectiveTitle" type="Label" parent="Briefing/Panel/Layout"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.42, 1, 0.7, 1)
+theme_override_font_sizes/font_size = 19
+text = "WHAT TO DO"
+
+[node name="Objective" type="Label" parent="Briefing/Panel/Layout"]
+layout_mode = 2
+text = "Follow the blue tether to the labeled power cube. Get within 3 metres and hold F to crank it. Both helmet lamps drain this same power bar."
+autowrap_mode = 2
+
+[node name="ControlsTitle" type="Label" parent="Briefing/Panel/Layout"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.68, 0.86, 1, 1)
+theme_override_font_sizes/font_size = 19
+text = "LAPTOP CONTROLS"
+
+[node name="Controls" type="Label" parent="Briefing/Panel/Layout"]
+layout_mode = 2
+text = "WASD  thrust     SPACE / SHIFT  up / down     TRACKPAD / MOUSE  look\nQ / E  roll     HOLD R  brake your drift     ESC  release the mouse"
+
+[node name="Verification" type="Label" parent="Briefing/Panel/Layout"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.95, 0.76, 0.38, 1)
+text = "CHECK  See the other suit move · cube % matches · either player can crank · host continues if guest leaves"
+autowrap_mode = 2
+
+[node name="BriefingReadyStatus" type="Label" parent="Briefing/Panel/Layout"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_color = Color(0.62, 0.72, 0.8, 1)
+text = "Synchronizing your suit…"
+horizontal_alignment = 1
+
+[node name="BriefingBeginButton" type="Button" parent="Briefing/Panel/Layout"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 56)
+layout_mode = 2
+text = "ENTER SUIT · CAPTURE TRACKPAD / MOUSE"
+
+[node name="ConnectionProgress" type="CanvasLayer" parent="."]
+layer = 40
+
+[node name="Backdrop" type="ColorRect" parent="ConnectionProgress"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.004, 0.007, 0.012, 1)
+
+[node name="Panel" type="PanelContainer" parent="ConnectionProgress"]
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -430.0
+offset_top = -280.0
+offset_right = 430.0
+offset_bottom = 280.0
+grow_horizontal = 2
+grow_vertical = 2
+theme = ExtResource("5_theme")
+theme_override_styles/panel = SubResource("StyleBox_lobby")
+
+[node name="Layout" type="VBoxContainer" parent="ConnectionProgress/Panel"]
+layout_mode = 2
+theme_override_constants/separation = 17
+
+[node name="Eyebrow" type="Label" parent="ConnectionProgress/Panel/Layout"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.42, 1, 0.7, 1)
+text = "MULTIPLAYER STARTUP"
+horizontal_alignment = 1
+
+[node name="LoadingPhase" type="Label" parent="ConnectionProgress/Panel/Layout"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_color = Color(0.95, 0.76, 0.38, 1)
+theme_override_font_sizes/font_size = 16
+text = "STAGE 1 OF 2"
+horizontal_alignment = 1
+
+[node name="LoadingTitle" type="Label" parent="ConnectionProgress/Panel/Layout"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_color = Color(0.68, 0.86, 1, 1)
+theme_override_font_sizes/font_size = 32
+text = "PREPARING NETWORK DEMO"
+horizontal_alignment = 1
+
+[node name="LoadingSessionCode" type="Label" parent="ConnectionProgress/Panel/Layout"]
+unique_name_in_owner = true
+visible = false
+layout_mode = 2
+theme_override_colors/font_color = Color(0.95, 0.76, 0.38, 1)
+theme_override_font_sizes/font_size = 20
+text = "SESSION CODE"
+horizontal_alignment = 1
+
+[node name="Divider" type="HSeparator" parent="ConnectionProgress/Panel/Layout"]
+layout_mode = 2
+
+[node name="LoadingDetail" type="Label" parent="ConnectionProgress/Panel/Layout"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 64)
+layout_mode = 2
+theme_override_colors/font_color = Color(0.8, 0.86, 0.92, 1)
+theme_override_font_sizes/font_size = 19
+text = "Loading the shared power chamber…"
+horizontal_alignment = 1
+vertical_alignment = 1
+autowrap_mode = 2
+
+[node name="LoadingBar" type="ProgressBar" parent="ConnectionProgress/Panel/Layout"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 20)
+layout_mode = 2
+value = 50.0
+show_percentage = false
+
+[node name="LoadingCancelButton" type="Button" parent="ConnectionProgress/Panel/Layout"]
+unique_name_in_owner = true
+visible = false
+custom_minimum_size = Vector2(0, 48)
+layout_mode = 2
+text = "BACK TO MULTIPLAYER LOBBY"

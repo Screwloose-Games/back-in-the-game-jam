@@ -1,6 +1,7 @@
 [gd_resource type="Resource" script_class="PrototypeSettingsIndex" format=3]
 
 [ext_resource type="Resource" path="res://prototypes/elevator_cutscene/elevator_cutscene_settings.tres" id="1_86qw3"]
+[ext_resource type="Resource" path="res://prototypes/drill_and_mining/drill_settings.tres" id="1_up0nj"]
 [ext_resource type="Resource" path="res://prototypes/level_design_01/level_design_01_settings.tres" id="2_16jwu"]
 [ext_resource type="Resource" path="res://prototypes/navigation/navigation_settings.tres" id="3_0p2wx"]
 [ext_resource type="Resource" path="res://prototypes/object_carrying/carry_settings.tres" id="4_ii6fk"]
@@ -16,3 +17,4 @@ tunnel_system = ExtResource("7_083y0")
 tentacle_crawler_chaser = ExtResource("6_0s31v")
 elevator_cutscene = ExtResource("1_86qw3")
 level_design_01 = ExtResource("2_16jwu")
+drill_and_mining = ExtResource("1_up0nj")

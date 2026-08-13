@@ -11,6 +11,43 @@ Your lamp is the only thing you can see by, your lamp runs on the suit battery,
 and the suit battery is refilled by the cube you have to haul around with you.
 This is the prototype for that loop.
 
+## Integrated multiplayer demo
+
+`power_and_lighting_multiplayer_demo.tscn` is the two-player network proof built
+from this room and its settled power/lighting values. It deliberately leaves the
+finished single-player prototype intact.
+
+The demo uses Godot's high-level multiplayer model rather than a custom gameplay
+packet format:
+
+- `MultiplayerSpawner` creates deterministic player nodes `1` and `2`.
+- Each player's `Inputs` node samples bounded intent. `ClientPredictor3D` sends
+  sequenced commands, moves the local suit immediately, and reconciles it to
+  host snapshots.
+- Player `StateSync` nodes publish atomic prediction snapshots and interpolate
+  remote suits. The cube `StateSync`, cube physics, and shared power all retain
+  peer 1 authority.
+- Lamp brightness, cube glow, and tether drawing are local presentation derived
+  from synchronized state.
+
+Build the browser version without changing the project's real main scene:
+
+```sh
+./tools/export_power_multiplayer_demo_web.sh
+cd releases/power-multiplayer-demo-web
+python3 -m http.server --bind 127.0.0.1 8002
+```
+
+Open `http://127.0.0.1:8002/` in two browsers. Host in one, enter its code in the
+other. The default endpoint is the signaling service in `infrastructure/`; for a
+local Worker, replace it in both windows with `ws://localhost:8787`.
+
+The multiplayer scene opens with its own briefing. Its deliberately small
+interaction set is: `WASD` thrust, `Space`/`Shift` up/down, trackpad or mouse to
+look, `Q`/`E` roll, hold `R` to brake drift, and hold `F` within three metres of
+the cube to crank it. The blue tether is automatic in this demo; unlike the
+single-player prototype documented below, `F` does not grab or release anything.
+
 ## This prototype is finished
 
 Nothing is open. Both lamps are settled - how bright, how far, what colour, how

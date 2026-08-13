@@ -59,7 +59,6 @@ func _ready() -> void:
 	_network_session.host_started.connect(_on_host_started)
 	_network_session.peer_available.connect(_on_peer_available)
 	_network_session.direct_connection_opened.connect(_on_direct_connection_opened)
-	_network_session.game_packet_received.connect(_on_game_packet_received)
 	_network_session.transport_diagnostic.connect(_on_transport_diagnostic)
 	_network_session.signaling_message_received.connect(_on_signaling_message_received)
 	_network_session.session_failed.connect(_on_session_failed)
@@ -97,9 +96,12 @@ func _on_join_pressed() -> void:
 	var session_code := _session_code_input.text.strip_edges().to_upper()
 	_session_code_input.text = session_code
 
-	var result: Error = _network_session.join(
-		_signaling_endpoint_input.text,
-		session_code,
+	var result: Error = (
+		_network_session
+		. join(
+			_signaling_endpoint_input.text,
+			session_code,
+		)
 	)
 
 	if result != OK:
@@ -140,7 +142,7 @@ func _on_peer_available() -> void:
 
 
 func _on_direct_connection_opened() -> void:
-	_append_log("Direct data channel opened.")
+	_append_log("Godot high-level multiplayer route opened.")
 
 	# Only the host owns the initial shared snapshot.
 	if _network_session.get_role() == NetworkSessionScript.Role.HOST:
@@ -203,55 +205,18 @@ func _submit_local_move(direction: Vector2i) -> void:
 		return
 
 	# A client sends intent only. It never sends a claimed world position.
-	_send_smoke_message(
-		{
-			"type": "move_intent",
-			"direction": {"x": direction.x, "y": direction.y},
-		},
-	)
+	_request_client_move.rpc_id(WebRTCSession.HOST_PEER_ID, direction)
 
 
-func _on_game_packet_received(packet: PackedByteArray) -> void:
-	var json := JSON.new()
-	var parse_result: Error = json.parse(packet.get_string_from_utf8())
-
-	if parse_result != OK:
-		_append_log("Ignored malformed direct packet.")
-		return
-
-	var raw_message: Variant = json.data
-	if typeof(raw_message) != TYPE_DICTIONARY:
-		_append_log("Ignored non-object direct packet.")
-		return
-
-	var message: Dictionary = raw_message
-	var message_type := String(message.get("type", ""))
-
-	match message_type:
-		"move_intent":
-			_apply_client_move_intent(message)
-		"state_snapshot":
-			_apply_authoritative_snapshot(message)
-		_:
-			_append_log("Ignored unknown direct message: %s" % message_type)
-
-
-func _apply_client_move_intent(message: Dictionary) -> void:
+@rpc("any_peer", "call_remote", "reliable")
+func _request_client_move(direction: Vector2i) -> void:
 	# Only the host is allowed to turn a client intent into state.
-	if _network_session.get_role() != NetworkSessionScript.Role.HOST:
+	if (
+		_network_session.get_role() != NetworkSessionScript.Role.HOST
+		or multiplayer.get_remote_sender_id() != WebRTCSession.CLIENT_PEER_ID
+	):
 		_append_log("Ignored move intent on non-host client.")
 		return
-
-	var raw_direction: Variant = message.get("direction", {})
-	if typeof(raw_direction) != TYPE_DICTIONARY:
-		_append_log("Ignored move intent without a direction.")
-		return
-
-	var direction_data: Dictionary = raw_direction
-	var direction := Vector2i(
-		int(direction_data.get("x", 0)),
-		int(direction_data.get("y", 0)),
-	)
 
 	# Accept only one-cell cardinal movement from the client.
 	if abs(direction.x) + abs(direction.y) != 1:
@@ -274,36 +239,23 @@ func _broadcast_authoritative_snapshot() -> void:
 	if _network_session.get_state() != NetworkSessionScript.State.CONNECTED:
 		return
 
-	_send_smoke_message(
-		{
-			"type": "state_snapshot",
-			"host": {"x": _host_grid_position.x, "y": _host_grid_position.y},
-			"client": {"x": _client_grid_position.x, "y": _client_grid_position.y},
-		},
+	(
+		_receive_authoritative_snapshot
+		. rpc(
+			_host_grid_position,
+			_client_grid_position,
+		)
 	)
 
 
-func _apply_authoritative_snapshot(message: Dictionary) -> void:
-	var raw_host: Variant = message.get("host", {})
-	var raw_client: Variant = message.get("client", {})
-
-	if typeof(raw_host) != TYPE_DICTIONARY or typeof(raw_client) != TYPE_DICTIONARY:
-		_append_log("Ignored incomplete state snapshot.")
-		return
-
-	var host_data: Dictionary = raw_host
-	var client_data: Dictionary = raw_client
-	_host_grid_position = Vector2i(int(host_data.get("x", 0)), int(host_data.get("y", 0)))
-	_client_grid_position = Vector2i(int(client_data.get("x", 0)), int(client_data.get("y", 0)))
+@rpc("authority", "call_remote", "reliable")
+func _receive_authoritative_snapshot(
+	host_position: Vector2i,
+	client_position: Vector2i,
+) -> void:
+	_host_grid_position = host_position
+	_client_grid_position = client_position
 	_render_grid()
-
-
-func _send_smoke_message(message: Dictionary) -> void:
-	var packet: PackedByteArray = JSON.stringify(message).to_utf8_buffer()
-	var result: Error = _network_session.send_game_packet(packet)
-
-	if result != OK:
-		_append_log("Could not send direct packet. Error: %d" % result)
 
 
 func _direction_for_key(keycode: Key) -> Vector2i:
@@ -320,10 +272,10 @@ func _direction_for_key(keycode: Key) -> Vector2i:
 			return Vector2i.ZERO
 
 
-func _move_on_grid(position: Vector2i, direction: Vector2i) -> Vector2i:
+func _move_on_grid(pos: Vector2i, direction: Vector2i) -> Vector2i:
 	return Vector2i(
-		clampi(position.x + direction.x, 0, GRID_COLUMNS - 1),
-		clampi(position.y + direction.y, 0, GRID_ROWS - 1),
+		clampi(pos.x + direction.x, 0, GRID_COLUMNS - 1),
+		clampi(pos.y + direction.y, 0, GRID_ROWS - 1),
 	)
 
 

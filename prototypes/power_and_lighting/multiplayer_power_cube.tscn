@@ -1,0 +1,75 @@
+[gd_scene load_steps=7 format=3]
+
+[ext_resource type="Script" path="res://prototypes/power_and_lighting/multiplayer_power_cube.gd" id="1_cube"]
+
+[sub_resource type="BoxShape3D" id="BoxShape_cube"]
+size = Vector3(1, 1, 1)
+
+[sub_resource type="StandardMaterial3D" id="Material_cube"]
+resource_local_to_scene = true
+albedo_color = Color(0.22, 0.24, 0.28, 1)
+metallic = 0.5
+metallic_specular = 0.4
+roughness = 0.5
+emission_enabled = true
+emission = Color(0.579, 0.758, 1, 1)
+emission_energy_multiplier = 0.5
+
+[sub_resource type="BoxMesh" id="BoxMesh_cube"]
+material = SubResource("Material_cube")
+size = Vector3(1, 1, 1)
+
+[sub_resource type="SceneReplicationConfig" id="ReplicationConfig_cube"]
+properties/0/path = NodePath(".:synced_transform")
+properties/0/spawn = true
+properties/0/replication_mode = 1
+properties/1/path = NodePath(".:synced_linear_velocity")
+properties/1/spawn = true
+properties/1/replication_mode = 1
+properties/2/path = NodePath(".:synced_angular_velocity")
+properties/2/spawn = true
+properties/2/replication_mode = 1
+properties/3/path = NodePath(".:power_fraction")
+properties/3/spawn = true
+properties/3/replication_mode = 1
+
+[node name="PowerCube" type="RigidBody3D"]
+mass = 1000.0
+gravity_scale = 0.0
+linear_damp = 0.05
+angular_damp = 0.05
+can_sleep = false
+freeze = true
+collision_layer = 8
+collision_mask = 11
+script = ExtResource("1_cube")
+
+[node name="CollisionShape" type="CollisionShape3D" parent="."]
+shape = SubResource("BoxShape_cube")
+
+[node name="Mesh" type="MeshInstance3D" parent="."]
+layers = 2
+material_override = SubResource("Material_cube")
+mesh = SubResource("BoxMesh_cube")
+
+[node name="CubeLight" type="OmniLight3D" parent="."]
+light_color = Color(0.579, 0.758, 1, 1)
+light_energy = 1.0
+shadow_enabled = true
+shadow_caster_mask = 4294967293
+omni_range = 16.0
+omni_attenuation = 1.0
+
+[node name="WorldLabel" type="Label3D" parent="."]
+position = Vector3(0, 1.15, 0)
+billboard = 1
+no_depth_test = true
+fixed_size = true
+text = "SHARED POWER CUBE\n50% · HOLD F NEARBY"
+font_size = 32
+outline_size = 10
+modulate = Color(0.68, 0.86, 1, 1)
+
+[node name="StateSync" type="MultiplayerSynchronizer" parent="."]
+replication_interval = 0.05
+replication_config = SubResource("ReplicationConfig_cube")
