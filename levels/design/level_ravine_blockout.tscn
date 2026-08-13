@@ -23,46 +23,6 @@ sound_origin = NodePath("Spaces/rv_s2")
 
 [node name="Spaces" type="Node3D" parent="." unique_id=1786283702]
 
-[node name="knot_west_a" type="Node3D" parent="Spaces" unique_id=209632568]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -41.559998, -33.989857, -56.96832)
-script = ExtResource("2_dei6f")
-kind = 1
-radius = 4.5
-tags = Array[StringName]([&"ravine", &"warren"])
-
-[node name="knot_west_b" type="Node3D" parent="Spaces" unique_id=1308497787]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -33.165924, -62.62684, 4.3305683)
-script = ExtResource("2_dei6f")
-kind = 1
-radius = 4.5
-tags = Array[StringName]([&"ravine", &"warren"])
-
-[node name="knot_east_a" type="Node3D" parent="Spaces" unique_id=1143782860]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 46, -44, -44)
-script = ExtResource("2_dei6f")
-kind = 1
-radius = 4.5
-tags = Array[StringName]([&"ravine", &"warren"])
-
-[node name="knot_east_b" type="Node3D" parent="Spaces" unique_id=1710286913]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 44, -60, 64)
-script = ExtResource("2_dei6f")
-kind = 1
-radius = 4.5
-tags = Array[StringName]([&"ravine", &"warren"])
-
-[node name="pocket_west_a" type="Node3D" parent="Spaces" unique_id=740842282]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -46.76444, -41.956985, -20.335373)
-script = ExtResource("2_dei6f")
-radius = 6.0
-tags = Array[StringName]([&"ravine", &"pocket"])
-
-[node name="pocket_east_a" type="Node3D" parent="Spaces" unique_id=584576113]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 70, -48, -84)
-script = ExtResource("2_dei6f")
-radius = 5.5
-tags = Array[StringName]([&"ravine", &"pocket"])
-
 [node name="rv_north_end" type="Node3D" parent="Spaces" unique_id=1589807128]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 7.3843765, -34.729286, -55.79015)
 script = ExtResource("2_dei6f")
@@ -105,29 +65,179 @@ kind = 2
 radius = 0.0
 tags = Array[StringName]([&"ravine", &"chasm", &"entrance"])
 
-[node name="side_s4_west_mid" type="Node3D" parent="Spaces" unique_id=792900356]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -22.526575, -55.303524, 44.90734)
+[node name="rv_r1_east_upper" type="Node3D" parent="Spaces" unique_id=1014835256]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.784782, -29.961435, -47.458244)
 script = ExtResource("2_dei6f")
 kind = 1
-radius = 5.5
+radius = 0.0
+tags = Array[StringName]([&"ravine", &"chasm"])
 
-[node name="side_south_west_mid" type="Node3D" parent="Spaces" unique_id=1218812207]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -26.485855, -58.28849, 88.28562)
+[node name="pocket_east_1" type="Node3D" parent="Spaces" unique_id=1868214111]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 21.025866, -33.961433, -44.675247)
+script = ExtResource("2_dei6f")
+radius = 3.6
+tags = Array[StringName]([&"ravine", &"pocket"])
+
+[node name="rv_r1_west_lower" type="Node3D" parent="Spaces" unique_id=1425532739]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.149684, -46.97004, -37.520126)
 script = ExtResource("2_dei6f")
 kind = 1
-radius = 5.5
+radius = 0.0
+tags = Array[StringName]([&"ravine", &"chasm"])
 
-[node name="rv_s4_upper_junc" type="Node3D" parent="Spaces" unique_id=55335505]
+[node name="pocket_west_1" type="Node3D" parent="Spaces" unique_id=1257782532]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -23.862127, -43.97004, -42.971737)
+script = ExtResource("2_dei6f")
+radius = 4.2
+tags = Array[StringName]([&"ravine", &"pocket"])
+
+[node name="rv_r2_east_mid" type="Node3D" parent="Spaces" unique_id=917162912]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.927188, -45.320984, -21.679377)
+script = ExtResource("2_dei6f")
+kind = 1
+radius = 0.0
+tags = Array[StringName]([&"ravine", &"chasm"])
+
+[node name="pocket_east_2" type="Node3D" parent="Spaces" unique_id=1817881254]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 15.418582, -47.820984, -24.995926)
+script = ExtResource("2_dei6f")
+radius = 3.4
+tags = Array[StringName]([&"ravine", &"pocket"])
+
+[node name="rv_r2_west_upper" type="Node3D" parent="Spaces" unique_id=615728804]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5.5495, -40.617455, -14.436283)
+script = ExtResource("2_dei6f")
+kind = 1
+radius = 0.0
+tags = Array[StringName]([&"ravine", &"chasm"])
+
+[node name="pocket_west_2" type="Node3D" parent="Spaces" unique_id=1274560151]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -15.380654, -45.117455, -8.197)
+script = ExtResource("2_dei6f")
+radius = 4.0
+tags = Array[StringName]([&"ravine", &"pocket"])
+
+[node name="rv_r2_east_lower" type="Node3D" parent="Spaces" unique_id=95504810]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 10.171812, -59.713924, -7.193189)
+script = ExtResource("2_dei6f")
+kind = 1
+radius = 0.0
+tags = Array[StringName]([&"ravine", &"chasm"])
+
+[node name="pocket_east_3" type="Node3D" parent="Spaces" unique_id=1834658873]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 34.778866, -56.213924, -16.965233)
+script = ExtResource("2_dei6f")
+radius = 3.8
+tags = Array[StringName]([&"ravine", &"pocket"])
+
+[node name="pocket_west_3" type="Node3D" parent="Spaces" unique_id=1291337770]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.470118, -59.009804, -1.192858)
+script = ExtResource("2_dei6f")
+radius = 4.4
+tags = Array[StringName]([&"ravine", &"pocket"])
+
+[node name="pocket_east_4" type="Node3D" parent="Spaces" unique_id=1784326016]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 38.195812, -53.509804, 4.054231)
+script = ExtResource("2_dei6f")
+radius = 3.5
+tags = Array[StringName]([&"ravine", &"pocket"])
+
+[node name="rv_r3_west_upper" type="Node3D" parent="Spaces" unique_id=890000640]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 12.547333, -45.863354, 11.692489)
+script = ExtResource("2_dei6f")
+kind = 1
+radius = 0.0
+tags = Array[StringName]([&"ravine", &"chasm"])
+
+[node name="pocket_west_4" type="Node3D" parent="Spaces" unique_id=1308115389]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -12.857747, -48.863354, 9.551942)
+script = ExtResource("2_dei6f")
+radius = 3.6
+tags = Array[StringName]([&"ravine", &"pocket"])
+
+[node name="rv_r3_east_mid" type="Node3D" parent="Spaces" unique_id=986941984]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 9.637913, -54.61856, 21.7552)
+script = ExtResource("2_dei6f")
+kind = 1
+radius = 0.0
+tags = Array[StringName]([&"ravine", &"chasm"])
+
+[node name="pocket_east_5" type="Node3D" parent="Spaces" unique_id=1801103635]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 23.897346, -58.11856, 30.04185)
+script = ExtResource("2_dei6f")
+radius = 4.5
+tags = Array[StringName]([&"ravine", &"pocket"])
+
+[node name="rv_r3_west_lower" type="Node3D" parent="Spaces" unique_id=1960920225]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6.728493, -64.173775, 31.81791)
+script = ExtResource("2_dei6f")
+kind = 1
+radius = 0.0
+tags = Array[StringName]([&"ravine", &"chasm"])
+
+[node name="pocket_west_5" type="Node3D" parent="Spaces" unique_id=1324893008]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -11.095799, -61.67377, 21.459597)
+script = ExtResource("2_dei6f")
+radius = 3.4
+tags = Array[StringName]([&"ravine", &"pocket"])
+
+[node name="rv_r4_east_upper" type="Node3D" parent="Spaces" unique_id=437224449]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5.407993, -47.687614, 46.218994)
+script = ExtResource("2_dei6f")
+kind = 1
+radius = 0.0
+tags = Array[StringName]([&"ravine", &"chasm"])
+
+[node name="pocket_east_6" type="Node3D" parent="Spaces" unique_id=1750770778]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 28.92953, -50.687614, 39.309776)
+script = ExtResource("2_dei6f")
+radius = 3.8
+tags = Array[StringName]([&"ravine", &"pocket"])
+
+[node name="rv_r4_west_upper" type="Node3D" parent="Spaces" unique_id=181540954]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6.107538, -48.47079, 55.01559)
 script = ExtResource("2_dei6f")
 kind = 1
 radius = 0.0
+tags = Array[StringName]([&"ravine", &"chasm"])
 
-[node name="rv_s1_upper_junc" type="Node3D" parent="Spaces" unique_id=506447631]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.7847824, -29.961435, -47.458244)
+[node name="pocket_west_6" type="Node3D" parent="Spaces" unique_id=1341670627]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8.443006, -50.97079, 61.20281)
+script = ExtResource("2_dei6f")
+radius = 4.0
+tags = Array[StringName]([&"ravine", &"pocket"])
+
+[node name="pocket_east_7" type="Node3D" parent="Spaces" unique_id=1767548397]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 27.1146, -56, 73.23898)
+script = ExtResource("2_dei6f")
+radius = 3.6
+tags = Array[StringName]([&"ravine", &"pocket"])
+
+[node name="rv_r5_west_mid" type="Node3D" parent="Spaces" unique_id=1589557812]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.288677, -59.68044, 74.90754)
 script = ExtResource("2_dei6f")
 kind = 1
 radius = 0.0
+tags = Array[StringName]([&"ravine", &"chasm"])
+
+[node name="pocket_west_7" type="Node3D" parent="Spaces" unique_id=1358448246]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -19.17306, -62.68044, 61.215553)
+script = ExtResource("2_dei6f")
+radius = 4.2
+tags = Array[StringName]([&"ravine", &"pocket"])
+
+[node name="rv_r5_east_lower" type="Node3D" parent="Spaces" unique_id=1628492908]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.637732, -68.50932, 81.270065)
+script = ExtResource("2_dei6f")
+kind = 1
+radius = 0.0
+tags = Array[StringName]([&"ravine", &"chasm"])
+
+[node name="pocket_east_8" type="Node3D" parent="Spaces" unique_id=1717215540]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 15.330206, -65.50932, 92.80831)
+script = ExtResource("2_dei6f")
+radius = 3.5
+tags = Array[StringName]([&"ravine", &"pocket"])
 
 [node name="Tunnels" type="Node3D" parent="." unique_id=816604611]
 
@@ -171,242 +281,315 @@ width = 3.0
 height = 24.0
 tags = Array[StringName]([&"ravine", &"chasm"])
 
-[node name="side_north_west" type="Node3D" parent="Tunnels" unique_id=434963850]
+[node name="side_east_1" type="Node3D" parent="Tunnels" unique_id=122624200]
 script = ExtResource("3_tcvyp")
-from_space = NodePath("../../Spaces/rv_north_end")
-to_space = NodePath("../../Spaces/knot_west_a")
-width = 5.5
+from_space = NodePath("../../Spaces/rv_r1_east_upper")
+to_space = NodePath("../../Spaces/pocket_east_1")
+width = 3.4
 tags = Array[StringName]([&"ravine", &"winding", &"refuge"])
 
-[node name="bend_1" type="Marker3D" parent="Tunnels/side_north_west" unique_id=819522437]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.520839, -34.77131, -94.53423)
+[node name="bend_1" type="Marker3D" parent="Tunnels/side_east_1" unique_id=548625331]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 12.428671, -29.961435, -43.89374)
 script = ExtResource("4_sfcfj")
 
-[node name="bend_2" type="Marker3D" parent="Tunnels/side_north_west" unique_id=1944141934]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -19.686226, -41.355385, -96.96311)
+[node name="bend_2" type="Marker3D" parent="Tunnels/side_east_1" unique_id=498292474]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 15.15948, -31.361435, -39.479294)
 script = ExtResource("4_sfcfj")
 
-[node name="bend_3" type="Marker3D" parent="Tunnels/side_north_west" unique_id=412330811]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -32.99908, -38.781467, -89.892685)
-script = ExtResource("4_sfcfj")
-
-[node name="side_north_east" type="Node3D" parent="Tunnels" unique_id=1179847204]
+[node name="side_west_1" type="Node3D" parent="Tunnels" unique_id=1043500994]
 script = ExtResource("3_tcvyp")
-from_space = NodePath("../../Spaces/rv_north_end")
-to_space = NodePath("../../Spaces/pocket_east_a")
-width = 7.0
+from_space = NodePath("../../Spaces/rv_r1_west_lower")
+to_space = NodePath("../../Spaces/pocket_west_1")
+width = 4.6
 tags = Array[StringName]([&"ravine", &"winding"])
 
-[node name="bend_1" type="Marker3D" parent="Tunnels/side_north_east" unique_id=785917219]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 14.274599, -39.561966, -95.147766)
+[node name="bend_1" type="Marker3D" parent="Tunnels/side_west_1" unique_id=385430305]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8.932244, -46.97004, -41.141815)
 script = ExtResource("4_sfcfj")
 
-[node name="bend_2" type="Marker3D" parent="Tunnels/side_north_east" unique_id=820028683]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 29.89639, -34.96038, -92.90825)
+[node name="bend_2" type="Marker3D" parent="Tunnels/side_west_1" unique_id=402207924]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -14.665682, -45.92004, -48.157394)
 script = ExtResource("4_sfcfj")
 
-[node name="bend_3" type="Marker3D" parent="Tunnels/side_north_east" unique_id=2089136805]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 48.577553, -40.74467, -103.79188)
-script = ExtResource("4_sfcfj")
-
-[node name="bend_4" type="Marker3D" parent="Tunnels/side_north_east" unique_id=1454052324]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 55.641308, -48.122433, -86.93683)
-script = ExtResource("4_sfcfj")
-
-[node name="side_s1_west" type="Node3D" parent="Tunnels" unique_id=40904845]
+[node name="side_east_2" type="Node3D" parent="Tunnels" unique_id=105846581]
 script = ExtResource("3_tcvyp")
-from_space = NodePath("../../Spaces/rv_s1")
-to_space = NodePath("../../Spaces/knot_west_a")
-width = 7.2
+from_space = NodePath("../../Spaces/rv_r2_east_mid")
+to_space = NodePath("../../Spaces/pocket_east_2")
+width = 3.6
+tags = Array[StringName]([&"ravine", &"winding", &"refuge"])
+
+[node name="bend_1" type="Marker3D" parent="Tunnels/side_east_2" unique_id=2062478502]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 7.670962, -45.320984, -25.98304)
+script = ExtResource("4_sfcfj")
+
+[node name="bend_2" type="Marker3D" parent="Tunnels/side_east_2" unique_id=2112811359]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 9.107875, -46.195984, -29.865728)
+script = ExtResource("4_sfcfj")
+
+[node name="side_west_2" type="Node3D" parent="Tunnels" unique_id=1093833851]
+script = ExtResource("3_tcvyp")
+from_space = NodePath("../../Spaces/rv_r2_west_upper")
+to_space = NodePath("../../Spaces/pocket_west_2")
+width = 4.4
 tags = Array[StringName]([&"ravine", &"winding"])
 
-[node name="bend_1" type="Marker3D" parent="Tunnels/side_s1_west" unique_id=1225171113]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -22.334843, -38.65268, -65.14505)
+[node name="bend_1" type="Marker3D" parent="Tunnels/side_west_2" unique_id=439978304]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.458732, -40.617455, -9.325684)
 script = ExtResource("4_sfcfj")
 
-[node name="bend_2" type="Marker3D" parent="Tunnels/side_s1_west" unique_id=1728824901]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -30.614374, -36.40925, -73.25179)
+[node name="bend_2" type="Marker3D" parent="Tunnels/side_west_2" unique_id=423200685]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5.767807, -42.19245, -2.753527)
 script = ExtResource("4_sfcfj")
 
-[node name="bend_3" type="Marker3D" parent="Tunnels/side_s1_west" unique_id=1238120163]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -36.91633, -36.60605, -84.864235)
-script = ExtResource("4_sfcfj")
-
-[node name="side_s1_east" type="Node3D" parent="Tunnels" unique_id=1919054646]
+[node name="side_east_3" type="Node3D" parent="Tunnels" unique_id=89068962]
 script = ExtResource("3_tcvyp")
-from_space = NodePath("../../Spaces/rv_s1_upper_junc")
-to_space = NodePath("../../Spaces/pocket_east_a")
+from_space = NodePath("../../Spaces/rv_r2_east_lower")
+to_space = NodePath("../../Spaces/pocket_east_3")
+width = 3.2
+tags = Array[StringName]([&"ravine", &"winding", &"refuge"])
+
+[node name="bend_1" type="Marker3D" parent="Tunnels/side_east_3" unique_id=1884579521]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 18.180044, -59.713924, -12.303788)
+script = ExtResource("4_sfcfj")
+
+[node name="bend_2" type="Marker3D" parent="Tunnels/side_east_3" unique_id=1901357140]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 23.32313, -58.488922, -21.114002)
+script = ExtResource("4_sfcfj")
+
+[node name="side_west_3" type="Node3D" parent="Tunnels" unique_id=1077056232]
+script = ExtResource("3_tcvyp")
+from_space = NodePath("../../Spaces/rv_s2")
+to_space = NodePath("../../Spaces/pocket_west_3")
+width = 5.0
+tags = Array[StringName]([&"ravine", &"winding"])
+
+[node name="bend_1" type="Marker3D" parent="Tunnels/side_west_3" unique_id=1725521811]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6.161855, -55.509804, 2.613589)
+script = ExtResource("4_sfcfj")
+
+[node name="bend_2" type="Marker3D" parent="Tunnels/side_west_3" unique_id=1675188954]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.253873, -56.734802, 6.339791)
+script = ExtResource("4_sfcfj")
+
+[node name="side_east_4" type="Node3D" parent="Tunnels" unique_id=206512295]
+script = ExtResource("3_tcvyp")
+from_space = NodePath("../../Spaces/rv_s2")
+to_space = NodePath("../../Spaces/pocket_east_4")
+width = 3.8
+tags = Array[StringName]([&"ravine", &"winding", &"refuge"])
+
+[node name="bend_1" type="Marker3D" parent="Tunnels/side_east_4" unique_id=1462246203]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 24.967163, -55.509804, -0.099415)
+script = ExtResource("4_sfcfj")
+
+[node name="bend_2" type="Marker3D" parent="Tunnels/side_east_4" unique_id=1445468584]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 31.209124, -54.809803, -4.980722)
+script = ExtResource("4_sfcfj")
+
+[node name="side_west_4" type="Node3D" parent="Tunnels" unique_id=1127389089]
+script = ExtResource("3_tcvyp")
+from_space = NodePath("../../Spaces/rv_r3_west_upper")
+to_space = NodePath("../../Spaces/pocket_west_4")
+width = 4.2
+tags = Array[StringName]([&"ravine", &"winding"])
+
+[node name="bend_1" type="Marker3D" parent="Tunnels/side_west_4" unique_id=995826594]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.421132, -45.863354, 9.053841)
+script = ExtResource("4_sfcfj")
+
+[node name="bend_2" type="Marker3D" parent="Tunnels/side_west_4" unique_id=1046159451]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.524101, -46.913353, 2.382278)
+script = ExtResource("4_sfcfj")
+
+[node name="side_east_5" type="Node3D" parent="Tunnels" unique_id=189734676]
+script = ExtResource("3_tcvyp")
+from_space = NodePath("../../Spaces/rv_r3_east_mid")
+to_space = NodePath("../../Spaces/pocket_east_5")
+width = 5.2
+tags = Array[StringName]([&"ravine", &"winding"])
+
+[node name="bend_1" type="Marker3D" parent="Tunnels/side_east_5" unique_id=1630985119]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 18.091656, -54.61856, 24.19942)
+script = ExtResource("4_sfcfj")
+
+[node name="bend_2" type="Marker3D" parent="Tunnels/side_east_5" unique_id=1580652262]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 22.690212, -55.843563, 22.551853)
+script = ExtResource("4_sfcfj")
+
+[node name="side_west_5" type="Node3D" parent="Tunnels" unique_id=1110611470]
+script = ExtResource("3_tcvyp")
+from_space = NodePath("../../Spaces/rv_r3_west_lower")
+to_space = NodePath("../../Spaces/pocket_west_5")
+width = 3.3
+tags = Array[StringName]([&"ravine", &"winding", &"refuge"])
+
+[node name="bend_1" type="Marker3D" parent="Tunnels/side_west_5" unique_id=1892299148]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.397708, -64.173775, 29.17926)
+script = ExtResource("4_sfcfj")
+
+[node name="bend_2" type="Marker3D" parent="Tunnels/side_west_5" unique_id=1909076767]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8.939831, -63.29877, 31.014378)
+script = ExtResource("4_sfcfj")
+
+[node name="side_east_6" type="Node3D" parent="Tunnels" unique_id=172957057]
+script = ExtResource("3_tcvyp")
+from_space = NodePath("../../Spaces/rv_r4_east_upper")
+to_space = NodePath("../../Spaces/pocket_east_6")
+width = 4.0
+tags = Array[StringName]([&"ravine", &"winding"])
+
+[node name="bend_1" type="Marker3D" parent="Tunnels/side_east_6" unique_id=565624386]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 14.877375, -47.687614, 45.456882)
+script = ExtResource("4_sfcfj")
+
+[node name="bend_2" type="Marker3D" parent="Tunnels/side_east_6" unique_id=615957243]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 23.171627, -48.737614, 49.103252)
+script = ExtResource("4_sfcfj")
+
+[node name="side_west_6" type="Node3D" parent="Tunnels" unique_id=1160944327]
+script = ExtResource("3_tcvyp")
+from_space = NodePath("../../Spaces/rv_r4_west_upper")
+to_space = NodePath("../../Spaces/pocket_west_6")
 width = 4.8
-tags = Array[StringName]([&"ravine", &"winding", &"refuge"])
-
-[node name="bend_1" type="Marker3D" parent="Tunnels/side_s1_east" unique_id=528988023]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 12.699647, -29.852505, -45.971996)
-script = ExtResource("4_sfcfj")
-
-[node name="bend_2" type="Marker3D" parent="Tunnels/side_s1_east" unique_id=1153049325]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 31.683788, -47.739944, -68.14229)
-script = ExtResource("4_sfcfj")
-
-[node name="bend_3" type="Marker3D" parent="Tunnels/side_s1_east" unique_id=398823187]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 48.849155, -45.530403, -85.85686)
-script = ExtResource("4_sfcfj")
-
-[node name="side_s2_west" type="Node3D" parent="Tunnels" unique_id=324792546]
-script = ExtResource("3_tcvyp")
-from_space = NodePath("../../Spaces/rv_s2")
-to_space = NodePath("../../Spaces/pocket_west_a")
-width = 6.8
 tags = Array[StringName]([&"ravine", &"winding"])
 
-[node name="bend_1" type="Marker3D" parent="Tunnels/side_s2_west" unique_id=9817748]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -15.4670315, -46.27232, -19.14936)
+[node name="bend_1" type="Marker3D" parent="Tunnels/side_west_6" unique_id=450133915]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.115872, -48.47079, 55.67742)
 script = ExtResource("4_sfcfj")
 
-[node name="bend_2" type="Marker3D" parent="Tunnels/side_s2_west" unique_id=2031105140]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -35.68029, -47.05446, -25.631638)
+[node name="bend_2" type="Marker3D" parent="Tunnels/side_west_6" unique_id=433356296]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6.031402, -49.34579, 53.303886)
 script = ExtResource("4_sfcfj")
 
-[node name="side_s2_east" type="Node3D" parent="Tunnels" unique_id=972626511]
-script = ExtResource("3_tcvyp")
-from_space = NodePath("../../Spaces/rv_s2")
-to_space = NodePath("../../Spaces/knot_east_a")
-width = 7.5
-tags = Array[StringName]([&"ravine", &"winding"])
-
-[node name="bend_1" type="Marker3D" parent="Tunnels/side_s2_east" unique_id=2141905885]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 20.355242, -43.812378, -22.414799)
-script = ExtResource("4_sfcfj")
-
-[node name="bend_2" type="Marker3D" parent="Tunnels/side_s2_east" unique_id=1472206206]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 25.534857, -44.056934, -35.44497)
-script = ExtResource("4_sfcfj")
-
-[node name="bend_3" type="Marker3D" parent="Tunnels/side_s2_east" unique_id=1280267254]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 42.497917, -46.339897, -28.307224)
-script = ExtResource("4_sfcfj")
-
-[node name="side_s3_west" type="Node3D" parent="Tunnels" unique_id=1864046449]
-script = ExtResource("3_tcvyp")
-from_space = NodePath("../../Spaces/rv_s3")
-to_space = NodePath("../../Spaces/knot_west_b")
-width = 6.0
-tags = Array[StringName]([&"ravine", &"winding", &"refuge"])
-
-[node name="bend_1" type="Marker3D" parent="Tunnels/side_s3_west" unique_id=1109057160]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -18.393675, -54.80434, 28.164108)
-script = ExtResource("4_sfcfj")
-
-[node name="bend_3" type="Marker3D" parent="Tunnels/side_s3_west" unique_id=123032737]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -24.627771, -58.919308, 9.262791)
-script = ExtResource("4_sfcfj")
-
-[node name="side_s4_west" type="Node3D" parent="Tunnels" unique_id=318603631]
-script = ExtResource("3_tcvyp")
-from_space = NodePath("../../Spaces/rv_s4_upper_junc")
-to_space = NodePath("../../Spaces/side_s4_west_mid")
-width = 7.0
-tags = Array[StringName]([&"ravine", &"winding"])
-
-[node name="bend_1" type="Marker3D" parent="Tunnels/side_s4_west" unique_id=1502261745]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -9.472138, -44.25961, 55.91383)
-script = ExtResource("4_sfcfj")
-
-[node name="bend_2" type="Marker3D" parent="Tunnels/side_s4_west" unique_id=1007831700]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -17.048353, -55.04953, 49.271076)
-script = ExtResource("4_sfcfj")
-
-[node name="side_s4_east" type="Node3D" parent="Tunnels" unique_id=1624183209]
+[node name="side_east_7" type="Node3D" parent="Tunnels" unique_id=156179438]
 script = ExtResource("3_tcvyp")
 from_space = NodePath("../../Spaces/rv_s4")
-to_space = NodePath("../../Spaces/knot_east_b")
-width = 6.9
-tags = Array[StringName]([&"ravine", &"winding"])
-
-[node name="bend_1" type="Marker3D" parent="Tunnels/side_s4_east" unique_id=1430124476]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 18.89028, -57.665096, 56.135273)
-script = ExtResource("4_sfcfj")
-
-[node name="bend_2" type="Marker3D" parent="Tunnels/side_s4_east" unique_id=1984232557]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 31.598698, -61.49006, 65.565956)
-script = ExtResource("4_sfcfj")
-
-[node name="side_south_west" type="Node3D" parent="Tunnels" unique_id=1339829989]
-script = ExtResource("3_tcvyp")
-from_space = NodePath("../../Spaces/rv_south_end")
-to_space = NodePath("../../Spaces/side_south_west_mid")
-width = 5.2
+to_space = NodePath("../../Spaces/pocket_east_7")
+width = 3.5
 tags = Array[StringName]([&"ravine", &"winding", &"refuge"])
 
-[node name="bend_2" type="Marker3D" parent="Tunnels/side_south_west" unique_id=1860426297]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -24.895412, -57.779484, 89.623024)
+[node name="bend_1" type="Marker3D" parent="Tunnels/side_east_7" unique_id=56943917]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 16.38281, -58, 67.48758)
 script = ExtResource("4_sfcfj")
 
-[node name="side_south_east" type="Node3D" parent="Tunnels" unique_id=1033391316]
+[node name="bend_2" type="Marker3D" parent="Tunnels/side_east_7" unique_id=73721536]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 23.218554, -57.3, 64.76437)
+script = ExtResource("4_sfcfj")
+
+[node name="side_west_7" type="Node3D" parent="Tunnels" unique_id=1144166708]
 script = ExtResource("3_tcvyp")
-from_space = NodePath("../../Spaces/rv_south_end")
-to_space = NodePath("../../Spaces/knot_east_b")
-width = 6.5
+from_space = NodePath("../../Spaces/rv_r5_west_mid")
+to_space = NodePath("../../Spaces/pocket_west_7")
+width = 4.4
 tags = Array[StringName]([&"ravine", &"winding"])
 
-[node name="bend_1" type="Marker3D" parent="Tunnels/side_south_east" unique_id=2136434115]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5.795457, -60.621845, 90.84514)
+[node name="bend_1" type="Marker3D" parent="Tunnels/side_west_7" unique_id=639661183]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5.480606, -59.68044, 71.253815)
 script = ExtResource("4_sfcfj")
 
-[node name="bend_2" type="Marker3D" parent="Tunnels/side_south_east" unique_id=1826833883]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 22.189749, -58.271957, 74.53867)
+[node name="bend_2" type="Marker3D" parent="Tunnels/side_west_7" unique_id=589328326]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -15.649825, -60.73044, 72.06512)
 script = ExtResource("4_sfcfj")
 
-[node name="west_a_pocket" type="Node3D" parent="Tunnels" unique_id=515730842]
+[node name="side_east_8" type="Node3D" parent="Tunnels" unique_id=273622771]
 script = ExtResource("3_tcvyp")
-from_space = NodePath("../../Spaces/knot_west_a")
-to_space = NodePath("../../Spaces/pocket_west_a")
+from_space = NodePath("../../Spaces/rv_r5_east_lower")
+to_space = NodePath("../../Spaces/pocket_east_8")
+width = 3.9
+tags = Array[StringName]([&"ravine", &"winding", &"refuge"])
+
+[node name="bend_1" type="Marker3D" parent="Tunnels/side_east_8" unique_id=647079703]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 9.407016, -68.50932, 84.92378)
+script = ExtResource("4_sfcfj")
+
+[node name="bend_2" type="Marker3D" parent="Tunnels/side_east_8" unique_id=630302084]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 14.960845, -67.45932, 83.74947)
+script = ExtResource("4_sfcfj")
+
+[node name="link_east_1_east_2" type="Node3D" parent="Tunnels" unique_id=1305789445]
+script = ExtResource("3_tcvyp")
+from_space = NodePath("../../Spaces/pocket_east_1")
+to_space = NodePath("../../Spaces/pocket_east_2")
+width = 4.2
+tags = Array[StringName]([&"ravine", &"warren"])
+
+[node name="bend_1" type="Marker3D" parent="Tunnels/link_east_1_east_2" unique_id=1375521445]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 23.222223, -38.89121, -34.835587)
+script = ExtResource("4_sfcfj")
+
+[node name="link_east_2_east_3" type="Node3D" parent="Tunnels" unique_id=1087307526]
+script = ExtResource("3_tcvyp")
+from_space = NodePath("../../Spaces/pocket_east_2")
+to_space = NodePath("../../Spaces/pocket_east_3")
+width = 3.6
+tags = Array[StringName]([&"ravine", &"warren"])
+
+[node name="bend_1" type="Marker3D" parent="Tunnels/link_east_2_east_3" unique_id=760032677]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 29.098724, -50.017452, -20.98058)
+script = ExtResource("4_sfcfj")
+
+[node name="link_east_5_east_6" type="Node3D" parent="Tunnels" unique_id=358221806]
+script = ExtResource("3_tcvyp")
+from_space = NodePath("../../Spaces/pocket_east_5")
+to_space = NodePath("../../Spaces/pocket_east_6")
+width = 4.8
+tags = Array[StringName]([&"ravine", &"warren"])
+
+[node name="bend_1" type="Marker3D" parent="Tunnels/link_east_5_east_6" unique_id=532181292]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 31.413439, -52.403088, 34.67581)
+script = ExtResource("4_sfcfj")
+
+[node name="link_east_7_east_8" type="Node3D" parent="Tunnels" unique_id=1060227862]
+script = ExtResource("3_tcvyp")
+from_space = NodePath("../../Spaces/pocket_east_7")
+to_space = NodePath("../../Spaces/pocket_east_8")
+width = 3.9
+tags = Array[StringName]([&"ravine", &"warren"])
+
+[node name="bend_1" type="Marker3D" parent="Tunnels/link_east_7_east_8" unique_id=1793155317]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 25.222403, -58.75466, 83.02365)
+script = ExtResource("4_sfcfj")
+
+[node name="link_west_2_west_3" type="Node3D" parent="Tunnels" unique_id=50810601]
+script = ExtResource("3_tcvyp")
+from_space = NodePath("../../Spaces/pocket_west_2")
+to_space = NodePath("../../Spaces/pocket_west_3")
 width = 4.5
-tags = Array[StringName]([&"ravine", &"winding", &"refuge"])
+tags = Array[StringName]([&"ravine", &"warren"])
 
-[node name="bend_2" type="Marker3D" parent="Tunnels/west_a_pocket" unique_id=2049259292]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -54.910202, -44.10724, -66.0072)
+[node name="bend_1" type="Marker3D" parent="Tunnels/link_west_2_west_3" unique_id=2090198601]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -12.925386, -50.06363, -4.694929)
 script = ExtResource("4_sfcfj")
 
-[node name="bend_3" type="Marker3D" parent="Tunnels/west_a_pocket" unique_id=516089813]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -58.098763, -44.561386, -54.6741)
-script = ExtResource("4_sfcfj")
-
-[node name="east_a_pocket" type="Node3D" parent="Tunnels" unique_id=1566157346]
+[node name="link_west_3_west_4" type="Node3D" parent="Tunnels" unique_id=106397970]
 script = ExtResource("3_tcvyp")
-from_space = NodePath("../../Spaces/knot_east_a")
-to_space = NodePath("../../Spaces/pocket_east_a")
-width = 6.4
-tags = Array[StringName]([&"ravine", &"winding"])
+from_space = NodePath("../../Spaces/pocket_west_3")
+to_space = NodePath("../../Spaces/pocket_west_4")
+width = 3.4
+tags = Array[StringName]([&"ravine", &"warren"])
 
-[node name="bend_1" type="Marker3D" parent="Tunnels/east_a_pocket" unique_id=1087816150]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 46.265, -41.757133, -57.765285)
+[node name="bend_1" type="Marker3D" parent="Tunnels/link_west_3_west_4" unique_id=179371633]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -12.663932, -51.93658, 4.179542)
 script = ExtResource("4_sfcfj")
 
-[node name="bend_2" type="Marker3D" parent="Tunnels/east_a_pocket" unique_id=1100458789]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 49.637135, -45.57325, -69.060394)
-script = ExtResource("4_sfcfj")
-
-[node name="bend_3" type="Marker3D" parent="Tunnels/east_a_pocket" unique_id=952316699]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 65.05029, -46.89153, -73.38067)
-script = ExtResource("4_sfcfj")
-
-[node name="side_s4_west_2" type="Node3D" parent="Tunnels" unique_id=1358466779]
+[node name="link_west_4_west_5" type="Node3D" parent="Tunnels" unique_id=1507315865]
 script = ExtResource("3_tcvyp")
-from_space = NodePath("../../Spaces/side_s4_west_mid")
-to_space = NodePath("../../Spaces/knot_west_b")
-width = 7.0
-tags = Array[StringName]([&"ravine", &"winding"])
+from_space = NodePath("../../Spaces/pocket_west_4")
+to_space = NodePath("../../Spaces/pocket_west_5")
+width = 5.0
+tags = Array[StringName]([&"ravine", &"warren"])
 
-[node name="bend_3" type="Marker3D" parent="Tunnels/side_s4_west_2" unique_id=1750694000]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -36.71762, -56.245625, 22.734772)
+[node name="bend_1" type="Marker3D" parent="Tunnels/link_west_4_west_5" unique_id=1684651769]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -15.976773, -53.268562, 15.505769)
 script = ExtResource("4_sfcfj")
 
-[node name="side_south_west_mid_to_side_s4_west_mid" type="Node3D" parent="Tunnels" unique_id=1261489591]
+[node name="link_west_6_west_7" type="Node3D" parent="Tunnels" unique_id=641109097]
 script = ExtResource("3_tcvyp")
-from_space = NodePath("../../Spaces/side_south_west_mid")
-to_space = NodePath("../../Spaces/side_s4_west_mid")
-width = 6.5
+from_space = NodePath("../../Spaces/pocket_west_6")
+to_space = NodePath("../../Spaces/pocket_west_7")
+width = 4.1
+tags = Array[StringName]([&"ravine", &"warren"])
 
-[node name="bend" type="Marker3D" parent="Tunnels/side_south_west_mid_to_side_s4_west_mid" unique_id=530390817]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -29.752098, -56.79601, 72.34266)
+[node name="bend_1" type="Marker3D" parent="Tunnels/link_west_6_west_7" unique_id=895432648]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -18.808031, -54.825615, 61.20918)
 script = ExtResource("4_sfcfj")
