@@ -1,0 +1,15 @@
+[gd_scene format=3 uid="uid://dbo3lgrb3ynv7"]
+
+[ext_resource type="PackedScene" uid="uid://ce0x1h0y7nj8q" path="res://levels/design/level_hive_blockout.tscn" id="1_os4hd"]
+[ext_resource type="PackedScene" uid="uid://ck4vkd4rn1wtp" path="res://levels/design/level_mine_blockout.tscn" id="2_3pujb"]
+[ext_resource type="PackedScene" uid="uid://ch45hpbhbpep" path="res://levels/design/level_ravine_blockout.tscn" id="3_wssbe"]
+
+[node name="LevelFullBlockout" type="Node3D" unique_id=749874247]
+
+[node name="HiveBlockout" parent="." unique_id=861621170 instance=ExtResource("1_os4hd")]
+transform = Transform3D(-0.43631002, 0, 0.8997964, 0, 1, 0, -0.8997964, 0, -0.43631002, 73.81131, 0.6181879, -26.768837)
+
+[node name="MineBlockout" parent="." unique_id=1601177174 instance=ExtResource("2_3pujb")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8.61203, 10.89016, 60.51145)
+
+[node name="RavineBlockout" parent="." unique_id=32552392 instance=ExtResource("3_wssbe")]

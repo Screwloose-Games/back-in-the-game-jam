@@ -198,20 +198,88 @@ func build_graph() -> LevelGraph:
 		record.notes = space.notes
 		graph.add_space(record)
 
+	var stops_on := _stops_by_tunnel()
 	for tunnel: MineTunnel in tunnels_in_level():
 		if not tunnel.describe_problem().is_empty():
 			continue
+		for record: LevelGraph.Tunnel in _tunnel_records(tunnel, stops_on.get(tunnel, [])):
+			graph.add_tunnel(record)
+	return graph
+
+
+## The spaces sitting part way along each tunnel, gathered by the tunnel they name.
+func _stops_by_tunnel() -> Dictionary:
+	var gathered := {}
+	for space: MineSpace in spaces_in_level():
+		var tunnel := space.resolve_on_tunnel() as MineTunnel
+		if tunnel == null:
+			continue
+		var stops: Array = gathered.get(tunnel, [])
+		stops.append(space)
+		gathered[tunnel] = stops
+	return gathered
+
+
+## One tunnel as the graph should see it: a single edge, or one edge per stretch
+## between the spaces sitting along it.
+##
+## THE SCENE IS NOT SPLIT, ONLY THE GRAPH. A run stays one node to select and drag,
+## and the pieces are slices of its own centreline, so the geometry carved from
+## them is the volume the whole run always was.
+func _tunnel_records(tunnel: MineTunnel, stops: Array) -> Array[LevelGraph.Tunnel]:
+	var polyline := tunnel.build_polyline()
+	var span := _polyline_length(polyline)
+
+	var cuts: Array[Dictionary] = []
+	for space: MineSpace in stops:
+		var along := LevelGraph.distance_along_polyline(polyline, space.global_position)
+		cuts.append({"id": space.name, "at": along})
+	cuts.sort_custom(
+		func(left: Dictionary, right: Dictionary) -> bool: return left["at"] < right["at"]
+	)
+
+	# A cut on top of an end - or on top of the previous cut - would make a piece
+	# with no length, which is a node indistinguishable from the one beside it.
+	var kept: Array[Dictionary] = []
+	var previous := 0.0
+	for cut: Dictionary in cuts:
+		var along: float = cut["at"]
+		if along - previous < LevelGraph.MIN_PIECE_LENGTH:
+			continue
+		if span - along < LevelGraph.MIN_PIECE_LENGTH:
+			continue
+		kept.append(cut)
+		previous = along
+
+	var boundaries: Array[float] = [0.0]
+	var stations: Array[StringName] = [tunnel.resolve_from().name]
+	for cut: Dictionary in kept:
+		boundaries.append(cut["at"])
+		stations.append(cut["id"])
+	boundaries.append(span)
+	stations.append(tunnel.resolve_to().name)
+
+	var records: Array[LevelGraph.Tunnel] = []
+	for index: int in boundaries.size() - 1:
 		var record := LevelGraph.Tunnel.new()
-		record.id = tunnel.name
-		record.from_id = tunnel.resolve_from().name
-		record.to_id = tunnel.resolve_to().name
-		record.polyline = tunnel.build_polyline()
+		# An unsplit tunnel keeps its own name, so nothing that never used this
+		# feature ever sees a generated id.
+		record.id = (
+			tunnel.name if kept.is_empty() else StringName("%s_%d" % [tunnel.name, index + 1])
+		)
+		record.source_id = tunnel.name
+		record.offset_along = boundaries[index]
+		record.from_id = stations[index]
+		record.to_id = stations[index + 1]
+		record.polyline = LevelGraph.slice_polyline(
+			polyline, boundaries[index], boundaries[index + 1]
+		)
 		record.width = tunnel.width
 		record.height = tunnel.height
 		record.tags = tunnel.tags
 		record.notes = tunnel.notes
-		graph.add_tunnel(record)
-	return graph
+		records.append(record)
+	return records
 
 
 ## The previewed noise. Recomputes first if anything has moved since the last one,

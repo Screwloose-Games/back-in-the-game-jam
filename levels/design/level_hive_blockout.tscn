@@ -29,6 +29,7 @@ script = ExtResource("2_7djq8")
 kind = 1
 radius = 6.40868
 vertical_scale = 0.33874953
+on_tunnel = null
 tags = Array[StringName]([&"hive", &"chamber"])
 
 [node name="hv_s1_b01" type="Node3D" parent="Spaces" unique_id=1834022983]
@@ -36,6 +37,7 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6.361485, -30.029667, -19.267
 script = ExtResource("2_7djq8")
 radius = 9.964294
 vertical_scale = 0.49921095
+on_tunnel = null
 tags = Array[StringName]([&"hive", &"chamber"])
 
 [node name="hv_s1_b02" type="Node3D" parent="Spaces" unique_id=153344543]
@@ -43,6 +45,7 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -14.592826, -28.778006, -11.2
 script = ExtResource("2_7djq8")
 radius = 9.147315
 vertical_scale = 0.5288795
+on_tunnel = null
 tags = Array[StringName]([&"hive", &"chamber"])
 
 [node name="hv_s1_b03" type="Node3D" parent="Spaces" unique_id=1560237493]
@@ -50,6 +53,7 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -26.965147, -25.745646, -5.33
 script = ExtResource("2_7djq8")
 radius = 8.8304
 vertical_scale = 0.3934784
+on_tunnel = null
 tags = Array[StringName]([&"hive", &"chamber"])
 
 [node name="hv_s1_b04" type="Node3D" parent="Spaces" unique_id=1274845851]
@@ -57,6 +61,7 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -25.94656, -30.669708, -19.91
 script = ExtResource("2_7djq8")
 radius = 9.743656
 vertical_scale = 0.30661374
+on_tunnel = null
 tags = Array[StringName]([&"hive", &"chamber"])
 
 [node name="hv_s1_b05" type="Node3D" parent="Spaces" unique_id=1279872437]
@@ -64,6 +69,7 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 19.13247, -25.584476, -25.322
 script = ExtResource("2_7djq8")
 radius = 10.010401
 vertical_scale = 0.43959016
+on_tunnel = null
 tags = Array[StringName]([&"hive", &"chamber"])
 
 [node name="hv_s1_b06" type="Node3D" parent="Spaces" unique_id=341932991]
@@ -72,6 +78,7 @@ script = ExtResource("2_7djq8")
 kind = 1
 radius = 6.440221
 vertical_scale = 0.32681844
+on_tunnel = null
 tags = Array[StringName]([&"hive", &"chamber"])
 
 [node name="hv_s1_b08" type="Node3D" parent="Spaces" unique_id=2092584732]
@@ -79,6 +86,7 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.7303987, -31.284216, -25.3
 script = ExtResource("2_7djq8")
 radius = 8.002696
 vertical_scale = 0.46793926
+on_tunnel = null
 tags = Array[StringName]([&"hive", &"chamber"])
 
 [node name="hv_s1_b10" type="Node3D" parent="Spaces" unique_id=1145450628]
@@ -86,6 +94,7 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -17.305294, -29.833488, 4.034
 script = ExtResource("2_7djq8")
 radius = 8.370003
 vertical_scale = 0.4839123
+on_tunnel = null
 tags = Array[StringName]([&"hive", &"chamber"])
 
 [node name="hv_s2_b00" type="Node3D" parent="Spaces" unique_id=1749370768]
@@ -93,6 +102,7 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.20899297, -36.05272, -0.699
 script = ExtResource("2_7djq8")
 radius = 10.399811
 vertical_scale = 0.30787835
+on_tunnel = null
 tags = Array[StringName]([&"hive", &"chamber"])
 
 [node name="hv_s2_b01" type="Node3D" parent="Spaces" unique_id=1496623621]
@@ -100,6 +110,7 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -13.681753, -38.914585, -4.87
 script = ExtResource("2_7djq8")
 radius = 9.329089
 vertical_scale = 0.49926615
+on_tunnel = null
 tags = Array[StringName]([&"hive", &"chamber"])
 
 [node name="hv_s2_b02" type="Node3D" parent="Spaces" unique_id=2013721084]
@@ -107,6 +118,7 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -26.010159, -41.951176, -13.4
 script = ExtResource("2_7djq8")
 radius = 8.016057
 vertical_scale = 0.5122082
+on_tunnel = null
 tags = Array[StringName]([&"hive", &"chamber"])
 
 [node name="hv_s2_b03" type="Node3D" parent="Spaces" unique_id=1145915483]
@@ -114,6 +126,7 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -40.0387, -44.855995, -21.530
 script = ExtResource("2_7djq8")
 radius = 8.88137
 vertical_scale = 0.31290343
+on_tunnel = null
 tags = Array[StringName]([&"hive", &"chamber"])
 
 [node name="hv_s2_b04" type="Node3D" parent="Spaces" unique_id=974285616]
@@ -121,6 +134,7 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -22.2879, -43.611378, -27.972
 script = ExtResource("2_7djq8")
 radius = 10.0087595
 vertical_scale = 0.4907645
+on_tunnel = null
 tags = Array[StringName]([&"hive", &"chamber"])
 
 [node name="hv_s2_b05" type="Node3D" parent="Spaces" unique_id=1972800108]
@@ -128,6 +142,7 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -7.84627, -36.962017, 10.5933
 script = ExtResource("2_7djq8")
 radius = 8.079603
 vertical_scale = 0.31064355
+on_tunnel = null
 tags = Array[StringName]([&"hive", &"chamber"])
 
 [node name="hv_s2_b06" type="Node3D" parent="Spaces" unique_id=990066088]
@@ -136,6 +151,7 @@ script = ExtResource("2_7djq8")
 kind = 1
 radius = 6.9466505
 vertical_scale = 0.47436437
+on_tunnel = null
 tags = Array[StringName]([&"hive", &"chamber"])
 
 [node name="hv_s2_b07" type="Node3D" parent="Spaces" unique_id=474555427]
@@ -144,6 +160,7 @@ script = ExtResource("2_7djq8")
 kind = 1
 radius = 7.225094
 vertical_scale = 0.32370603
+on_tunnel = null
 tags = Array[StringName]([&"hive", &"chamber"])
 
 [node name="hv_s2_b08" type="Node3D" parent="Spaces" unique_id=466339574]
@@ -151,6 +168,7 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 13.230461, -34.44164, 17.2578
 script = ExtResource("2_7djq8")
 radius = 10.114367
 vertical_scale = 0.4291286
+on_tunnel = null
 tags = Array[StringName]([&"hive", &"chamber"])
 
 [node name="hv_s2_b09" type="Node3D" parent="Spaces" unique_id=392903088]
@@ -159,6 +177,7 @@ script = ExtResource("2_7djq8")
 kind = 1
 radius = 5.3818355
 vertical_scale = 0.38338012
+on_tunnel = null
 tags = Array[StringName]([&"hive", &"chamber"])
 
 [node name="hv_s2_b10" type="Node3D" parent="Spaces" unique_id=472858255]
@@ -166,6 +185,7 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 24.422005, -38.31569, -26.045
 script = ExtResource("2_7djq8")
 radius = 8.765364
 vertical_scale = 0.3077576
+on_tunnel = null
 tags = Array[StringName]([&"hive", &"chamber"])
 
 [node name="hv_s2_b11" type="Node3D" parent="Spaces" unique_id=1553400690]
@@ -173,6 +193,7 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 22.66314, -37.91957, 27.35027
 script = ExtResource("2_7djq8")
 radius = 10.078085
 vertical_scale = 0.5266141
+on_tunnel = null
 tags = Array[StringName]([&"hive", &"chamber"])
 
 [node name="hv_s2_b14" type="Node3D" parent="Spaces" unique_id=1534828655]
@@ -180,6 +201,7 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5.763199, -36.38303, 32.59332
 script = ExtResource("2_7djq8")
 radius = 10.273659
 vertical_scale = 0.46806622
+on_tunnel = null
 tags = Array[StringName]([&"hive", &"chamber"])
 
 [node name="hv_s2_b15" type="Node3D" parent="Spaces" unique_id=1429195877]
@@ -187,6 +209,7 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -25.674051, -35.78542, 14.450
 script = ExtResource("2_7djq8")
 radius = 9.168205
 vertical_scale = 0.5441109
+on_tunnel = null
 tags = Array[StringName]([&"hive", &"chamber"])
 
 [node name="hv_s3_b00" type="Node3D" parent="Spaces" unique_id=2128132911]
@@ -195,6 +218,7 @@ script = ExtResource("2_7djq8")
 kind = 1
 radius = 7.3028507
 vertical_scale = 0.3458474
+on_tunnel = null
 tags = Array[StringName]([&"hive", &"chamber"])
 
 [node name="hv_s3_b01" type="Node3D" parent="Spaces" unique_id=144685701]
@@ -202,6 +226,7 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.8240082, -51.503067, 19.73
 script = ExtResource("2_7djq8")
 radius = 10.659661
 vertical_scale = 0.41726613
+on_tunnel = null
 tags = Array[StringName]([&"hive", &"chamber"])
 
 [node name="hv_s3_b02" type="Node3D" parent="Spaces" unique_id=1617354049]
@@ -209,6 +234,7 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 7.5038834, -51.28546, 25.1347
 script = ExtResource("2_7djq8")
 radius = 9.556085
 vertical_scale = 0.5078499
+on_tunnel = null
 tags = Array[StringName]([&"hive", &"chamber"])
 
 [node name="hv_s3_b03" type="Node3D" parent="Spaces" unique_id=2127814431]
@@ -217,6 +243,7 @@ script = ExtResource("2_7djq8")
 kind = 1
 radius = 7.566948
 vertical_scale = 0.36122495
+on_tunnel = null
 tags = Array[StringName]([&"hive", &"chamber"])
 
 [node name="hv_s3_b04" type="Node3D" parent="Spaces" unique_id=828127812]
@@ -224,6 +251,7 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 23.877153, -50.475094, 8.4622
 script = ExtResource("2_7djq8")
 radius = 8.451683
 vertical_scale = 0.44719553
+on_tunnel = null
 tags = Array[StringName]([&"hive", &"chamber"])
 
 [node name="hv_s3_b05" type="Node3D" parent="Spaces" unique_id=1103111302]
@@ -231,6 +259,7 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 12.252729, -54.135036, -2.401
 script = ExtResource("2_7djq8")
 radius = 8.218134
 vertical_scale = 0.46078667
+on_tunnel = null
 tags = Array[StringName]([&"hive", &"chamber"])
 
 [node name="hv_s3_b06" type="Node3D" parent="Spaces" unique_id=560976236]
@@ -239,6 +268,7 @@ script = ExtResource("2_7djq8")
 kind = 1
 radius = 7.731928
 vertical_scale = 0.44191277
+on_tunnel = null
 tags = Array[StringName]([&"hive", &"chamber"])
 
 [node name="hv_s3_b08" type="Node3D" parent="Spaces" unique_id=1138834105]
@@ -247,6 +277,7 @@ script = ExtResource("2_7djq8")
 kind = 1
 radius = 5.193401
 vertical_scale = 0.3312042
+on_tunnel = null
 tags = Array[StringName]([&"hive", &"chamber"])
 
 [node name="hv_s3_b09" type="Node3D" parent="Spaces" unique_id=588008584]
@@ -254,6 +285,7 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -16.889746, -50.076214, 25.22
 script = ExtResource("2_7djq8")
 radius = 9.550836
 vertical_scale = 0.5021479
+on_tunnel = null
 tags = Array[StringName]([&"hive", &"chamber"])
 
 [node name="hv_s3_b10" type="Node3D" parent="Spaces" unique_id=2084329599]
@@ -261,6 +293,7 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8.354962, -48.90597, 9.08124
 script = ExtResource("2_7djq8")
 radius = 10.397977
 vertical_scale = 0.3750384
+on_tunnel = null
 tags = Array[StringName]([&"hive", &"chamber"])
 notes = "This is probably the single most dangerous room in the entire game. It should be very rewarding."
 
@@ -269,6 +302,7 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4.441685, -63.756584, 4.26869
 script = ExtResource("2_7djq8")
 radius = 9.920766
 vertical_scale = 0.3257396
+on_tunnel = null
 tags = Array[StringName]([&"hive", &"chamber"])
 
 [node name="hv_s4_b01" type="Node3D" parent="Spaces" unique_id=24577855]
@@ -277,6 +311,7 @@ script = ExtResource("2_7djq8")
 kind = 1
 radius = 6.7454424
 vertical_scale = 0.5266495
+on_tunnel = null
 tags = Array[StringName]([&"hive", &"chamber"])
 
 [node name="hv_s4_b02" type="Node3D" parent="Spaces" unique_id=1764735877]
@@ -285,6 +320,7 @@ script = ExtResource("2_7djq8")
 kind = 1
 radius = 5.7703147
 vertical_scale = 0.3590486
+on_tunnel = null
 tags = Array[StringName]([&"hive", &"chamber"])
 
 [node name="hv_s4_b03" type="Node3D" parent="Spaces" unique_id=1682352742]
@@ -293,6 +329,7 @@ script = ExtResource("2_7djq8")
 kind = 1
 radius = 6.841385
 vertical_scale = 0.46333265
+on_tunnel = null
 tags = Array[StringName]([&"hive", &"chamber"])
 
 [node name="hv_s4_b04" type="Node3D" parent="Spaces" unique_id=1683826122]
@@ -301,6 +338,7 @@ script = ExtResource("2_7djq8")
 kind = 1
 radius = 7.332782
 vertical_scale = 0.5266191
+on_tunnel = null
 tags = Array[StringName]([&"hive", &"chamber"])
 
 [node name="hv_s4_b05" type="Node3D" parent="Spaces" unique_id=1070093023]
@@ -309,6 +347,7 @@ script = ExtResource("2_7djq8")
 kind = 1
 radius = 7.726506
 vertical_scale = 0.36469653
+on_tunnel = null
 tags = Array[StringName]([&"hive", &"chamber"])
 
 [node name="hv_s4_b06" type="Node3D" parent="Spaces" unique_id=581750804]
@@ -317,6 +356,7 @@ script = ExtResource("2_7djq8")
 kind = 1
 radius = 5.7439857
 vertical_scale = 0.30805916
+on_tunnel = null
 tags = Array[StringName]([&"hive", &"chamber"])
 
 [node name="hv_s4_b07" type="Node3D" parent="Spaces" unique_id=740474848]
@@ -325,6 +365,7 @@ script = ExtResource("2_7djq8")
 kind = 1
 radius = 6.534686
 vertical_scale = 0.5100861
+on_tunnel = null
 tags = Array[StringName]([&"hive", &"chamber"])
 
 [node name="hv_s4_b08" type="Node3D" parent="Spaces" unique_id=1864495939]
@@ -333,6 +374,7 @@ script = ExtResource("2_7djq8")
 kind = 1
 radius = 5.4850035
 vertical_scale = 0.3276585
+on_tunnel = null
 tags = Array[StringName]([&"hive", &"chamber"])
 
 [node name="hv_s4_b10" type="Node3D" parent="Spaces" unique_id=965056160]
@@ -341,6 +383,7 @@ script = ExtResource("2_7djq8")
 kind = 1
 radius = 6.9007983
 vertical_scale = 0.37720507
+on_tunnel = null
 tags = Array[StringName]([&"hive", &"chamber"])
 
 [node name="hv_s5_b00" type="Node3D" parent="Spaces" unique_id=644201444]
@@ -348,6 +391,7 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4.595012, -73.23758, -1.25917
 script = ExtResource("2_7djq8")
 radius = 10.563801
 vertical_scale = 0.4007583
+on_tunnel = null
 tags = Array[StringName]([&"hive", &"chamber"])
 
 [node name="hv_s5_b01" type="Node3D" parent="Spaces" unique_id=924686699]
@@ -355,6 +399,7 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -11.352303, -70.10827, 0.8163
 script = ExtResource("2_7djq8")
 radius = 9.826938
 vertical_scale = 0.39335793
+on_tunnel = null
 tags = Array[StringName]([&"hive", &"chamber"])
 
 [node name="hv_s5_b02" type="Node3D" parent="Spaces" unique_id=1916265049]
@@ -363,6 +408,7 @@ script = ExtResource("2_7djq8")
 kind = 1
 radius = 6.9808893
 vertical_scale = 0.5451584
+on_tunnel = null
 tags = Array[StringName]([&"hive", &"chamber"])
 
 [node name="hv_s5_b03" type="Node3D" parent="Spaces" unique_id=715460801]
@@ -371,6 +417,7 @@ script = ExtResource("2_7djq8")
 kind = 1
 radius = 7.1542754
 vertical_scale = 0.53700495
+on_tunnel = null
 tags = Array[StringName]([&"hive", &"chamber"])
 
 [node name="hv_s5_b05" type="Node3D" parent="Spaces" unique_id=259983059]
@@ -379,6 +426,7 @@ script = ExtResource("2_7djq8")
 kind = 1
 radius = 6.0021353
 vertical_scale = 0.47389376
+on_tunnel = null
 tags = Array[StringName]([&"hive", &"chamber"])
 
 [node name="hv_s5_b06" type="Node3D" parent="Spaces" unique_id=767221875]
@@ -386,6 +434,7 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -36.127785, -70.72214, 15.943
 script = ExtResource("2_7djq8")
 radius = 9.969813
 vertical_scale = 0.46335256
+on_tunnel = null
 tags = Array[StringName]([&"hive", &"chamber"])
 
 [node name="hv_s5_b07" type="Node3D" parent="Spaces" unique_id=924579548]
@@ -394,6 +443,7 @@ script = ExtResource("2_7djq8")
 kind = 1
 radius = 6.092122
 vertical_scale = 0.3099239
+on_tunnel = null
 tags = Array[StringName]([&"hive", &"chamber"])
 
 [node name="hv_s5_b08" type="Node3D" parent="Spaces" unique_id=1217023849]
@@ -401,6 +451,7 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -13.56019, -74.68056, 33.6984
 script = ExtResource("2_7djq8")
 radius = 10.795056
 vertical_scale = 0.3190558
+on_tunnel = null
 tags = Array[StringName]([&"hive", &"chamber"])
 
 [node name="hv_s5_b12" type="Node3D" parent="Spaces" unique_id=982297692]
@@ -409,6 +460,7 @@ script = ExtResource("2_7djq8")
 kind = 1
 radius = 5.646419
 vertical_scale = 0.42552173
+on_tunnel = null
 tags = Array[StringName]([&"hive", &"chamber"])
 
 [node name="Tunnels" type="Node3D" parent="." unique_id=545605888]

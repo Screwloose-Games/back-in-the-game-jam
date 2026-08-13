@@ -9,46 +9,46 @@ Loudness is a radius in metres, matching `core_loop_noise.gd`. **Through tunnels
 | Source | Loudness | Spaces heard | | Tunnel metres heard | | Overstated by |
 |---|---|---|---|---|---|---|
 | | | tunnels | straight | tunnels | straight | |
-| drill / crank | 60 m | 4.2 | 20.2 | 106 | 453 | 329% more tunnel |
-| sprint | 20 m | 1.2 | 4.0 | 34 | 82 | 142% more tunnel |
-| thrust | 12 m | 1.0 | 1.8 | 20 | 33 | 61% more tunnel |
+| drill / crank | 60 m | 13.4 | 20.2 | 296 | 453 | 53% more tunnel |
+| sprint | 20 m | 2.8 | 4.0 | 58 | 82 | 42% more tunnel |
+| thrust | 12 m | 1.9 | 1.8 | 31 | 33 | 5% more tunnel |
 
 ## Per space, drilling (60 m)
 
 | Noise made in | Spaces reached | | Tunnel metres reached | |
 |---|---|---|---|---|
 | | through tunnels | straight line | through tunnels | straight line |
-| `rv_north_end` | 2 | 13 | 60 | 272 |
-| `rv_s1` | 3 | 19 | 134 | 446 |
-| `rv_s2` | 7 | 24 | 261 | 564 |
-| `rv_s3` | 5 | 25 | 186 | 551 |
-| `rv_s4` | 5 | 18 | 144 | 359 |
-| `rv_south_end` | 4 | 14 | 96 | 261 |
-| `rv_r1_east_upper` | 3 | 15 | 70 | 362 |
-| `pocket_east_1` | 5 | 16 | 103 | 371 |
-| `rv_r1_west_lower` | 2 | 18 | 29 | 414 |
-| `pocket_west_1` | 2 | 13 | 29 | 336 |
-| `rv_r2_east_mid` | 4 | 21 | 100 | 486 |
-| `pocket_east_2` | 6 | 21 | 126 | 475 |
-| `rv_r2_west_upper` | 3 | 23 | 71 | 505 |
-| `pocket_west_2` | 6 | 23 | 177 | 502 |
-| `rv_r2_east_lower` | 3 | 24 | 64 | 543 |
-| `pocket_east_3` | 5 | 21 | 113 | 469 |
-| `pocket_west_3` | 8 | 25 | 265 | 565 |
-| `pocket_east_4` | 3 | 21 | 129 | 494 |
-| `rv_r3_west_upper` | 4 | 25 | 98 | 589 |
-| `pocket_west_4` | 7 | 24 | 209 | 565 |
-| `rv_r3_east_mid` | 3 | 25 | 60 | 592 |
-| `pocket_east_5` | 4 | 25 | 68 | 599 |
-| `rv_r3_west_lower` | 3 | 27 | 74 | 595 |
-| `pocket_west_5` | 6 | 24 | 138 | 566 |
-| `rv_r4_east_upper` | 3 | 23 | 60 | 530 |
-| `pocket_east_6` | 4 | 24 | 68 | 550 |
-| `rv_r4_west_upper` | 3 | 21 | 60 | 456 |
-| `pocket_west_6` | 4 | 19 | 72 | 401 |
-| `pocket_east_7` | 6 | 15 | 134 | 313 |
-| `rv_r5_west_mid` | 3 | 16 | 60 | 325 |
-| `pocket_west_7` | 4 | 17 | 72 | 368 |
-| `rv_r5_east_lower` | 3 | 15 | 60 | 290 |
-| `pocket_east_8` | 4 | 13 | 92 | 237 |
+| `rv_north_end` | 9 | 13 | 177 | 271 |
+| `rv_s1` | 15 | 19 | 346 | 446 |
+| `rv_s2` | 21 | 24 | 478 | 563 |
+| `rv_s3` | 19 | 25 | 432 | 550 |
+| `rv_s4` | 15 | 18 | 316 | 359 |
+| `rv_south_end` | 12 | 14 | 225 | 262 |
+| `rv_r1_east_upper` | 10 | 15 | 206 | 362 |
+| `pocket_east_1` | 9 | 16 | 184 | 371 |
+| `rv_r1_west_lower` | 13 | 18 | 295 | 413 |
+| `pocket_west_1` | 7 | 13 | 119 | 336 |
+| `rv_r2_east_mid` | 17 | 21 | 393 | 486 |
+| `pocket_east_2` | 12 | 21 | 282 | 474 |
+| `rv_r2_west_upper` | 18 | 23 | 425 | 505 |
+| `pocket_west_2` | 12 | 23 | 275 | 502 |
+| `rv_r2_east_lower` | 19 | 24 | 465 | 543 |
+| `pocket_east_3` | 9 | 21 | 239 | 468 |
+| `pocket_west_3` | 12 | 25 | 318 | 565 |
+| `pocket_east_4` | 8 | 21 | 192 | 494 |
+| `rv_r3_west_upper` | 21 | 25 | 472 | 589 |
+| `pocket_west_4` | 11 | 24 | 272 | 565 |
+| `rv_r3_east_mid` | 20 | 25 | 455 | 592 |
+| `pocket_east_5` | 11 | 25 | 248 | 599 |
+| `rv_r3_west_lower` | 19 | 27 | 448 | 595 |
+| `pocket_west_5` | 12 | 24 | 264 | 566 |
+| `rv_r4_east_upper` | 19 | 23 | 410 | 530 |
+| `pocket_east_6` | 10 | 24 | 204 | 550 |
+| `rv_r4_west_upper` | 18 | 21 | 376 | 456 |
+| `pocket_west_6` | 12 | 19 | 232 | 401 |
+| `pocket_east_7` | 10 | 15 | 193 | 313 |
+| `rv_r5_west_mid` | 13 | 16 | 272 | 326 |
+| `pocket_west_7` | 9 | 17 | 177 | 368 |
+| `rv_r5_east_lower` | 12 | 15 | 241 | 290 |
+| `pocket_east_8` | 7 | 13 | 149 | 238 |
 

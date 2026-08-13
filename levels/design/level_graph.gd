@@ -29,6 +29,16 @@ enum SpaceKind {
 	DEAD_END,  ## A pocket with one way in.
 }
 
+## Metres. Cutting a tunnel this close to one of its own ends leaves a piece
+## with no length, which is a node nothing can tell apart from that end.
+const MIN_PIECE_LENGTH := 1.0
+
+## Metres. Lit stretches this close together are one stretch. Two pieces of a
+## split tunnel meet at a distance each computed its own way, so a fully audible
+## run arrives as spans that abut to within rounding rather than exactly - and
+## without this it would report as several stretches and draw seams of silence.
+const INTERVAL_WELD := 0.001
+
 var spaces: Array[Space] = []
 var tunnels: Array[Tunnel] = []
 
@@ -60,6 +70,34 @@ func find_tunnel(tunnel_id: StringName) -> Tunnel:
 		if tunnel.id == tunnel_id:
 			return tunnel
 	return null
+
+
+## Every piece of one authored tunnel, in the order it runs through them.
+##
+## A tunnel with nothing sitting along it is one piece and answers to its own id,
+## so callers that never split anything cannot tell this exists.
+func pieces_of_tunnel(source_id: StringName) -> Array[Tunnel]:
+	var found: Array[Tunnel] = []
+	for tunnel: Tunnel in tunnels:
+		if tunnel.source_id == source_id:
+			found.append(tunnel)
+	if found.is_empty():
+		# Addressed by the id of a piece rather than of the whole.
+		var single := find_tunnel(source_id)
+		if single != null:
+			found.append(single)
+	found.sort_custom(
+		func(left: Tunnel, right: Tunnel) -> bool: return left.offset_along < right.offset_along
+	)
+	return found
+
+
+## Total centreline metres of an authored tunnel, its pieces added back together.
+func tunnel_length(source_id: StringName) -> float:
+	var total := 0.0
+	for piece: Tunnel in pieces_of_tunnel(source_id):
+		total += piece.length()
+	return total
 
 
 func tunnels_at(space_id: StringName) -> Array[Tunnel]:
@@ -150,19 +188,39 @@ func propagate_from_space(origin_id: StringName, loudness: float) -> SoundField:
 ##
 ## Seeds both endpoints with what is left of the noise after it has run up the
 ## tunnel to each of them, then walks the graph from both at once.
+##
+## `distance_along` is measured on the tunnel AS DRAWN, so a caller naming a point
+## on a run does not have to know whether the graph cut that run into pieces at
+## the mouths along it.
 func propagate_from_tunnel(
 	tunnel_id: StringName, distance_along: float, loudness: float
 ) -> SoundField:
-	var tunnel := find_tunnel(tunnel_id)
-	if tunnel == null:
+	var pieces := pieces_of_tunnel(tunnel_id)
+	if pieces.is_empty():
 		return SoundField.new()
-	var span := clampf(distance_along, 0.0, tunnel.length())
+
+	var whole := 0.0
+	for piece: Tunnel in pieces:
+		whole += piece.length()
+	var wanted := clampf(distance_along, 0.0, whole)
+
+	# The piece the noise is actually made in, and how far along THAT it is.
+	var tunnel: Tunnel = pieces[pieces.size() - 1]
+	var span := tunnel.length()
+	var travelled := 0.0
+	for piece: Tunnel in pieces:
+		if wanted <= travelled + piece.length():
+			tunnel = piece
+			span = wanted - travelled
+			break
+		travelled += piece.length()
+
 	var seeds := {
 		tunnel.from_id: loudness - span,
 		tunnel.to_id: loudness - (tunnel.length() - span),
 	}
-	var field := _propagate(seeds, loudness, tunnel_id, span)
-	field.origin_description = "%.0f m along tunnel %s" % [span, tunnel_id]
+	var field := _propagate(seeds, loudness, tunnel.id, span)
+	field.origin_description = "%.0f m along tunnel %s" % [wanted, tunnel_id]
 	field.origin_position = tunnel.point_at(span)
 	return field
 
@@ -192,6 +250,30 @@ static func point_on_polyline(points: PackedVector3Array, distance: float) -> Ve
 			return points[index].lerp(points[index + 1], (distance - travelled) / step)
 		travelled += step
 	return points[points.size() - 1]
+
+
+## Metres from the start of a polyline to the point on it nearest `target`.
+##
+## This is how a space that sits INSIDE a tunnel rather than at either end finds
+## where along it that is. The space is generally off the centreline - a mouth
+## part way up the wall of a slot is the case this exists for - so the answer is
+## a projection, not a lookup.
+static func distance_along_polyline(points: PackedVector3Array, target: Vector3) -> float:
+	var travelled := 0.0
+	var nearest_distance := 0.0
+	var nearest_gap := INF
+	for index: int in maxi(points.size() - 1, 0):
+		var start := points[index]
+		var finish := points[index + 1]
+		var span := start.distance_to(finish)
+		if span > 0.0:
+			var reach := clampf((target - start).dot((finish - start) / span), 0.0, span)
+			var gap := start.lerp(finish, reach / span).distance_to(target)
+			if gap < nearest_gap:
+				nearest_gap = gap
+				nearest_distance = travelled + reach
+		travelled += span
+	return nearest_distance
 
 
 ## The stretch of a polyline between two distances along it, with the cut ends
@@ -307,6 +389,8 @@ func _measure_covered_intervals(
 	remaining: Dictionary, origin_tunnel_id: StringName, origin_span: float, loudness: float
 ) -> Dictionary:
 	var covered := {}
+	# Pieces of a split tunnel, shifted back onto the run they were cut from.
+	var by_source := {}
 	for tunnel: Tunnel in tunnels:
 		var span := tunnel.length()
 		var intervals: Array[Vector2] = []
@@ -324,7 +408,18 @@ func _measure_covered_intervals(
 				Vector2(maxf(origin_span - loudness, 0.0), minf(origin_span + loudness, span))
 			)
 
-		covered[tunnel.id] = _merge_intervals(intervals)
+		var merged := _merge_intervals(intervals)
+		covered[tunnel.id] = merged
+		if tunnel.source_id != tunnel.id and not tunnel.source_id.is_empty():
+			var gathered: Array[Vector2] = by_source.get(tunnel.source_id, [] as Array[Vector2])
+			for interval: Vector2 in merged:
+				gathered.append(interval + Vector2.ONE * tunnel.offset_along)
+			by_source[tunnel.source_id] = gathered
+
+	# Merging fuses spans that touch, so a noise crossing a cut reads as one lit
+	# stretch of the run rather than as two that happen to abut.
+	for source_id: StringName in by_source:
+		covered[source_id] = _merge_intervals(by_source[source_id])
 	return covered
 
 
@@ -338,7 +433,7 @@ func _merge_intervals(intervals: Array[Vector2]) -> Array[Vector2]:
 	for index: int in range(1, intervals.size()):
 		var current := intervals[index]
 		var last: Vector2 = merged[merged.size() - 1]
-		if current.x <= last.y:
+		if current.x <= last.y + INTERVAL_WELD:
 			merged[merged.size() - 1] = Vector2(last.x, maxf(last.y, current.y))
 		else:
 			merged.append(current)
@@ -396,6 +491,19 @@ class Tunnel:
 
 	var tags: Array[StringName] = []
 	var notes := ""
+
+	## The authored tunnel this came from. Equal to `id` unless the tunnel was cut
+	## into pieces at the spaces sitting along it, in which case every piece
+	## carries the id of the one tunnel the designer drew.
+	##
+	## WITHOUT THIS A SPLIT TUNNEL IS UNADDRESSABLE. Everything outside the graph -
+	## the diagram, the map, whatever names a noise origin - knows the level by the
+	## nodes in the scene, and a run that became four edges answers to none of them.
+	var source_id := StringName()
+
+	## Metres from the start of the authored tunnel to the start of this piece, so
+	## a measurement taken on a piece can be reported against the whole.
+	var offset_along := 0.0
 
 	var _length := -1.0
 
