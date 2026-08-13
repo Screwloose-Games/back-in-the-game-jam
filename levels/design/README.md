@@ -253,7 +253,8 @@ does today; the first is what it should do. This is open design question #5.
 suit in at the entrance. Open it and press play.
 
 WASD + space/ctrl to thrust, mouse to look, Q/E to roll, shift to stabilise, R to
-respawn at the entrance, escape to release the mouse.
+respawn at the entrance, escape to release the mouse. **M** shows and hides the
+map, **N** puts names on its spaces, **-** and **=** zoom it.
 
 Knobs on the root node:
 
@@ -265,6 +266,28 @@ Knobs on the root node:
   check the shape came out the way the plan says.
 - **`show_design_overlay`** draws the annotated graph - labels, colour coding,
   the lot - on top of the carved rock.
+- **`show_minimap`** puts the plan view in the corner. On by default.
+
+### The map
+
+`level_minimap.gd` draws a plan of the level in the corner and your suit on it,
+from the graph rather than from the carved rock - so it costs a few hundred 2D
+draw calls and no second camera.
+
+**Depth is a fade, not a cut.** Everything is drawn, but spaces and tunnels more
+than 25 m above or below you dim towards a floor of 12%. The stratum you are in
+reads solid and the ones it is stacked on read as ghosts, which is the only way a
+flat plan says anything useful about the hive or the ravine. Colours are the
+level's own `color_mode`, so the map agrees with the editor viewport rather than
+inventing a second scheme.
+
+The map shows the whole level from the first frame, visited or not: the question
+it answers is whether the layout came out the way it was drawn, not what a player
+would know.
+
+It centres on the level while the whole level fits and follows the suit once you
+zoom past that. The readout gives the space you are in - or how far you are from
+the nearest one when you are mid-tunnel - the depth, and the metres across.
 
 To start somewhere other than the entrance, change `entrance_space` on the
 blockout. It is the spawn point, so it doubles as a teleport - which is how you

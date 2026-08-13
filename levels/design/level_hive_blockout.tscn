@@ -18,6 +18,7 @@ tag_colors = Dictionary[StringName, Color]({
 &"refuge": Color(0.3, 0.9, 0.5, 1),
 &"unbuilt": Color(0.5, 0.5, 0.55, 1)
 })
+entrance_space = NodePath("Spaces/hv_s1_b05")
 sound_origin = NodePath("Spaces/hv_s3_b10")
 
 [node name="Spaces" type="Node3D" parent="." unique_id=1125778322]

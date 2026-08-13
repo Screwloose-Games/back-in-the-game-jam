@@ -38,6 +38,10 @@ const CAMERA_FAR_MARGIN := 1.5
 ## different blockout does not mean editing that blockout's file.
 @export var show_design_overlay := false
 
+## Puts the plan-view map in the corner, so where you are in the layout is
+## answerable without flying back to something recognisable.
+@export var show_minimap := true
+
 ## The node that carves the rock. Left at its default it finds the one in this
 ## scene.
 @export_node_path("Node3D") var geometry_path: NodePath = ^"LevelGeometry"
@@ -51,7 +55,9 @@ func _ready() -> void:
 	if level == null:
 		return
 	_carve(level)
-	_spawn_suit(_entrance_position(level))
+	var suit := _spawn_suit(_entrance_position(level))
+	if show_minimap and suit != null:
+		_install_minimap(level, suit)
 	_report(level)
 
 
@@ -126,17 +132,33 @@ func _entrance_position(level: MineLevel) -> Vector3:
 ## ZeroGPlayer captures its own spawn transform in _ready, and _ready runs inside
 ## add_child - so moving it afterwards would leave R respawning it back to
 ## wherever the scene file happened to leave it rather than to the entrance.
-func _spawn_suit(where: Vector3) -> void:
+func _spawn_suit(where: Vector3) -> ZeroGPlayer:
 	var suit := player_scene.instantiate() as ZeroGPlayer
 	if suit == null:
 		push_warning("player_scene is not a ZeroGPlayer; nobody spawned.")
-		return
+		return null
 	suit.name = "Suit"
 	suit.position = to_local(where)
 	add_child(suit)
 	# After add_child, because binding applies the optics to nodes that only
 	# exist once the suit is ready.
 	suit.bind_settings(_flight_settings())
+	return suit
+
+
+## Hangs the map off its own CanvasLayer, so it draws at screen resolution and
+## the fog and the clip distance never reach it.
+func _install_minimap(level: MineLevel, suit: ZeroGPlayer) -> void:
+	var overlay := CanvasLayer.new()
+	overlay.name = "MapOverlay"
+	add_child(overlay)
+
+	var minimap := LevelMinimap.new()
+	minimap.name = "Minimap"
+	overlay.add_child(minimap)
+	# After add_child: the snapshot reads global positions, which only exist once
+	# the map - and so the level it is pointed at - is inside the tree.
+	minimap.watch(level, suit)
 
 
 func _flight_settings() -> NavigationSettings:
@@ -164,6 +186,7 @@ func _report(level: MineLevel) -> void:
 	print(
 		(
 			"WASD + space/ctrl to thrust, mouse to look, Q/E to roll, "
-			+ "shift to stabilise, R to respawn, escape to release the mouse."
+			+ "shift to stabilise, R to respawn, escape to release the mouse. "
+			+ "M shows the map, N names its spaces, -/= zoom it."
 		)
 	)
