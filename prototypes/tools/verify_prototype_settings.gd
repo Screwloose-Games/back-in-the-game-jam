@@ -27,6 +27,7 @@ const SETTINGS_SCRIPTS := [
 	"res://prototypes/tentacle_crawler_chaser/chase_settings.gd",
 	"res://prototypes/elevator_cutscene/elevator_cutscene_settings.gd",
 	"res://prototypes/level_design_01/level_design_01_settings.gd",
+	"res://prototypes/voxel_cavern/voxel_cavern_settings.gd",
 ]
 
 ## Somewhere writable that is not the repo. The round trip has to write a real
