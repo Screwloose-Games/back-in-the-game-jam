@@ -1,0 +1,1208 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1840" height="1086" viewBox="0 0 1840 1086">
+<rect width="100%" height="100%" fill="#14161a"/>
+<text x="70" y="34" fill="#e8eaf0" font-family="sans-serif" font-size="22">HiveBlockout</text>
+<text x="70" y="58" fill="#8b93a3" font-family="sans-serif" font-size="13">115 spaces, 184 tunnels, 3250 m of centreline. Creature fits down 160 of 184 at 6.4 m.</text>
+<text x="1770" y="58" text-anchor="end" fill="#8b93a3" font-family="sans-serif" font-size="13">colour: tag</text>
+<g id="plan">
+<text x="70" y="112" fill="#e8eaf0" font-family="sans-serif" font-size="15">PLAN - looking down (x / z)</text>
+<polyline points="433.8,552.8 385.1,524.5" fill="none" stroke="#ff9b4d" stroke-width="41.4" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="409.5" y="534.6" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">hv_s0_bore_00_02  14m</text>
+<polyline points="385.1,524.5 383.5,570.7" fill="none" stroke="#ff9b4d" stroke-width="38.4" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="384.3" y="543.6" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">hv_s0_bore_02_01  13m</text>
+<polyline points="433.8,552.8 489.8,567.4" fill="none" stroke="#ff9b4d" stroke-width="48.3" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="461.8" y="556.1" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">hv_s0_bore_00_04  15m</text>
+<polyline points="385.1,524.5 339.9,478.1" fill="none" stroke="#ff9b4d" stroke-width="32.4" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="362.5" y="497.3" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">hv_s0_bore_02_05  16m</text>
+<polyline points="339.9,478.1 382.1,444.1" fill="none" stroke="#ff9b4d" stroke-width="51.4" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="361.0" y="457.1" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">hv_s0_bore_05_03  13m</text>
+<polyline points="382.1,444.1 368.1,384.8" fill="none" stroke="#ff9b4d" stroke-width="56.8" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="375.1" y="410.5" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">hv_s0_bore_03_10  15m</text>
+<polyline points="368.1,384.8 412.8,389.4" fill="none" stroke="#ff9b4d" stroke-width="56.0" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="390.5" y="383.1" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">hv_s0_bore_10_06  11m</text>
+<polyline points="339.9,478.1 292.6,512.4" fill="none" stroke="#ff9b4d" stroke-width="44.8" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="316.2" y="491.3" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">hv_s0_bore_05_08  15m</text>
+<polyline points="292.6,512.4 263.2,571.4" fill="none" stroke="#ff9b4d" stroke-width="28.4" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="277.9" y="537.9" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">hv_s0_bore_08_09  16m</text>
+<polyline points="489.8,567.4 557.8,557.5" fill="none" stroke="#ff9b4d" stroke-width="45.7" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="523.8" y="558.5" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">hv_s0_bore_04_07  17m</text>
+<polyline points="383.5,570.7 369.1,605.9 341.2,631.3" fill="none" stroke="#ff9b4d" stroke-width="81.3" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="369.1" y="601.9" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">hv_s0_bore_01_11  19m</text>
+<polyline points="433.8,552.8 383.5,570.7" fill="none" stroke="#ff9b4d" stroke-width="68.3" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="408.6" y="557.7" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">hv_s0_bore_00_01  14m</text>
+<polyline points="382.1,444.1 412.8,389.4" fill="none" stroke="#ff9b4d" stroke-width="48.5" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="397.4" y="412.8" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">hv_s0_bore_03_06  16m</text>
+<polyline points="385.1,524.5 383.9,484.6 382.1,444.1" fill="none" stroke="#ff9b4d" stroke-width="41.6" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="383.9" y="480.6" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">hv_s0_bore_02_03  20m</text>
+<polyline points="385.1,524.5 340.3,508.7 292.6,512.4" fill="none" stroke="#ff9b4d" stroke-width="40.9" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="340.3" y="504.7" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">hv_s0_bore_02_08  24m</text>
+<polyline points="434.6,549.9 476.1,586.0" fill="none" stroke="#ff9b4d" stroke-width="46.7" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="455.4" y="563.9" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">hv_s1_bore_00_06  14m</text>
+<polyline points="434.6,549.9 402.8,571.2 363.9,569.1" fill="none" stroke="#ff9b4d" stroke-width="26.3" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="402.8" y="567.2" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">hv_s1_bore_00_10  19m</text>
+<polyline points="363.9,569.1 324.8,531.2" fill="none" stroke="#ff9b4d" stroke-width="70.0" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="344.3" y="546.2" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">hv_s1_bore_10_03  14m</text>
+<polyline points="324.8,531.2 374.8,507.1" fill="none" stroke="#ff9b4d" stroke-width="44.3" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="349.8" y="515.2" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">hv_s1_bore_03_02  14m</text>
+<polyline points="374.8,507.1 328.9,472.3" fill="none" stroke="#ff9b4d" stroke-width="68.7" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="351.9" y="485.7" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">hv_s1_bore_02_04  14m</text>
+<polyline points="374.8,507.1 418.7,450.2" fill="none" stroke="#ff9b4d" stroke-width="36.8" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="396.8" y="474.7" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">hv_s1_bore_02_08  18m</text>
+<polyline points="418.7,450.2 459.5,474.9" fill="none" stroke="#ff9b4d" stroke-width="62.1" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="439.1" y="458.5" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">hv_s1_bore_08_01  12m</text>
+<polyline points="459.5,474.9 511.2,450.4" fill="none" stroke="#ff9b4d" stroke-width="97.0" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="485.4" y="458.7" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">hv_s1_bore_01_05  15m</text>
+<polyline points="324.8,531.2 288.6,543.1 265.5,574.1" fill="none" stroke="#ff9b4d" stroke-width="86.9" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="288.6" y="539.1" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">hv_s1_bore_03_07  19m</text>
+<polyline points="265.5,574.1 294.1,618.3" fill="none" stroke="#ff9b4d" stroke-width="58.3" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="279.8" y="592.2" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">hv_s1_bore_07_09  13m</text>
+<polyline points="294.1,618.3 333.0,641.5" fill="none" stroke="#ff9b4d" stroke-width="33.4" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="313.5" y="625.9" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">hv_s1_bore_09_11  11m</text>
+<polyline points="324.8,531.2 328.9,472.3" fill="none" stroke="#ff9b4d" stroke-width="41.5" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="326.9" y="497.8" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">hv_s1_bore_03_04  15m</text>
+<polyline points="374.8,507.1 363.9,569.1" fill="none" stroke="#ff9b4d" stroke-width="84.8" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="369.4" y="534.1" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">hv_s1_bore_02_10  16m</text>
+<polyline points="434.6,549.9 406.8,525.8 374.8,507.1" fill="none" stroke="#ff9b4d" stroke-width="35.6" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="406.8" y="521.8" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">hv_s1_bore_00_02  18m</text>
+<polyline points="434.6,549.9 435.3,508.4 459.5,474.9" fill="none" stroke="#ff9b4d" stroke-width="24.2" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="435.3" y="504.4" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">hv_s1_bore_00_01  21m</text>
+<polyline points="434.7,550.0 402.1,595.6" fill="none" stroke="#ff9b4d" stroke-width="74.8" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="418.4" y="568.8" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">hv_s2_bore_00_05  14m</text>
+<polyline points="402.1,595.6 439.1,629.1" fill="none" stroke="#ff9b4d" stroke-width="71.3" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="420.6" y="608.4" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">hv_s2_bore_05_07  12m</text>
+<polyline points="439.1,629.1 487.3,622.6" fill="none" stroke="#ff9b4d" stroke-width="72.7" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="463.2" y="621.8" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">hv_s2_bore_07_08  12m</text>
+<polyline points="402.1,595.6 371.5,637.2" fill="none" stroke="#ff9b4d" stroke-width="28.6" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="386.8" y="612.4" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">hv_s2_bore_05_06  13m</text>
+<polyline points="371.5,637.2 330.0,611.2" fill="none" stroke="#ff9b4d" stroke-width="26.5" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="350.8" y="620.2" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">hv_s2_bore_06_15  13m</text>
+<polyline points="487.3,622.6 525.4,663.4" fill="none" stroke="#ff9b4d" stroke-width="80.4" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="506.4" y="639.0" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">hv_s2_bore_08_11  14m</text>
+<polyline points="439.1,629.1 457.1,684.5" fill="none" stroke="#ff9b4d" stroke-width="42.4" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="448.1" y="652.8" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">hv_s2_bore_07_14  14m</text>
+<polyline points="434.7,550.0 378.5,533.1" fill="none" stroke="#ff9b4d" stroke-width="76.3" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="406.6" y="537.5" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">hv_s2_bore_00_01  15m</text>
+<polyline points="525.4,663.4 581.7,646.6" fill="none" stroke="#ff9b4d" stroke-width="69.4" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="553.6" y="651.0" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">hv_s2_bore_11_12  15m</text>
+<polyline points="378.5,533.1 328.7,498.3" fill="none" stroke="#ff9b4d" stroke-width="40.5" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="353.6" y="511.7" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">hv_s2_bore_01_02  15m</text>
+<polyline points="328.7,498.3 343.7,439.7" fill="none" stroke="#ff9b4d" stroke-width="34.2" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="336.2" y="465.0" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">hv_s2_bore_02_04  15m</text>
+<polyline points="328.7,498.3 272.0,465.7" fill="none" stroke="#ff9b4d" stroke-width="34.3" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="300.3" y="478.0" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">hv_s2_bore_02_03  16m</text>
+<polyline points="434.7,550.0 463.8,523.2 482.9,487.5" fill="none" stroke="#ff9b4d" stroke-width="34.7" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="463.8" y="519.2" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">hv_s2_bore_00_09  20m</text>
+<polyline points="482.9,487.5 532.6,447.5" fill="none" stroke="#ff9b4d" stroke-width="33.2" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="507.7" y="463.5" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">hv_s2_bore_09_10  16m</text>
+<polyline points="482.9,487.5 455.6,430.2" fill="none" stroke="#ff9b4d" stroke-width="41.2" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="469.3" y="454.8" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">hv_s2_bore_09_13  16m</text>
+<polyline points="378.5,533.1 402.1,595.6" fill="none" stroke="#ff9b4d" stroke-width="78.0" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="390.3" y="560.3" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">hv_s2_bore_01_05  17m</text>
+<polyline points="371.5,637.2 439.1,629.1" fill="none" stroke="#ff9b4d" stroke-width="26.6" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="405.3" y="629.2" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">hv_s2_bore_06_07  17m</text>
+<polyline points="487.3,622.6 457.1,684.5" fill="none" stroke="#ff9b4d" stroke-width="75.3" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="472.2" y="649.6" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">hv_s2_bore_08_14  17m</text>
+<polyline points="525.4,663.4 457.1,684.5" fill="none" stroke="#ff9b4d" stroke-width="54.8" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="491.3" y="669.9" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">hv_s2_bore_11_14  18m</text>
+<polyline points="402.1,595.6 367.8,612.7 330.0,611.2" fill="none" stroke="#ff9b4d" stroke-width="83.4" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="367.8" y="608.7" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">hv_s2_bore_05_15  19m</text>
+<polyline points="272.0,465.7 307.3,451.8 343.7,439.7" fill="none" stroke="#ff9b4d" stroke-width="66.5" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="307.3" y="447.8" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">hv_s2_bore_03_04  19m</text>
+<polyline points="444.8,569.5 483.4,543.1" fill="none" stroke="#ff9b4d" stroke-width="71.8" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="464.1" y="552.3" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">hv_s3_bore_00_05  12m</text>
+<polyline points="444.8,569.5 482.8,603.5" fill="none" stroke="#ff9b4d" stroke-width="76.6" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="463.8" y="582.5" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">hv_s3_bore_00_03  13m</text>
+<polyline points="444.8,569.5 400.1,589.5" fill="none" stroke="#ff9b4d" stroke-width="41.2" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="422.4" y="575.5" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">hv_s3_bore_00_10  13m</text>
+<polyline points="400.1,589.5 422.4,632.6" fill="none" stroke="#ff9b4d" stroke-width="97.0" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="411.2" y="607.0" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">hv_s3_bore_10_01  12m</text>
+<polyline points="422.4,632.6 464.2,654.4" fill="none" stroke="#ff9b4d" stroke-width="35.2" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="443.3" y="639.5" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">hv_s3_bore_01_02  12m</text>
+<polyline points="464.2,654.4 464.5,702.0" fill="none" stroke="#ff9b4d" stroke-width="38.0" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="464.3" y="674.2" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">hv_s3_bore_02_06  12m</text>
+<polyline points="482.8,603.5 530.4,587.0" fill="none" stroke="#ff9b4d" stroke-width="45.1" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="506.6" y="591.3" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">hv_s3_bore_03_04  13m</text>
+<polyline points="422.4,632.6 414.4,682.7" fill="none" stroke="#ff9b4d" stroke-width="51.4" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="418.4" y="653.7" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">hv_s3_bore_01_08  13m</text>
+<polyline points="414.4,682.7 365.6,654.7" fill="none" stroke="#ff9b4d" stroke-width="50.0" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="390.0" y="664.7" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">hv_s3_bore_08_09  14m</text>
+<polyline points="483.4,543.1 520.4,494.4" fill="none" stroke="#ff9b4d" stroke-width="64.9" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="501.9" y="514.7" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">hv_s3_bore_05_12  15m</text>
+<polyline points="414.4,682.7 366.7,725.9" fill="none" stroke="#ff9b4d" stroke-width="21.4" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="390.5" y="700.3" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">hv_s3_bore_08_11  16m</text>
+<polyline points="464.5,702.0 515.4,733.1" fill="none" stroke="#ff9b4d" stroke-width="50.4" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="490.0" y="713.6" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">hv_s3_bore_06_07  17m</text>
+<polyline points="464.5,702.0 414.4,682.7" fill="none" stroke="#ff9b4d" stroke-width="47.8" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="439.4" y="688.4" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">hv_s3_bore_06_08  13m</text>
+<polyline points="464.2,654.4 482.8,603.5" fill="none" stroke="#ff9b4d" stroke-width="57.2" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="473.5" y="625.0" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">hv_s3_bore_02_03  13m</text>
+<polyline points="464.2,654.4 414.4,682.7" fill="none" stroke="#ff9b4d" stroke-width="49.3" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="439.3" y="664.6" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">hv_s3_bore_02_08  14m</text>
+<polyline points="482.8,603.5 483.4,543.1" fill="none" stroke="#ff9b4d" stroke-width="52.6" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="483.1" y="569.3" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">hv_s3_bore_03_05  15m</text>
+<polyline points="422.4,632.6 365.6,654.7" fill="none" stroke="#ff9b4d" stroke-width="56.2" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="394.0" y="639.7" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">hv_s3_bore_01_09  15m</text>
+<polyline points="451.8,570.0 484.3,537.9" fill="none" stroke="#ff9b4d" stroke-width="57.9" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="468.0" y="550.0" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">hv_s4_bore_00_07  12m</text>
+<polyline points="451.8,570.0 407.6,531.8" fill="none" stroke="#ff9b4d" stroke-width="75.4" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="429.7" y="546.9" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">hv_s4_bore_00_04  14m</text>
+<polyline points="407.6,531.8 360.8,561.3" fill="none" stroke="#ff9b4d" stroke-width="41.2" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="384.2" y="542.5" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">hv_s4_bore_04_06  14m</text>
+<polyline points="360.8,561.3 391.6,597.0" fill="none" stroke="#ff9b4d" stroke-width="58.2" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="376.2" y="575.1" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">hv_s4_bore_06_01  12m</text>
+<polyline points="391.6,597.0 373.4,641.5" fill="none" stroke="#ff9b4d" stroke-width="37.7" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="382.5" y="615.2" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">hv_s4_bore_01_05  12m</text>
+<polyline points="373.4,641.5 328.2,620.1" fill="none" stroke="#ff9b4d" stroke-width="23.8" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="350.8" y="626.8" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">hv_s4_bore_05_02  13m</text>
+<polyline points="328.2,620.1 281.6,603.4" fill="none" stroke="#ff9b4d" stroke-width="38.1" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="304.9" y="607.7" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">hv_s4_bore_02_12  13m</text>
+<polyline points="391.6,597.0 436.1,627.3" fill="none" stroke="#ff9b4d" stroke-width="42.9" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="413.9" y="608.1" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">hv_s4_bore_01_03  15m</text>
+<polyline points="436.1,627.3 488.1,615.6" fill="none" stroke="#ff9b4d" stroke-width="66.6" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="462.1" y="617.5" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">hv_s4_bore_03_10  13m</text>
+<polyline points="360.8,561.3 341.5,500.2" fill="none" stroke="#ff9b4d" stroke-width="46.8" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="351.1" y="526.7" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">hv_s4_bore_06_09  16m</text>
+<polyline points="341.5,500.2 363.9,447.8" fill="none" stroke="#ff9b4d" stroke-width="68.9" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="352.7" y="470.0" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">hv_s4_bore_09_11  14m</text>
+<polyline points="373.4,641.5 409.0,701.7" fill="none" stroke="#ff9b4d" stroke-width="42.2" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="391.2" y="667.6" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">hv_s4_bore_05_08  18m</text>
+<polyline points="451.8,570.0 436.1,627.3" fill="none" stroke="#ff9b4d" stroke-width="65.7" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="444.0" y="594.7" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">hv_s4_bore_00_03  16m</text>
+<polyline points="451.8,570.0 488.1,615.6" fill="none" stroke="#ff9b4d" stroke-width="53.9" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="470.0" y="588.8" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">hv_s4_bore_00_10  16m</text>
+<polyline points="451.8,570.0 391.6,597.0" fill="none" stroke="#ff9b4d" stroke-width="36.5" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="421.7" y="579.5" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">hv_s4_bore_00_01  16m</text>
+<polyline points="391.6,597.0 407.6,531.8" fill="none" stroke="#ff9b4d" stroke-width="45.6" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="399.6" y="560.4" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">hv_s4_bore_01_04  17m</text>
+<polyline points="436.1,627.3 373.4,641.5" fill="none" stroke="#ff9b4d" stroke-width="67.2" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="404.8" y="630.4" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">hv_s4_bore_03_05  17m</text>
+<polyline points="452.4,547.7 481.6,586.9" fill="none" stroke="#ff9b4d" stroke-width="69.6" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="467.0" y="563.3" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">hv_s5_bore_00_03  13m</text>
+<polyline points="481.6,586.9 444.9,625.2" fill="none" stroke="#ff9b4d" stroke-width="55.9" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="463.2" y="602.1" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">hv_s5_bore_03_02  13m</text>
+<polyline points="444.9,625.2 452.4,681.0" fill="none" stroke="#ff9b4d" stroke-width="50.2" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="448.7" y="649.1" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">hv_s5_bore_02_07  14m</text>
+<polyline points="452.4,681.0 476.3,729.8" fill="none" stroke="#ff9b4d" stroke-width="58.1" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="464.4" y="701.4" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">hv_s5_bore_07_09  15m</text>
+<polyline points="452.4,547.7 387.9,556.1" fill="none" stroke="#ff9b4d" stroke-width="84.1" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="420.2" y="547.9" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">hv_s5_bore_00_01  16m</text>
+<polyline points="387.9,556.1 348.5,509.2" fill="none" stroke="#ff9b4d" stroke-width="54.9" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="368.2" y="528.7" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">hv_s5_bore_01_10  15m</text>
+<polyline points="452.4,547.7 459.7,479.6" fill="none" stroke="#ff9b4d" stroke-width="28.5" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="456.0" y="509.6" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">hv_s5_bore_00_04  17m</text>
+<polyline points="387.9,556.1 367.8,623.0" fill="none" stroke="#ff9b4d" stroke-width="30.1" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="377.9" y="585.6" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">hv_s5_bore_01_05  17m</text>
+<polyline points="367.8,623.0 334.6,653.4" fill="none" stroke="#ff9b4d" stroke-width="23.4" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="351.2" y="634.2" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">hv_s5_bore_05_12  11m</text>
+<polyline points="334.6,653.4 379.0,689.0" fill="none" stroke="#ff9b4d" stroke-width="47.2" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="356.8" y="667.2" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">hv_s5_bore_12_08  14m</text>
+<polyline points="334.6,653.4 287.8,617.2" fill="none" stroke="#ff9b4d" stroke-width="58.1" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="311.2" y="631.3" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">hv_s5_bore_12_06  15m</text>
+<polyline points="481.6,586.9 497.8,621.8 530.4,640.6" fill="none" stroke="#ff9b4d" stroke-width="41.3" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="497.8" y="617.8" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">hv_s5_bore_03_11  19m</text>
+<polyline points="367.8,623.0 379.0,689.0" fill="none" stroke="#ff9b4d" stroke-width="27.4" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="373.4" y="652.0" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">hv_s5_bore_05_08  17m</text>
+<polyline points="452.4,681.0 414.9,687.3 379.0,689.0" fill="none" stroke="#ff9b4d" stroke-width="33.5" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="414.9" y="683.3" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">hv_s5_bore_07_08  19m</text>
+<polyline points="444.9,625.2 406.3,617.1 367.8,623.0" fill="none" stroke="#ff9b4d" stroke-width="52.6" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="406.3" y="613.1" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">hv_s5_bore_02_05  20m</text>
+<polyline points="452.4,547.7 461.9,588.0 444.9,625.2" fill="none" stroke="#ff9b4d" stroke-width="45.5" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="461.9" y="584.0" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">hv_s5_bore_00_02  21m</text>
+<polyline points="367.8,623.0 327.5,625.7 287.8,617.2" fill="none" stroke="#ff9b4d" stroke-width="50.6" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="327.5" y="621.7" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">hv_s5_bore_05_06  20m</text>
+<polyline points="462.0,540.6 511.5,547.0" fill="none" stroke="#ff9b4d" stroke-width="45.5" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="486.8" y="539.8" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">hv_s6_bore_00_04  12m</text>
+<polyline points="511.5,547.0 579.9,548.0" fill="none" stroke="#ff9b4d" stroke-width="35.2" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="545.7" y="543.5" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">hv_s6_bore_04_12  17m</text>
+<polyline points="462.0,540.6 471.8,606.6" fill="none" stroke="#ff9b4d" stroke-width="54.3" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="466.9" y="569.6" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">hv_s6_bore_00_01  17m</text>
+<polyline points="471.8,606.6 426.5,622.3" fill="none" stroke="#ff9b4d" stroke-width="45.1" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="449.1" y="610.5" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">hv_s6_bore_01_11  12m</text>
+<polyline points="426.5,622.3 388.8,575.9" fill="none" stroke="#ff9b4d" stroke-width="23.2" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="407.7" y="595.1" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">hv_s6_bore_11_03  15m</text>
+<polyline points="388.8,575.9 395.1,542.1 396.9,505.5" fill="none" stroke="#ff9b4d" stroke-width="36.4" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="395.1" y="538.1" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">hv_s6_bore_03_02  18m</text>
+<polyline points="396.9,505.5 439.6,469.6" fill="none" stroke="#ff9b4d" stroke-width="27.0" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="418.2" y="483.5" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">hv_s6_bore_02_10  14m</text>
+<polyline points="439.6,469.6 387.7,435.5" fill="none" stroke="#ff9b4d" stroke-width="59.7" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="413.7" y="448.6" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">hv_s6_bore_10_09  15m</text>
+<polyline points="387.7,435.5 376.4,380.4" fill="none" stroke="#ff9b4d" stroke-width="49.4" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="382.1" y="404.0" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">hv_s6_bore_09_13  14m</text>
+<polyline points="396.9,505.5 363.7,523.5 325.2,518.7" fill="none" stroke="#ff9b4d" stroke-width="47.2" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="363.7" y="519.5" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">hv_s6_bore_02_06  21m</text>
+<polyline points="325.2,518.7 301.2,576.2" fill="none" stroke="#ff9b4d" stroke-width="20.8" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="313.2" y="543.5" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">hv_s6_bore_06_08  16m</text>
+<polyline points="301.2,576.2 323.1,621.7" fill="none" stroke="#ff9b4d" stroke-width="64.6" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="312.1" y="595.0" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">hv_s6_bore_08_05  13m</text>
+<polyline points="323.1,621.7 358.3,667.8" fill="none" stroke="#ff9b4d" stroke-width="40.7" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="340.7" y="640.8" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">hv_s6_bore_05_07  14m</text>
+<polyline points="396.9,505.5 385.6,471.2 387.7,435.5" fill="none" stroke="#ff9b4d" stroke-width="29.5" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="385.6" y="467.2" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">hv_s6_bore_02_09  19m</text>
+<polyline points="471.8,606.6 487.0,574.3 511.5,547.0" fill="none" stroke="#ff9b4d" stroke-width="29.1" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="487.0" y="570.3" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">hv_s6_bore_01_04  19m</text>
+<polyline points="462.0,540.6 451.0,504.9 439.6,469.6" fill="none" stroke="#ff9b4d" stroke-width="51.9" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="451.0" y="500.9" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">hv_s6_bore_00_10  18m</text>
+<polyline points="462.0,540.6 425.8,529.8 396.9,505.5" fill="none" stroke="#ff9b4d" stroke-width="44.6" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="425.8" y="525.8" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">hv_s6_bore_00_02  19m</text>
+<polyline points="388.8,575.9 364.1,610.5 323.1,621.7" fill="none" stroke="#ff9b4d" stroke-width="45.1" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="364.1" y="606.5" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">hv_s6_bore_03_05  21m</text>
+<polyline points="455.2,537.4 403.9,570.8" fill="none" stroke="#ff9b4d" stroke-width="46.2" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="429.5" y="550.1" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">hv_s7_bore_00_02  15m</text>
+<polyline points="403.9,570.8 453.3,604.0" fill="none" stroke="#ff9b4d" stroke-width="70.5" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="428.6" y="583.4" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">hv_s7_bore_02_10  15m</text>
+<polyline points="453.3,604.0 488.3,654.3" fill="none" stroke="#ff9b4d" stroke-width="36.7" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="470.8" y="625.2" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">hv_s7_bore_10_14  15m</text>
+<polyline points="488.3,654.3 468.5,697.1" fill="none" stroke="#ff9b4d" stroke-width="41.1" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="478.4" y="671.7" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">hv_s7_bore_14_18  12m</text>
+<polyline points="488.3,654.3 516.6,691.8" fill="none" stroke="#ff9b4d" stroke-width="40.2" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="502.4" y="669.0" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">hv_s7_bore_14_15  12m</text>
+<polyline points="453.3,604.0 514.1,592.6" fill="none" stroke="#ff9b4d" stroke-width="45.4" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="483.7" y="594.3" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">hv_s7_bore_10_06  15m</text>
+<polyline points="514.1,592.6 566.2,561.9" fill="none" stroke="#ff9b4d" stroke-width="79.3" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="540.1" y="573.3" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">hv_s7_bore_06_09  15m</text>
+<polyline points="566.2,561.9 595.2,605.2" fill="none" stroke="#ff9b4d" stroke-width="72.2" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="580.7" y="579.6" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">hv_s7_bore_09_17  14m</text>
+<polyline points="595.2,605.2 627.5,558.6" fill="none" stroke="#ff9b4d" stroke-width="61.5" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="611.3" y="577.9" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">hv_s7_bore_17_12  14m</text>
+<polyline points="455.2,537.4 408.1,496.1" fill="none" stroke="#ff9b4d" stroke-width="46.7" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="431.7" y="512.8" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">hv_s7_bore_00_04  15m</text>
+<polyline points="627.5,558.6 619.6,499.1" fill="none" stroke="#ff9b4d" stroke-width="89.0" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="623.5" y="524.8" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">hv_s7_bore_12_16  16m</text>
+<polyline points="619.6,499.1 599.2,448.0" fill="none" stroke="#ff9b4d" stroke-width="54.7" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="609.4" y="469.5" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">hv_s7_bore_16_11  14m</text>
+<polyline points="455.2,537.4 516.7,525.2" fill="none" stroke="#ff9b4d" stroke-width="36.3" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="485.9" y="527.3" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">hv_s7_bore_00_01  16m</text>
+<polyline points="516.7,525.2 553.6,494.5" fill="none" stroke="#ff9b4d" stroke-width="51.6" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="535.1" y="505.8" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">hv_s7_bore_01_13  13m</text>
+<polyline points="553.6,494.5 536.7,451.8" fill="none" stroke="#ff9b4d" stroke-width="47.3" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="545.2" y="469.2" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">hv_s7_bore_13_05  12m</text>
+<polyline points="516.7,525.2 487.6,485.9" fill="none" stroke="#ff9b4d" stroke-width="52.3" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="502.1" y="501.5" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">hv_s7_bore_01_03  14m</text>
+<polyline points="487.6,485.9 462.6,457.7 446.2,423.4" fill="none" stroke="#ff9b4d" stroke-width="29.9" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="462.6" y="453.7" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">hv_s7_bore_03_07  19m</text>
+<polyline points="446.2,423.4 494.2,377.1" fill="none" stroke="#ff9b4d" stroke-width="66.4" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="470.2" y="396.3" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">hv_s7_bore_07_08  17m</text>
+<polyline points="516.6,691.8 468.5,697.1" fill="none" stroke="#ff9b4d" stroke-width="75.7" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="492.5" y="690.5" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">hv_s7_bore_15_18  13m</text>
+<polyline points="487.6,485.9 536.7,451.8" fill="none" stroke="#ff9b4d" stroke-width="84.0" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="512.1" y="464.9" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">hv_s7_bore_03_05  15m</text>
+<polyline points="566.2,561.9 627.5,558.6" fill="none" stroke="#ff9b4d" stroke-width="70.8" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="596.8" y="556.3" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">hv_s7_bore_09_12  16m</text>
+<polyline points="516.7,525.2 566.2,561.9" fill="none" stroke="#ff9b4d" stroke-width="34.0" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="541.4" y="539.6" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">hv_s7_bore_01_09  16m</text>
+<polyline points="455.2,537.4 487.6,485.9" fill="none" stroke="#ff9b4d" stroke-width="51.2" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="471.4" y="507.6" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">hv_s7_bore_00_03  16m</text>
+<polyline points="599.2,448.0 553.6,494.5" fill="none" stroke="#ff9b4d" stroke-width="32.1" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="576.4" y="467.2" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">hv_s7_bore_11_13  16m</text>
+<polyline points="553.6,494.5 619.6,499.1" fill="none" stroke="#ff9b4d" stroke-width="52.7" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="586.6" y="492.8" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">hv_s7_bore_13_16  16m</text>
+<polyline points="292.6,512.4 324.8,531.2" fill="none" stroke="#ff9b4d" stroke-width="15.0" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="308.7" y="517.8" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">hv_breach_0_1_0  16m</text>
+<polyline points="385.1,524.5 374.8,507.1" fill="none" stroke="#ff9b4d" stroke-width="23.8" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="380.0" y="511.8" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">hv_breach_0_1_1  14m</text>
+<polyline points="382.1,444.1 328.9,472.3" fill="none" stroke="#ff9b4d" stroke-width="30.2" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="355.5" y="454.2" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">hv_breach_0_1_2  20m</text>
+<polyline points="341.2,631.3 333.0,641.5" fill="none" stroke="#ff9b4d" stroke-width="26.1" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="337.1" y="632.4" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">hv_breach_0_1_3  15m</text>
+<polyline points="263.2,571.4 294.1,618.3" fill="none" stroke="#ff9b4d" stroke-width="16.6" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="278.7" y="590.8" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">hv_breach_0_1_4  20m</text>
+<polyline points="324.8,531.2 328.7,498.3" fill="none" stroke="#ff9b4d" stroke-width="28.2" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="326.8" y="510.8" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">hv_breach_1_2_0  18m</text>
+<polyline points="328.9,472.3 272.0,465.7" fill="none" stroke="#ff9b4d" stroke-width="20.2" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="300.5" y="465.0" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">hv_breach_1_2_1  20m</text>
+<polyline points="363.9,569.1 330.0,611.2" fill="none" stroke="#ff9b4d" stroke-width="15.1" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="347.0" y="586.2" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">hv_breach_1_2_2  15m</text>
+<polyline points="328.9,472.3 343.7,439.7" fill="none" stroke="#ff9b4d" stroke-width="15.3" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="336.3" y="452.0" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">hv_breach_1_2_3  16m</text>
+<polyline points="511.2,450.4 532.6,447.5" fill="none" stroke="#ff9b4d" stroke-width="22.1" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="521.9" y="445.0" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">hv_breach_1_2_4  14m</text>
+<polyline points="439.1,629.1 400.1,589.5" fill="none" stroke="#ff9b4d" stroke-width="18.8" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="419.6" y="605.3" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">hv_breach_2_3_0  18m</text>
+<polyline points="378.5,533.1 400.1,589.5" fill="none" stroke="#ff9b4d" stroke-width="17.7" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="389.3" y="557.3" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">hv_breach_2_3_1  18m</text>
+<polyline points="457.1,684.5 464.5,702.0" fill="none" stroke="#ff9b4d" stroke-width="26.3" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="460.8" y="689.3" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">hv_breach_2_3_2  18m</text>
+<polyline points="487.3,622.6 422.4,632.6" fill="none" stroke="#ff9b4d" stroke-width="23.0" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="454.9" y="623.6" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">hv_breach_2_3_3  24m</text>
+<polyline points="487.3,622.6 464.2,654.4" fill="none" stroke="#ff9b4d" stroke-width="32.6" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="475.7" y="634.5" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">hv_breach_2_3_4  19m</text>
+<polyline points="483.4,543.1 484.3,537.9" fill="none" stroke="#ff9b4d" stroke-width="29.3" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="483.8" y="536.5" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">hv_breach_3_4_0  5m</text>
+<polyline points="400.1,589.5 436.1,627.3" fill="none" stroke="#ff9b4d" stroke-width="32.7" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="418.1" y="604.4" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">hv_breach_3_4_1  16m</text>
+<polyline points="400.1,589.5 407.6,531.8" fill="none" stroke="#ff9b4d" stroke-width="21.5" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="403.8" y="556.6" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">hv_breach_3_4_2  21m</text>
+<polyline points="400.1,589.5 391.6,597.0" fill="none" stroke="#ff9b4d" stroke-width="19.6" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="395.8" y="589.3" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">hv_breach_3_4_3  17m</text>
+<polyline points="464.2,654.4 488.1,615.6" fill="none" stroke="#ff9b4d" stroke-width="32.4" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="476.2" y="631.0" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">hv_breach_3_4_4  13m</text>
+<polyline points="409.0,701.7 379.0,689.0" fill="none" stroke="#ff9b4d" stroke-width="29.6" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="394.0" y="691.4" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">hv_breach_4_5_0  16m</text>
+<polyline points="328.2,620.1 287.8,617.2" fill="none" stroke="#ff9b4d" stroke-width="19.3" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="308.0" y="614.7" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">hv_breach_4_5_1  14m</text>
+<polyline points="328.2,620.1 334.6,653.4" fill="none" stroke="#ff9b4d" stroke-width="30.5" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="331.4" y="632.7" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">hv_breach_4_5_2  14m</text>
+<polyline points="484.3,537.9 481.6,586.9" fill="none" stroke="#ff9b4d" stroke-width="26.0" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="482.9" y="558.4" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">hv_breach_4_5_3  15m</text>
+<polyline points="373.4,641.5 367.8,623.0" fill="none" stroke="#ff9b4d" stroke-width="23.4" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="370.6" y="628.3" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">hv_breach_4_5_4  8m</text>
+<polyline points="459.7,479.6 439.6,469.6" fill="none" stroke="#ff9b4d" stroke-width="33.5" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="449.6" y="470.6" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">hv_breach_5_6_0  18m</text>
+<polyline points="579.9,548.0 553.6,494.5" fill="none" stroke="#ff9b4d" stroke-width="17.5" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="566.7" y="517.2" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">hv_breach_6_7_0  19m</text>
+<polyline points="426.5,622.3 453.3,604.0" fill="none" stroke="#ff9b4d" stroke-width="26.6" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="439.9" y="609.2" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">hv_breach_6_7_1  17m</text>
+<polyline points="471.8,606.6 453.3,604.0" fill="none" stroke="#ff9b4d" stroke-width="31.3" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="462.5" y="601.3" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">hv_breach_6_7_2  12m</text>
+<polyline points="439.6,469.6 446.2,423.4" fill="none" stroke="#ff9b4d" stroke-width="27.8" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="442.9" y="442.5" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">hv_breach_6_7_3  15m</text>
+<polyline points="462.0,540.6 455.2,537.4" fill="none" stroke="#ff9b4d" stroke-width="22.2" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="458.6" y="535.0" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">hv_breach_6_7_4  14m</text>
+<polyline points="373.4,641.5 340.5,584.1 394.9,511.7 415.1,447.7 376.4,380.4" fill="none" stroke="#ff9b4d" stroke-width="30.7" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="390.0" y="514.3" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">hv_long_0  82m</text>
+<polyline points="360.8,561.3 360.5,575.2 355.2,609.5 313.4,594.2 323.1,621.7" fill="none" stroke="#ff9b4d" stroke-width="32.0" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="347.3" y="602.6" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">hv_long_1  43m</text>
+<polyline points="476.3,729.8 452.2,726.3 488.6,706.3 480.4,708.6 468.5,697.1" fill="none" stroke="#ff9b4d" stroke-width="24.7" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="480.9" y="706.5" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">hv_long_2  40m</text>
+<polyline points="414.4,682.7 383.7,640.9 367.8,606.8 376.5,535.6 325.2,518.7" fill="none" stroke="#ff9b4d" stroke-width="32.0" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="369.1" y="592.4" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">hv_long_3  70m</text>
+<polyline points="383.5,570.7 417.1,565.3 455.3,554.8 489.8,545.3 530.4,587.0" fill="none" stroke="#ff9b4d" stroke-width="19.4" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="458.6" y="549.9" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">hv_long_4  58m</text>
+<polyline points="417.7,366.8 423.7,382.0 410.6,382.9 412.8,389.4" fill="none" stroke="#ff9b4d" stroke-width="30.3" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="417.4" y="378.5" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">entrance_drop  26m</text>
+<polyline points="476.1,586.0 547.9,657.0 665.7,652.7 720.1,752.8 813.8,787.3" fill="none" stroke="#ff9b4d" stroke-width="28.3" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="662.3" y="648.8" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">link_to_ravine  108m</text>
+<polyline points="403.9,570.8 335.7,637.1 261.6,702.2 152.1,722.1 86.2,787.3" fill="none" stroke="#ff9b4d" stroke-width="27.5" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="256.2" y="699.2" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">link_to_mines  104m</text>
+<ellipse cx="417.7" cy="366.8" rx="24.3" ry="24.3" fill="#ff9b4d" fill-opacity="0.45" stroke="#ff9b4d" stroke-width="1.5"/>
+<text x="417.7" y="405.1" fill="#e8eaf0" font-family="sans-serif" font-size="13" text-anchor="middle">hive_mouth</text>
+<ellipse cx="86.2" cy="787.3" rx="16.2" ry="16.2" fill="#ffd933" fill-opacity="0.45" stroke="#ffd933" stroke-width="1.5"/>
+<text x="86.2" y="817.4" fill="#e8eaf0" font-family="sans-serif" font-size="13" text-anchor="middle">link_mines</text>
+<ellipse cx="813.8" cy="787.3" rx="16.2" ry="16.2" fill="#ffd933" fill-opacity="0.45" stroke="#ffd933" stroke-width="1.5"/>
+<text x="813.8" y="817.4" fill="#e8eaf0" font-family="sans-serif" font-size="13" text-anchor="middle">link_ravine</text>
+<ellipse cx="433.8" cy="552.8" rx="27.7" ry="27.7" fill="#ff9b4d" fill-opacity="0.15" stroke="#ff9b4d" stroke-width="1.5"/>
+<text x="433.8" y="594.5" fill="#e8eaf0" font-family="sans-serif" font-size="13" text-anchor="middle">hv_s0_b00</text>
+<ellipse cx="383.5" cy="570.7" rx="31.6" ry="31.6" fill="#ff9b4d" fill-opacity="0.15" stroke="#ff9b4d" stroke-width="1.5"/>
+<text x="383.5" y="616.3" fill="#e8eaf0" font-family="sans-serif" font-size="13" text-anchor="middle">hv_s0_b01</text>
+<ellipse cx="385.1" cy="524.5" rx="25.6" ry="25.6" fill="#ff9b4d" fill-opacity="0.15" stroke="#ff9b4d" stroke-width="1.5"/>
+<text x="385.1" y="564.1" fill="#e8eaf0" font-family="sans-serif" font-size="13" text-anchor="middle">hv_s0_b02</text>
+<ellipse cx="382.1" cy="444.1" rx="28.2" ry="28.2" fill="#ff9b4d" fill-opacity="0.15" stroke="#ff9b4d" stroke-width="1.5"/>
+<text x="382.1" y="486.3" fill="#e8eaf0" font-family="sans-serif" font-size="13" text-anchor="middle">hv_s0_b03</text>
+<ellipse cx="489.8" cy="567.4" rx="21.5" ry="21.5" fill="#ff9b4d" fill-opacity="0.15" stroke="#ff9b4d" stroke-width="1.5"/>
+<text x="489.8" y="602.9" fill="#e8eaf0" font-family="sans-serif" font-size="13" text-anchor="middle">hv_s0_b04</text>
+<ellipse cx="339.9" cy="478.1" rx="44.4" ry="44.4" fill="#ff9b4d" fill-opacity="0.45" stroke="#ff9b4d" stroke-width="1.5"/>
+<text x="339.9" y="536.6" fill="#e8eaf0" font-family="sans-serif" font-size="13" text-anchor="middle">hv_s0_b05</text>
+<ellipse cx="412.8" cy="389.4" rx="42.0" ry="42.0" fill="#ff9b4d" fill-opacity="0.45" stroke="#ff9b4d" stroke-width="1.5"/>
+<text x="412.8" y="445.3" fill="#e8eaf0" font-family="sans-serif" font-size="13" text-anchor="middle">hv_s0_b06</text>
+<ellipse cx="557.8" cy="557.5" rx="37.6" ry="37.6" fill="#ff9b4d" fill-opacity="0.45" stroke="#ff9b4d" stroke-width="1.5"/>
+<text x="557.8" y="609.1" fill="#e8eaf0" font-family="sans-serif" font-size="13" text-anchor="middle">hv_s0_b07</text>
+<ellipse cx="292.6" cy="512.4" rx="29.1" ry="29.1" fill="#ff9b4d" fill-opacity="0.15" stroke="#ff9b4d" stroke-width="1.5"/>
+<text x="292.6" y="555.5" fill="#e8eaf0" font-family="sans-serif" font-size="13" text-anchor="middle">hv_s0_b08</text>
+<ellipse cx="263.2" cy="571.4" rx="25.0" ry="25.0" fill="#ff9b4d" fill-opacity="0.15" stroke="#ff9b4d" stroke-width="1.5"/>
+<text x="263.2" y="610.3" fill="#e8eaf0" font-family="sans-serif" font-size="13" text-anchor="middle">hv_s0_b09</text>
+<ellipse cx="368.1" cy="384.8" rx="28.4" ry="28.4" fill="#ff9b4d" fill-opacity="0.15" stroke="#ff9b4d" stroke-width="1.5"/>
+<text x="368.1" y="427.2" fill="#e8eaf0" font-family="sans-serif" font-size="13" text-anchor="middle">hv_s0_b10</text>
+<ellipse cx="341.2" cy="631.3" rx="42.6" ry="42.6" fill="#ff9b4d" fill-opacity="0.45" stroke="#ff9b4d" stroke-width="1.5"/>
+<text x="341.2" y="687.9" fill="#e8eaf0" font-family="sans-serif" font-size="13" text-anchor="middle">hv_s0_b11</text>
+<ellipse cx="434.6" cy="549.9" rx="25.9" ry="25.9" fill="#ff9b4d" fill-opacity="0.15" stroke="#ff9b4d" stroke-width="1.5"/>
+<text x="434.6" y="589.8" fill="#e8eaf0" font-family="sans-serif" font-size="13" text-anchor="middle">hv_s1_b00</text>
+<ellipse cx="459.5" cy="474.9" rx="40.3" ry="40.3" fill="#ff9b4d" fill-opacity="0.45" stroke="#ff9b4d" stroke-width="1.5"/>
+<text x="459.5" y="529.2" fill="#e8eaf0" font-family="sans-serif" font-size="13" text-anchor="middle">hv_s1_b01</text>
+<ellipse cx="374.8" cy="507.1" rx="37.0" ry="37.0" fill="#ff9b4d" fill-opacity="0.45" stroke="#ff9b4d" stroke-width="1.5"/>
+<text x="374.8" y="558.1" fill="#e8eaf0" font-family="sans-serif" font-size="13" text-anchor="middle">hv_s1_b02</text>
+<ellipse cx="324.8" cy="531.2" rx="35.7" ry="35.7" fill="#ff9b4d" fill-opacity="0.45" stroke="#ff9b4d" stroke-width="1.5"/>
+<text x="324.8" y="580.9" fill="#e8eaf0" font-family="sans-serif" font-size="13" text-anchor="middle">hv_s1_b03</text>
+<ellipse cx="328.9" cy="472.3" rx="39.4" ry="39.4" fill="#ff9b4d" fill-opacity="0.45" stroke="#ff9b4d" stroke-width="1.5"/>
+<text x="328.9" y="525.7" fill="#e8eaf0" font-family="sans-serif" font-size="13" text-anchor="middle">hv_s1_b04</text>
+<ellipse cx="511.2" cy="450.4" rx="40.5" ry="40.5" fill="#ff9b4d" fill-opacity="0.45" stroke="#ff9b4d" stroke-width="1.5"/>
+<text x="511.2" y="504.9" fill="#e8eaf0" font-family="sans-serif" font-size="13" text-anchor="middle">hv_s1_b05</text>
+<ellipse cx="476.1" cy="586.0" rx="26.0" ry="26.0" fill="#ff9b4d" fill-opacity="0.15" stroke="#ff9b4d" stroke-width="1.5"/>
+<text x="476.1" y="626.0" fill="#e8eaf0" font-family="sans-serif" font-size="13" text-anchor="middle">hv_s1_b06</text>
+<ellipse cx="265.5" cy="574.1" rx="39.2" ry="39.2" fill="#ff9b4d" fill-opacity="0.45" stroke="#ff9b4d" stroke-width="1.5"/>
+<text x="265.5" y="627.3" fill="#e8eaf0" font-family="sans-serif" font-size="13" text-anchor="middle">hv_s1_b07</text>
+<ellipse cx="418.7" cy="450.2" rx="32.4" ry="32.4" fill="#ff9b4d" fill-opacity="0.45" stroke="#ff9b4d" stroke-width="1.5"/>
+<text x="418.7" y="496.5" fill="#e8eaf0" font-family="sans-serif" font-size="13" text-anchor="middle">hv_s1_b08</text>
+<ellipse cx="294.1" cy="618.3" rx="37.9" ry="37.9" fill="#ff9b4d" fill-opacity="0.45" stroke="#ff9b4d" stroke-width="1.5"/>
+<text x="294.1" y="670.2" fill="#e8eaf0" font-family="sans-serif" font-size="13" text-anchor="middle">hv_s1_b09</text>
+<ellipse cx="363.9" cy="569.1" rx="33.8" ry="33.8" fill="#ff9b4d" fill-opacity="0.45" stroke="#ff9b4d" stroke-width="1.5"/>
+<text x="363.9" y="616.9" fill="#e8eaf0" font-family="sans-serif" font-size="13" text-anchor="middle">hv_s1_b10</text>
+<ellipse cx="333.0" cy="641.5" rx="28.0" ry="28.0" fill="#ff9b4d" fill-opacity="0.15" stroke="#ff9b4d" stroke-width="1.5"/>
+<text x="333.0" y="683.5" fill="#e8eaf0" font-family="sans-serif" font-size="13" text-anchor="middle">hv_s1_b11</text>
+<ellipse cx="434.7" cy="550.0" rx="42.0" ry="42.0" fill="#ff9b4d" fill-opacity="0.45" stroke="#ff9b4d" stroke-width="1.5"/>
+<text x="434.7" y="606.0" fill="#e8eaf0" font-family="sans-serif" font-size="13" text-anchor="middle">hv_s2_b00</text>
+<ellipse cx="378.5" cy="533.1" rx="37.7" ry="37.7" fill="#ff9b4d" fill-opacity="0.45" stroke="#ff9b4d" stroke-width="1.5"/>
+<text x="378.5" y="584.8" fill="#e8eaf0" font-family="sans-serif" font-size="13" text-anchor="middle">hv_s2_b01</text>
+<ellipse cx="328.7" cy="498.3" rx="32.4" ry="32.4" fill="#ff9b4d" fill-opacity="0.45" stroke="#ff9b4d" stroke-width="1.5"/>
+<text x="328.7" y="544.7" fill="#e8eaf0" font-family="sans-serif" font-size="13" text-anchor="middle">hv_s2_b02</text>
+<ellipse cx="272.0" cy="465.7" rx="35.9" ry="35.9" fill="#ff9b4d" fill-opacity="0.45" stroke="#ff9b4d" stroke-width="1.5"/>
+<text x="272.0" y="515.7" fill="#e8eaf0" font-family="sans-serif" font-size="13" text-anchor="middle">hv_s2_b03</text>
+<ellipse cx="343.7" cy="439.7" rx="40.5" ry="40.5" fill="#ff9b4d" fill-opacity="0.45" stroke="#ff9b4d" stroke-width="1.5"/>
+<text x="343.7" y="494.2" fill="#e8eaf0" font-family="sans-serif" font-size="13" text-anchor="middle">hv_s2_b04</text>
+<ellipse cx="402.1" cy="595.6" rx="32.7" ry="32.7" fill="#ff9b4d" fill-opacity="0.45" stroke="#ff9b4d" stroke-width="1.5"/>
+<text x="402.1" y="642.3" fill="#e8eaf0" font-family="sans-serif" font-size="13" text-anchor="middle">hv_s2_b05</text>
+<ellipse cx="371.5" cy="637.2" rx="28.1" ry="28.1" fill="#ff9b4d" fill-opacity="0.15" stroke="#ff9b4d" stroke-width="1.5"/>
+<text x="371.5" y="679.3" fill="#e8eaf0" font-family="sans-serif" font-size="13" text-anchor="middle">hv_s2_b06</text>
+<ellipse cx="439.1" cy="629.1" rx="29.2" ry="29.2" fill="#ff9b4d" fill-opacity="0.15" stroke="#ff9b4d" stroke-width="1.5"/>
+<text x="439.1" y="672.3" fill="#e8eaf0" font-family="sans-serif" font-size="13" text-anchor="middle">hv_s2_b07</text>
+<ellipse cx="487.3" cy="622.6" rx="40.9" ry="40.9" fill="#ff9b4d" fill-opacity="0.45" stroke="#ff9b4d" stroke-width="1.5"/>
+<text x="487.3" y="677.4" fill="#e8eaf0" font-family="sans-serif" font-size="13" text-anchor="middle">hv_s2_b08</text>
+<ellipse cx="482.9" cy="487.5" rx="21.8" ry="21.8" fill="#ff9b4d" fill-opacity="0.15" stroke="#ff9b4d" stroke-width="1.5"/>
+<text x="482.9" y="523.2" fill="#e8eaf0" font-family="sans-serif" font-size="13" text-anchor="middle">hv_s2_b09</text>
+<ellipse cx="532.6" cy="447.5" rx="35.4" ry="35.4" fill="#ff9b4d" fill-opacity="0.45" stroke="#ff9b4d" stroke-width="1.5"/>
+<text x="532.6" y="496.9" fill="#e8eaf0" font-family="sans-serif" font-size="13" text-anchor="middle">hv_s2_b10</text>
+<ellipse cx="525.4" cy="663.4" rx="40.7" ry="40.7" fill="#ff9b4d" fill-opacity="0.45" stroke="#ff9b4d" stroke-width="1.5"/>
+<text x="525.4" y="718.1" fill="#e8eaf0" font-family="sans-serif" font-size="13" text-anchor="middle">hv_s2_b11</text>
+<ellipse cx="581.7" cy="646.6" rx="34.6" ry="34.6" fill="#ff9b4d" fill-opacity="0.45" stroke="#ff9b4d" stroke-width="1.5"/>
+<text x="581.7" y="695.2" fill="#e8eaf0" font-family="sans-serif" font-size="13" text-anchor="middle">hv_s2_b12</text>
+<ellipse cx="455.6" cy="430.2" rx="23.1" ry="23.1" fill="#ff9b4d" fill-opacity="0.45" stroke="#ff9b4d" stroke-width="1.5"/>
+<text x="455.6" y="467.3" fill="#e8eaf0" font-family="sans-serif" font-size="13" text-anchor="middle">hv_s2_b13</text>
+<ellipse cx="457.1" cy="684.5" rx="41.5" ry="41.5" fill="#ff9b4d" fill-opacity="0.45" stroke="#ff9b4d" stroke-width="1.5"/>
+<text x="457.1" y="740.1" fill="#e8eaf0" font-family="sans-serif" font-size="13" text-anchor="middle">hv_s2_b14</text>
+<ellipse cx="330.0" cy="611.2" rx="37.1" ry="37.1" fill="#ff9b4d" fill-opacity="0.45" stroke="#ff9b4d" stroke-width="1.5"/>
+<text x="330.0" y="662.3" fill="#e8eaf0" font-family="sans-serif" font-size="13" text-anchor="middle">hv_s2_b15</text>
+<ellipse cx="444.8" cy="569.5" rx="29.5" ry="29.5" fill="#ff9b4d" fill-opacity="0.15" stroke="#ff9b4d" stroke-width="1.5"/>
+<text x="444.8" y="613.1" fill="#e8eaf0" font-family="sans-serif" font-size="13" text-anchor="middle">hv_s3_b00</text>
+<ellipse cx="422.4" cy="632.6" rx="43.1" ry="43.1" fill="#ff9b4d" fill-opacity="0.45" stroke="#ff9b4d" stroke-width="1.5"/>
+<text x="422.4" y="689.7" fill="#e8eaf0" font-family="sans-serif" font-size="13" text-anchor="middle">hv_s3_b01</text>
+<ellipse cx="464.2" cy="654.4" rx="38.6" ry="38.6" fill="#ff9b4d" fill-opacity="0.45" stroke="#ff9b4d" stroke-width="1.5"/>
+<text x="464.2" y="707.0" fill="#e8eaf0" font-family="sans-serif" font-size="13" text-anchor="middle">hv_s3_b02</text>
+<ellipse cx="482.8" cy="603.5" rx="30.6" ry="30.6" fill="#ff9b4d" fill-opacity="0.15" stroke="#ff9b4d" stroke-width="1.5"/>
+<text x="482.8" y="648.1" fill="#e8eaf0" font-family="sans-serif" font-size="13" text-anchor="middle">hv_s3_b03</text>
+<ellipse cx="530.4" cy="587.0" rx="34.2" ry="34.2" fill="#ff9b4d" fill-opacity="0.45" stroke="#ff9b4d" stroke-width="1.5"/>
+<text x="530.4" y="635.2" fill="#e8eaf0" font-family="sans-serif" font-size="13" text-anchor="middle">hv_s3_b04</text>
+<ellipse cx="483.4" cy="543.1" rx="33.2" ry="33.2" fill="#ff9b4d" fill-opacity="0.45" stroke="#ff9b4d" stroke-width="1.5"/>
+<text x="483.4" y="590.3" fill="#e8eaf0" font-family="sans-serif" font-size="13" text-anchor="middle">hv_s3_b05</text>
+<ellipse cx="464.5" cy="702.0" rx="31.3" ry="31.3" fill="#ff9b4d" fill-opacity="0.15" stroke="#ff9b4d" stroke-width="1.5"/>
+<text x="464.5" y="747.3" fill="#e8eaf0" font-family="sans-serif" font-size="13" text-anchor="middle">hv_s3_b06</text>
+<ellipse cx="515.4" cy="733.1" rx="33.7" ry="33.7" fill="#ff9b4d" fill-opacity="0.45" stroke="#ff9b4d" stroke-width="1.5"/>
+<text x="515.4" y="780.9" fill="#e8eaf0" font-family="sans-serif" font-size="13" text-anchor="middle">hv_s3_b07</text>
+<ellipse cx="414.4" cy="682.7" rx="21.0" ry="21.0" fill="#ff9b4d" fill-opacity="0.15" stroke="#ff9b4d" stroke-width="1.5"/>
+<text x="414.4" y="717.7" fill="#e8eaf0" font-family="sans-serif" font-size="13" text-anchor="middle">hv_s3_b08</text>
+<ellipse cx="365.6" cy="654.7" rx="38.6" ry="38.6" fill="#ff9b4d" fill-opacity="0.45" stroke="#ff9b4d" stroke-width="1.5"/>
+<text x="365.6" y="707.4" fill="#e8eaf0" font-family="sans-serif" font-size="13" text-anchor="middle">hv_s3_b09</text>
+<ellipse cx="400.1" cy="589.5" rx="42.0" ry="42.0" fill="#ff9b4d" fill-opacity="0.45" stroke="#ff9b4d" stroke-width="1.5"/>
+<text x="400.1" y="645.5" fill="#e8eaf0" font-family="sans-serif" font-size="13" text-anchor="middle">hv_s3_b10</text>
+<ellipse cx="366.7" cy="725.9" rx="31.7" ry="31.7" fill="#ff9b4d" fill-opacity="0.45" stroke="#ff9b4d" stroke-width="1.5"/>
+<text x="366.7" y="771.6" fill="#e8eaf0" font-family="sans-serif" font-size="13" text-anchor="middle">hv_s3_b11</text>
+<ellipse cx="520.4" cy="494.4" rx="38.5" ry="38.5" fill="#ff9b4d" fill-opacity="0.45" stroke="#ff9b4d" stroke-width="1.5"/>
+<text x="520.4" y="546.9" fill="#e8eaf0" font-family="sans-serif" font-size="13" text-anchor="middle">hv_s3_b12</text>
+<ellipse cx="451.8" cy="570.0" rx="40.1" ry="40.1" fill="#ff9b4d" fill-opacity="0.45" stroke="#ff9b4d" stroke-width="1.5"/>
+<text x="451.8" y="624.1" fill="#e8eaf0" font-family="sans-serif" font-size="13" text-anchor="middle">hv_s4_b00</text>
+<ellipse cx="391.6" cy="597.0" rx="27.3" ry="27.3" fill="#ff9b4d" fill-opacity="0.15" stroke="#ff9b4d" stroke-width="1.5"/>
+<text x="391.6" y="638.3" fill="#e8eaf0" font-family="sans-serif" font-size="13" text-anchor="middle">hv_s4_b01</text>
+<ellipse cx="328.2" cy="620.1" rx="23.3" ry="23.3" fill="#ff9b4d" fill-opacity="0.15" stroke="#ff9b4d" stroke-width="1.5"/>
+<text x="328.2" y="657.4" fill="#e8eaf0" font-family="sans-serif" font-size="13" text-anchor="middle">hv_s4_b02</text>
+<ellipse cx="436.1" cy="627.3" rx="27.7" ry="27.7" fill="#ff9b4d" fill-opacity="0.15" stroke="#ff9b4d" stroke-width="1.5"/>
+<text x="436.1" y="668.9" fill="#e8eaf0" font-family="sans-serif" font-size="13" text-anchor="middle">hv_s4_b03</text>
+<ellipse cx="407.6" cy="531.8" rx="29.6" ry="29.6" fill="#ff9b4d" fill-opacity="0.15" stroke="#ff9b4d" stroke-width="1.5"/>
+<text x="407.6" y="575.4" fill="#e8eaf0" font-family="sans-serif" font-size="13" text-anchor="middle">hv_s4_b04</text>
+<ellipse cx="373.4" cy="641.5" rx="31.2" ry="31.2" fill="#ff9b4d" fill-opacity="0.15" stroke="#ff9b4d" stroke-width="1.5"/>
+<text x="373.4" y="686.7" fill="#e8eaf0" font-family="sans-serif" font-size="13" text-anchor="middle">hv_s4_b05</text>
+<ellipse cx="360.8" cy="561.3" rx="23.2" ry="23.2" fill="#ff9b4d" fill-opacity="0.15" stroke="#ff9b4d" stroke-width="1.5"/>
+<text x="360.8" y="598.5" fill="#e8eaf0" font-family="sans-serif" font-size="13" text-anchor="middle">hv_s4_b06</text>
+<ellipse cx="484.3" cy="537.9" rx="26.4" ry="26.4" fill="#ff9b4d" fill-opacity="0.15" stroke="#ff9b4d" stroke-width="1.5"/>
+<text x="484.3" y="578.3" fill="#e8eaf0" font-family="sans-serif" font-size="13" text-anchor="middle">hv_s4_b07</text>
+<ellipse cx="409.0" cy="701.7" rx="22.2" ry="22.2" fill="#ff9b4d" fill-opacity="0.15" stroke="#ff9b4d" stroke-width="1.5"/>
+<text x="409.0" y="737.9" fill="#e8eaf0" font-family="sans-serif" font-size="13" text-anchor="middle">hv_s4_b08</text>
+<ellipse cx="341.5" cy="500.2" rx="30.6" ry="30.6" fill="#ff9b4d" fill-opacity="0.15" stroke="#ff9b4d" stroke-width="1.5"/>
+<text x="341.5" y="544.8" fill="#e8eaf0" font-family="sans-serif" font-size="13" text-anchor="middle">hv_s4_b09</text>
+<ellipse cx="488.1" cy="615.6" rx="27.9" ry="27.9" fill="#ff9b4d" fill-opacity="0.15" stroke="#ff9b4d" stroke-width="1.5"/>
+<text x="488.1" y="657.5" fill="#e8eaf0" font-family="sans-serif" font-size="13" text-anchor="middle">hv_s4_b10</text>
+<ellipse cx="363.9" cy="447.8" rx="29.8" ry="29.8" fill="#ff9b4d" fill-opacity="0.45" stroke="#ff9b4d" stroke-width="1.5"/>
+<text x="363.9" y="491.6" fill="#e8eaf0" font-family="sans-serif" font-size="13" text-anchor="middle">hv_s4_b11</text>
+<ellipse cx="281.6" cy="603.4" rx="40.7" ry="40.7" fill="#ff9b4d" fill-opacity="0.45" stroke="#ff9b4d" stroke-width="1.5"/>
+<text x="281.6" y="658.1" fill="#e8eaf0" font-family="sans-serif" font-size="13" text-anchor="middle">hv_s4_b12</text>
+<ellipse cx="452.4" cy="547.7" rx="42.7" ry="42.7" fill="#ff9b4d" fill-opacity="0.45" stroke="#ff9b4d" stroke-width="1.5"/>
+<text x="452.4" y="604.4" fill="#e8eaf0" font-family="sans-serif" font-size="13" text-anchor="middle">hv_s5_b00</text>
+<ellipse cx="387.9" cy="556.1" rx="39.7" ry="39.7" fill="#ff9b4d" fill-opacity="0.45" stroke="#ff9b4d" stroke-width="1.5"/>
+<text x="387.9" y="609.8" fill="#e8eaf0" font-family="sans-serif" font-size="13" text-anchor="middle">hv_s5_b01</text>
+<ellipse cx="444.9" cy="625.2" rx="28.2" ry="28.2" fill="#ff9b4d" fill-opacity="0.15" stroke="#ff9b4d" stroke-width="1.5"/>
+<text x="444.9" y="667.5" fill="#e8eaf0" font-family="sans-serif" font-size="13" text-anchor="middle">hv_s5_b02</text>
+<ellipse cx="481.6" cy="586.9" rx="28.9" ry="28.9" fill="#ff9b4d" fill-opacity="0.15" stroke="#ff9b4d" stroke-width="1.5"/>
+<text x="481.6" y="629.9" fill="#e8eaf0" font-family="sans-serif" font-size="13" text-anchor="middle">hv_s5_b03</text>
+<ellipse cx="459.7" cy="479.6" rx="21.6" ry="21.6" fill="#ff9b4d" fill-opacity="0.15" stroke="#ff9b4d" stroke-width="1.5"/>
+<text x="459.7" y="515.2" fill="#e8eaf0" font-family="sans-serif" font-size="13" text-anchor="middle">hv_s5_b04</text>
+<ellipse cx="367.8" cy="623.0" rx="24.3" ry="24.3" fill="#ff9b4d" fill-opacity="0.15" stroke="#ff9b4d" stroke-width="1.5"/>
+<text x="367.8" y="661.3" fill="#e8eaf0" font-family="sans-serif" font-size="13" text-anchor="middle">hv_s5_b05</text>
+<ellipse cx="287.8" cy="617.2" rx="40.3" ry="40.3" fill="#ff9b4d" fill-opacity="0.45" stroke="#ff9b4d" stroke-width="1.5"/>
+<text x="287.8" y="671.5" fill="#e8eaf0" font-family="sans-serif" font-size="13" text-anchor="middle">hv_s5_b06</text>
+<ellipse cx="452.4" cy="681.0" rx="24.6" ry="24.6" fill="#ff9b4d" fill-opacity="0.15" stroke="#ff9b4d" stroke-width="1.5"/>
+<text x="452.4" y="719.7" fill="#e8eaf0" font-family="sans-serif" font-size="13" text-anchor="middle">hv_s5_b07</text>
+<ellipse cx="379.0" cy="689.0" rx="43.6" ry="43.6" fill="#ff9b4d" fill-opacity="0.45" stroke="#ff9b4d" stroke-width="1.5"/>
+<text x="379.0" y="746.7" fill="#e8eaf0" font-family="sans-serif" font-size="13" text-anchor="middle">hv_s5_b08</text>
+<ellipse cx="476.3" cy="729.8" rx="38.5" ry="38.5" fill="#ff9b4d" fill-opacity="0.45" stroke="#ff9b4d" stroke-width="1.5"/>
+<text x="476.3" y="782.3" fill="#e8eaf0" font-family="sans-serif" font-size="13" text-anchor="middle">hv_s5_b09</text>
+<ellipse cx="348.5" cy="509.2" rx="21.9" ry="21.9" fill="#ff9b4d" fill-opacity="0.45" stroke="#ff9b4d" stroke-width="1.5"/>
+<text x="348.5" y="545.1" fill="#e8eaf0" font-family="sans-serif" font-size="13" text-anchor="middle">hv_s5_b10</text>
+<ellipse cx="530.4" cy="640.6" rx="27.9" ry="27.9" fill="#ff9b4d" fill-opacity="0.45" stroke="#ff9b4d" stroke-width="1.5"/>
+<text x="530.4" y="682.4" fill="#e8eaf0" font-family="sans-serif" font-size="13" text-anchor="middle">hv_s5_b11</text>
+<ellipse cx="334.6" cy="653.4" rx="22.8" ry="22.8" fill="#ff9b4d" fill-opacity="0.15" stroke="#ff9b4d" stroke-width="1.5"/>
+<text x="334.6" y="690.2" fill="#e8eaf0" font-family="sans-serif" font-size="13" text-anchor="middle">hv_s5_b12</text>
+<ellipse cx="462.0" cy="540.6" rx="24.3" ry="24.3" fill="#ff9b4d" fill-opacity="0.15" stroke="#ff9b4d" stroke-width="1.5"/>
+<text x="462.0" y="578.9" fill="#e8eaf0" font-family="sans-serif" font-size="13" text-anchor="middle">hv_s6_b00</text>
+<ellipse cx="471.8" cy="606.6" rx="30.3" ry="30.3" fill="#ff9b4d" fill-opacity="0.15" stroke="#ff9b4d" stroke-width="1.5"/>
+<text x="471.8" y="650.9" fill="#e8eaf0" font-family="sans-serif" font-size="13" text-anchor="middle">hv_s6_b01</text>
+<ellipse cx="396.9" cy="505.5" rx="30.6" ry="30.6" fill="#ff9b4d" fill-opacity="0.15" stroke="#ff9b4d" stroke-width="1.5"/>
+<text x="396.9" y="550.1" fill="#e8eaf0" font-family="sans-serif" font-size="13" text-anchor="middle">hv_s6_b02</text>
+<ellipse cx="388.8" cy="575.9" rx="23.8" ry="23.8" fill="#ff9b4d" fill-opacity="0.15" stroke="#ff9b4d" stroke-width="1.5"/>
+<text x="388.8" y="613.7" fill="#e8eaf0" font-family="sans-serif" font-size="13" text-anchor="middle">hv_s6_b03</text>
+<ellipse cx="511.5" cy="547.0" rx="27.3" ry="27.3" fill="#ff9b4d" fill-opacity="0.15" stroke="#ff9b4d" stroke-width="1.5"/>
+<text x="511.5" y="588.3" fill="#e8eaf0" font-family="sans-serif" font-size="13" text-anchor="middle">hv_s6_b04</text>
+<ellipse cx="323.1" cy="621.7" rx="40.5" ry="40.5" fill="#ff9b4d" fill-opacity="0.45" stroke="#ff9b4d" stroke-width="1.5"/>
+<text x="323.1" y="676.3" fill="#e8eaf0" font-family="sans-serif" font-size="13" text-anchor="middle">hv_s6_b05</text>
+<ellipse cx="325.2" cy="518.7" rx="20.4" ry="20.4" fill="#ff9b4d" fill-opacity="0.15" stroke="#ff9b4d" stroke-width="1.5"/>
+<text x="325.2" y="553.2" fill="#e8eaf0" font-family="sans-serif" font-size="13" text-anchor="middle">hv_s6_b06</text>
+<ellipse cx="358.3" cy="667.8" rx="30.8" ry="30.8" fill="#ff9b4d" fill-opacity="0.45" stroke="#ff9b4d" stroke-width="1.5"/>
+<text x="358.3" y="712.6" fill="#e8eaf0" font-family="sans-serif" font-size="13" text-anchor="middle">hv_s6_b07</text>
+<ellipse cx="301.2" cy="576.2" rx="36.2" ry="36.2" fill="#ff9b4d" fill-opacity="0.45" stroke="#ff9b4d" stroke-width="1.5"/>
+<text x="301.2" y="626.4" fill="#e8eaf0" font-family="sans-serif" font-size="13" text-anchor="middle">hv_s6_b08</text>
+<ellipse cx="387.7" cy="435.5" rx="35.3" ry="35.3" fill="#ff9b4d" fill-opacity="0.45" stroke="#ff9b4d" stroke-width="1.5"/>
+<text x="387.7" y="484.8" fill="#e8eaf0" font-family="sans-serif" font-size="13" text-anchor="middle">hv_s6_b09</text>
+<ellipse cx="439.6" cy="469.6" rx="27.4" ry="27.4" fill="#ff9b4d" fill-opacity="0.15" stroke="#ff9b4d" stroke-width="1.5"/>
+<text x="439.6" y="511.0" fill="#e8eaf0" font-family="sans-serif" font-size="13" text-anchor="middle">hv_s6_b10</text>
+<ellipse cx="426.5" cy="622.3" rx="21.0" ry="21.0" fill="#ff9b4d" fill-opacity="0.15" stroke="#ff9b4d" stroke-width="1.5"/>
+<text x="426.5" y="657.4" fill="#e8eaf0" font-family="sans-serif" font-size="13" text-anchor="middle">hv_s6_b11</text>
+<ellipse cx="579.9" cy="548.0" rx="34.0" ry="34.0" fill="#ff9b4d" fill-opacity="0.45" stroke="#ff9b4d" stroke-width="1.5"/>
+<text x="579.9" y="596.0" fill="#e8eaf0" font-family="sans-serif" font-size="13" text-anchor="middle">hv_s6_b12</text>
+<ellipse cx="376.4" cy="380.4" rx="32.4" ry="32.4" fill="#ff9b4d" fill-opacity="0.45" stroke="#ff9b4d" stroke-width="1.5"/>
+<text x="376.4" y="426.8" fill="#e8eaf0" font-family="sans-serif" font-size="13" text-anchor="middle">hv_s6_b13</text>
+<ellipse cx="455.2" cy="537.4" rx="32.4" ry="32.4" fill="#ff9b4d" fill-opacity="0.45" stroke="#ff9b4d" stroke-width="1.5"/>
+<text x="455.2" y="583.8" fill="#e8eaf0" font-family="sans-serif" font-size="13" text-anchor="middle">hv_s7_b00</text>
+<ellipse cx="516.7" cy="525.2" rx="41.6" ry="41.6" fill="#ff9b4d" fill-opacity="0.45" stroke="#ff9b4d" stroke-width="1.5"/>
+<text x="516.7" y="580.8" fill="#e8eaf0" font-family="sans-serif" font-size="13" text-anchor="middle">hv_s7_b01</text>
+<ellipse cx="403.9" cy="570.8" rx="28.7" ry="28.7" fill="#ff9b4d" fill-opacity="0.15" stroke="#ff9b4d" stroke-width="1.5"/>
+<text x="403.9" y="613.5" fill="#e8eaf0" font-family="sans-serif" font-size="13" text-anchor="middle">hv_s7_b02</text>
+<ellipse cx="487.6" cy="485.9" rx="42.8" ry="42.8" fill="#ff9b4d" fill-opacity="0.45" stroke="#ff9b4d" stroke-width="1.5"/>
+<text x="487.6" y="542.6" fill="#e8eaf0" font-family="sans-serif" font-size="13" text-anchor="middle">hv_s7_b03</text>
+<ellipse cx="408.1" cy="496.1" rx="21.7" ry="21.7" fill="#ff9b4d" fill-opacity="0.45" stroke="#ff9b4d" stroke-width="1.5"/>
+<text x="408.1" y="531.8" fill="#e8eaf0" font-family="sans-serif" font-size="13" text-anchor="middle">hv_s7_b04</text>
+<ellipse cx="536.7" cy="451.8" rx="35.0" ry="35.0" fill="#ff9b4d" fill-opacity="0.45" stroke="#ff9b4d" stroke-width="1.5"/>
+<text x="536.7" y="500.8" fill="#e8eaf0" font-family="sans-serif" font-size="13" text-anchor="middle">hv_s7_b05</text>
+<ellipse cx="514.1" cy="592.6" rx="30.9" ry="30.9" fill="#ff9b4d" fill-opacity="0.15" stroke="#ff9b4d" stroke-width="1.5"/>
+<text x="514.1" y="637.5" fill="#e8eaf0" font-family="sans-serif" font-size="13" text-anchor="middle">hv_s7_b06</text>
+<ellipse cx="446.2" cy="423.4" rx="29.1" ry="29.1" fill="#ff9b4d" fill-opacity="0.15" stroke="#ff9b4d" stroke-width="1.5"/>
+<text x="446.2" y="466.6" fill="#e8eaf0" font-family="sans-serif" font-size="13" text-anchor="middle">hv_s7_b07</text>
+<ellipse cx="494.2" cy="377.1" rx="25.8" ry="25.8" fill="#ff9b4d" fill-opacity="0.45" stroke="#ff9b4d" stroke-width="1.5"/>
+<text x="494.2" y="416.9" fill="#e8eaf0" font-family="sans-serif" font-size="13" text-anchor="middle">hv_s7_b08</text>
+<ellipse cx="566.2" cy="561.9" rx="35.0" ry="35.0" fill="#ff9b4d" fill-opacity="0.45" stroke="#ff9b4d" stroke-width="1.5"/>
+<text x="566.2" y="610.9" fill="#e8eaf0" font-family="sans-serif" font-size="13" text-anchor="middle">hv_s7_b09</text>
+<ellipse cx="453.3" cy="604.0" rx="41.7" ry="41.7" fill="#ff9b4d" fill-opacity="0.45" stroke="#ff9b4d" stroke-width="1.5"/>
+<text x="453.3" y="659.8" fill="#e8eaf0" font-family="sans-serif" font-size="13" text-anchor="middle">hv_s7_b10</text>
+<ellipse cx="599.2" cy="448.0" rx="27.9" ry="27.9" fill="#ff9b4d" fill-opacity="0.15" stroke="#ff9b4d" stroke-width="1.5"/>
+<text x="599.2" y="489.9" fill="#e8eaf0" font-family="sans-serif" font-size="13" text-anchor="middle">hv_s7_b11</text>
+<ellipse cx="627.5" cy="558.6" rx="40.1" ry="40.1" fill="#ff9b4d" fill-opacity="0.45" stroke="#ff9b4d" stroke-width="1.5"/>
+<text x="627.5" y="612.7" fill="#e8eaf0" font-family="sans-serif" font-size="13" text-anchor="middle">hv_s7_b12</text>
+<ellipse cx="553.6" cy="494.5" rx="36.4" ry="36.4" fill="#ff9b4d" fill-opacity="0.45" stroke="#ff9b4d" stroke-width="1.5"/>
+<text x="553.6" y="544.9" fill="#e8eaf0" font-family="sans-serif" font-size="13" text-anchor="middle">hv_s7_b13</text>
+<ellipse cx="488.3" cy="654.3" rx="21.7" ry="21.7" fill="#ff9b4d" fill-opacity="0.15" stroke="#ff9b4d" stroke-width="1.5"/>
+<text x="488.3" y="690.0" fill="#e8eaf0" font-family="sans-serif" font-size="13" text-anchor="middle">hv_s7_b14</text>
+<ellipse cx="516.6" cy="691.8" rx="40.8" ry="40.8" fill="#ff9b4d" fill-opacity="0.45" stroke="#ff9b4d" stroke-width="1.5"/>
+<text x="516.6" y="746.7" fill="#e8eaf0" font-family="sans-serif" font-size="13" text-anchor="middle">hv_s7_b15</text>
+<ellipse cx="619.6" cy="499.1" rx="34.6" ry="34.6" fill="#ff9b4d" fill-opacity="0.45" stroke="#ff9b4d" stroke-width="1.5"/>
+<text x="619.6" y="547.7" fill="#e8eaf0" font-family="sans-serif" font-size="13" text-anchor="middle">hv_s7_b16</text>
+<ellipse cx="595.2" cy="605.2" rx="30.3" ry="30.3" fill="#ff9b4d" fill-opacity="0.15" stroke="#ff9b4d" stroke-width="1.5"/>
+<text x="595.2" y="649.5" fill="#e8eaf0" font-family="sans-serif" font-size="13" text-anchor="middle">hv_s7_b17</text>
+<ellipse cx="468.5" cy="697.1" rx="43.0" ry="43.0" fill="#ff9b4d" fill-opacity="0.45" stroke="#ff9b4d" stroke-width="1.5"/>
+<text x="468.5" y="754.1" fill="#e8eaf0" font-family="sans-serif" font-size="13" text-anchor="middle">hv_s7_b18</text>
+</g>
+<g id="elevation">
+<text x="1010" y="112" fill="#e8eaf0" font-family="sans-serif" font-size="15">ELEVATION - side on (x / depth)</text>
+<polyline points="1373.8,384.6 1325.1,383.3" fill="none" stroke="#ff9b4d" stroke-width="41.4" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="1349.5" y="379.9" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">hv_s0_bore_00_02  14m</text>
+<polyline points="1325.1,383.3 1323.5,362.8" fill="none" stroke="#ff9b4d" stroke-width="38.4" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="1324.3" y="369.0" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">hv_s0_bore_02_01  13m</text>
+<polyline points="1373.8,384.6 1429.8,369.1" fill="none" stroke="#ff9b4d" stroke-width="48.3" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="1401.8" y="372.9" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">hv_s0_bore_00_04  15m</text>
+<polyline points="1325.1,383.3 1279.9,387.1" fill="none" stroke="#ff9b4d" stroke-width="32.4" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="1302.5" y="381.2" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">hv_s0_bore_02_05  16m</text>
+<polyline points="1279.9,387.1 1322.1,390.3" fill="none" stroke="#ff9b4d" stroke-width="51.4" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="1301.0" y="384.7" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">hv_s0_bore_05_03  13m</text>
+<polyline points="1322.1,390.3 1308.1,391.8" fill="none" stroke="#ff9b4d" stroke-width="56.8" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="1315.1" y="387.1" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">hv_s0_bore_03_10  15m</text>
+<polyline points="1308.1,391.8 1352.8,386.0" fill="none" stroke="#ff9b4d" stroke-width="56.0" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="1330.5" y="384.9" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">hv_s0_bore_10_06  11m</text>
+<polyline points="1279.9,387.1 1232.6,369.6" fill="none" stroke="#ff9b4d" stroke-width="44.8" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="1256.2" y="374.4" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">hv_s0_bore_05_08  15m</text>
+<polyline points="1232.6,369.6 1203.2,360.2" fill="none" stroke="#ff9b4d" stroke-width="28.4" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="1217.9" y="360.9" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">hv_s0_bore_08_09  16m</text>
+<polyline points="1429.8,369.1 1497.8,362.7" fill="none" stroke="#ff9b4d" stroke-width="45.7" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="1463.8" y="361.9" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">hv_s0_bore_04_07  17m</text>
+<polyline points="1323.5,362.8 1309.1,361.1 1281.2,365.9" fill="none" stroke="#ff9b4d" stroke-width="81.3" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="1309.1" y="357.1" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">hv_s0_bore_01_11  19m</text>
+<polyline points="1373.8,384.6 1323.5,362.8" fill="none" stroke="#ff9b4d" stroke-width="68.3" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="1348.6" y="369.7" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">hv_s0_bore_00_01  14m</text>
+<polyline points="1322.1,390.3 1352.8,386.0" fill="none" stroke="#ff9b4d" stroke-width="48.5" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="1337.4" y="384.2" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">hv_s0_bore_03_06  16m</text>
+<polyline points="1325.1,383.3 1323.9,389.9 1322.1,390.3" fill="none" stroke="#ff9b4d" stroke-width="41.6" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="1323.9" y="385.9" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">hv_s0_bore_02_03  20m</text>
+<polyline points="1325.1,383.3 1280.3,375.2 1232.6,369.6" fill="none" stroke="#ff9b4d" stroke-width="40.9" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="1280.3" y="371.2" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">hv_s0_bore_02_08  24m</text>
+<polyline points="1374.6,447.2 1416.1,447.7" fill="none" stroke="#ff9b4d" stroke-width="46.7" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="1395.4" y="443.4" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">hv_s1_bore_00_06  14m</text>
+<polyline points="1374.6,447.2 1342.8,439.5 1303.9,440.9" fill="none" stroke="#ff9b4d" stroke-width="26.3" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="1342.8" y="435.5" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">hv_s1_bore_00_10  19m</text>
+<polyline points="1303.9,440.9 1264.8,424.4" fill="none" stroke="#ff9b4d" stroke-width="70.0" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="1284.3" y="428.7" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">hv_s1_bore_10_03  14m</text>
+<polyline points="1264.8,424.4 1314.8,436.7" fill="none" stroke="#ff9b4d" stroke-width="44.3" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="1289.8" y="426.5" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">hv_s1_bore_03_02  14m</text>
+<polyline points="1314.8,436.7 1268.9,444.3" fill="none" stroke="#ff9b4d" stroke-width="68.7" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="1291.9" y="436.5" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">hv_s1_bore_02_04  14m</text>
+<polyline points="1314.8,436.7 1358.7,446.8" fill="none" stroke="#ff9b4d" stroke-width="36.8" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="1336.8" y="437.7" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">hv_s1_bore_02_08  18m</text>
+<polyline points="1358.7,446.8 1399.5,441.7" fill="none" stroke="#ff9b4d" stroke-width="62.1" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="1379.1" y="440.3" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">hv_s1_bore_08_01  12m</text>
+<polyline points="1399.5,441.7 1451.2,423.8" fill="none" stroke="#ff9b4d" stroke-width="97.0" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="1425.4" y="428.8" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">hv_s1_bore_01_05  15m</text>
+<polyline points="1264.8,424.4 1228.6,431.8 1205.5,430.3" fill="none" stroke="#ff9b4d" stroke-width="86.9" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="1228.6" y="427.8" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">hv_s1_bore_03_07  19m</text>
+<polyline points="1205.5,430.3 1234.1,420.4" fill="none" stroke="#ff9b4d" stroke-width="58.3" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="1219.8" y="421.3" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">hv_s1_bore_07_09  13m</text>
+<polyline points="1234.1,420.4 1273.0,425.4" fill="none" stroke="#ff9b4d" stroke-width="33.4" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="1253.5" y="418.9" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">hv_s1_bore_09_11  11m</text>
+<polyline points="1264.8,424.4 1268.9,444.3" fill="none" stroke="#ff9b4d" stroke-width="41.5" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="1266.9" y="430.4" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">hv_s1_bore_03_04  15m</text>
+<polyline points="1314.8,436.7 1303.9,440.9" fill="none" stroke="#ff9b4d" stroke-width="84.8" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="1309.4" y="434.8" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">hv_s1_bore_02_10  16m</text>
+<polyline points="1374.6,447.2 1346.8,440.9 1314.8,436.7" fill="none" stroke="#ff9b4d" stroke-width="35.6" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="1346.8" y="436.9" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">hv_s1_bore_00_02  18m</text>
+<polyline points="1374.6,447.2 1375.3,445.5 1399.5,441.7" fill="none" stroke="#ff9b4d" stroke-width="24.2" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="1375.3" y="441.5" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">hv_s1_bore_00_01  21m</text>
+<polyline points="1374.7,466.1 1342.1,469.8" fill="none" stroke="#ff9b4d" stroke-width="74.8" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="1358.4" y="463.9" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">hv_s2_bore_00_05  14m</text>
+<polyline points="1342.1,469.8 1379.1,472.0" fill="none" stroke="#ff9b4d" stroke-width="71.3" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="1360.6" y="466.9" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">hv_s2_bore_05_07  12m</text>
+<polyline points="1379.1,472.0 1427.3,459.6" fill="none" stroke="#ff9b4d" stroke-width="72.7" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="1403.2" y="461.8" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">hv_s2_bore_07_08  12m</text>
+<polyline points="1342.1,469.8 1311.5,481.8" fill="none" stroke="#ff9b4d" stroke-width="28.6" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="1326.8" y="471.8" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">hv_s2_bore_05_06  13m</text>
+<polyline points="1311.5,481.8 1270.0,465.0" fill="none" stroke="#ff9b4d" stroke-width="26.5" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="1290.8" y="469.4" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">hv_s2_bore_06_15  13m</text>
+<polyline points="1427.3,459.6 1465.4,473.6" fill="none" stroke="#ff9b4d" stroke-width="80.4" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="1446.4" y="462.6" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">hv_s2_bore_08_11  14m</text>
+<polyline points="1379.1,472.0 1397.1,467.4" fill="none" stroke="#ff9b4d" stroke-width="42.4" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="1388.1" y="465.7" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">hv_s2_bore_07_14  14m</text>
+<polyline points="1374.7,466.1 1318.5,477.7" fill="none" stroke="#ff9b4d" stroke-width="76.3" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="1346.6" y="467.9" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">hv_s2_bore_00_01  15m</text>
+<polyline points="1465.4,473.6 1521.7,488.4" fill="none" stroke="#ff9b4d" stroke-width="69.4" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="1493.6" y="477.0" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">hv_s2_bore_11_12  15m</text>
+<polyline points="1318.5,477.7 1268.7,489.9" fill="none" stroke="#ff9b4d" stroke-width="40.5" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="1293.6" y="479.8" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">hv_s2_bore_01_02  15m</text>
+<polyline points="1268.7,489.9 1283.7,496.6" fill="none" stroke="#ff9b4d" stroke-width="34.2" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="1276.2" y="489.3" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">hv_s2_bore_02_04  15m</text>
+<polyline points="1268.7,489.9 1212.0,501.7" fill="none" stroke="#ff9b4d" stroke-width="34.3" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="1240.3" y="491.8" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">hv_s2_bore_02_03  16m</text>
+<polyline points="1374.7,466.1 1403.8,474.7 1422.9,473.3" fill="none" stroke="#ff9b4d" stroke-width="34.7" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="1403.8" y="470.7" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">hv_s2_bore_00_09  20m</text>
+<polyline points="1422.9,473.3 1472.6,475.2" fill="none" stroke="#ff9b4d" stroke-width="33.2" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="1447.7" y="470.3" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">hv_s2_bore_09_10  16m</text>
+<polyline points="1422.9,473.3 1395.6,486.2" fill="none" stroke="#ff9b4d" stroke-width="41.2" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="1409.3" y="475.8" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">hv_s2_bore_09_13  16m</text>
+<polyline points="1318.5,477.7 1342.1,469.8" fill="none" stroke="#ff9b4d" stroke-width="78.0" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="1330.3" y="469.7" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">hv_s2_bore_01_05  17m</text>
+<polyline points="1311.5,481.8 1379.1,472.0" fill="none" stroke="#ff9b4d" stroke-width="26.6" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="1345.3" y="472.9" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">hv_s2_bore_06_07  17m</text>
+<polyline points="1427.3,459.6 1397.1,467.4" fill="none" stroke="#ff9b4d" stroke-width="75.3" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="1412.2" y="459.5" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">hv_s2_bore_08_14  17m</text>
+<polyline points="1465.4,473.6 1397.1,467.4" fill="none" stroke="#ff9b4d" stroke-width="54.8" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="1431.3" y="466.5" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">hv_s2_bore_11_14  18m</text>
+<polyline points="1342.1,469.8 1307.8,471.7 1270.0,465.0" fill="none" stroke="#ff9b4d" stroke-width="83.4" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="1307.8" y="467.7" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">hv_s2_bore_05_15  19m</text>
+<polyline points="1212.0,501.7 1247.3,495.4 1283.7,496.6" fill="none" stroke="#ff9b4d" stroke-width="66.5" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="1247.3" y="491.4" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">hv_s2_bore_03_04  19m</text>
+<polyline points="1384.8,532.7 1423.4,539.2" fill="none" stroke="#ff9b4d" stroke-width="71.8" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="1404.1" y="531.9" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">hv_s3_bore_00_05  12m</text>
+<polyline points="1384.8,532.7 1422.8,533.8" fill="none" stroke="#ff9b4d" stroke-width="76.6" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="1403.8" y="529.2" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">hv_s3_bore_00_03  13m</text>
+<polyline points="1384.8,532.7 1340.1,518.0" fill="none" stroke="#ff9b4d" stroke-width="41.2" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="1362.4" y="521.4" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">hv_s3_bore_00_10  13m</text>
+<polyline points="1340.1,518.0 1362.4,528.5" fill="none" stroke="#ff9b4d" stroke-width="97.0" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="1351.2" y="519.3" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">hv_s3_bore_10_01  12m</text>
+<polyline points="1362.4,528.5 1404.2,527.7" fill="none" stroke="#ff9b4d" stroke-width="35.2" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="1383.3" y="524.1" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">hv_s3_bore_01_02  12m</text>
+<polyline points="1404.2,527.7 1404.5,536.2" fill="none" stroke="#ff9b4d" stroke-width="38.0" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="1404.3" y="527.9" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">hv_s3_bore_02_06  12m</text>
+<polyline points="1422.8,533.8 1470.4,524.4" fill="none" stroke="#ff9b4d" stroke-width="45.1" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="1446.6" y="525.1" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">hv_s3_bore_03_04  13m</text>
+<polyline points="1362.4,528.5 1354.4,536.7" fill="none" stroke="#ff9b4d" stroke-width="51.4" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="1358.4" y="528.6" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">hv_s3_bore_01_08  13m</text>
+<polyline points="1354.4,536.7 1305.6,522.8" fill="none" stroke="#ff9b4d" stroke-width="50.0" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="1330.0" y="525.7" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">hv_s3_bore_08_09  14m</text>
+<polyline points="1423.4,539.2 1460.4,545.7" fill="none" stroke="#ff9b4d" stroke-width="64.9" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="1441.9" y="538.4" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">hv_s3_bore_05_12  15m</text>
+<polyline points="1354.4,536.7 1306.7,539.2" fill="none" stroke="#ff9b4d" stroke-width="21.4" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="1330.5" y="533.9" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">hv_s3_bore_08_11  16m</text>
+<polyline points="1404.5,536.2 1455.4,499.9" fill="none" stroke="#ff9b4d" stroke-width="50.4" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="1430.0" y="514.0" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">hv_s3_bore_06_07  17m</text>
+<polyline points="1404.5,536.2 1354.4,536.7" fill="none" stroke="#ff9b4d" stroke-width="47.8" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="1379.4" y="532.4" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">hv_s3_bore_06_08  13m</text>
+<polyline points="1404.2,527.7 1422.8,533.8" fill="none" stroke="#ff9b4d" stroke-width="57.2" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="1413.5" y="526.7" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">hv_s3_bore_02_03  13m</text>
+<polyline points="1404.2,527.7 1354.4,536.7" fill="none" stroke="#ff9b4d" stroke-width="49.3" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="1379.3" y="528.2" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">hv_s3_bore_02_08  14m</text>
+<polyline points="1422.8,533.8 1423.4,539.2" fill="none" stroke="#ff9b4d" stroke-width="52.6" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="1423.1" y="532.5" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">hv_s3_bore_03_05  15m</text>
+<polyline points="1362.4,528.5 1305.6,522.8" fill="none" stroke="#ff9b4d" stroke-width="56.2" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="1334.0" y="521.7" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">hv_s3_bore_01_09  15m</text>
+<polyline points="1391.8,578.1 1424.3,559.0" fill="none" stroke="#ff9b4d" stroke-width="57.9" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="1408.0" y="564.5" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">hv_s4_bore_00_07  12m</text>
+<polyline points="1391.8,578.1 1347.6,578.8" fill="none" stroke="#ff9b4d" stroke-width="75.4" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="1369.7" y="574.4" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">hv_s4_bore_00_04  14m</text>
+<polyline points="1347.6,578.8 1300.8,579.1" fill="none" stroke="#ff9b4d" stroke-width="41.2" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="1324.2" y="574.9" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">hv_s4_bore_04_06  14m</text>
+<polyline points="1300.8,579.1 1331.6,584.5" fill="none" stroke="#ff9b4d" stroke-width="58.2" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="1316.2" y="577.8" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">hv_s4_bore_06_01  12m</text>
+<polyline points="1331.6,584.5 1313.4,578.2" fill="none" stroke="#ff9b4d" stroke-width="37.7" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="1322.5" y="577.4" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">hv_s4_bore_01_05  12m</text>
+<polyline points="1313.4,578.2 1268.2,567.8" fill="none" stroke="#ff9b4d" stroke-width="23.8" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="1290.8" y="569.0" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">hv_s4_bore_05_02  13m</text>
+<polyline points="1268.2,567.8 1221.6,554.8" fill="none" stroke="#ff9b4d" stroke-width="38.1" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="1244.9" y="557.3" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">hv_s4_bore_02_12  13m</text>
+<polyline points="1331.6,584.5 1376.1,556.0" fill="none" stroke="#ff9b4d" stroke-width="42.9" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="1353.9" y="566.3" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">hv_s4_bore_01_03  15m</text>
+<polyline points="1376.1,556.0 1428.1,552.1" fill="none" stroke="#ff9b4d" stroke-width="66.6" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="1402.1" y="550.0" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">hv_s4_bore_03_10  13m</text>
+<polyline points="1300.8,579.1 1281.5,581.0" fill="none" stroke="#ff9b4d" stroke-width="46.8" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="1291.1" y="576.0" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">hv_s4_bore_06_09  16m</text>
+<polyline points="1281.5,581.0 1303.9,579.9" fill="none" stroke="#ff9b4d" stroke-width="68.9" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="1292.7" y="576.4" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">hv_s4_bore_09_11  14m</text>
+<polyline points="1313.4,578.2 1349.0,567.5" fill="none" stroke="#ff9b4d" stroke-width="42.2" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="1331.2" y="568.8" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">hv_s4_bore_05_08  18m</text>
+<polyline points="1391.8,578.1 1376.1,556.0" fill="none" stroke="#ff9b4d" stroke-width="65.7" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="1384.0" y="563.0" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">hv_s4_bore_00_03  16m</text>
+<polyline points="1391.8,578.1 1428.1,552.1" fill="none" stroke="#ff9b4d" stroke-width="53.9" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="1410.0" y="561.1" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">hv_s4_bore_00_10  16m</text>
+<polyline points="1391.8,578.1 1331.6,584.5" fill="none" stroke="#ff9b4d" stroke-width="36.5" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="1361.7" y="577.3" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">hv_s4_bore_00_01  16m</text>
+<polyline points="1331.6,584.5 1347.6,578.8" fill="none" stroke="#ff9b4d" stroke-width="45.6" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="1339.6" y="577.6" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">hv_s4_bore_01_04  17m</text>
+<polyline points="1376.1,556.0 1313.4,578.2" fill="none" stroke="#ff9b4d" stroke-width="67.2" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="1344.8" y="563.1" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">hv_s4_bore_03_05  17m</text>
+<polyline points="1392.4,616.4 1421.6,593.5" fill="none" stroke="#ff9b4d" stroke-width="69.6" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="1407.0" y="601.0" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">hv_s5_bore_00_03  13m</text>
+<polyline points="1421.6,593.5 1384.9,598.2" fill="none" stroke="#ff9b4d" stroke-width="55.9" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="1403.2" y="591.8" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">hv_s5_bore_03_02  13m</text>
+<polyline points="1384.9,598.2 1392.4,602.1" fill="none" stroke="#ff9b4d" stroke-width="50.2" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="1388.7" y="596.1" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">hv_s5_bore_02_07  14m</text>
+<polyline points="1392.4,602.1 1416.3,629.4" fill="none" stroke="#ff9b4d" stroke-width="58.1" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="1404.4" y="611.8" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">hv_s5_bore_07_09  15m</text>
+<polyline points="1392.4,616.4 1327.9,603.8" fill="none" stroke="#ff9b4d" stroke-width="84.1" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="1360.2" y="606.1" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">hv_s5_bore_00_01  16m</text>
+<polyline points="1327.9,603.8 1288.5,611.1" fill="none" stroke="#ff9b4d" stroke-width="54.9" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="1308.2" y="603.4" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">hv_s5_bore_01_10  15m</text>
+<polyline points="1392.4,616.4 1399.7,626.3" fill="none" stroke="#ff9b4d" stroke-width="28.5" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="1396.0" y="617.3" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">hv_s5_bore_00_04  17m</text>
+<polyline points="1327.9,603.8 1307.8,605.4" fill="none" stroke="#ff9b4d" stroke-width="30.1" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="1317.9" y="600.6" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">hv_s5_bore_01_05  17m</text>
+<polyline points="1307.8,605.4 1274.6,611.0" fill="none" stroke="#ff9b4d" stroke-width="23.4" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="1291.2" y="604.2" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">hv_s5_bore_05_12  11m</text>
+<polyline points="1274.6,611.0 1319.0,622.2" fill="none" stroke="#ff9b4d" stroke-width="47.2" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="1296.8" y="612.6" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">hv_s5_bore_12_08  14m</text>
+<polyline points="1274.6,611.0 1227.8,606.2" fill="none" stroke="#ff9b4d" stroke-width="58.1" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="1251.2" y="604.6" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">hv_s5_bore_12_06  15m</text>
+<polyline points="1421.6,593.5 1437.8,599.2 1470.4,608.9" fill="none" stroke="#ff9b4d" stroke-width="41.3" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="1437.8" y="595.2" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">hv_s5_bore_03_11  19m</text>
+<polyline points="1307.8,605.4 1319.0,622.2" fill="none" stroke="#ff9b4d" stroke-width="27.4" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="1313.4" y="609.8" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">hv_s5_bore_05_08  17m</text>
+<polyline points="1392.4,602.1 1354.9,608.1 1319.0,622.2" fill="none" stroke="#ff9b4d" stroke-width="33.5" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="1354.9" y="604.1" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">hv_s5_bore_07_08  19m</text>
+<polyline points="1384.9,598.2 1346.3,598.5 1307.8,605.4" fill="none" stroke="#ff9b4d" stroke-width="52.6" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="1346.3" y="594.5" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">hv_s5_bore_02_05  20m</text>
+<polyline points="1392.4,616.4 1401.9,608.4 1384.9,598.2" fill="none" stroke="#ff9b4d" stroke-width="45.5" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="1401.9" y="604.4" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">hv_s5_bore_00_02  21m</text>
+<polyline points="1307.8,605.4 1267.5,609.7 1227.8,606.2" fill="none" stroke="#ff9b4d" stroke-width="50.6" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="1267.5" y="605.7" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">hv_s5_bore_05_06  20m</text>
+<polyline points="1402.0,689.3 1451.5,692.6" fill="none" stroke="#ff9b4d" stroke-width="45.5" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="1426.8" y="686.9" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">hv_s6_bore_00_04  12m</text>
+<polyline points="1451.5,692.6 1519.9,687.6" fill="none" stroke="#ff9b4d" stroke-width="35.2" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="1485.7" y="686.1" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">hv_s6_bore_04_12  17m</text>
+<polyline points="1402.0,689.3 1411.8,712.2" fill="none" stroke="#ff9b4d" stroke-width="54.3" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="1406.9" y="696.7" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">hv_s6_bore_00_01  17m</text>
+<polyline points="1411.8,712.2 1366.5,697.3" fill="none" stroke="#ff9b4d" stroke-width="45.1" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="1389.1" y="700.7" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">hv_s6_bore_01_11  12m</text>
+<polyline points="1366.5,697.3 1328.8,694.1" fill="none" stroke="#ff9b4d" stroke-width="23.2" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="1347.7" y="691.7" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">hv_s6_bore_11_03  15m</text>
+<polyline points="1328.8,694.1 1335.1,680.9 1336.9,676.9" fill="none" stroke="#ff9b4d" stroke-width="36.4" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="1335.1" y="676.9" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">hv_s6_bore_03_02  18m</text>
+<polyline points="1336.9,676.9 1379.6,693.7" fill="none" stroke="#ff9b4d" stroke-width="27.0" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="1358.2" y="681.3" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">hv_s6_bore_02_10  14m</text>
+<polyline points="1379.6,693.7 1327.7,699.5" fill="none" stroke="#ff9b4d" stroke-width="59.7" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="1353.7" y="692.6" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">hv_s6_bore_10_09  15m</text>
+<polyline points="1327.7,699.5 1316.4,699.9" fill="none" stroke="#ff9b4d" stroke-width="49.4" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="1322.1" y="695.7" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">hv_s6_bore_09_13  14m</text>
+<polyline points="1336.9,676.9 1303.7,694.4 1265.2,709.4" fill="none" stroke="#ff9b4d" stroke-width="47.2" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="1303.7" y="690.4" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">hv_s6_bore_02_06  21m</text>
+<polyline points="1265.2,709.4 1241.2,699.8" fill="none" stroke="#ff9b4d" stroke-width="20.8" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="1253.2" y="700.6" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">hv_s6_bore_06_08  16m</text>
+<polyline points="1241.2,699.8 1263.1,696.6" fill="none" stroke="#ff9b4d" stroke-width="64.6" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="1252.1" y="694.2" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">hv_s6_bore_08_05  13m</text>
+<polyline points="1263.1,696.6 1298.3,703.1" fill="none" stroke="#ff9b4d" stroke-width="40.7" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="1280.7" y="695.9" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">hv_s6_bore_05_07  14m</text>
+<polyline points="1336.9,676.9 1325.6,687.7 1327.7,699.5" fill="none" stroke="#ff9b4d" stroke-width="29.5" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="1325.6" y="683.7" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">hv_s6_bore_02_09  19m</text>
+<polyline points="1411.8,712.2 1427.0,700.6 1451.5,692.6" fill="none" stroke="#ff9b4d" stroke-width="29.1" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="1427.0" y="696.6" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">hv_s6_bore_01_04  19m</text>
+<polyline points="1402.0,689.3 1391.0,689.4 1379.6,693.7" fill="none" stroke="#ff9b4d" stroke-width="51.9" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="1391.0" y="685.4" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">hv_s6_bore_00_10  18m</text>
+<polyline points="1402.0,689.3 1365.8,683.2 1336.9,676.9" fill="none" stroke="#ff9b4d" stroke-width="44.6" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="1365.8" y="679.2" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">hv_s6_bore_00_02  19m</text>
+<polyline points="1328.8,694.1 1304.1,696.4 1263.1,696.6" fill="none" stroke="#ff9b4d" stroke-width="45.1" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="1304.1" y="692.4" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">hv_s6_bore_03_05  21m</text>
+<polyline points="1395.2,747.3 1343.9,736.9" fill="none" stroke="#ff9b4d" stroke-width="46.2" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="1369.5" y="738.1" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">hv_s7_bore_00_02  15m</text>
+<polyline points="1343.9,736.9 1393.3,755.9" fill="none" stroke="#ff9b4d" stroke-width="70.5" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="1368.6" y="742.4" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">hv_s7_bore_02_10  15m</text>
+<polyline points="1393.3,755.9 1428.3,755.1" fill="none" stroke="#ff9b4d" stroke-width="36.7" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="1410.8" y="751.5" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">hv_s7_bore_10_14  15m</text>
+<polyline points="1428.3,755.1 1408.5,757.1" fill="none" stroke="#ff9b4d" stroke-width="41.1" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="1418.4" y="752.1" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">hv_s7_bore_14_18  12m</text>
+<polyline points="1428.3,755.1 1456.6,738.7" fill="none" stroke="#ff9b4d" stroke-width="40.2" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="1442.4" y="742.9" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">hv_s7_bore_14_15  12m</text>
+<polyline points="1393.3,755.9 1454.1,756.4" fill="none" stroke="#ff9b4d" stroke-width="45.4" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="1423.7" y="752.2" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">hv_s7_bore_10_06  15m</text>
+<polyline points="1454.1,756.4 1506.2,741.5" fill="none" stroke="#ff9b4d" stroke-width="79.3" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="1480.1" y="745.0" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">hv_s7_bore_06_09  15m</text>
+<polyline points="1506.2,741.5 1535.2,760.5" fill="none" stroke="#ff9b4d" stroke-width="72.2" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="1520.7" y="747.0" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">hv_s7_bore_09_17  14m</text>
+<polyline points="1535.2,760.5 1567.5,755.7" fill="none" stroke="#ff9b4d" stroke-width="61.5" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="1551.3" y="754.1" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">hv_s7_bore_17_12  14m</text>
+<polyline points="1395.2,747.3 1348.1,747.9" fill="none" stroke="#ff9b4d" stroke-width="46.7" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="1371.7" y="743.6" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">hv_s7_bore_00_04  15m</text>
+<polyline points="1567.5,755.7 1559.6,736.7" fill="none" stroke="#ff9b4d" stroke-width="89.0" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="1563.5" y="742.2" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">hv_s7_bore_12_16  16m</text>
+<polyline points="1559.6,736.7 1539.2,745.6" fill="none" stroke="#ff9b4d" stroke-width="54.7" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="1549.4" y="737.1" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">hv_s7_bore_16_11  14m</text>
+<polyline points="1395.2,747.3 1456.7,756.4" fill="none" stroke="#ff9b4d" stroke-width="36.3" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="1425.9" y="747.8" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">hv_s7_bore_00_01  16m</text>
+<polyline points="1456.7,756.4 1493.6,733.7" fill="none" stroke="#ff9b4d" stroke-width="51.6" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="1475.1" y="741.1" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">hv_s7_bore_01_13  13m</text>
+<polyline points="1493.6,733.7 1476.7,723.9" fill="none" stroke="#ff9b4d" stroke-width="47.3" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="1485.2" y="724.8" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">hv_s7_bore_13_05  12m</text>
+<polyline points="1456.7,756.4 1427.6,728.8" fill="none" stroke="#ff9b4d" stroke-width="52.3" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="1442.1" y="738.6" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">hv_s7_bore_01_03  14m</text>
+<polyline points="1427.6,728.8 1402.6,734.1 1386.2,735.1" fill="none" stroke="#ff9b4d" stroke-width="29.9" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="1402.6" y="730.1" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">hv_s7_bore_03_07  19m</text>
+<polyline points="1386.2,735.1 1434.2,743.5" fill="none" stroke="#ff9b4d" stroke-width="66.4" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="1410.2" y="735.3" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">hv_s7_bore_07_08  17m</text>
+<polyline points="1456.6,738.7 1408.5,757.1" fill="none" stroke="#ff9b4d" stroke-width="75.7" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="1432.5" y="743.9" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">hv_s7_bore_15_18  13m</text>
+<polyline points="1427.6,728.8 1476.7,723.9" fill="none" stroke="#ff9b4d" stroke-width="84.0" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="1452.1" y="722.3" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">hv_s7_bore_03_05  15m</text>
+<polyline points="1506.2,741.5 1567.5,755.7" fill="none" stroke="#ff9b4d" stroke-width="70.8" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="1536.8" y="744.6" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">hv_s7_bore_09_12  16m</text>
+<polyline points="1456.7,756.4 1506.2,741.5" fill="none" stroke="#ff9b4d" stroke-width="34.0" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="1481.4" y="745.0" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">hv_s7_bore_01_09  16m</text>
+<polyline points="1395.2,747.3 1427.6,728.8" fill="none" stroke="#ff9b4d" stroke-width="51.2" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="1411.4" y="734.0" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">hv_s7_bore_00_03  16m</text>
+<polyline points="1539.2,745.6 1493.6,733.7" fill="none" stroke="#ff9b4d" stroke-width="32.1" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="1516.4" y="735.7" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">hv_s7_bore_11_13  16m</text>
+<polyline points="1493.6,733.7 1559.6,736.7" fill="none" stroke="#ff9b4d" stroke-width="52.7" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="1526.6" y="731.2" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">hv_s7_bore_13_16  16m</text>
+<polyline points="1232.6,369.6 1264.8,424.4" fill="none" stroke="#ff9b4d" stroke-width="15.0" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="1248.7" y="393.0" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">hv_breach_0_1_0  16m</text>
+<polyline points="1325.1,383.3 1314.8,436.7" fill="none" stroke="#ff9b4d" stroke-width="23.8" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="1320.0" y="406.0" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">hv_breach_0_1_1  14m</text>
+<polyline points="1322.1,390.3 1268.9,444.3" fill="none" stroke="#ff9b4d" stroke-width="30.2" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="1295.5" y="413.3" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">hv_breach_0_1_2  20m</text>
+<polyline points="1281.2,365.9 1273.0,425.4" fill="none" stroke="#ff9b4d" stroke-width="26.1" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="1277.1" y="391.7" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">hv_breach_0_1_3  15m</text>
+<polyline points="1203.2,360.2 1234.1,420.4" fill="none" stroke="#ff9b4d" stroke-width="16.6" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="1218.7" y="386.3" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">hv_breach_0_1_4  20m</text>
+<polyline points="1264.8,424.4 1268.7,489.9" fill="none" stroke="#ff9b4d" stroke-width="28.2" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="1266.8" y="453.2" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">hv_breach_1_2_0  18m</text>
+<polyline points="1268.9,444.3 1212.0,501.7" fill="none" stroke="#ff9b4d" stroke-width="20.2" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="1240.5" y="469.0" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">hv_breach_1_2_1  20m</text>
+<polyline points="1303.9,440.9 1270.0,465.0" fill="none" stroke="#ff9b4d" stroke-width="15.1" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="1287.0" y="449.0" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">hv_breach_1_2_2  15m</text>
+<polyline points="1268.9,444.3 1283.7,496.6" fill="none" stroke="#ff9b4d" stroke-width="15.3" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="1276.3" y="466.5" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">hv_breach_1_2_3  16m</text>
+<polyline points="1451.2,423.8 1472.6,475.2" fill="none" stroke="#ff9b4d" stroke-width="22.1" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="1461.9" y="445.5" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">hv_breach_1_2_4  14m</text>
+<polyline points="1379.1,472.0 1340.1,518.0" fill="none" stroke="#ff9b4d" stroke-width="18.8" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="1359.6" y="491.0" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">hv_breach_2_3_0  18m</text>
+<polyline points="1318.5,477.7 1340.1,518.0" fill="none" stroke="#ff9b4d" stroke-width="17.7" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="1329.3" y="493.9" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">hv_breach_2_3_1  18m</text>
+<polyline points="1397.1,467.4 1404.5,536.2" fill="none" stroke="#ff9b4d" stroke-width="26.3" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="1400.8" y="497.8" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">hv_breach_2_3_2  18m</text>
+<polyline points="1427.3,459.6 1362.4,528.5" fill="none" stroke="#ff9b4d" stroke-width="23.0" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="1394.9" y="490.1" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">hv_breach_2_3_3  24m</text>
+<polyline points="1427.3,459.6 1404.2,527.7" fill="none" stroke="#ff9b4d" stroke-width="32.6" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="1415.7" y="489.6" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">hv_breach_2_3_4  19m</text>
+<polyline points="1423.4,539.2 1424.3,559.0" fill="none" stroke="#ff9b4d" stroke-width="29.3" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="1423.8" y="545.1" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">hv_breach_3_4_0  5m</text>
+<polyline points="1340.1,518.0 1376.1,556.0" fill="none" stroke="#ff9b4d" stroke-width="32.7" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="1358.1" y="533.0" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">hv_breach_3_4_1  16m</text>
+<polyline points="1340.1,518.0 1347.6,578.8" fill="none" stroke="#ff9b4d" stroke-width="21.5" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="1343.8" y="544.4" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">hv_breach_3_4_2  21m</text>
+<polyline points="1340.1,518.0 1331.6,584.5" fill="none" stroke="#ff9b4d" stroke-width="19.6" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="1335.8" y="547.3" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">hv_breach_3_4_3  17m</text>
+<polyline points="1404.2,527.7 1428.1,552.1" fill="none" stroke="#ff9b4d" stroke-width="32.4" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="1416.2" y="535.9" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">hv_breach_3_4_4  13m</text>
+<polyline points="1349.0,567.5 1319.0,622.2" fill="none" stroke="#ff9b4d" stroke-width="29.6" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="1334.0" y="590.8" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">hv_breach_4_5_0  16m</text>
+<polyline points="1268.2,567.8 1227.8,606.2" fill="none" stroke="#ff9b4d" stroke-width="19.3" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="1248.0" y="583.0" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">hv_breach_4_5_1  14m</text>
+<polyline points="1268.2,567.8 1274.6,611.0" fill="none" stroke="#ff9b4d" stroke-width="30.5" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="1271.4" y="585.4" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">hv_breach_4_5_2  14m</text>
+<polyline points="1424.3,559.0 1421.6,593.5" fill="none" stroke="#ff9b4d" stroke-width="26.0" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="1422.9" y="572.2" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">hv_breach_4_5_3  15m</text>
+<polyline points="1313.4,578.2 1307.8,605.4" fill="none" stroke="#ff9b4d" stroke-width="23.4" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="1310.6" y="587.8" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">hv_breach_4_5_4  8m</text>
+<polyline points="1399.7,626.3 1379.6,693.7" fill="none" stroke="#ff9b4d" stroke-width="33.5" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="1389.6" y="656.0" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">hv_breach_5_6_0  18m</text>
+<polyline points="1519.9,687.6 1493.6,733.7" fill="none" stroke="#ff9b4d" stroke-width="17.5" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="1506.7" y="706.7" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">hv_breach_6_7_0  19m</text>
+<polyline points="1366.5,697.3 1393.3,755.9" fill="none" stroke="#ff9b4d" stroke-width="26.6" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="1379.9" y="722.6" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">hv_breach_6_7_1  17m</text>
+<polyline points="1411.8,712.2 1393.3,755.9" fill="none" stroke="#ff9b4d" stroke-width="31.3" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="1402.5" y="730.0" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">hv_breach_6_7_2  12m</text>
+<polyline points="1379.6,693.7 1386.2,735.1" fill="none" stroke="#ff9b4d" stroke-width="27.8" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="1382.9" y="710.4" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">hv_breach_6_7_3  15m</text>
+<polyline points="1402.0,689.3 1395.2,747.3" fill="none" stroke="#ff9b4d" stroke-width="22.2" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="1398.6" y="714.3" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">hv_breach_6_7_4  14m</text>
+<polyline points="1313.4,578.2 1280.5,626.6 1334.9,640.2 1355.1,672.9 1316.4,699.9" fill="none" stroke="#ff9b4d" stroke-width="30.7" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="1330.0" y="635.0" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">hv_long_0  82m</text>
+<polyline points="1300.8,579.1 1300.5,612.0 1295.2,632.8 1253.4,667.5 1263.1,696.6" fill="none" stroke="#ff9b4d" stroke-width="32.0" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="1287.3" y="635.4" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">hv_long_1  43m</text>
+<polyline points="1416.3,629.4 1392.2,661.2 1428.6,692.4 1420.4,726.7 1408.5,757.1" fill="none" stroke="#ff9b4d" stroke-width="24.7" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="1420.9" y="681.8" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">hv_long_2  40m</text>
+<polyline points="1354.4,536.7 1323.7,574.7 1307.8,627.8 1316.5,658.4 1265.2,709.4" fill="none" stroke="#ff9b4d" stroke-width="32.0" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="1309.1" y="628.3" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">hv_long_3  70m</text>
+<polyline points="1323.5,362.8 1357.1,407.0 1395.3,447.5 1429.8,491.3 1470.4,524.4" fill="none" stroke="#ff9b4d" stroke-width="19.4" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="1398.6" y="447.7" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">hv_long_4  58m</text>
+<polyline points="1357.7,288.0 1363.7,319.3 1350.6,352.9 1352.8,386.0" fill="none" stroke="#ff9b4d" stroke-width="30.3" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="1357.4" y="331.4" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">entrance_drop  26m</text>
+<polyline points="1416.1,447.7 1487.9,460.1 1605.7,437.6 1660.1,450.7 1753.8,457.8" fill="none" stroke="#ff9b4d" stroke-width="28.3" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="1602.3" y="434.2" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">link_to_ravine  108m</text>
+<polyline points="1343.9,736.9 1275.7,776.5 1201.6,803.3 1092.1,819.1 1026.2,866.1" fill="none" stroke="#ff9b4d" stroke-width="27.5" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="1196.2" y="800.1" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">link_to_mines  104m</text>
+<ellipse cx="1357.7" cy="288.0" rx="24.3" ry="24.3" fill="#ff9b4d" fill-opacity="0.45" stroke="#ff9b4d" stroke-width="1.5"/>
+<text x="1357.7" y="326.3" fill="#e8eaf0" font-family="sans-serif" font-size="13" text-anchor="middle">hive_mouth</text>
+<ellipse cx="1026.2" cy="866.1" rx="16.2" ry="16.2" fill="#ffd933" fill-opacity="0.45" stroke="#ffd933" stroke-width="1.5"/>
+<text x="1026.2" y="896.3" fill="#e8eaf0" font-family="sans-serif" font-size="13" text-anchor="middle">link_mines</text>
+<ellipse cx="1753.8" cy="457.8" rx="16.2" ry="16.2" fill="#ffd933" fill-opacity="0.45" stroke="#ffd933" stroke-width="1.5"/>
+<text x="1753.8" y="488.0" fill="#e8eaf0" font-family="sans-serif" font-size="13" text-anchor="middle">link_ravine</text>
+<ellipse cx="1373.8" cy="384.6" rx="27.7" ry="10.5" fill="#ff9b4d" fill-opacity="0.15" stroke="#ff9b4d" stroke-width="1.5"/>
+<text x="1373.8" y="409.1" fill="#e8eaf0" font-family="sans-serif" font-size="13" text-anchor="middle">hv_s0_b00</text>
+<ellipse cx="1323.5" cy="362.8" rx="31.6" ry="17.1" fill="#ff9b4d" fill-opacity="0.15" stroke="#ff9b4d" stroke-width="1.5"/>
+<text x="1323.5" y="393.9" fill="#e8eaf0" font-family="sans-serif" font-size="13" text-anchor="middle">hv_s0_b01</text>
+<ellipse cx="1325.1" cy="383.3" rx="25.6" ry="8.7" fill="#ff9b4d" fill-opacity="0.15" stroke="#ff9b4d" stroke-width="1.5"/>
+<text x="1325.1" y="406.0" fill="#e8eaf0" font-family="sans-serif" font-size="13" text-anchor="middle">hv_s0_b02</text>
+<ellipse cx="1322.1" cy="390.3" rx="28.2" ry="9.1" fill="#ff9b4d" fill-opacity="0.15" stroke="#ff9b4d" stroke-width="1.5"/>
+<text x="1322.1" y="413.5" fill="#e8eaf0" font-family="sans-serif" font-size="13" text-anchor="middle">hv_s0_b03</text>
+<ellipse cx="1429.8" cy="369.1" rx="21.5" ry="11.2" fill="#ff9b4d" fill-opacity="0.15" stroke="#ff9b4d" stroke-width="1.5"/>
+<text x="1429.8" y="394.3" fill="#e8eaf0" font-family="sans-serif" font-size="13" text-anchor="middle">hv_s0_b04</text>
+<ellipse cx="1279.9" cy="387.1" rx="44.4" ry="14.7" fill="#ff9b4d" fill-opacity="0.45" stroke="#ff9b4d" stroke-width="1.5"/>
+<text x="1279.9" y="415.8" fill="#e8eaf0" font-family="sans-serif" font-size="13" text-anchor="middle">hv_s0_b05</text>
+<ellipse cx="1352.8" cy="386.0" rx="42.0" ry="19.9" fill="#ff9b4d" fill-opacity="0.45" stroke="#ff9b4d" stroke-width="1.5"/>
+<text x="1352.8" y="419.9" fill="#e8eaf0" font-family="sans-serif" font-size="13" text-anchor="middle">hv_s0_b06</text>
+<ellipse cx="1497.8" cy="362.7" rx="37.6" ry="15.0" fill="#ff9b4d" fill-opacity="0.45" stroke="#ff9b4d" stroke-width="1.5"/>
+<text x="1497.8" y="391.7" fill="#e8eaf0" font-family="sans-serif" font-size="13" text-anchor="middle">hv_s0_b07</text>
+<ellipse cx="1232.6" cy="369.6" rx="29.1" ry="14.5" fill="#ff9b4d" fill-opacity="0.15" stroke="#ff9b4d" stroke-width="1.5"/>
+<text x="1232.6" y="398.1" fill="#e8eaf0" font-family="sans-serif" font-size="13" text-anchor="middle">hv_s0_b08</text>
+<ellipse cx="1203.2" cy="360.2" rx="25.0" ry="8.6" fill="#ff9b4d" fill-opacity="0.15" stroke="#ff9b4d" stroke-width="1.5"/>
+<text x="1203.2" y="382.8" fill="#e8eaf0" font-family="sans-serif" font-size="13" text-anchor="middle">hv_s0_b09</text>
+<ellipse cx="1308.1" cy="391.8" rx="28.4" ry="13.7" fill="#ff9b4d" fill-opacity="0.15" stroke="#ff9b4d" stroke-width="1.5"/>
+<text x="1308.1" y="419.6" fill="#e8eaf0" font-family="sans-serif" font-size="13" text-anchor="middle">hv_s0_b10</text>
+<ellipse cx="1281.2" cy="365.9" rx="42.6" ry="17.3" fill="#ff9b4d" fill-opacity="0.45" stroke="#ff9b4d" stroke-width="1.5"/>
+<text x="1281.2" y="397.3" fill="#e8eaf0" font-family="sans-serif" font-size="13" text-anchor="middle">hv_s0_b11</text>
+<ellipse cx="1374.6" cy="447.2" rx="25.9" ry="8.8" fill="#ff9b4d" fill-opacity="0.15" stroke="#ff9b4d" stroke-width="1.5"/>
+<text x="1374.6" y="470.0" fill="#e8eaf0" font-family="sans-serif" font-size="13" text-anchor="middle">hv_s1_b00</text>
+<ellipse cx="1399.5" cy="441.7" rx="40.3" ry="20.1" fill="#ff9b4d" fill-opacity="0.45" stroke="#ff9b4d" stroke-width="1.5"/>
+<text x="1399.5" y="475.8" fill="#e8eaf0" font-family="sans-serif" font-size="13" text-anchor="middle">hv_s1_b01</text>
+<ellipse cx="1314.8" cy="436.7" rx="37.0" ry="19.6" fill="#ff9b4d" fill-opacity="0.45" stroke="#ff9b4d" stroke-width="1.5"/>
+<text x="1314.8" y="470.2" fill="#e8eaf0" font-family="sans-serif" font-size="13" text-anchor="middle">hv_s1_b02</text>
+<ellipse cx="1264.8" cy="424.4" rx="35.7" ry="14.0" fill="#ff9b4d" fill-opacity="0.45" stroke="#ff9b4d" stroke-width="1.5"/>
+<text x="1264.8" y="452.5" fill="#e8eaf0" font-family="sans-serif" font-size="13" text-anchor="middle">hv_s1_b03</text>
+<ellipse cx="1268.9" cy="444.3" rx="39.4" ry="12.1" fill="#ff9b4d" fill-opacity="0.45" stroke="#ff9b4d" stroke-width="1.5"/>
+<text x="1268.9" y="470.4" fill="#e8eaf0" font-family="sans-serif" font-size="13" text-anchor="middle">hv_s1_b04</text>
+<ellipse cx="1451.2" cy="423.8" rx="40.5" ry="17.8" fill="#ff9b4d" fill-opacity="0.45" stroke="#ff9b4d" stroke-width="1.5"/>
+<text x="1451.2" y="455.6" fill="#e8eaf0" font-family="sans-serif" font-size="13" text-anchor="middle">hv_s1_b05</text>
+<ellipse cx="1416.1" cy="447.7" rx="26.0" ry="8.5" fill="#ff9b4d" fill-opacity="0.15" stroke="#ff9b4d" stroke-width="1.5"/>
+<text x="1416.1" y="470.2" fill="#e8eaf0" font-family="sans-serif" font-size="13" text-anchor="middle">hv_s1_b06</text>
+<ellipse cx="1205.5" cy="430.3" rx="39.2" ry="19.6" fill="#ff9b4d" fill-opacity="0.45" stroke="#ff9b4d" stroke-width="1.5"/>
+<text x="1205.5" y="463.8" fill="#e8eaf0" font-family="sans-serif" font-size="13" text-anchor="middle">hv_s1_b07</text>
+<ellipse cx="1358.7" cy="446.8" rx="32.4" ry="15.1" fill="#ff9b4d" fill-opacity="0.45" stroke="#ff9b4d" stroke-width="1.5"/>
+<text x="1358.7" y="475.9" fill="#e8eaf0" font-family="sans-serif" font-size="13" text-anchor="middle">hv_s1_b08</text>
+<ellipse cx="1234.1" cy="420.4" rx="37.9" ry="16.0" fill="#ff9b4d" fill-opacity="0.45" stroke="#ff9b4d" stroke-width="1.5"/>
+<text x="1234.1" y="450.3" fill="#e8eaf0" font-family="sans-serif" font-size="13" text-anchor="middle">hv_s1_b09</text>
+<ellipse cx="1303.9" cy="440.9" rx="33.8" ry="16.4" fill="#ff9b4d" fill-opacity="0.45" stroke="#ff9b4d" stroke-width="1.5"/>
+<text x="1303.9" y="471.3" fill="#e8eaf0" font-family="sans-serif" font-size="13" text-anchor="middle">hv_s1_b10</text>
+<ellipse cx="1273.0" cy="425.4" rx="28.0" ry="13.3" fill="#ff9b4d" fill-opacity="0.15" stroke="#ff9b4d" stroke-width="1.5"/>
+<text x="1273.0" y="452.7" fill="#e8eaf0" font-family="sans-serif" font-size="13" text-anchor="middle">hv_s1_b11</text>
+<ellipse cx="1374.7" cy="466.1" rx="42.0" ry="12.9" fill="#ff9b4d" fill-opacity="0.45" stroke="#ff9b4d" stroke-width="1.5"/>
+<text x="1374.7" y="493.0" fill="#e8eaf0" font-family="sans-serif" font-size="13" text-anchor="middle">hv_s2_b00</text>
+<ellipse cx="1318.5" cy="477.7" rx="37.7" ry="18.8" fill="#ff9b4d" fill-opacity="0.45" stroke="#ff9b4d" stroke-width="1.5"/>
+<text x="1318.5" y="510.5" fill="#e8eaf0" font-family="sans-serif" font-size="13" text-anchor="middle">hv_s2_b01</text>
+<ellipse cx="1268.7" cy="489.9" rx="32.4" ry="16.6" fill="#ff9b4d" fill-opacity="0.45" stroke="#ff9b4d" stroke-width="1.5"/>
+<text x="1268.7" y="520.5" fill="#e8eaf0" font-family="sans-serif" font-size="13" text-anchor="middle">hv_s2_b02</text>
+<ellipse cx="1212.0" cy="501.7" rx="35.9" ry="11.2" fill="#ff9b4d" fill-opacity="0.45" stroke="#ff9b4d" stroke-width="1.5"/>
+<text x="1212.0" y="526.9" fill="#e8eaf0" font-family="sans-serif" font-size="13" text-anchor="middle">hv_s2_b03</text>
+<ellipse cx="1283.7" cy="496.6" rx="40.5" ry="19.9" fill="#ff9b4d" fill-opacity="0.45" stroke="#ff9b4d" stroke-width="1.5"/>
+<text x="1283.7" y="530.5" fill="#e8eaf0" font-family="sans-serif" font-size="13" text-anchor="middle">hv_s2_b04</text>
+<ellipse cx="1342.1" cy="469.8" rx="32.7" ry="10.1" fill="#ff9b4d" fill-opacity="0.45" stroke="#ff9b4d" stroke-width="1.5"/>
+<text x="1342.1" y="493.9" fill="#e8eaf0" font-family="sans-serif" font-size="13" text-anchor="middle">hv_s2_b05</text>
+<ellipse cx="1311.5" cy="481.8" rx="28.1" ry="13.3" fill="#ff9b4d" fill-opacity="0.15" stroke="#ff9b4d" stroke-width="1.5"/>
+<text x="1311.5" y="509.1" fill="#e8eaf0" font-family="sans-serif" font-size="13" text-anchor="middle">hv_s2_b06</text>
+<ellipse cx="1379.1" cy="472.0" rx="29.2" ry="9.5" fill="#ff9b4d" fill-opacity="0.15" stroke="#ff9b4d" stroke-width="1.5"/>
+<text x="1379.1" y="495.4" fill="#e8eaf0" font-family="sans-serif" font-size="13" text-anchor="middle">hv_s2_b07</text>
+<ellipse cx="1427.3" cy="459.6" rx="40.9" ry="17.5" fill="#ff9b4d" fill-opacity="0.45" stroke="#ff9b4d" stroke-width="1.5"/>
+<text x="1427.3" y="491.1" fill="#e8eaf0" font-family="sans-serif" font-size="13" text-anchor="middle">hv_s2_b08</text>
+<ellipse cx="1422.9" cy="473.3" rx="21.8" ry="8.3" fill="#ff9b4d" fill-opacity="0.15" stroke="#ff9b4d" stroke-width="1.5"/>
+<text x="1422.9" y="495.7" fill="#e8eaf0" font-family="sans-serif" font-size="13" text-anchor="middle">hv_s2_b09</text>
+<ellipse cx="1472.6" cy="475.2" rx="35.4" ry="10.9" fill="#ff9b4d" fill-opacity="0.45" stroke="#ff9b4d" stroke-width="1.5"/>
+<text x="1472.6" y="500.1" fill="#e8eaf0" font-family="sans-serif" font-size="13" text-anchor="middle">hv_s2_b10</text>
+<ellipse cx="1465.4" cy="473.6" rx="40.7" ry="21.5" fill="#ff9b4d" fill-opacity="0.45" stroke="#ff9b4d" stroke-width="1.5"/>
+<text x="1465.4" y="509.1" fill="#e8eaf0" font-family="sans-serif" font-size="13" text-anchor="middle">hv_s2_b11</text>
+<ellipse cx="1521.7" cy="488.4" rx="34.6" ry="16.8" fill="#ff9b4d" fill-opacity="0.45" stroke="#ff9b4d" stroke-width="1.5"/>
+<text x="1521.7" y="519.2" fill="#e8eaf0" font-family="sans-serif" font-size="13" text-anchor="middle">hv_s2_b12</text>
+<ellipse cx="1395.6" cy="486.2" rx="23.1" ry="8.8" fill="#ff9b4d" fill-opacity="0.45" stroke="#ff9b4d" stroke-width="1.5"/>
+<text x="1395.6" y="509.0" fill="#e8eaf0" font-family="sans-serif" font-size="13" text-anchor="middle">hv_s2_b13</text>
+<ellipse cx="1397.1" cy="467.4" rx="41.5" ry="19.4" fill="#ff9b4d" fill-opacity="0.45" stroke="#ff9b4d" stroke-width="1.5"/>
+<text x="1397.1" y="500.9" fill="#e8eaf0" font-family="sans-serif" font-size="13" text-anchor="middle">hv_s2_b14</text>
+<ellipse cx="1270.0" cy="465.0" rx="37.1" ry="20.2" fill="#ff9b4d" fill-opacity="0.45" stroke="#ff9b4d" stroke-width="1.5"/>
+<text x="1270.0" y="499.2" fill="#e8eaf0" font-family="sans-serif" font-size="13" text-anchor="middle">hv_s2_b15</text>
+<ellipse cx="1384.8" cy="532.7" rx="29.5" ry="10.2" fill="#ff9b4d" fill-opacity="0.15" stroke="#ff9b4d" stroke-width="1.5"/>
+<text x="1384.8" y="556.9" fill="#e8eaf0" font-family="sans-serif" font-size="13" text-anchor="middle">hv_s3_b00</text>
+<ellipse cx="1362.4" cy="528.5" rx="43.1" ry="18.0" fill="#ff9b4d" fill-opacity="0.45" stroke="#ff9b4d" stroke-width="1.5"/>
+<text x="1362.4" y="560.5" fill="#e8eaf0" font-family="sans-serif" font-size="13" text-anchor="middle">hv_s3_b01</text>
+<ellipse cx="1404.2" cy="527.7" rx="38.6" ry="19.6" fill="#ff9b4d" fill-opacity="0.45" stroke="#ff9b4d" stroke-width="1.5"/>
+<text x="1404.2" y="561.3" fill="#e8eaf0" font-family="sans-serif" font-size="13" text-anchor="middle">hv_s3_b02</text>
+<ellipse cx="1422.8" cy="533.8" rx="30.6" ry="11.0" fill="#ff9b4d" fill-opacity="0.15" stroke="#ff9b4d" stroke-width="1.5"/>
+<text x="1422.8" y="558.9" fill="#e8eaf0" font-family="sans-serif" font-size="13" text-anchor="middle">hv_s3_b03</text>
+<ellipse cx="1470.4" cy="524.4" rx="34.2" ry="15.3" fill="#ff9b4d" fill-opacity="0.45" stroke="#ff9b4d" stroke-width="1.5"/>
+<text x="1470.4" y="553.7" fill="#e8eaf0" font-family="sans-serif" font-size="13" text-anchor="middle">hv_s3_b04</text>
+<ellipse cx="1423.4" cy="539.2" rx="33.2" ry="15.3" fill="#ff9b4d" fill-opacity="0.45" stroke="#ff9b4d" stroke-width="1.5"/>
+<text x="1423.4" y="568.5" fill="#e8eaf0" font-family="sans-serif" font-size="13" text-anchor="middle">hv_s3_b05</text>
+<ellipse cx="1404.5" cy="536.2" rx="31.3" ry="13.8" fill="#ff9b4d" fill-opacity="0.15" stroke="#ff9b4d" stroke-width="1.5"/>
+<text x="1404.5" y="564.0" fill="#e8eaf0" font-family="sans-serif" font-size="13" text-anchor="middle">hv_s3_b06</text>
+<ellipse cx="1455.4" cy="499.9" rx="33.7" ry="17.9" fill="#ff9b4d" fill-opacity="0.45" stroke="#ff9b4d" stroke-width="1.5"/>
+<text x="1455.4" y="531.8" fill="#e8eaf0" font-family="sans-serif" font-size="13" text-anchor="middle">hv_s3_b07</text>
+<ellipse cx="1354.4" cy="536.7" rx="21.0" ry="7.0" fill="#ff9b4d" fill-opacity="0.15" stroke="#ff9b4d" stroke-width="1.5"/>
+<text x="1354.4" y="557.7" fill="#e8eaf0" font-family="sans-serif" font-size="13" text-anchor="middle">hv_s3_b08</text>
+<ellipse cx="1305.6" cy="522.8" rx="38.6" ry="19.4" fill="#ff9b4d" fill-opacity="0.45" stroke="#ff9b4d" stroke-width="1.5"/>
+<text x="1305.6" y="556.2" fill="#e8eaf0" font-family="sans-serif" font-size="13" text-anchor="middle">hv_s3_b09</text>
+<ellipse cx="1340.1" cy="518.0" rx="42.0" ry="15.8" fill="#ff9b4d" fill-opacity="0.45" stroke="#ff9b4d" stroke-width="1.5"/>
+<text x="1340.1" y="547.8" fill="#e8eaf0" font-family="sans-serif" font-size="13" text-anchor="middle">hv_s3_b10</text>
+<ellipse cx="1306.7" cy="539.2" rx="31.7" ry="9.6" fill="#ff9b4d" fill-opacity="0.45" stroke="#ff9b4d" stroke-width="1.5"/>
+<text x="1306.7" y="562.7" fill="#e8eaf0" font-family="sans-serif" font-size="13" text-anchor="middle">hv_s3_b11</text>
+<ellipse cx="1460.4" cy="545.7" rx="38.5" ry="12.5" fill="#ff9b4d" fill-opacity="0.45" stroke="#ff9b4d" stroke-width="1.5"/>
+<text x="1460.4" y="572.2" fill="#e8eaf0" font-family="sans-serif" font-size="13" text-anchor="middle">hv_s3_b12</text>
+<ellipse cx="1391.8" cy="578.1" rx="40.1" ry="13.1" fill="#ff9b4d" fill-opacity="0.45" stroke="#ff9b4d" stroke-width="1.5"/>
+<text x="1391.8" y="605.1" fill="#e8eaf0" font-family="sans-serif" font-size="13" text-anchor="middle">hv_s4_b00</text>
+<ellipse cx="1331.6" cy="584.5" rx="27.3" ry="14.4" fill="#ff9b4d" fill-opacity="0.15" stroke="#ff9b4d" stroke-width="1.5"/>
+<text x="1331.6" y="612.9" fill="#e8eaf0" font-family="sans-serif" font-size="13" text-anchor="middle">hv_s4_b01</text>
+<ellipse cx="1268.2" cy="567.8" rx="23.3" ry="8.4" fill="#ff9b4d" fill-opacity="0.15" stroke="#ff9b4d" stroke-width="1.5"/>
+<text x="1268.2" y="590.1" fill="#e8eaf0" font-family="sans-serif" font-size="13" text-anchor="middle">hv_s4_b02</text>
+<ellipse cx="1376.1" cy="556.0" rx="27.7" ry="12.8" fill="#ff9b4d" fill-opacity="0.15" stroke="#ff9b4d" stroke-width="1.5"/>
+<text x="1376.1" y="582.8" fill="#e8eaf0" font-family="sans-serif" font-size="13" text-anchor="middle">hv_s4_b03</text>
+<ellipse cx="1347.6" cy="578.8" rx="29.6" ry="15.6" fill="#ff9b4d" fill-opacity="0.15" stroke="#ff9b4d" stroke-width="1.5"/>
+<text x="1347.6" y="608.4" fill="#e8eaf0" font-family="sans-serif" font-size="13" text-anchor="middle">hv_s4_b04</text>
+<ellipse cx="1313.4" cy="578.2" rx="31.2" ry="11.4" fill="#ff9b4d" fill-opacity="0.15" stroke="#ff9b4d" stroke-width="1.5"/>
+<text x="1313.4" y="603.6" fill="#e8eaf0" font-family="sans-serif" font-size="13" text-anchor="middle">hv_s4_b05</text>
+<ellipse cx="1300.8" cy="579.1" rx="23.2" ry="7.2" fill="#ff9b4d" fill-opacity="0.15" stroke="#ff9b4d" stroke-width="1.5"/>
+<text x="1300.8" y="600.2" fill="#e8eaf0" font-family="sans-serif" font-size="13" text-anchor="middle">hv_s4_b06</text>
+<ellipse cx="1424.3" cy="559.0" rx="26.4" ry="13.5" fill="#ff9b4d" fill-opacity="0.15" stroke="#ff9b4d" stroke-width="1.5"/>
+<text x="1424.3" y="586.5" fill="#e8eaf0" font-family="sans-serif" font-size="13" text-anchor="middle">hv_s4_b07</text>
+<ellipse cx="1349.0" cy="567.5" rx="22.2" ry="7.3" fill="#ff9b4d" fill-opacity="0.15" stroke="#ff9b4d" stroke-width="1.5"/>
+<text x="1349.0" y="588.7" fill="#e8eaf0" font-family="sans-serif" font-size="13" text-anchor="middle">hv_s4_b08</text>
+<ellipse cx="1281.5" cy="581.0" rx="30.6" ry="15.1" fill="#ff9b4d" fill-opacity="0.15" stroke="#ff9b4d" stroke-width="1.5"/>
+<text x="1281.5" y="610.0" fill="#e8eaf0" font-family="sans-serif" font-size="13" text-anchor="middle">hv_s4_b09</text>
+<ellipse cx="1428.1" cy="552.1" rx="27.9" ry="10.5" fill="#ff9b4d" fill-opacity="0.15" stroke="#ff9b4d" stroke-width="1.5"/>
+<text x="1428.1" y="576.6" fill="#e8eaf0" font-family="sans-serif" font-size="13" text-anchor="middle">hv_s4_b10</text>
+<ellipse cx="1303.9" cy="579.9" rx="29.8" ry="12.7" fill="#ff9b4d" fill-opacity="0.45" stroke="#ff9b4d" stroke-width="1.5"/>
+<text x="1303.9" y="606.6" fill="#e8eaf0" font-family="sans-serif" font-size="13" text-anchor="middle">hv_s4_b11</text>
+<ellipse cx="1221.6" cy="554.8" rx="40.7" ry="19.3" fill="#ff9b4d" fill-opacity="0.45" stroke="#ff9b4d" stroke-width="1.5"/>
+<text x="1221.6" y="588.1" fill="#e8eaf0" font-family="sans-serif" font-size="13" text-anchor="middle">hv_s4_b12</text>
+<ellipse cx="1392.4" cy="616.4" rx="42.7" ry="17.1" fill="#ff9b4d" fill-opacity="0.45" stroke="#ff9b4d" stroke-width="1.5"/>
+<text x="1392.4" y="647.5" fill="#e8eaf0" font-family="sans-serif" font-size="13" text-anchor="middle">hv_s5_b00</text>
+<ellipse cx="1327.9" cy="603.8" rx="39.7" ry="15.6" fill="#ff9b4d" fill-opacity="0.45" stroke="#ff9b4d" stroke-width="1.5"/>
+<text x="1327.9" y="633.4" fill="#e8eaf0" font-family="sans-serif" font-size="13" text-anchor="middle">hv_s5_b01</text>
+<ellipse cx="1384.9" cy="598.2" rx="28.2" ry="15.4" fill="#ff9b4d" fill-opacity="0.15" stroke="#ff9b4d" stroke-width="1.5"/>
+<text x="1384.9" y="627.5" fill="#e8eaf0" font-family="sans-serif" font-size="13" text-anchor="middle">hv_s5_b02</text>
+<ellipse cx="1421.6" cy="593.5" rx="28.9" ry="15.5" fill="#ff9b4d" fill-opacity="0.15" stroke="#ff9b4d" stroke-width="1.5"/>
+<text x="1421.6" y="623.1" fill="#e8eaf0" font-family="sans-serif" font-size="13" text-anchor="middle">hv_s5_b03</text>
+<ellipse cx="1399.7" cy="626.3" rx="21.6" ry="6.7" fill="#ff9b4d" fill-opacity="0.15" stroke="#ff9b4d" stroke-width="1.5"/>
+<text x="1399.7" y="647.0" fill="#e8eaf0" font-family="sans-serif" font-size="13" text-anchor="middle">hv_s5_b04</text>
+<ellipse cx="1307.8" cy="605.4" rx="24.3" ry="11.5" fill="#ff9b4d" fill-opacity="0.15" stroke="#ff9b4d" stroke-width="1.5"/>
+<text x="1307.8" y="630.9" fill="#e8eaf0" font-family="sans-serif" font-size="13" text-anchor="middle">hv_s5_b05</text>
+<ellipse cx="1227.8" cy="606.2" rx="40.3" ry="18.7" fill="#ff9b4d" fill-opacity="0.45" stroke="#ff9b4d" stroke-width="1.5"/>
+<text x="1227.8" y="638.9" fill="#e8eaf0" font-family="sans-serif" font-size="13" text-anchor="middle">hv_s5_b06</text>
+<ellipse cx="1392.4" cy="602.1" rx="24.6" ry="7.6" fill="#ff9b4d" fill-opacity="0.15" stroke="#ff9b4d" stroke-width="1.5"/>
+<text x="1392.4" y="623.7" fill="#e8eaf0" font-family="sans-serif" font-size="13" text-anchor="middle">hv_s5_b07</text>
+<ellipse cx="1319.0" cy="622.2" rx="43.6" ry="13.9" fill="#ff9b4d" fill-opacity="0.45" stroke="#ff9b4d" stroke-width="1.5"/>
+<text x="1319.0" y="650.2" fill="#e8eaf0" font-family="sans-serif" font-size="13" text-anchor="middle">hv_s5_b08</text>
+<ellipse cx="1416.3" cy="629.4" rx="38.5" ry="18.1" fill="#ff9b4d" fill-opacity="0.45" stroke="#ff9b4d" stroke-width="1.5"/>
+<text x="1416.3" y="661.5" fill="#e8eaf0" font-family="sans-serif" font-size="13" text-anchor="middle">hv_s5_b09</text>
+<ellipse cx="1288.5" cy="611.1" rx="21.9" ry="9.8" fill="#ff9b4d" fill-opacity="0.45" stroke="#ff9b4d" stroke-width="1.5"/>
+<text x="1288.5" y="634.9" fill="#e8eaf0" font-family="sans-serif" font-size="13" text-anchor="middle">hv_s5_b10</text>
+<ellipse cx="1470.4" cy="608.9" rx="27.9" ry="8.9" fill="#ff9b4d" fill-opacity="0.45" stroke="#ff9b4d" stroke-width="1.5"/>
+<text x="1470.4" y="631.8" fill="#e8eaf0" font-family="sans-serif" font-size="13" text-anchor="middle">hv_s5_b11</text>
+<ellipse cx="1274.6" cy="611.0" rx="22.8" ry="9.7" fill="#ff9b4d" fill-opacity="0.15" stroke="#ff9b4d" stroke-width="1.5"/>
+<text x="1274.6" y="634.8" fill="#e8eaf0" font-family="sans-serif" font-size="13" text-anchor="middle">hv_s5_b12</text>
+<ellipse cx="1402.0" cy="689.3" rx="24.3" ry="11.5" fill="#ff9b4d" fill-opacity="0.15" stroke="#ff9b4d" stroke-width="1.5"/>
+<text x="1402.0" y="714.7" fill="#e8eaf0" font-family="sans-serif" font-size="13" text-anchor="middle">hv_s6_b00</text>
+<ellipse cx="1411.8" cy="712.2" rx="30.3" ry="10.6" fill="#ff9b4d" fill-opacity="0.15" stroke="#ff9b4d" stroke-width="1.5"/>
+<text x="1411.8" y="736.8" fill="#e8eaf0" font-family="sans-serif" font-size="13" text-anchor="middle">hv_s6_b01</text>
+<ellipse cx="1336.9" cy="676.9" rx="30.6" ry="14.8" fill="#ff9b4d" fill-opacity="0.15" stroke="#ff9b4d" stroke-width="1.5"/>
+<text x="1336.9" y="705.6" fill="#e8eaf0" font-family="sans-serif" font-size="13" text-anchor="middle">hv_s6_b02</text>
+<ellipse cx="1328.8" cy="694.1" rx="23.8" ry="9.2" fill="#ff9b4d" fill-opacity="0.15" stroke="#ff9b4d" stroke-width="1.5"/>
+<text x="1328.8" y="717.3" fill="#e8eaf0" font-family="sans-serif" font-size="13" text-anchor="middle">hv_s6_b03</text>
+<ellipse cx="1451.5" cy="692.6" rx="27.3" ry="10.7" fill="#ff9b4d" fill-opacity="0.15" stroke="#ff9b4d" stroke-width="1.5"/>
+<text x="1451.5" y="717.2" fill="#e8eaf0" font-family="sans-serif" font-size="13" text-anchor="middle">hv_s6_b04</text>
+<ellipse cx="1263.1" cy="696.6" rx="40.5" ry="22.1" fill="#ff9b4d" fill-opacity="0.45" stroke="#ff9b4d" stroke-width="1.5"/>
+<text x="1263.1" y="732.8" fill="#e8eaf0" font-family="sans-serif" font-size="13" text-anchor="middle">hv_s6_b05</text>
+<ellipse cx="1265.2" cy="709.4" rx="20.4" ry="10.6" fill="#ff9b4d" fill-opacity="0.15" stroke="#ff9b4d" stroke-width="1.5"/>
+<text x="1265.2" y="734.0" fill="#e8eaf0" font-family="sans-serif" font-size="13" text-anchor="middle">hv_s6_b06</text>
+<ellipse cx="1298.3" cy="703.1" rx="30.8" ry="15.4" fill="#ff9b4d" fill-opacity="0.45" stroke="#ff9b4d" stroke-width="1.5"/>
+<text x="1298.3" y="732.5" fill="#e8eaf0" font-family="sans-serif" font-size="13" text-anchor="middle">hv_s6_b07</text>
+<ellipse cx="1241.2" cy="699.8" rx="36.2" ry="13.6" fill="#ff9b4d" fill-opacity="0.45" stroke="#ff9b4d" stroke-width="1.5"/>
+<text x="1241.2" y="727.4" fill="#e8eaf0" font-family="sans-serif" font-size="13" text-anchor="middle">hv_s6_b08</text>
+<ellipse cx="1327.7" cy="699.5" rx="35.3" ry="13.3" fill="#ff9b4d" fill-opacity="0.45" stroke="#ff9b4d" stroke-width="1.5"/>
+<text x="1327.7" y="726.9" fill="#e8eaf0" font-family="sans-serif" font-size="13" text-anchor="middle">hv_s6_b09</text>
+<ellipse cx="1379.6" cy="693.7" rx="27.4" ry="13.4" fill="#ff9b4d" fill-opacity="0.15" stroke="#ff9b4d" stroke-width="1.5"/>
+<text x="1379.6" y="721.1" fill="#e8eaf0" font-family="sans-serif" font-size="13" text-anchor="middle">hv_s6_b10</text>
+<ellipse cx="1366.5" cy="697.3" rx="21.0" ry="8.3" fill="#ff9b4d" fill-opacity="0.15" stroke="#ff9b4d" stroke-width="1.5"/>
+<text x="1366.5" y="719.6" fill="#e8eaf0" font-family="sans-serif" font-size="13" text-anchor="middle">hv_s6_b11</text>
+<ellipse cx="1519.9" cy="687.6" rx="34.0" ry="12.7" fill="#ff9b4d" fill-opacity="0.45" stroke="#ff9b4d" stroke-width="1.5"/>
+<text x="1519.9" y="714.3" fill="#e8eaf0" font-family="sans-serif" font-size="13" text-anchor="middle">hv_s6_b12</text>
+<ellipse cx="1316.4" cy="699.9" rx="32.4" ry="16.5" fill="#ff9b4d" fill-opacity="0.45" stroke="#ff9b4d" stroke-width="1.5"/>
+<text x="1316.4" y="730.4" fill="#e8eaf0" font-family="sans-serif" font-size="13" text-anchor="middle">hv_s6_b13</text>
+<ellipse cx="1395.2" cy="747.3" rx="32.4" ry="13.2" fill="#ff9b4d" fill-opacity="0.45" stroke="#ff9b4d" stroke-width="1.5"/>
+<text x="1395.2" y="774.5" fill="#e8eaf0" font-family="sans-serif" font-size="13" text-anchor="middle">hv_s7_b00</text>
+<ellipse cx="1456.7" cy="756.4" rx="41.6" ry="15.5" fill="#ff9b4d" fill-opacity="0.45" stroke="#ff9b4d" stroke-width="1.5"/>
+<text x="1456.7" y="785.9" fill="#e8eaf0" font-family="sans-serif" font-size="13" text-anchor="middle">hv_s7_b01</text>
+<ellipse cx="1343.9" cy="736.9" rx="28.7" ry="14.2" fill="#ff9b4d" fill-opacity="0.15" stroke="#ff9b4d" stroke-width="1.5"/>
+<text x="1343.9" y="765.1" fill="#e8eaf0" font-family="sans-serif" font-size="13" text-anchor="middle">hv_s7_b02</text>
+<ellipse cx="1427.6" cy="728.8" rx="42.8" ry="16.5" fill="#ff9b4d" fill-opacity="0.45" stroke="#ff9b4d" stroke-width="1.5"/>
+<text x="1427.6" y="759.3" fill="#e8eaf0" font-family="sans-serif" font-size="13" text-anchor="middle">hv_s7_b03</text>
+<ellipse cx="1348.1" cy="747.9" rx="21.7" ry="8.6" fill="#ff9b4d" fill-opacity="0.45" stroke="#ff9b4d" stroke-width="1.5"/>
+<text x="1348.1" y="770.5" fill="#e8eaf0" font-family="sans-serif" font-size="13" text-anchor="middle">hv_s7_b04</text>
+<ellipse cx="1476.7" cy="723.9" rx="35.0" ry="11.4" fill="#ff9b4d" fill-opacity="0.45" stroke="#ff9b4d" stroke-width="1.5"/>
+<text x="1476.7" y="749.3" fill="#e8eaf0" font-family="sans-serif" font-size="13" text-anchor="middle">hv_s7_b05</text>
+<ellipse cx="1454.1" cy="756.4" rx="30.9" ry="15.4" fill="#ff9b4d" fill-opacity="0.15" stroke="#ff9b4d" stroke-width="1.5"/>
+<text x="1454.1" y="785.8" fill="#e8eaf0" font-family="sans-serif" font-size="13" text-anchor="middle">hv_s7_b06</text>
+<ellipse cx="1386.2" cy="735.1" rx="29.1" ry="15.1" fill="#ff9b4d" fill-opacity="0.15" stroke="#ff9b4d" stroke-width="1.5"/>
+<text x="1386.2" y="764.1" fill="#e8eaf0" font-family="sans-serif" font-size="13" text-anchor="middle">hv_s7_b07</text>
+<ellipse cx="1434.2" cy="743.5" rx="25.8" ry="13.2" fill="#ff9b4d" fill-opacity="0.45" stroke="#ff9b4d" stroke-width="1.5"/>
+<text x="1434.2" y="770.7" fill="#e8eaf0" font-family="sans-serif" font-size="13" text-anchor="middle">hv_s7_b08</text>
+<ellipse cx="1506.2" cy="741.5" rx="35.0" ry="16.2" fill="#ff9b4d" fill-opacity="0.45" stroke="#ff9b4d" stroke-width="1.5"/>
+<text x="1506.2" y="771.7" fill="#e8eaf0" font-family="sans-serif" font-size="13" text-anchor="middle">hv_s7_b09</text>
+<ellipse cx="1393.3" cy="755.9" rx="41.7" ry="12.9" fill="#ff9b4d" fill-opacity="0.45" stroke="#ff9b4d" stroke-width="1.5"/>
+<text x="1393.3" y="782.9" fill="#e8eaf0" font-family="sans-serif" font-size="13" text-anchor="middle">hv_s7_b10</text>
+<ellipse cx="1539.2" cy="745.6" rx="27.9" ry="14.4" fill="#ff9b4d" fill-opacity="0.15" stroke="#ff9b4d" stroke-width="1.5"/>
+<text x="1539.2" y="774.0" fill="#e8eaf0" font-family="sans-serif" font-size="13" text-anchor="middle">hv_s7_b11</text>
+<ellipse cx="1567.5" cy="755.7" rx="40.1" ry="20.2" fill="#ff9b4d" fill-opacity="0.45" stroke="#ff9b4d" stroke-width="1.5"/>
+<text x="1567.5" y="789.9" fill="#e8eaf0" font-family="sans-serif" font-size="13" text-anchor="middle">hv_s7_b12</text>
+<ellipse cx="1493.6" cy="733.7" rx="36.4" ry="19.0" fill="#ff9b4d" fill-opacity="0.45" stroke="#ff9b4d" stroke-width="1.5"/>
+<text x="1493.6" y="766.7" fill="#e8eaf0" font-family="sans-serif" font-size="13" text-anchor="middle">hv_s7_b13</text>
+<ellipse cx="1428.3" cy="755.1" rx="21.7" ry="7.5" fill="#ff9b4d" fill-opacity="0.15" stroke="#ff9b4d" stroke-width="1.5"/>
+<text x="1428.3" y="776.6" fill="#e8eaf0" font-family="sans-serif" font-size="13" text-anchor="middle">hv_s7_b14</text>
+<ellipse cx="1456.6" cy="738.7" rx="40.8" ry="19.4" fill="#ff9b4d" fill-opacity="0.45" stroke="#ff9b4d" stroke-width="1.5"/>
+<text x="1456.6" y="772.1" fill="#e8eaf0" font-family="sans-serif" font-size="13" text-anchor="middle">hv_s7_b15</text>
+<ellipse cx="1559.6" cy="736.7" rx="34.6" ry="18.7" fill="#ff9b4d" fill-opacity="0.45" stroke="#ff9b4d" stroke-width="1.5"/>
+<text x="1559.6" y="769.4" fill="#e8eaf0" font-family="sans-serif" font-size="13" text-anchor="middle">hv_s7_b16</text>
+<ellipse cx="1535.2" cy="760.5" rx="30.3" ry="9.2" fill="#ff9b4d" fill-opacity="0.15" stroke="#ff9b4d" stroke-width="1.5"/>
+<text x="1535.2" y="783.6" fill="#e8eaf0" font-family="sans-serif" font-size="13" text-anchor="middle">hv_s7_b17</text>
+<ellipse cx="1408.5" cy="757.1" rx="43.0" ry="21.3" fill="#ff9b4d" fill-opacity="0.45" stroke="#ff9b4d" stroke-width="1.5"/>
+<text x="1408.5" y="792.4" fill="#e8eaf0" font-family="sans-serif" font-size="13" text-anchor="middle">hv_s7_b18</text>
+</g>
+</svg>

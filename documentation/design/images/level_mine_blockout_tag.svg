@@ -1,0 +1,164 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1840" height="1086" viewBox="0 0 1840 1086">
+<rect width="100%" height="100%" fill="#14161a"/>
+<text x="70" y="34" fill="#e8eaf0" font-family="sans-serif" font-size="22">MineBlockout</text>
+<text x="70" y="58" fill="#8b93a3" font-family="sans-serif" font-size="13">16 spaces, 22 tunnels, 1303 m of centreline. Creature fits down 18 of 22 at 6.4 m.</text>
+<text x="1770" y="58" text-anchor="end" fill="#8b93a3" font-family="sans-serif" font-size="13">colour: tag</text>
+<g id="plan">
+<text x="70" y="112" fill="#e8eaf0" font-family="sans-serif" font-size="15">PLAN - looking down (x / z)</text>
+<polyline points="262.7,565.0 396.5,565.0" fill="none" stroke="#599eff" stroke-width="24.1" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="329.6" y="561.0" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">drift_a_m_1  50m</text>
+<polyline points="396.5,565.0 530.3,565.0" fill="none" stroke="#599eff" stroke-width="24.1" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="463.4" y="561.0" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">drift_a_m_2  51m</text>
+<polyline points="396.5,436.5 530.3,436.5" fill="none" stroke="#599eff" stroke-width="24.1" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="463.4" y="432.5" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">drift_a_n_2  50m</text>
+<polyline points="396.5,565.0 396.5,436.5" fill="none" stroke="#8cc7f2" stroke-width="18.7" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="396.5" y="496.7" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">strip_a_c2_mn  48m</text>
+<polyline points="530.3,565.0 530.3,436.5" fill="none" stroke="#8cc7f2" stroke-width="12.0" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="530.3" y="496.7" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">strip_a_c3_mn  48m</text>
+<polyline points="262.7,565.0 396.5,565.0" fill="none" stroke="#599eff" stroke-width="24.1" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="329.6" y="561.0" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">drift_b_m_1  50m</text>
+<polyline points="396.5,565.0 530.3,565.0" fill="none" stroke="#599eff" stroke-width="24.1" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="463.4" y="561.0" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">drift_b_m_2  51m</text>
+<polyline points="262.7,436.5 396.5,436.5" fill="none" stroke="#599eff" stroke-width="24.1" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="329.6" y="432.5" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">drift_b_n_1  50m</text>
+<polyline points="396.5,436.5 530.3,436.5" fill="none" stroke="#599eff" stroke-width="24.1" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="463.4" y="432.5" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">drift_b_n_2  50m</text>
+<polyline points="262.7,565.0 262.7,436.5" fill="none" stroke="#8cc7f2" stroke-width="12.0" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="262.7" y="496.7" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">strip_b_c1_mn  48m</text>
+<polyline points="396.5,565.0 396.5,436.5" fill="none" stroke="#8cc7f2" stroke-width="18.7" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="396.5" y="496.7" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">strip_b_c2_mn  48m</text>
+<polyline points="530.3,565.0 530.3,436.5" fill="none" stroke="#8cc7f2" stroke-width="18.7" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="530.3" y="496.7" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">strip_b_c3_mn  48m</text>
+<polyline points="88.7,565.0 262.7,565.0" fill="none" stroke="#599eff" stroke-width="26.8" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="175.7" y="561.0" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">entrance_adit  65m</text>
+<polyline points="530.3,565.0 530.3,565.0" fill="none" stroke="#d959e6" stroke-width="18.7" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="530.3" y="561.0" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">winze_deep  52m</text>
+<polyline points="396.5,436.5 396.5,436.5" fill="none" stroke="#d959e6" stroke-width="13.4" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="396.5" y="432.5" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">winze_north  53m</text>
+<polyline points="396.5,436.5 432.9,466.3 455.7,509.3 481.2,547.5 530.3,565.0" fill="none" stroke="#f29e40" stroke-width="14.7" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="456.9" y="507.1" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">nat_a_deep  74m</text>
+<polyline points="530.3,436.5 509.2,469.7 457.3,459.3 446.0,513.2 438.1,544.5 396.5,565.0" fill="none" stroke="#f29e40" stroke-width="18.2" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="452.7" y="477.5" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">nat_drop  100m</text>
+<polyline points="262.7,565.0 292.1,527.9 331.5,503.0 352.8,457.7 396.5,436.5" fill="none" stroke="#f29e40" stroke-width="19.3" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="331.8" y="498.2" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">nat_b_cross  74m</text>
+<polyline points="530.3,565.0 572.8,594.8 591.8,651.4 642.7,672.0" fill="none" stroke="#f29e40" stroke-width="20.1" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="582.9" y="620.8" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">fork_from_mines  63m</text>
+<polyline points="642.7,672.0 676.9,733.4 709.2,795.1 781.5,822.9 819.3,880.7" fill="none" stroke="#ffd933" stroke-width="18.2" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="712.4" y="792.4" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">link_to_ravine  108m</text>
+<polyline points="530.3,436.5 552.3,404.6 593.7,393.9 626.6,377.6" fill="none" stroke="#f29e40" stroke-width="18.7" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="571.2" y="395.7" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">fork_from_lower  47m</text>
+<polyline points="626.6,377.6 671.5,363.6 694.3,323.8 716.9,280.4 755.1,265.3" fill="none" stroke="#ffd933" stroke-width="18.7" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="694.5" y="319.5" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">link_to_hive  74m</text>
+<circle cx="88.7" cy="565.0" r="18.7" fill="#f2f280" fill-opacity="0.45" stroke="#f2f280" stroke-width="1.5"/>
+<text x="88.7" y="597.7" fill="#e8eaf0" font-family="sans-serif" font-size="13" text-anchor="middle">mine_mouth</text>
+<circle cx="642.7" cy="672.0" r="13.4" fill="#f29e40" fill-opacity="0.15" stroke="#f29e40" stroke-width="1.5"/>
+<text x="642.7" y="699.4" fill="#e8eaf0" font-family="sans-serif" font-size="13" text-anchor="middle">fork_east</text>
+<circle cx="626.6" cy="377.6" r="13.4" fill="#f29e40" fill-opacity="0.15" stroke="#f29e40" stroke-width="1.5"/>
+<text x="626.6" y="405.0" fill="#e8eaf0" font-family="sans-serif" font-size="13" text-anchor="middle">fork_deep</text>
+<circle cx="819.3" cy="880.7" r="10.7" fill="#ffd933" fill-opacity="0.45" stroke="#ffd933" stroke-width="1.5"/>
+<text x="819.3" y="905.5" fill="#e8eaf0" font-family="sans-serif" font-size="13" text-anchor="middle">link_ravine</text>
+<circle cx="755.1" cy="265.3" r="10.7" fill="#ffd933" fill-opacity="0.45" stroke="#ffd933" stroke-width="1.5"/>
+<text x="755.1" y="290.0" fill="#e8eaf0" font-family="sans-serif" font-size="13" text-anchor="middle">link_hive</text>
+<circle cx="262.7" cy="565.0" r="13.4" fill="#4dff7d" fill-opacity="0.15" stroke="#4dff7d" stroke-width="1.5"/>
+<text x="262.7" y="592.4" fill="#e8eaf0" font-family="sans-serif" font-size="13" text-anchor="middle">a_c1_m</text>
+<circle cx="396.5" cy="565.0" r="13.4" fill="#4dff7d" fill-opacity="0.15" stroke="#4dff7d" stroke-width="1.5"/>
+<text x="396.5" y="592.4" fill="#e8eaf0" font-family="sans-serif" font-size="13" text-anchor="middle">a_c2_m</text>
+<circle cx="396.5" cy="436.5" r="9.4" fill="#4dff7d" fill-opacity="0.15" stroke="#4dff7d" stroke-width="1.5"/>
+<text x="396.5" y="459.9" fill="#e8eaf0" font-family="sans-serif" font-size="13" text-anchor="middle">a_c2_n</text>
+<circle cx="530.3" cy="565.0" r="13.4" fill="#4dff7d" fill-opacity="0.15" stroke="#4dff7d" stroke-width="1.5"/>
+<text x="530.3" y="592.4" fill="#e8eaf0" font-family="sans-serif" font-size="13" text-anchor="middle">a_c3_m</text>
+<circle cx="530.3" cy="436.5" r="9.4" fill="#4dff7d" fill-opacity="0.15" stroke="#4dff7d" stroke-width="1.5"/>
+<text x="530.3" y="459.9" fill="#e8eaf0" font-family="sans-serif" font-size="13" text-anchor="middle">a_c3_n</text>
+<circle cx="262.7" cy="565.0" r="13.4" fill="#ff4d50" fill-opacity="0.15" stroke="#ff4d50" stroke-width="1.5"/>
+<text x="262.7" y="592.4" fill="#e8eaf0" font-family="sans-serif" font-size="13" text-anchor="middle">b_c1_m</text>
+<circle cx="262.7" cy="436.5" r="9.4" fill="#ff4d50" fill-opacity="0.15" stroke="#ff4d50" stroke-width="1.5"/>
+<text x="262.7" y="459.9" fill="#e8eaf0" font-family="sans-serif" font-size="13" text-anchor="middle">b_c1_n</text>
+<circle cx="396.5" cy="565.0" r="13.4" fill="#ff4d50" fill-opacity="0.15" stroke="#ff4d50" stroke-width="1.5"/>
+<text x="396.5" y="592.4" fill="#e8eaf0" font-family="sans-serif" font-size="13" text-anchor="middle">b_c2_m</text>
+<circle cx="396.5" cy="436.5" r="9.4" fill="#ff4d50" fill-opacity="0.15" stroke="#ff4d50" stroke-width="1.5"/>
+<text x="396.5" y="459.9" fill="#e8eaf0" font-family="sans-serif" font-size="13" text-anchor="middle">b_c2_n</text>
+<circle cx="530.3" cy="565.0" r="13.4" fill="#ff4d50" fill-opacity="0.15" stroke="#ff4d50" stroke-width="1.5"/>
+<text x="530.3" y="592.4" fill="#e8eaf0" font-family="sans-serif" font-size="13" text-anchor="middle">b_c3_m</text>
+<circle cx="530.3" cy="436.5" r="9.4" fill="#ff4d50" fill-opacity="0.15" stroke="#ff4d50" stroke-width="1.5"/>
+<text x="530.3" y="459.9" fill="#e8eaf0" font-family="sans-serif" font-size="13" text-anchor="middle">b_c3_n</text>
+</g>
+<g id="elevation">
+<text x="1010" y="112" fill="#e8eaf0" font-family="sans-serif" font-size="15">ELEVATION - side on (x / depth)</text>
+<polyline points="1202.7,443.2 1336.5,459.3" fill="none" stroke="#599eff" stroke-width="24.1" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="1269.6" y="447.2" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">drift_a_m_1  50m</text>
+<polyline points="1336.5,459.3 1470.3,480.7" fill="none" stroke="#599eff" stroke-width="24.1" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="1403.4" y="466.0" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">drift_a_m_2  51m</text>
+<polyline points="1336.5,451.2 1470.3,470.0" fill="none" stroke="#599eff" stroke-width="24.1" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="1403.4" y="456.6" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">drift_a_n_2  50m</text>
+<polyline points="1336.5,459.3 1336.5,451.2" fill="none" stroke="#8cc7f2" stroke-width="18.7" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="1336.5" y="451.3" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">strip_a_c2_mn  48m</text>
+<polyline points="1470.3,480.7 1470.3,470.0" fill="none" stroke="#8cc7f2" stroke-width="12.0" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="1470.3" y="471.3" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">strip_a_c3_mn  48m</text>
+<polyline points="1202.7,585.0 1336.5,598.4" fill="none" stroke="#599eff" stroke-width="24.1" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="1269.6" y="587.7" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">drift_b_m_1  50m</text>
+<polyline points="1336.5,598.4 1470.3,619.8" fill="none" stroke="#599eff" stroke-width="24.1" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="1403.4" y="605.1" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">drift_b_m_2  51m</text>
+<polyline points="1202.7,579.7 1336.5,593.1" fill="none" stroke="#599eff" stroke-width="24.1" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="1269.6" y="582.4" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">drift_b_n_1  50m</text>
+<polyline points="1336.5,593.1 1470.3,609.1" fill="none" stroke="#599eff" stroke-width="24.1" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="1403.4" y="597.1" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">drift_b_n_2  50m</text>
+<polyline points="1202.7,585.0 1202.7,579.7" fill="none" stroke="#8cc7f2" stroke-width="12.0" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="1202.7" y="578.4" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">strip_b_c1_mn  48m</text>
+<polyline points="1336.5,598.4 1336.5,593.1" fill="none" stroke="#8cc7f2" stroke-width="18.7" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="1336.5" y="591.7" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">strip_b_c2_mn  48m</text>
+<polyline points="1470.3,619.8 1470.3,609.1" fill="none" stroke="#8cc7f2" stroke-width="18.7" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="1470.3" y="610.5" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">strip_b_c3_mn  48m</text>
+<polyline points="1028.7,443.2 1202.7,443.2" fill="none" stroke="#599eff" stroke-width="26.8" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="1115.7" y="439.2" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">entrance_adit  65m</text>
+<polyline points="1470.3,480.7 1470.3,619.8" fill="none" stroke="#d959e6" stroke-width="18.7" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="1470.3" y="546.3" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">winze_deep  52m</text>
+<polyline points="1336.5,451.2 1336.5,593.1" fill="none" stroke="#d959e6" stroke-width="13.4" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="1336.5" y="518.2" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">winze_north  53m</text>
+<polyline points="1336.5,451.2 1372.9,455.7 1395.7,463.6 1421.2,480.8 1470.3,480.7" fill="none" stroke="#f29e40" stroke-width="14.7" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="1396.9" y="460.4" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">nat_a_deep  74m</text>
+<polyline points="1470.3,470.0 1449.2,494.1 1397.3,529.7 1386.0,543.3 1378.1,583.0 1336.5,598.4" fill="none" stroke="#f29e40" stroke-width="18.2" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="1392.7" y="531.3" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">nat_drop  100m</text>
+<polyline points="1202.7,585.0 1232.1,576.2 1271.5,593.2 1292.8,586.7 1336.5,593.1" fill="none" stroke="#f29e40" stroke-width="19.3" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="1271.8" y="589.1" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">nat_b_cross  74m</text>
+<polyline points="1470.3,480.7 1512.8,489.7 1531.8,484.5 1582.7,496.7" fill="none" stroke="#f29e40" stroke-width="20.1" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="1522.9" y="483.0" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">fork_from_mines  63m</text>
+<polyline points="1582.7,496.7 1616.9,499.6 1649.2,510.7 1721.5,522.7 1759.3,528.8" fill="none" stroke="#ffd933" stroke-width="18.2" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="1652.4" y="507.2" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">link_to_ravine  108m</text>
+<polyline points="1470.3,609.1 1492.3,627.3 1533.7,622.5 1566.6,635.9" fill="none" stroke="#f29e40" stroke-width="18.7" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="1511.2" y="621.1" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">fork_from_lower  47m</text>
+<polyline points="1566.6,635.9 1611.5,653.7 1634.3,670.9 1656.9,683.1 1695.1,710.8" fill="none" stroke="#ffd933" stroke-width="18.7" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="1634.5" y="667.0" fill="#8b93a3" font-family="sans-serif" font-size="11" text-anchor="middle">link_to_hive  74m</text>
+<circle cx="1028.7" cy="443.2" r="18.7" fill="#f2f280" fill-opacity="0.45" stroke="#f2f280" stroke-width="1.5"/>
+<text x="1028.7" y="475.9" fill="#e8eaf0" font-family="sans-serif" font-size="13" text-anchor="middle">mine_mouth</text>
+<circle cx="1582.7" cy="496.7" r="13.4" fill="#f29e40" fill-opacity="0.15" stroke="#f29e40" stroke-width="1.5"/>
+<text x="1582.7" y="524.1" fill="#e8eaf0" font-family="sans-serif" font-size="13" text-anchor="middle">fork_east</text>
+<circle cx="1566.6" cy="635.9" r="13.4" fill="#f29e40" fill-opacity="0.15" stroke="#f29e40" stroke-width="1.5"/>
+<text x="1566.6" y="663.3" fill="#e8eaf0" font-family="sans-serif" font-size="13" text-anchor="middle">fork_deep</text>
+<circle cx="1759.3" cy="528.8" r="10.7" fill="#ffd933" fill-opacity="0.45" stroke="#ffd933" stroke-width="1.5"/>
+<text x="1759.3" y="553.5" fill="#e8eaf0" font-family="sans-serif" font-size="13" text-anchor="middle">link_ravine</text>
+<circle cx="1695.1" cy="710.8" r="10.7" fill="#ffd933" fill-opacity="0.45" stroke="#ffd933" stroke-width="1.5"/>
+<text x="1695.1" y="735.5" fill="#e8eaf0" font-family="sans-serif" font-size="13" text-anchor="middle">link_hive</text>
+<circle cx="1202.7" cy="443.2" r="13.4" fill="#4dff7d" fill-opacity="0.15" stroke="#4dff7d" stroke-width="1.5"/>
+<text x="1202.7" y="470.6" fill="#e8eaf0" font-family="sans-serif" font-size="13" text-anchor="middle">a_c1_m</text>
+<circle cx="1336.5" cy="459.3" r="13.4" fill="#4dff7d" fill-opacity="0.15" stroke="#4dff7d" stroke-width="1.5"/>
+<text x="1336.5" y="486.6" fill="#e8eaf0" font-family="sans-serif" font-size="13" text-anchor="middle">a_c2_m</text>
+<circle cx="1336.5" cy="451.2" r="9.4" fill="#4dff7d" fill-opacity="0.15" stroke="#4dff7d" stroke-width="1.5"/>
+<text x="1336.5" y="474.6" fill="#e8eaf0" font-family="sans-serif" font-size="13" text-anchor="middle">a_c2_n</text>
+<circle cx="1470.3" cy="480.7" r="13.4" fill="#4dff7d" fill-opacity="0.15" stroke="#4dff7d" stroke-width="1.5"/>
+<text x="1470.3" y="508.1" fill="#e8eaf0" font-family="sans-serif" font-size="13" text-anchor="middle">a_c3_m</text>
+<circle cx="1470.3" cy="470.0" r="9.4" fill="#4dff7d" fill-opacity="0.15" stroke="#4dff7d" stroke-width="1.5"/>
+<text x="1470.3" y="493.3" fill="#e8eaf0" font-family="sans-serif" font-size="13" text-anchor="middle">a_c3_n</text>
+<circle cx="1202.7" cy="585.0" r="13.4" fill="#ff4d50" fill-opacity="0.15" stroke="#ff4d50" stroke-width="1.5"/>
+<text x="1202.7" y="612.4" fill="#e8eaf0" font-family="sans-serif" font-size="13" text-anchor="middle">b_c1_m</text>
+<circle cx="1202.7" cy="579.7" r="9.4" fill="#ff4d50" fill-opacity="0.15" stroke="#ff4d50" stroke-width="1.5"/>
+<text x="1202.7" y="603.1" fill="#e8eaf0" font-family="sans-serif" font-size="13" text-anchor="middle">b_c1_n</text>
+<circle cx="1336.5" cy="598.4" r="13.4" fill="#ff4d50" fill-opacity="0.15" stroke="#ff4d50" stroke-width="1.5"/>
+<text x="1336.5" y="625.8" fill="#e8eaf0" font-family="sans-serif" font-size="13" text-anchor="middle">b_c2_m</text>
+<circle cx="1336.5" cy="593.1" r="9.4" fill="#ff4d50" fill-opacity="0.15" stroke="#ff4d50" stroke-width="1.5"/>
+<text x="1336.5" y="616.4" fill="#e8eaf0" font-family="sans-serif" font-size="13" text-anchor="middle">b_c2_n</text>
+<circle cx="1470.3" cy="619.8" r="13.4" fill="#ff4d50" fill-opacity="0.15" stroke="#ff4d50" stroke-width="1.5"/>
+<text x="1470.3" y="647.2" fill="#e8eaf0" font-family="sans-serif" font-size="13" text-anchor="middle">b_c3_m</text>
+<circle cx="1470.3" cy="609.1" r="9.4" fill="#ff4d50" fill-opacity="0.15" stroke="#ff4d50" stroke-width="1.5"/>
+<text x="1470.3" y="632.5" fill="#e8eaf0" font-family="sans-serif" font-size="13" text-anchor="middle">b_c3_n</text>
+</g>
+</svg>

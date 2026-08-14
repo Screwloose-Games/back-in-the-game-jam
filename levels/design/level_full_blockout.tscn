@@ -1,0 +1,159 @@
+[gd_scene format=3 uid="uid://dbo3lgrb3ynv7"]
+
+[ext_resource type="Script" uid="uid://dgo34fmrn1qnh" path="res://levels/design/mine_level.gd" id="1_level"]
+[ext_resource type="PackedScene" uid="uid://ce0x1h0y7nj8q" path="res://levels/design/level_hive_blockout.tscn" id="1_os4hd"]
+[ext_resource type="PackedScene" uid="uid://ck4vkd4rn1wtp" path="res://levels/design/level_mine_blockout.tscn" id="2_3pujb"]
+[ext_resource type="Script" uid="uid://blil1jlmg7kau" path="res://levels/design/mine_space.gd" id="2_t8gq3"]
+[ext_resource type="Script" uid="uid://dbg375tvjakbe" path="res://levels/design/mine_tunnel.gd" id="3_3pujb"]
+[ext_resource type="PackedScene" uid="uid://ch45hpbhbpep" path="res://levels/design/level_ravine_blockout.tscn" id="3_wssbe"]
+[ext_resource type="Script" uid="uid://da631uj74eenu" path="res://levels/design/mine_bend.gd" id="4_kt3w3"]
+
+[node name="LevelFullBlockout" type="Node3D" unique_id=749874247]
+script = ExtResource("1_level")
+color_mode = 1
+creature_min_width = 4.0
+creature_squeeze_width = 2.0
+tag_colors = Dictionary[StringName, Color]({
+&"biome_link": Color(1, 0.85, 0.2, 1),
+&"bore": Color(0.45, 0.85, 0.95, 1),
+&"breach": Color(0.95, 0.62, 0.25, 1),
+&"chamber": Color(0.35, 0.72, 1, 1),
+&"chasm": Color(0.35, 0.72, 1, 1),
+&"drift": Color(0.35, 0.62, 1, 1),
+&"entrance": Color(0.95, 0.95, 0.5, 1),
+&"long_link": Color(0.85, 0.35, 0.9, 1),
+&"merged": Color(1, 0.4, 0.35, 1),
+&"natural": Color(0.95, 0.62, 0.25, 1),
+&"pocket": Color(0.45, 0.95, 0.75, 1),
+&"refuge": Color(0.3, 0.9, 0.5, 1),
+&"strip": Color(0.55, 0.78, 0.95, 1),
+&"unbuilt": Color(0.5, 0.5, 0.55, 1),
+&"warren": Color(0.85, 0.35, 0.9, 1),
+&"winding": Color(0.95, 0.62, 0.25, 1),
+&"winze": Color(0.85, 0.35, 0.9, 1)
+})
+entrance_space = NodePath("MineBlockout/Spaces/mine_mouth")
+notes = "The three biomes stitched into one asteroid. The player starts at the mine mouth; the mines run east and drop into the ravine, and the ravine's eastern pockets cross into the hive.
+The biomes are instanced scenes with no overrides, and the tunnels joining them live under Connectors, so editing a biome updates this level. Each biome's own description is below, read through its instance."
+
+[node name="HiveBlockout" parent="." unique_id=861621170 instance=ExtResource("1_os4hd")]
+transform = Transform3D(-0.14779529, 0, 0.989018, 0, 1, 0, -0.989018, 0, -0.14779529, 67.91356, 0.6181879, -4.6477146)
+
+[node name="MineBlockout" parent="." unique_id=1601177174 instance=ExtResource("2_3pujb")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4.0004406, 6.928627, 33.24968)
+
+[node name="RavineBlockout" parent="." unique_id=32552392 instance=ExtResource("3_wssbe")]
+
+[node name="Connectors" type="Node3D" parent="." unique_id=593563281]
+
+[node name="Spaces" type="Node3D" parent="Connectors" unique_id=1838884402]
+
+[node name="winze_deep_mid" type="Node3D" parent="Connectors/Spaces" unique_id=1154501423]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -33.499573, -67.43109, 33.249695)
+script = ExtResource("2_t8gq3")
+kind = 1
+radius = 0.0
+on_tunnel = NodePath("../../../MineBlockout/Tunnels/winze_deep")
+notes = "Split junction on winze_deep, carrying the mines-to-ravine link at pocket_west_7. No chamber of its own, so the shaft it sits in is unchanged - this is a statement about the graph, not about the shape."
+
+[node name="drift_b_n_2_mid" type="Node3D" parent="Connectors/Spaces" unique_id=1356086103]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -46.69658, -76.32137, -2.7503242)
+script = ExtResource("2_t8gq3")
+kind = 1
+radius = 0.0
+on_tunnel = NodePath("../../../MineBlockout/Tunnels/drift_b_n_2")
+notes = "Split junction on drift_b_n_2, carrying the lower-level link out to pocket_west_2. No chamber, so the drift is unchanged."
+
+[node name="Tunnels" type="Node3D" parent="Connectors" unique_id=1499499327]
+
+[node name="pocket_east_6_to_hv_s2_b03" type="Node3D" parent="Connectors/Tunnels" unique_id=1946191694]
+script = ExtResource("3_3pujb")
+from_space = NodePath("../../../RavineBlockout/Spaces/pocket_east_6")
+to_space = NodePath("../../../HiveBlockout/Spaces/hv_s2_b03")
+width = 3.0
+tags = Array[StringName]([&"biome_link"])
+notes = "Biome link: the ravine to the hive's second stratum. 3.0 m bore."
+
+[node name="bend" type="Marker3D" parent="Connectors/Tunnels/pocket_east_6_to_hv_s2_b03" unique_id=988790098]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 42.82643, -50.073093, 41.56124)
+script = ExtResource("4_kt3w3")
+
+[node name="pocket_east_3_to_hv_s3_b05" type="Node3D" parent="Connectors/Tunnels" unique_id=1886972491]
+script = ExtResource("3_3pujb")
+from_space = NodePath("../../../RavineBlockout/Spaces/pocket_east_3")
+to_space = NodePath("../../../HiveBlockout/Spaces/hv_s3_b05")
+width = 3.0
+tags = Array[StringName]([&"biome_link"])
+notes = "Biome link: the ravine to the hive's third stratum, the deepest of the four eastern crossings. 3.0 m bore."
+
+[node name="hv_s4_b04_to_pocket_east_4" type="Node3D" parent="Connectors/Tunnels" unique_id=1680629315]
+script = ExtResource("3_3pujb")
+from_space = NodePath("../../../HiveBlockout/Spaces/hv_s4_b04")
+to_space = NodePath("../../../RavineBlockout/Spaces/pocket_east_4")
+width = 3.0
+tags = Array[StringName]([&"biome_link"])
+notes = "Biome link: the hive's fourth stratum back out to the ravine. 3.0 m bore."
+
+[node name="hv_s1_b05_to_pocket_east_1" type="Node3D" parent="Connectors/Tunnels" unique_id=2079384284]
+script = ExtResource("3_3pujb")
+from_space = NodePath("../../../HiveBlockout/Spaces/hv_s1_b05")
+to_space = NodePath("../../../RavineBlockout/Spaces/pocket_east_1")
+width = 3.0
+tags = Array[StringName]([&"biome_link"])
+notes = "Biome link: the ravine to the hive, arriving at the hive's own entrance chamber. 3.0 m bore."
+
+[node name="bend" type="Marker3D" parent="Connectors/Tunnels/hv_s1_b05_to_pocket_east_1" unique_id=2102336819]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 25.889679, -25.756996, -38.57672)
+script = ExtResource("4_kt3w3")
+
+[node name="winze_deep_mid_to_pocket_west_7" type="Node3D" parent="Connectors/Tunnels" unique_id=416017002]
+script = ExtResource("3_3pujb")
+from_space = NodePath("../../Spaces/winze_deep_mid")
+to_space = NodePath("../../../RavineBlockout/Spaces/pocket_west_7")
+width = 5.0
+tags = Array[StringName]([&"biome_link"])
+notes = "Biome link: the mines to the ravine, off the deep winze. 5.0 m bore, under the 6.4 m the creature needs."
+
+[node name="bend" type="Marker3D" parent="Connectors/Tunnels/winze_deep_mid_to_pocket_west_7" unique_id=1923341130]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -23.281631, -72.55692, 46.947777)
+script = ExtResource("4_kt3w3")
+
+[node name="strip_a_c3_mn_mid_to_pocket_west_4" type="Node3D" parent="Connectors/Tunnels" unique_id=381783322]
+script = ExtResource("3_3pujb")
+from_space = NodePath("../../../MineBlockout/Spaces/strip_a_c3_mn_mid")
+to_space = NodePath("../../../RavineBlockout/Spaces/pocket_west_4")
+width = 4.0
+tags = Array[StringName]([&"biome_link"])
+notes = "Biome link: the upper mines to the ravine. 4.0 m bore, a refuge."
+
+[node name="bend" type="Marker3D" parent="Connectors/Tunnels/strip_a_c3_mn_mid_to_pocket_west_4" unique_id=377104881]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -19.388395, -43.970177, 11.3745365)
+script = ExtResource("4_kt3w3")
+
+[node name="drift_b_n_2_mid_to_pocket_west_2" type="Node3D" parent="Connectors/Tunnels" unique_id=62377421]
+script = ExtResource("3_3pujb")
+from_space = NodePath("../../Spaces/drift_b_n_2_mid")
+to_space = NodePath("../../../RavineBlockout/Spaces/pocket_west_2")
+width = 4.0
+tags = Array[StringName]([&"biome_link"])
+notes = "Biome link: the lower mines to the ravine, and the longest crossing in the level at 44 m. 4.0 m bore, a refuge."
+
+[node name="bend" type="Marker3D" parent="Connectors/Tunnels/drift_b_n_2_mid_to_pocket_west_2" unique_id=55593623]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -39.522972, -60.52932, -7.3056564)
+script = ExtResource("4_kt3w3")
+
+[node name="bend_2" type="Marker3D" parent="Connectors/Tunnels/drift_b_n_2_mid_to_pocket_west_2" unique_id=844069422]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -30.279917, -53.52641, -13.206863)
+script = ExtResource("4_kt3w3")
+
+[node name="pocket_east_5_to_hv_s2_b04" type="Node3D" parent="Connectors/Tunnels" unique_id=1838977377]
+script = ExtResource("3_3pujb")
+from_space = NodePath("../../../RavineBlockout/Spaces/pocket_east_5")
+to_space = NodePath("../../../HiveBlockout/Spaces/hv_s2_b04")
+width = 4.8
+tags = Array[StringName]([&"ravine", &"warren", &"biome_link"])
+notes = "Biome link: the ravine warren to the hive. The widest crossing in the level at 4.8 m, and still a refuge."
+
+[node name="bend_1" type="Marker3D" parent="Connectors/Tunnels/pocket_east_5_to_hv_s2_b04" unique_id=1538361257]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 31.413439, -48.179604, 25.975155)
+script = ExtResource("4_kt3w3")
