@@ -1,0 +1,12 @@
+[gd_scene format=3 uid="uid://c1njs3qylfuj3"]
+
+[ext_resource type="Script" uid="uid://dvi6afkmw45mb" path="res://prefabs/ui/hud/widgets/hud_status.gd" id="1_status"]
+
+[node name="StatusFace" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_status")

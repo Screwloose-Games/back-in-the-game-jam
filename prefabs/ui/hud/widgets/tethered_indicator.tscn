@@ -1,0 +1,12 @@
+[gd_scene format=3 uid="uid://dlufiuvd6wy2g"]
+
+[ext_resource type="Script" uid="uid://cy8ua37hwv43t" path="res://prefabs/ui/hud/widgets/hud_tethered_meter.gd" id="1_tether"]
+
+[node name="TetheredIndicator" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_tether")
