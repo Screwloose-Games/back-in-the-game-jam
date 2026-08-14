@@ -42,6 +42,35 @@ Oxygen is two scenes rather than one because it is two drawings: HUD 02's
 horizontal bar and HUD 03/04's ring. They share the `show_fraction` contract, so a
 layout swaps one for the other by swapping which scene it instances.
 
+`hud_oxygen_bar.gd` is the worked example of what a widget script should look like,
+and the conventions it sets are worth copying:
+
+- **The reported value is an `@export_range`, not a private var.** That is what makes
+  `@tool` mean anything — you drag `fraction` and the editor draws that level. To stop
+  a preview leaking into the `.tscn` and from there into every layout that instances
+  it, `_validate_property()` clears `PROPERTY_USAGE_STORAGE` on it: inspector row and
+  live slider, but Godot never writes the value. The runtime value stays the only one
+  that ships.
+- **Textures are `@export`s defaulting to `HudArt.*`**, as `hud_power.gd` already did,
+  and `design_extent()` derives from the art rather than restating its size. A Figma
+  re-export that changes the PNG cannot leave a constant stale behind it.
+- **Setters guard the no-op** (`if is_equal_approx(next, fraction): return`) before
+  assigning, so a repeated value costs no redraw. Writing to the property inside its
+  own setter is direct member access, not recursion.
+- **`bind()` is idempotent and seeds.** A second `connect()` to the same `Callable` is
+  an error rather than a no-op, and seeding means binding alone is enough.
+- **`_get_configuration_warnings()` catches the silent failures** — above all a
+  missing lines texture, which still draws a frame and so looks exactly like a working
+  HUD reading full.
+
+**The bar no longer pulses at low oxygen and the ring still does.** The alarm was cut
+from `hud_oxygen_bar.gd`; `hud_oxygen_ring.gd` keeps `ALARM_FRACTION`/`_RATE`/`_DEPTH`
+and its `_process`. So HUD 02 and HUD 03/04 currently differ in more than layout, which
+undercuts the A/B comparison the three variants exist for. Deciding it either way —
+dropping the ring's pulse too, or giving the bar something back — is an open decision,
+not an oversight. Low supply is still reported in every variant through
+`HudState.status_for()` and the status face.
+
 ## What it is not
 
 - **Not a menu system.** Pause, options and title screens live in `common/ui/`.
@@ -130,11 +159,23 @@ exactly like a HUD that works.
 A variant with no status face simply has no `Status` node. Nothing branches on
 which variant it is.
 
-## Three things that will bite
+## Four things that will bite
 
-**Nothing here runs `_process` except the low-supply alarms and the demo driver.**
+**Nothing here runs `_process` except the oxygen ring's alarm and the demo driver.**
 Widgets redraw when the value they report changes, per the rule `power_bar.gd` sets
-out.
+out. Note that *defining* `_process` is what registers a node for processing — a
+`_process` that early-returns on its first line is still a per-frame script call, so
+gate it with `set_process()` instead, or do not define it.
+
+**`_get_minimum_size()` is wrong for these widgets, however standard it looks.**
+`Control.set_size()` clamps to `get_combined_minimum_size()` whether or not the parent
+is a container, and `Chrome` is a plain `Control`. The layouts deliberately place
+widgets *smaller* than their design size — `prefab_hud_02.tscn` gives the 711x71 oxygen
+bar a 474x47 rect — because `scale_factor()` exists precisely so a design-space widget
+draws at any size. Returning `design_extent()` as a minimum would force the node back
+to 711x71, fight the offsets in the scene, and rewrite the layout on the next save.
+**For this family the design extent is a coordinate system, not a floor.** The same
+goes for `custom_minimum_size`.
 
 **`const X := PackedFloat32Array([...])` is not a constant expression.** It parses,
 it lints, and it fails at load with `Assigned value for constant ... isn't a
