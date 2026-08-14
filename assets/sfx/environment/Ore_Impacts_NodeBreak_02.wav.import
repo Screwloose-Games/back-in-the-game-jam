@@ -3,12 +3,12 @@
 importer="wav"
 type="AudioStreamWAV"
 uid="uid://bctlmlcol3ibb"
-path="res://.godot/imported/Ore_Impacts_NodeBreak_02.wav-67b4be70a731e4168d46a2f13da51bd4.sample"
+path="res://.godot/imported/Ore_Impacts_NodeBreak_02.wav-7ce69498a593ee9924241a0ae93f6be5.sample"
 
 [deps]
 
-source_file="res://assets/sfx/mining/Ore_Impacts_NodeBreak_02.wav"
-dest_files=["res://.godot/imported/Ore_Impacts_NodeBreak_02.wav-67b4be70a731e4168d46a2f13da51bd4.sample"]
+source_file="res://assets/sfx/environment/Ore_Impacts_NodeBreak_02.wav"
+dest_files=["res://.godot/imported/Ore_Impacts_NodeBreak_02.wav-7ce69498a593ee9924241a0ae93f6be5.sample"]
 
 [params]
 

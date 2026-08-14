@@ -3,12 +3,12 @@
 importer="wav"
 type="AudioStreamWAV"
 uid="uid://cdfmkiulda0tm"
-path="res://.godot/imported/Alien_Sighting_Sting.wav-cea18c3d0e9d0aa05f4b0e194c816026.sample"
+path="res://.godot/imported/Alien_Sighting_Sting.wav-ba99117b915da76a6d61095e7443d862.sample"
 
 [deps]
 
-source_file="res://assets/sfx/music/Alien_Sighting_Sting.wav"
-dest_files=["res://.godot/imported/Alien_Sighting_Sting.wav-cea18c3d0e9d0aa05f4b0e194c816026.sample"]
+source_file="res://assets/music/Alien_Sighting_Sting.wav"
+dest_files=["res://.godot/imported/Alien_Sighting_Sting.wav-ba99117b915da76a6d61095e7443d862.sample"]
 
 [params]
 

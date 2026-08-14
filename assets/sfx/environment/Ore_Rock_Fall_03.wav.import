@@ -3,12 +3,12 @@
 importer="wav"
 type="AudioStreamWAV"
 uid="uid://cub4nk7dehemi"
-path="res://.godot/imported/Ore_Rock_Fall_03.wav-fdccdee4460c604ba73116bb51a58fa0.sample"
+path="res://.godot/imported/Ore_Rock_Fall_03.wav-8c6affcbc1b1e2af7fd71eb972182eef.sample"
 
 [deps]
 
-source_file="res://assets/sfx/mining/Ore_Rock_Fall_03.wav"
-dest_files=["res://.godot/imported/Ore_Rock_Fall_03.wav-fdccdee4460c604ba73116bb51a58fa0.sample"]
+source_file="res://assets/sfx/environment/Ore_Rock_Fall_03.wav"
+dest_files=["res://.godot/imported/Ore_Rock_Fall_03.wav-8c6affcbc1b1e2af7fd71eb972182eef.sample"]
 
 [params]
 

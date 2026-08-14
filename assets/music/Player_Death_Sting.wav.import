@@ -3,12 +3,12 @@
 importer="wav"
 type="AudioStreamWAV"
 uid="uid://c4v1j4l2enxg"
-path="res://.godot/imported/Player_Death_Sting.wav-39446c285eabeb8b2c4ca45e0c5a18d7.sample"
+path="res://.godot/imported/Player_Death_Sting.wav-7f9154b9392d6ee004a147c26abafbc3.sample"
 
 [deps]
 
-source_file="res://assets/sfx/music/Player_Death_Sting.wav"
-dest_files=["res://.godot/imported/Player_Death_Sting.wav-39446c285eabeb8b2c4ca45e0c5a18d7.sample"]
+source_file="res://assets/music/Player_Death_Sting.wav"
+dest_files=["res://.godot/imported/Player_Death_Sting.wav-7f9154b9392d6ee004a147c26abafbc3.sample"]
 
 [params]
 
