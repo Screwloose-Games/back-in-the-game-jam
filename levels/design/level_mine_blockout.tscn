@@ -24,94 +24,101 @@ sound_origin = NodePath("Spaces/pocket")
 [node name="Spaces" type="Node3D" parent="." unique_id=179536954]
 
 [node name="mine_mouth" type="Node3D" parent="Spaces" unique_id=506200350]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -126.37373, -53.002308, 2.9004655)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -94.780297, -39.751731, 2.175349)
 script = ExtResource("2_6b4y6")
-radius = 7.0
+radius = 5.25
 tags = Array[StringName]([&"entrance"])
+notes = "Where the player starts. The first stretch east is one straight tunnel with no choices at all, so the map is taught before it is used."
 
 [node name="a_c2_m" type="Node3D" parent="Spaces" unique_id=1915479047]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -95.1062, -58, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -71.32965, -43.5, 0.0)
 script = ExtResource("2_6b4y6")
 kind = 1
 tags = Array[StringName]([&"mines_a"])
+radius = 3.75
 
 [node name="pocket" type="Node3D" parent="Spaces" unique_id=1009364138]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -78.6671, -90.11066, -24.893763)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -59.000325, -67.582995, -18.670322)
 script = ExtResource("2_6b4y6")
-radius = 9.0
+radius = 6.75
 tags = Array[StringName]([&"cavern"])
+notes = "Natural cavern off the survey, on the way down. Not a working - nothing here was cut by the machine."
 
 [node name="a_c2_n" type="Node3D" parent="Spaces" unique_id=692606043]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -93.74311, -55, -48)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -70.307333, -41.25, -36.0)
 script = ExtResource("2_6b4y6")
 kind = 1
 tags = Array[StringName]([&"mines_a"])
+radius = 3.75
 
 [node name="a_c2_2_n" type="Node3D" parent="Spaces" unique_id=1905952921]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -78.66012, -57.83188, -47.870335)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -58.99509, -43.37391, -35.902751)
 script = ExtResource("2_6b4y6")
 kind = 1
-radius = 3.5
+radius = 2.625
 tags = Array[StringName]([&"mines_a"])
 
 [node name="a_c3_m" type="Node3D" parent="Spaces" unique_id=1389404294]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -50, -66, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -37.5, -49.5, 0.0)
 script = ExtResource("2_6b4y6")
 kind = 1
 tags = Array[StringName]([&"mines_a"])
+radius = 3.75
 
 [node name="a_c3_n" type="Node3D" parent="Spaces" unique_id=1903729024]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -50, -62, -48)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -37.5, -46.5, -36.0)
 script = ExtResource("2_6b4y6")
 kind = 1
-radius = 3.5
+radius = 2.625
 tags = Array[StringName]([&"mines_a"])
 
 [node name="b_c2_m" type="Node3D" parent="Spaces" unique_id=660031076]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -92.32208, -110, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -69.24156, -82.5, 0.0)
 script = ExtResource("2_6b4y6")
 kind = 1
 tags = Array[StringName]([&"mines_b"])
+radius = 3.75
 
 [node name="b_c2_n" type="Node3D" parent="Spaces" unique_id=1415510501]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -91.77738, -108, -48)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -68.833035, -81.0, -36.0)
 script = ExtResource("2_6b4y6")
 kind = 1
-radius = 3.5
+radius = 2.625
 tags = Array[StringName]([&"mines_b"])
 
 [node name="b_c3_m" type="Node3D" parent="Spaces" unique_id=309287204]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -50, -118, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -37.5, -88.5, 0.0)
 script = ExtResource("2_6b4y6")
 kind = 1
 tags = Array[StringName]([&"mines_b"])
+radius = 3.75
 
 [node name="b_c3_n" type="Node3D" parent="Spaces" unique_id=97737533]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -50, -114, -48)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -37.5, -85.5, -36.0)
 script = ExtResource("2_6b4y6")
 kind = 1
-radius = 3.5
+radius = 2.625
 tags = Array[StringName]([&"mines_b"])
 
 [node name="strip_a_c3_mn_mid" type="Node3D" parent="Spaces" unique_id=851872034]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -50, -64, -24)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -37.5, -48.0, -18.0)
 script = ExtResource("2_6b4y6")
 kind = 1
-radius = 3.5
+radius = 2.625
 tags = Array[StringName]([&"mines_a"])
 
 [node name="drift_b_n_1_mid" type="Node3D" parent="Spaces" unique_id=1843278160]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -112.19321, -105.5, -48)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -84.144907, -79.125, -36.0)
 script = ExtResource("2_6b4y6")
 kind = 1
-radius = 3.5
+radius = 2.625
 tags = Array[StringName]([&"mines_b"])
 
 [node name="drift_a_m_2_mid" type="Node3D" parent="Spaces" unique_id=880172600]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -72.5531, -62, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -54.414825, -46.5, 0.0)
 script = ExtResource("2_6b4y6")
 kind = 1
-radius = 3.5
+radius = 2.625
 tags = Array[StringName]([&"mines_a"])
 
 [node name="Tunnels" type="Node3D" parent="." unique_id=855103381]
@@ -120,171 +127,171 @@ tags = Array[StringName]([&"mines_a"])
 script = ExtResource("3_smlkf")
 from_space = NodePath("../../Spaces/mine_mouth")
 to_space = NodePath("../../Spaces/a_c2_m")
-width = 9.0
+width = 6.75
 tags = Array[StringName]([&"drift"])
 
 [node name="drift_a_m_2" type="Node3D" parent="Tunnels" unique_id=9481865]
 script = ExtResource("3_smlkf")
 from_space = NodePath("../../Spaces/a_c2_m")
 to_space = NodePath("../../Spaces/drift_a_m_2_mid")
-width = 9.0
+width = 6.75
 tags = Array[StringName]([&"drift"])
 
 [node name="drift_a_n_2" type="Node3D" parent="Tunnels" unique_id=1864918315]
 script = ExtResource("3_smlkf")
 from_space = NodePath("../../Spaces/a_c2_n")
 to_space = NodePath("../../Spaces/a_c2_2_n")
-width = 9.0
+width = 6.75
 tags = Array[StringName]([&"drift"])
 
 [node name="drift_a_n_3" type="Node3D" parent="Tunnels" unique_id=551593356]
 script = ExtResource("3_smlkf")
 from_space = NodePath("../../Spaces/a_c2_2_n")
 to_space = NodePath("../../Spaces/a_c3_n")
-width = 9.0
+width = 6.75
 tags = Array[StringName]([&"drift"])
 
 [node name="strip_a_c2_mn" type="Node3D" parent="Tunnels" unique_id=1836059853]
 script = ExtResource("3_smlkf")
 from_space = NodePath("../../Spaces/a_c2_m")
 to_space = NodePath("../../Spaces/a_c2_n")
-width = 7.0
+width = 5.25
 tags = Array[StringName]([&"strip"])
 
 [node name="strip_a_c3_mn" type="Node3D" parent="Tunnels" unique_id=1119456814]
 script = ExtResource("3_smlkf")
 from_space = NodePath("../../Spaces/a_c3_m")
 to_space = NodePath("../../Spaces/strip_a_c3_mn_mid")
-width = 4.5
+width = 3.375
 tags = Array[StringName]([&"strip", &"refuge"])
 
 [node name="drift_b_m_2" type="Node3D" parent="Tunnels" unique_id=1997387097]
 script = ExtResource("3_smlkf")
 from_space = NodePath("../../Spaces/b_c2_m")
 to_space = NodePath("../../Spaces/b_c3_m")
-width = 9.0
+width = 6.75
 tags = Array[StringName]([&"drift"])
 
 [node name="drift_b_n_2" type="Node3D" parent="Tunnels" unique_id=830088621]
 script = ExtResource("3_smlkf")
 from_space = NodePath("../../Spaces/b_c2_n")
 to_space = NodePath("../../Spaces/b_c3_n")
-width = 9.0
+width = 6.75
 tags = Array[StringName]([&"drift"])
 
 [node name="strip_b_c2_mn" type="Node3D" parent="Tunnels" unique_id=872320932]
 script = ExtResource("3_smlkf")
 from_space = NodePath("../../Spaces/b_c2_m")
 to_space = NodePath("../../Spaces/b_c2_n")
-width = 7.0
+width = 5.25
 tags = Array[StringName]([&"strip"])
 
 [node name="strip_b_c3_mn" type="Node3D" parent="Tunnels" unique_id=24490678]
 script = ExtResource("3_smlkf")
 from_space = NodePath("../../Spaces/b_c3_m")
 to_space = NodePath("../../Spaces/b_c3_n")
-width = 7.0
+width = 5.25
 tags = Array[StringName]([&"strip"])
 
 [node name="winze_deep" type="Node3D" parent="Tunnels" unique_id=788668638]
 script = ExtResource("3_smlkf")
 from_space = NodePath("../../Spaces/a_c3_m")
 to_space = NodePath("../../Spaces/b_c3_m")
-width = 7.0
+width = 5.25
 tags = Array[StringName]([&"winze"])
 
 [node name="winze_north" type="Node3D" parent="Tunnels" unique_id=1930698239]
 script = ExtResource("3_smlkf")
 from_space = NodePath("../../Spaces/a_c2_n")
 to_space = NodePath("../../Spaces/b_c2_n")
-width = 5.0
+width = 3.75
 tags = Array[StringName]([&"winze", &"refuge"])
 
 [node name="nat_a_deep" type="Node3D" parent="Tunnels" unique_id=331667025]
 script = ExtResource("3_smlkf")
 from_space = NodePath("../../Spaces/a_c2_2_n")
 to_space = NodePath("../../Spaces/drift_a_m_2_mid")
-width = 5.5
+width = 4.125
 tags = Array[StringName]([&"natural", &"refuge"])
 
 [node name="bend_1" type="Marker3D" parent="Tunnels/nat_a_deep" unique_id=1093551377]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -75.817856, -50.539146, -30.935253)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -56.863392, -37.904359, -23.20144)
 script = ExtResource("4_ghrrc")
 
 [node name="bend_2" type="Marker3D" parent="Tunnels/nat_a_deep" unique_id=1306043927]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -63.426308, -52.04296, -20.802145)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -47.569731, -39.03222, -15.601609)
 script = ExtResource("4_ghrrc")
 
 [node name="bend_3" type="Marker3D" parent="Tunnels/nat_a_deep" unique_id=1144708642]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -66.66467, -52.985, -5.8362384)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -49.998503, -39.73875, -4.377179)
 script = ExtResource("4_ghrrc")
 
 [node name="nat_drop_part1" type="Node3D" parent="Tunnels" unique_id=784855373]
 script = ExtResource("3_smlkf")
 from_space = NodePath("../../Spaces/strip_a_c3_mn_mid")
 to_space = NodePath("../../Spaces/pocket")
-width = 6.8
+width = 5.1
 tags = Array[StringName]([&"natural"])
 
 [node name="bend_1" type="Marker3D" parent="Tunnels/nat_drop_part1" unique_id=1833824498]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -57.864704, -71.026955, -35.823227)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -43.398528, -53.270216, -26.86742)
 script = ExtResource("4_ghrrc")
 
 [node name="bend_2" type="Marker3D" parent="Tunnels/nat_drop_part1" unique_id=584192718]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -71.936005, -80.82257, -30.836939)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -53.952004, -60.616928, -23.127704)
 script = ExtResource("4_ghrrc")
 
 [node name="nat_drop_part2" type="Node3D" parent="Tunnels" unique_id=1230660658]
 script = ExtResource("3_smlkf")
 from_space = NodePath("../../Spaces/pocket")
 to_space = NodePath("../../Spaces/b_c2_m")
-width = 6.8
+width = 5.1
 tags = Array[StringName]([&"natural"])
 
 [node name="bend_3" type="Marker3D" parent="Tunnels/nat_drop_part2" unique_id=889766147]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -77.53714, -96.63698, -10.547443)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -58.152855, -72.477735, -7.910582)
 script = ExtResource("4_ghrrc")
 
 [node name="bend_4" type="Marker3D" parent="Tunnels/nat_drop_part2" unique_id=1681915990]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -92.62379, -104.244514, -3.1274252)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -69.467843, -78.183385, -2.345569)
 script = ExtResource("4_ghrrc")
 
 [node name="nat_b_cross" type="Node3D" parent="Tunnels" unique_id=1614276481]
 script = ExtResource("3_smlkf")
 from_space = NodePath("../../Spaces/drift_b_n_1_mid")
 to_space = NodePath("../../Spaces/pocket")
-width = 7.2
+width = 5.4
 tags = Array[StringName]([&"natural"])
 
 [node name="bend_1" type="Marker3D" parent="Tunnels/nat_b_cross" unique_id=233245524]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -121.39481, -91.06267, -36.24086)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -91.046108, -68.297002, -27.180645)
 script = ExtResource("4_ghrrc")
 
 [node name="bend_2" type="Marker3D" parent="Tunnels/nat_b_cross" unique_id=601537302]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -111.9374, -76.4176, -28.69992)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -83.95305, -57.3132, -21.52494)
 script = ExtResource("4_ghrrc")
 
 [node name="bend_3" type="Marker3D" parent="Tunnels/nat_b_cross" unique_id=461952208]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -95.711845, -74.50293, -34.898567)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -71.783884, -55.877198, -26.173925)
 script = ExtResource("4_ghrrc")
 
 [node name="strip_a_c3_mn_2" type="Node3D" parent="Tunnels" unique_id=742723724]
 script = ExtResource("3_smlkf")
 from_space = NodePath("../../Spaces/strip_a_c3_mn_mid")
 to_space = NodePath("../../Spaces/a_c3_n")
-width = 4.5
+width = 3.375
 tags = Array[StringName]([&"strip", &"refuge"])
 
 [node name="drift_b_n_1_2" type="Node3D" parent="Tunnels" unique_id=995227734]
 script = ExtResource("3_smlkf")
 from_space = NodePath("../../Spaces/drift_b_n_1_mid")
 to_space = NodePath("../../Spaces/b_c2_n")
-width = 9.0
+width = 6.75
 tags = Array[StringName]([&"drift"])
 
 [node name="drift_a_m_2_2" type="Node3D" parent="Tunnels" unique_id=137975250]
 script = ExtResource("3_smlkf")
 from_space = NodePath("../../Spaces/drift_a_m_2_mid")
 to_space = NodePath("../../Spaces/a_c3_m")
-width = 9.0
+width = 6.75
 tags = Array[StringName]([&"drift"])

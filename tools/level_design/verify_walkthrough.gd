@@ -23,6 +23,9 @@ const SUIT_RADIUS := 0.4
 ## collision shape lands a frame or two after the mesh does.
 const SETTLE_FRAMES := 240
 
+## How many of the worst-overrunning runs to name.
+const OVERRUN_REPORT_COUNT := 6
+
 
 func _initialize() -> void:
 	_run()
@@ -68,6 +71,8 @@ func _check_carve(walkthrough: Node3D) -> PackedStringArray:
 		failures.append("nothing was carved")
 		return failures
 
+	_report_overruns(builder.overruns_by_tunnel())
+
 	var combiner := builder.get_node_or_null("HullCombiner") as CSGCombiner3D
 	var meshes := combiner.get_meshes()
 	if meshes.size() < 2 or meshes[1] == null:
@@ -102,6 +107,23 @@ func _check_hollow(walkthrough: Node3D) -> PackedStringArray:
 			failures.append("space '%s' is solid at its centre" % space.id)
 	print("probed %d tunnels and %d spaces" % [graph.tunnels.size(), graph.spaces.size()])
 	return failures
+
+
+## The runs whose bores reach furthest past their own junctions.
+##
+## Not a pass or a fail - overrun is what seals a junction and some of it has to be
+## there. It is printed because a run near the top of this list with a gentle bend
+## is carving a spur out through the wall, and nothing else in a headless check
+## would ever mention it.
+func _report_overruns(overruns: Dictionary) -> void:
+	var ranked := overruns.keys()
+	ranked.sort_custom(
+		func(left: String, right: String) -> bool: return overruns[left] > overruns[right]
+	)
+	var worst := PackedStringArray()
+	for tunnel_id: String in ranked.slice(0, OVERRUN_REPORT_COUNT):
+		worst.append("%s %.1f m" % [tunnel_id, overruns[tunnel_id]])
+	print("widest overruns: %s" % ", ".join(worst))
 
 
 func _requested_level() -> String:

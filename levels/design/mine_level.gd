@@ -151,14 +151,33 @@ func _process(_delta: float) -> void:
 		return
 	_dirty = false
 	_recompute()
-	if Engine.is_editor_hint() or draw_when_running:
-		_draw_everything()
+	if not (Engine.is_editor_hint() or draw_when_running):
+		return
+	if is_nested_in_another_level():
+		return
+	_draw_everything()
 
 
 ## Queues a redraw. Cheap and idempotent, so every setter and every moved node
 ## can call it without anyone counting how many times per frame that happens.
 func mark_visuals_dirty() -> void:
 	_dirty = true
+
+
+## Whether an outer MineLevel already covers this one.
+##
+## A composed level instances biome scenes whose roots are levels in their own
+## right, and the outer level walks into them for its spaces and tunnels. Left to
+## itself each inner level would draw its whole biome again underneath the outer
+## level's drawing of the same nodes - three sets of labels in the same place,
+## none of them wrong. Data is unaffected; only the picture has one owner.
+func is_nested_in_another_level() -> bool:
+	var ancestor := get_parent()
+	while ancestor != null:
+		if ancestor is MineLevel:
+			return true
+		ancestor = ancestor.get_parent()
+	return false
 
 
 ## Every MineSpace under this level, in tree order.
@@ -303,7 +322,7 @@ func rebuild_visuals() -> void:
 func _recompute() -> void:
 	_graph = build_graph()
 	_sound_field = _compute_sound_field(_graph)
-	_measure_depth_range()
+	_measure_depth_range(_graph)
 
 
 func _draw_everything() -> void:
@@ -321,8 +340,13 @@ func _draw_everything() -> void:
 
 
 ## Totals the dock reports. Every number here is derived, never authored.
+##
+## Measures the depth range against the graph it just built rather than against
+## whatever the last redraw left behind, so a caller that asks before the first
+## frame gets the level's real depths instead of zeroes.
 func describe_stats() -> Dictionary:
 	var graph := build_graph()
+	_measure_depth_range(graph)
 	var longest_name := ""
 	var longest := 0.0
 	var shortest_name := ""
@@ -594,11 +618,11 @@ func _depth_fraction(height: float) -> float:
 	return clampf((_shallowest - height) / (_shallowest - _deepest), 0.0, 1.0)
 
 
-func _measure_depth_range() -> void:
+func _measure_depth_range(graph: LevelGraph) -> void:
 	_shallowest = 0.0
 	_deepest = 0.0
 	var started := false
-	for space: LevelGraph.Space in _graph.spaces:
+	for space: LevelGraph.Space in graph.spaces:
 		var height := space.position.y
 		_shallowest = height if not started else maxf(_shallowest, height)
 		_deepest = height if not started else minf(_deepest, height)

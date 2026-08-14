@@ -1,0 +1,75 @@
+extends SceneTree
+
+## Runs MineLevel.validate() from the command line.
+##
+## The designer dock has a Validate button, which is no use to CI and no use after
+## a scene has been rewritten by a tool. Same checks, same wording: duplicate names,
+## half-wired tunnels, and any space with no route from the entrance.
+##
+## Reachability is the one a composed level gets wrong. Geometry probing proves
+## every bore was cut; it says nothing about whether a biome is joined to the rest
+## of the asteroid, and a biome that is not is a biome the player never sees.
+##
+##     godot --headless --path . --script res://tools/level_design/validate_level.gd
+##     ... validate_level.gd -- --level=res://levels/design/level_mine_blockout.tscn
+
+const DEFAULT_LEVEL := "res://levels/design/level_full_blockout.tscn"
+
+
+func _initialize() -> void:
+	_run()
+
+
+func _run() -> void:
+	await process_frame
+
+	var level_path := _requested_level()
+	var level := load(level_path).instantiate() as MineLevel
+	if level == null:
+		printerr("validate_level: %s does not have a MineLevel root" % level_path)
+		quit(1)
+		return
+	root.add_child(level)
+
+	var stats := level.describe_stats()
+	print("level: %s" % level_path)
+	print(
+		(
+			"%d spaces (%d rooms, %d junctions, %d dead ends), %d tunnels, %.0f m"
+			% [
+				stats["space_count"],
+				stats["room_count"],
+				stats["junction_count"],
+				stats["dead_end_count"],
+				stats["tunnel_count"],
+				stats["total_length"],
+			]
+		)
+	)
+	print(
+		(
+			"%d tunnels the creature fits down, %d refuges, %.0f m to %.0f m deep"
+			% [
+				stats["passable_tunnels"],
+				stats["refuge_tunnels"],
+				stats["shallowest"],
+				stats["deepest"],
+			]
+		)
+	)
+
+	var problems := level.validate()
+	if problems.is_empty():
+		print("validate_level: OK")
+		quit(0)
+		return
+	for problem: String in problems:
+		printerr("validate_level: %s" % problem)
+	quit(1)
+
+
+func _requested_level() -> String:
+	for argument: String in OS.get_cmdline_user_args():
+		if argument.begins_with("--level="):
+			return argument.substr("--level=".length())
+	return DEFAULT_LEVEL

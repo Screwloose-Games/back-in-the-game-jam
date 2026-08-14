@@ -11,9 +11,29 @@ finished geometry and none tries to be.
 | `level_ravine_blockout.tscn` | The ravine | 16 spaces, 23 tunnels, 1,406 m |
 | `level_hive_blockout.tscn` | The hive | 115 spaces, 184 tunnels, 3,250 m |
 
-**None of them assumes a central cavern.** How the biomes join is still open, so
-each ends at `link_*` dead-end stubs tagged `unbuilt` marking where a connection
-would land. Stitching them into one scene is a separate job.
+**`level_full_blockout.tscn` is the three of them stitched together**, and is the
+level the jam ships. Its root is a `MineLevel` like any other blockout, so it
+walks in `level_walkthrough.tscn` and every tool takes it; `MineLevel` collects
+spaces and tunnels from its whole subtree, so the biomes being instanced scenes
+with `MineLevel` roots of their own costs nothing. Space and tunnel names are graph
+ids and no two biomes collide, which is what makes one flat namespace work.
+
+**Nothing in the composed scene uses "can edit children".** The tunnels joining
+the biomes live under its own `Connectors/Spaces` and `Connectors/Tunnels` and
+reach into the instances by NodePath, which a NodePath does perfectly well across
+an instance boundary. The two places where a mine tunnel is split for a link are
+`MineSpace.on_tunnel` stops rather than retargeted tunnels, so the biome files are
+untouched and still say what they are on their own. Edit a biome and the composed
+level follows.
+
+The one thing that cannot be said from outside is repointing an instanced tunnel's
+end. `link_east_5_east_6` was originally rerouted that way; it is now a connector
+of its own, so `pocket_east_5` keeps its ravine link **and** gains the hive link -
+one more edge than the hand-composed version had.
+
+Each biome still ends at `link_*` dead-end stubs tagged `unbuilt` marking where a
+connection would land, and the ones the composed level does not use are still
+there.
 
 (`level_core_loop_blockout.tscn` is the small placeholder map the core loop
 prototype actually plays. It is not in the repo - `import_core_loop_layout.gd`
@@ -301,10 +321,23 @@ technique is `prototypes/core_loop/core_loop_tunnels.gd`; what is different is
 that this one reads the `LevelGraph`, so the space you fly through and the graph
 the sound model runs on are the same description.
 
-Tunnels tagged `natural` get a **round** bore and everything else gets a
-**square** one (`round_profile_tags` on the builder). The mines were cut by
-machine and the naturals were not, and from the inside that is most of what tells
-you which one you are in.
+Tunnels carrying any tag in `round_profile_tags` on the builder get a **round**
+bore and everything else gets a **square** one. Today that is `natural`, `hive`,
+`winding`, `warren` and `biome_link`. The mines were cut by machine and the
+naturals were not, and from the inside that is most of what tells you which one
+you are in. The ravine is split rather than listed whole: its side network was
+worn out of the rock and rounds, while the chasm runs stay square, because the
+flat floor and flat walls are what make the chasm read as a chasm.
+
+**Overrun at a joint is mitred.** A span reaches past its own junction far enough
+that its cross-section covers the corner and no further, which for a bore turning
+through an angle is half its extent across the bend times the tangent of the half
+angle - capped at the blunt half-width this used to always use, because a mitre
+grows without bound as a joint approaches a hairpin. Measuring it on the widest
+face instead overruns a tall slot by half its HEIGHT however gentle the bend is,
+and the ravine's chasm runs then carved twelve-metre spurs of air out through the
+wall at every station. `verify_walkthrough.gd` prints the worst offenders; a wide
+run near the top of that list with a gentle bend is the bug coming back.
 
 **This is a blockout, not shipping geometry.** The full carve is 246 brushes,
 about 300 ms and 23k triangles. Fine for walking the level, not fine for a web
@@ -316,11 +349,14 @@ Run from the project root:
 
 ```
 godot --headless --path . --script res://tools/level_design/test_level_graph.gd
+godot --headless --path . --script res://tools/level_design/validate_level.gd
 godot --headless --path . --script res://tools/level_design/verify_walkthrough.gd
 godot --headless --path . --script res://tools/level_design/render_level_maps.gd
 godot --headless --path . --script res://tools/level_design/render_level_maps.gd -- --mode=sound
 godot --headless --path . --script res://tools/level_design/export_layout_snippet.gd
 godot --headless --path . --script res://tools/level_design/report_sound_reach.gd
+godot --headless --path . --script res://tools/level_design/report_annotations.gd
+godot --headless --path . --script res://tools/level_design/export_level_model.gd
 ```
 
 Every tool except the test takes `-- --level=res://...` and defaults to the mine
@@ -348,6 +384,24 @@ sheet; this is how to do that. The elevation panel is fine unfiltered.
   reasoning a generator would delete.
 - `report_sound_reach.gd` writes the through-tunnel and straight-line numbers for
   every space and every noise source, as markdown for the design doc.
+- `validate_level.gd` is the dock's **Validate** button from the command line:
+  duplicate names, half-wired tunnels, and any space with no route from the
+  entrance. Reachability is the one a composed level gets wrong, and nothing else
+  in a headless run would notice a biome that is joined to nothing.
+- `report_annotations.gd` writes the `notes` on every space and tunnel out as
+  markdown, plus a full index of both keyed by world position, to
+  `documentation/design/<level>_annotations.md`. **That document is how
+  annotations reach anyone working outside Godot** - a `.gltf` carries geometry
+  and nothing else, and once the CSG is resolved there are no names left in it at
+  all. The document and the model are built from the same graph at the same scale
+  about the same origin, so a coordinate in one is a coordinate in the other.
+- `export_level_model.gd` bakes the carve to a single static mesh and writes it as
+  glTF Separate to `assets/art/environment/level_blockout/`, following the
+  static-mesh rules in `documentation/pipeline/pipeline.yaml` because the pipeline
+  has no phase covering a level exported as a model. **Corners come out sharp** -
+  CSG has no fillet operator and tessellation is the only knob it has. Dulling
+  them is a Bevel modifier in Blender, and the recipe is in the annotations
+  document.
 - `verify_walkthrough.gd` proves the carve is flyable without a human at the
   mouse: it drops a suit-sized sphere at the middle of every tunnel and the
   centre of every space and fails on anything that comes back solid. That is the
