@@ -7,8 +7,10 @@
 
 [node name="RavineBlockout" type="Node3D" unique_id=32552392]
 script = ExtResource("1_1cf0o")
+notes = "A large cavernous ravine running slight downward as it travels. The ravine biome serves as the center of the map and the connector between the mines and the hive. It's more dangerous than the mines due to the many connections and open space, which can allow a smart creature to potentially intercept a player. The interconnectivity makes loud noises riskier and orientation harder. The ravine should contain a noticeably denser concentration of minerals than the mines, including low and mid tier minerals."
 color_mode = 4
-creature_min_width = 3.9
+creature_min_width = 4.0
+creature_squeeze_width = 2.0
 tag_colors = Dictionary[StringName, Color]({
 &"biome_link": Color(1, 0.85, 0.2, 1),
 &"chasm": Color(0.35, 0.72, 1, 1),

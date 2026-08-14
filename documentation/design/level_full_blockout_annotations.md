@@ -2,6 +2,9 @@
 
 Generated from `res://levels/design/level_full_blockout.tscn` by `tools/level_design/report_annotations.gd`. Every number here is derived from the level; nothing in this file is hand-maintained, so re-run it rather than editing it.
 
+The three biomes stitched into one asteroid. The player starts at the mine mouth; the mines run east and drop into the ravine, and the ravine's eastern pockets cross into the hive.  
+The biomes are instanced scenes with no overrides, and the tunnels joining them live under Connectors, so editing a biome updates this level. Each biome's own description is below, read through its instance.
+
 ## The model this goes with
 
 `assets/art/environment/level_blockout/sm_level_full_blockout.gltf`, with its `.bin` and `.import` beside it.
@@ -15,7 +18,7 @@ Generated from `res://levels/design/level_full_blockout.tscn` by `tools/level_de
 
 101 spaces (46 rooms, 53 junctions, 2 dead ends) joined by 166 tunnels, 3111 m of centreline, running from -25 m to -82 m.
 
-87 tunnels are wide enough for the creature at the level's current 6.4 m threshold; the other 79 are refuges.
+Against the creature: **141 tunnels it moves down unhandicapped** (4.0 m or wider), **25 it can only squeeze along** (2.0 m to 4.0 m, slowly), and **0 it cannot enter at all** - those last are the real refuges.
 
 The graph validates: no duplicate names, no half-wired tunnels, and
 every space has a route from the entrance.
@@ -30,16 +33,24 @@ Plan and elevation, drawn from the same graph, by `tools/level_design/render_lev
 
 ### HiveBlockout
 
+The hive is the challenge biome of this game. The algorithm to generate a hive is based on the structure of anthills, with stacked, uneven strata that intersect at several points, merging into different spaces and blurring the lines between layers. The hive contains the largest open spaces of in the game, but they're arranged in a confusing, bizarre, and disorienting manner. Due to the high density of spaces and tunnels in the hive, loud sounds can travel easily to much of the rest of the biome, making it especially dangerous in the center. The hive should reward players willing to mine in it by containing dense pockets of mid to high tier crystal, with the center having the densest and most valuable pockets.
+
 **hv_s3_b10** - room, at 78, -48, 2.  
-This is probably the single most dangerous room in the entire game. It should be very rewarding.
+This is probably the single most dangerous space in the entire game. It should be very rewarding.
 
 ### MineBlockout
+
+Where the player starts. The mines are kept simple to ease the player into the game. They have initially no choice where to go--only forward--and are gradually given more options and put in increasingly disorienting spaces. The mines are the smallest biome and the least rewarding. They should contain only sparse, low tier minerals, though they should contain a mineral almost immediately near the entrance to teach the player about mining.
 
 **mine_mouth** - room, at -91, -33, 35.  
 Where the player starts. The first stretch east is one straight tunnel with no choices at all, so the map is taught before it is used.
 
 **pocket** - room, at -55, -61, 15.  
-Natural cavern off the survey, on the way down. Not a working - nothing here was cut by the machine.
+The most rewarding room in the mines and, to some extent, its most dangerous. Reward the players for exploring the mine and its tunnels by putting a good handful of tier 1 mineral deposits here.
+
+### RavineBlockout
+
+A large cavernous ravine running slight downward as it travels. The ravine biome serves as the center of the map and the connector between the mines and the hive. It's more dangerous than the mines due to the many connections and open space, which can allow a smart creature to potentially intercept a player. The interconnectivity makes loud noises riskier and orientation harder. The ravine should contain a noticeably denser concentration of minerals than the mines, including low and mid tier minerals.
 
 ### Connectors
 

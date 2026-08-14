@@ -76,6 +76,10 @@ func _compose(level_path: String) -> String:
 	)
 	lines.append("")
 
+	if not _level.notes.strip_edges().is_empty():
+		lines.append(_as_prose(_level.notes))
+		lines.append("")
+
 	lines.append("## The model this goes with")
 	lines.append("")
 	lines.append("`%s`, with its `.bin` and `.import` beside it." % MODEL_PATH)
@@ -124,15 +128,23 @@ func _compose(level_path: String) -> String:
 	)
 	lines.append(summary)
 	lines.append("")
-	lines.append(
-		(
-			(
-				"%d tunnels are wide enough for the creature at the level's current "
-				+ "%.1f m threshold; the other %d are refuges."
-			)
-			% [stats["passable_tunnels"], _level.creature_min_width, stats["refuge_tunnels"]]
-		)
+	var fit := (
+		"Against the creature: **%d tunnels it moves down unhandicapped** (%.1f m or "
+		+ "wider), **%d it can only squeeze along** (%.1f m to %.1f m, slowly), and "
+		+ "**%d it cannot enter at all** - those last are the real refuges."
 	)
+	var against_creature := (
+		fit
+		% [
+			stats["passable_tunnels"],
+			_level.creature_min_width,
+			stats["squeeze_tunnels"],
+			_level.creature_squeeze_width,
+			_level.creature_min_width,
+			stats["blocked_tunnels"],
+		]
+	)
+	lines.append(against_creature)
 	lines.append("")
 
 	var problems := _level.validate()
@@ -182,11 +194,12 @@ func _annotation_section() -> PackedStringArray:
 
 	var spaces := _annotated_spaces()
 	var tunnels := _annotated_tunnels()
-	if spaces.is_empty() and tunnels.is_empty():
+	if spaces.is_empty() and tunnels.is_empty() and _biome_notes().is_empty():
 		lines.append(
 			(
 				"Nothing is annotated yet. Notes are the `notes` field on any space or "
-				+ "tunnel in the blockout scenes; fill some in and re-run this."
+				+ "tunnel in the blockout scenes, and on the level root itself for a "
+				+ "whole biome; fill some in and re-run this."
 			)
 		)
 		lines.append("")
@@ -199,11 +212,15 @@ func _annotation_section() -> PackedStringArray:
 		var biome_tunnels := tunnels.filter(
 			func(tunnel: MineTunnel) -> bool: return _biome_of(tunnel) == biome
 		)
-		if biome_spaces.is_empty() and biome_tunnels.is_empty():
+		var about := _branch_note(biome)
+		if about.is_empty() and biome_spaces.is_empty() and biome_tunnels.is_empty():
 			continue
 
 		lines.append("### %s" % biome)
 		lines.append("")
+		if not about.is_empty():
+			lines.append(_as_prose(about))
+			lines.append("")
 		for space: MineSpace in biome_spaces:
 			lines.append(
 				(
@@ -294,6 +311,29 @@ func _biome_of(node: Node) -> String:
 	while branch != null and branch.get_parent() != _level:
 		branch = branch.get_parent()
 	return "the level" if branch == null else String(branch.name)
+
+
+## What a biome says about itself.
+##
+## Read through the instance, so the description lives in the biome's own scene and
+## a composed level shows it without holding a second copy that could disagree.
+func _branch_note(branch_name: String) -> String:
+	var branch := _level.get_node_or_null(NodePath(branch_name)) as MineLevel
+	return "" if branch == null else branch.notes.strip_edges()
+
+
+func _biome_notes() -> PackedStringArray:
+	var found := PackedStringArray()
+	for biome: String in _biome_order():
+		if not _branch_note(biome).is_empty():
+			found.append(biome)
+	return found
+
+
+## A note as markdown. Single newlines end a line rather than being swallowed,
+## because a designer writing a list in the Inspector means the list.
+func _as_prose(note: String) -> String:
+	return note.strip_edges().replace("\n", "  \n")
 
 
 func _biome_order() -> PackedStringArray:

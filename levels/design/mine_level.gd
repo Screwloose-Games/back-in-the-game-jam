@@ -16,10 +16,11 @@ extends Node3D
 ## design - positions, radii, widths, tags and notes - and the picture is rebuilt
 ## from it. Deleting the container loses nothing.
 ##
-## WIDTH THRESHOLDS ARE LEVEL-WIDE, NOT PER TUNNEL. The creature's real size is
-## not settled, so `creature_min_width` is one number that recolours the whole
-## map. When the creature turns out to be wider than expected, the level does not
-## need re-authoring to find out what that broke.
+## WIDTH THRESHOLDS ARE LEVEL-WIDE, NOT PER TUNNEL. The creature's size has
+## already changed once mid-design, so `creature_min_width` and
+## `creature_squeeze_width` are two numbers that recolour the whole map. When the
+## creature changes again, the level does not need re-authoring to find out what
+## that broke.
 
 enum ColorMode {
 	UNIFORM,  ## One colour. For reading shape alone.
@@ -49,6 +50,7 @@ const COLOR_WIDE := Color(0.25, 0.6, 1.0)
 const COLOR_SHALLOW := Color(0.4, 0.9, 0.7)
 const COLOR_DEEP := Color(0.85, 0.2, 0.55)
 const COLOR_PASSABLE := Color(0.95, 0.35, 0.3)
+const COLOR_SQUEEZE := Color(0.95, 0.75, 0.25)
 const COLOR_REFUGE := Color(0.3, 0.9, 0.5)
 const COLOR_SILENT := Color(0.18, 0.2, 0.24)
 const COLOR_HEARD_FAINT := Color(0.5, 0.1, 0.1)
@@ -58,16 +60,39 @@ const COLOR_HEARD_LOUD := Color(1.0, 0.95, 0.6)
 ## so a dozen invented tags stay distinguishable instead of cycling.
 const TAG_HUE_STEP := 0.618034
 
+## What this level is, for whoever reads it without having built it.
+##
+## The same field MineSpace and MineTunnel carry, one level up: a space annotates a
+## place and this annotates the whole biome. Nothing generates it and nothing
+## regenerates it. report_annotations.gd puts it at the head of that biome's
+## section, so a composed level picks up each biome's own description through the
+## instance rather than restating it.
+@export_multiline var notes := ""
+
 @export var color_mode: ColorMode = ColorMode.WIDTH:
 	set(value):
 		color_mode = value
 		mark_visuals_dirty()
 
-## Metres. The narrowest tunnel the creature can get down. Seeded from twice the
-## chase prototype's probe comfort; expected to move once the real creature exists.
-@export_range(0.0, 20.0, 0.1, "or_greater", "suffix:m") var creature_min_width := 6.4:
+## Metres. The narrowest tunnel the creature moves down UNHANDICAPPED.
+##
+## Below this it can still follow, down to creature_squeeze_width, but slowly - so
+## this is the width that decides whether a tunnel is a chase or a head start, and
+## it is the one the refuge tagging and the passable counts read.
+@export_range(0.0, 20.0, 0.1, "or_greater", "suffix:m") var creature_min_width := 4.0:
 	set(value):
 		creature_min_width = maxf(value, 0.0)
+		mark_visuals_dirty()
+
+## Metres. The narrowest tunnel the creature can get down at all, slowly.
+##
+## TWO NUMBERS, BECAUSE THE CREATURE HAS TWO SPEEDS. One threshold can only say
+## whether a tunnel is a wall. A tunnel the creature has to squeeze along is
+## neither a wall nor a corridor, and it is the interesting case - it is what the
+## ravine's side network was built to pose. Under this is a real refuge.
+@export_range(0.0, 20.0, 0.1, "or_greater", "suffix:m") var creature_squeeze_width := 2.0:
+	set(value):
+		creature_squeeze_width = maxf(value, 0.0)
 		mark_visuals_dirty()
 
 ## Colours for named tags. A tag with no entry gets a stable colour from its own
@@ -359,8 +384,13 @@ func describe_stats() -> Dictionary:
 			shortest = tunnel.length()
 			shortest_name = tunnel.id
 
+	# Nested bands: everything that fits unhandicapped also fits at a squeeze, so
+	# the middle band is the difference rather than a count of its own.
 	var passable := graph.passable_tunnel_ids(creature_min_width).size()
+	var reachable := graph.passable_tunnel_ids(creature_squeeze_width).size()
 	return {
+		"squeeze_tunnels": reachable - passable,
+		"blocked_tunnels": graph.tunnels.size() - reachable,
 		"space_count": graph.spaces.size(),
 		"room_count": _count_of_kind(graph, LevelGraph.SpaceKind.ROOM),
 		"junction_count": _count_of_kind(graph, LevelGraph.SpaceKind.JUNCTION),
@@ -441,7 +471,7 @@ func color_for_tunnel(tunnel: MineTunnel) -> Color:
 		ColorMode.DEPTH:
 			chosen = COLOR_SHALLOW.lerp(COLOR_DEEP, _depth_fraction(_tunnel_mid_height(tunnel)))
 		ColorMode.CREATURE_PASSABLE:
-			chosen = COLOR_PASSABLE if tunnel.width >= creature_min_width else COLOR_REFUGE
+			chosen = _fit_color(tunnel.width)
 		_:
 			chosen = COLOR_UNIFORM_TUNNEL
 	return chosen
@@ -589,8 +619,24 @@ func _describe_space(space: MineSpace) -> String:
 
 
 func _describe_tunnel(tunnel: MineTunnel) -> String:
-	var fit := "" if tunnel.width >= creature_min_width else "  refuge"
-	return "%s\n%.0f m long, %.1f m wide%s" % [tunnel.name, tunnel.length(), tunnel.width, fit]
+	return (
+		"%s\n%.0f m long, %.1f m wide%s"
+		% [tunnel.name, tunnel.length(), tunnel.width, describe_fit(tunnel.width)]
+	)
+
+
+## How a bore of this width reads against the creature: nothing when it is a plain
+## corridor, and the reason otherwise.
+func describe_fit(width: float) -> String:
+	if width >= creature_min_width:
+		return ""
+	return "  squeeze" if width >= creature_squeeze_width else "  refuge"
+
+
+func _fit_color(width: float) -> Color:
+	if width >= creature_min_width:
+		return COLOR_PASSABLE
+	return COLOR_SQUEEZE if width >= creature_squeeze_width else COLOR_REFUGE
 
 
 ## Dark grey for silence, deep red for a noise that barely arrived, near-white
