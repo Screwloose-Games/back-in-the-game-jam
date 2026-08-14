@@ -1,0 +1,144 @@
+# systems/hud/
+
+The in-world readouts: power, oxygen, tether, minimap and suit status, plus the
+widgets that draw them.
+
+Three HUD layouts are being compared (`prefabs/ui/hud/prefab_hud_02..04.tscn`).
+They exist to be A/B'd, not to all ship. Everything in here is shared by all three;
+the scenes carry only node structure, anchors, and which Figma texture each widget
+holds.
+
+`HUDInterface_01` was dropped — the designer renamed it "Don't Use - Test Variant".
+
+## Names come from Figma
+
+Every component is named for the layer it came out of, so a conversation about
+`MINIMAP` or `POWER_LINES` means the same thing in both places:
+
+| Figma | Scene node | Script |
+|---|---|---|
+| `BORDER` | `Border` | `hud_border.gd` |
+| `POWER_BG` + `POWER_LINES` | `Power` | `hud_power.gd` |
+| `OXYGEN` | `Oxygen` | `hud_oxygen_ring.gd` / `hud_oxygen_bar.gd` |
+| `TETHERED_METER` | `TetheredMeter` | `hud_tethered_meter.gd` |
+| `MINIMAP` | `Minimap` | `hud_minimap.gd` |
+| `STATUS` | `Status` | `hud_status.gd` |
+| `RETICLE` | `Reticle` | `hud_reticle.gd` |
+| `Screw_01` | drawn by `Border` | — |
+
+## What it is not
+
+- **Not a menu system.** Pause, options and title screens live in `common/ui/`.
+- **Not the source of the numbers.** `HudState` is a mailbox. Deciding what counts
+  as a contact, how fast oxygen drains, or when the suit is in trouble belongs to
+  whatever fills it in. `HudDemoDriver` fills it with invented values so the
+  layouts can be judged before those systems exist; it is scaffolding.
+- **Not on the GlobalSignalBus, and should not move there.** That bus carries level
+  and menu lifecycle — one event per scene change. This is per-frame gameplay
+  telemetry with a different lifetime, and a HUD signal on the global bus would
+  outlive the thing it reports on.
+
+## The art
+
+Exported from Figma, one PNG per named component, filed under the component it
+belongs to:
+
+```
+assets/art/ui/hud/
+├── border/    ui_hud_screw
+├── minimap/   ui_hud_minimap_background, _lines01..04, _reflection, ui_hud_enemy_dot
+├── oxygen/    ui_hud_oxygen_ring, _border, _lines
+├── power/     ui_hud_power_bg_02/03/04, ui_hud_power_lines, _lines_03
+├── reticle/   ui_hud_reticle_02/03/04
+└── status/    ui_hud_status_green, _yellow, _red
+```
+
+The filenames repeat the group, matching how `assets/art/` already does it for 3D
+(`elevator_car/t_elevator_car_basecolor.png`) — a file that names itself is still
+findable once it has been dragged somewhere else.
+
+`hud_art.gd` is the only file that names them, and it also holds where each one
+sits, as a **centre** in design coordinates — Figma grows an export's bounding box
+to cover strokes and glow, symmetrically, so a node stated at 333.75x270.85 arrives
+as a 339x276 PNG. Anchoring by centre absorbs that; anchoring by corner would put
+every asset out by half its bleed.
+
+Two things are still drawn rather than blitted, and both for a reason:
+
+- **`BORDER`**, because Figma states it at 1836x1024 and the repo's art gate blocks
+  any PNG over 1024 in either dimension. Which is the right answer anyway: the
+  border is the one element that must meet all four screen edges, and
+  `stretch/aspect="expand"` hands the game a canvas wider than 1280x720 on anything
+  that is not 16:9.
+- **`TETHERED_METER`**, because its content changes every metre.
+
+### Re-exporting
+
+The Figma MCP's `download_assets` composites every **PNG** it returns onto a
+`#1E1E1E` preview backdrop — the alpha comes back uniformly opaque and the art is
+unusable as an overlay. Its **SVG** export has no matte. So:
+
+```
+# 1. download_assets(nodeId, defaultFormat: "svg") for each component
+# 2. rasterise, preserving alpha, into that component's directory:
+godot --headless --path . --script res://tools/figma-export/svg_to_png.gd \
+    -- <svg_dir> assets/art/ui/hud/<group>
+```
+
+The converter writes `<name>.png` for every `<name>.svg` it finds, so name the SVGs
+as they should land and point it at one group at a time.
+
+`tools/figma-export/svg_to_png.gd` strips the preview backdrop and renders through
+the same ThorVG that Godot's own SVG importer uses.
+
+One thing to keep true in the Figma file: **the `HUDInterface_*` frames must have no
+background fill.** A frame fill is exported *into* every child asset, which is how
+22 assets first came back matted onto white.
+
+## How a widget binds
+
+Widgets connect themselves; nothing above them knows their method names. This is
+the connect-then-seed order `prototypes/power_and_lighting/power_hud.gd` uses on
+the suit bar, moved down a level:
+
+```gdscript
+func bind(state: HudState) -> void:
+    state.power_changed.connect(show_fraction)
+```
+
+`HudVariant.bind()` walks its `HudWidget` descendants, calls `bind()` on each, then
+calls `state.announce_all()`. That last call is why swapping a variant mid-run
+shows the truth immediately rather than a HUD full of defaults — which looks
+exactly like a HUD that works.
+
+A variant with no status face simply has no `Status` node. Nothing branches on
+which variant it is.
+
+## Three things that will bite
+
+**Nothing here runs `_process` except the low-supply alarms and the demo driver.**
+Widgets redraw when the value they report changes, per the rule `power_bar.gd` sets
+out.
+
+**`const X := PackedFloat32Array([...])` is not a constant expression.** It parses,
+it lints, and it fails at load with `Assigned value for constant ... isn't a
+constant expression` — sometimes only in the scene that touches it. Write
+`const X: PackedFloat32Array = [...]` instead.
+
+**PixelPurl has a 16px em**, so it is only crisp at multiples of 16. The mockup's
+40px and 60px convert to 26.7 and 40 canvas units, neither of which qualifies;
+`HudMetrics.font_size` snaps to 32 and 48. That runs 20% larger than the design, so
+the `TetheredMeter` boxes are wider than Figma's stated 255px — otherwise
+"TETHERED 33m" clips to "TETHERED".
+
+## Running it
+
+```
+godot --headless --path . --import                       # new class_names need this first
+godot --headless --path . res://tests/run_tests.tscn
+godot --path . res://prefabs/ui/hud/hud_preview.tscn     # name the scene, or the main menu boots
+```
+
+In the preview: `2`-`4` swap variant, `B` cycles the backdrop between dark, lit
+rock and worst-case bright, `A` hands the meters back to the demo driver after you
+have moved a slider, `H` hides the panel.

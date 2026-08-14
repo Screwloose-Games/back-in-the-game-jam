@@ -1,0 +1,109 @@
+[gd_scene load_steps=12 format=3]
+
+[ext_resource type="Script" path="res://systems/hud/hud_variant.gd" id="1_root"]
+[ext_resource type="Script" path="res://systems/hud/widgets/hud_border.gd" id="2_border"]
+[ext_resource type="Script" path="res://systems/hud/widgets/hud_power.gd" id="3_power"]
+[ext_resource type="Script" path="res://systems/hud/widgets/hud_oxygen_ring.gd" id="4_oxygen"]
+[ext_resource type="Script" path="res://systems/hud/widgets/hud_tethered_meter.gd" id="5_tether"]
+[ext_resource type="Script" path="res://systems/hud/widgets/hud_minimap.gd" id="6_minimap"]
+[ext_resource type="Script" path="res://systems/hud/widgets/hud_status.gd" id="7_status"]
+[ext_resource type="Script" path="res://systems/hud/widgets/hud_reticle.gd" id="8_reticle"]
+[ext_resource type="Texture2D" path="res://assets/art/ui/hud/power/ui_hud_power_bg_03.png" id="9_pbg"]
+[ext_resource type="Texture2D" path="res://assets/art/ui/hud/power/ui_hud_power_lines_03.png" id="10_plines"]
+[ext_resource type="Texture2D" path="res://assets/art/ui/hud/reticle/ui_hud_reticle_03.png" id="11_ret"]
+
+[node name="prefab_hud_03" type="CanvasLayer"]
+script = ExtResource("1_root")
+
+[node name="Chrome" type="Control" parent="."]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="Border" type="Control" parent="Chrome"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 28.0
+offset_top = 20.0
+offset_right = -28.0
+offset_bottom = -20.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("2_border")
+
+[node name="Oxygen" type="Control" parent="Chrome"]
+offset_left = 59.0
+offset_top = 49.0
+offset_right = 260.0
+offset_bottom = 249.0
+script = ExtResource("4_oxygen")
+
+[node name="Power" type="Control" parent="Chrome"]
+offset_left = 87.0
+offset_top = 127.0
+offset_right = 230.0
+offset_bottom = 208.0
+script = ExtResource("3_power")
+background = ExtResource("9_pbg")
+lines = ExtResource("10_plines")
+lines_centre = Vector2(104, 34)
+
+[node name="TetheredMeter" type="Control" parent="Chrome"]
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -361.0
+offset_top = 58.0
+offset_right = -81.0
+offset_bottom = 88.0
+grow_horizontal = 0
+script = ExtResource("5_tether")
+attached_format = "TETHERED %dM"
+alignment = 2
+
+[node name="Minimap" type="Control" parent="Chrome"]
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -115.0
+offset_top = -212.0
+offset_right = 108.0
+offset_bottom = -32.0
+grow_horizontal = 2
+grow_vertical = 0
+script = ExtResource("6_minimap")
+
+[node name="Status" type="Control" parent="Chrome"]
+anchors_preset = 3
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -264.0
+offset_top = -218.0
+offset_right = -81.0
+offset_bottom = -35.0
+grow_horizontal = 0
+grow_vertical = 0
+script = ExtResource("7_status")
+
+[node name="Reticle" type="Control" parent="Chrome"]
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -168.0
+offset_top = -29.0
+offset_right = 169.0
+offset_bottom = 29.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("8_reticle")
+texture = ExtResource("11_ret")
