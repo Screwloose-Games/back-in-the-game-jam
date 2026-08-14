@@ -3,12 +3,12 @@
 importer="oggvorbisstr"
 type="AudioStreamOggVorbis"
 uid="uid://ctsj4h111a2q6"
-path="res://.godot/imported/Alien_Chasing.ogg-2ecd0166ad75981ca3e36d1c62385b4b.oggvorbisstr"
+path="res://.godot/imported/Alien_Chasing.ogg-9e40694cb7d61e48a8471e4175ffcb94.oggvorbisstr"
 
 [deps]
 
-source_file="res://assets/sfx/music/Alien_Chasing.ogg"
-dest_files=["res://.godot/imported/Alien_Chasing.ogg-2ecd0166ad75981ca3e36d1c62385b4b.oggvorbisstr"]
+source_file="res://assets/music/Alien_Chasing.ogg"
+dest_files=["res://.godot/imported/Alien_Chasing.ogg-9e40694cb7d61e48a8471e4175ffcb94.oggvorbisstr"]
 
 [params]
 

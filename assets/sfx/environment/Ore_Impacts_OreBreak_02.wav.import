@@ -3,12 +3,12 @@
 importer="wav"
 type="AudioStreamWAV"
 uid="uid://qboxbuugi8or"
-path="res://.godot/imported/Ore_Impacts_OreBreak_02.wav-28ed7bbfa1ddf11ddc7fd3f7a71f15c2.sample"
+path="res://.godot/imported/Ore_Impacts_OreBreak_02.wav-bd3f23e28b8030e4a774572c2b5d7c05.sample"
 
 [deps]
 
-source_file="res://assets/sfx/mining/Ore_Impacts_OreBreak_02.wav"
-dest_files=["res://.godot/imported/Ore_Impacts_OreBreak_02.wav-28ed7bbfa1ddf11ddc7fd3f7a71f15c2.sample"]
+source_file="res://assets/sfx/environment/Ore_Impacts_OreBreak_02.wav"
+dest_files=["res://.godot/imported/Ore_Impacts_OreBreak_02.wav-bd3f23e28b8030e4a774572c2b5d7c05.sample"]
 
 [params]
 
