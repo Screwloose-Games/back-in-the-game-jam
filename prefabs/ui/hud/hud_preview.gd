@@ -1,27 +1,12 @@
 class_name HudPreview
 extends Node
 
-## The A/B harness: all four HUDs, one at a time, over a backdrop you can brighten.
-##
-## The comparison this is built to settle is legibility, not prettiness, which is why
-## the backdrop cycles rather than sitting on one dark grey. HUD 01's terminal chrome
-## and HUD 02-04's lit green behave very differently over a bright cavern wall, and
-## that difference does not show up in the Figma file - every mockup there is
-## composited over the same screenshot.
-##
-## Controls: 1-4 pick a variant, B cycles the backdrop, A hands the meters back to
-## the demo driver after you have moved a slider, H hides this panel.
-
-## HUDInterface_01 is not here: the designer renamed it "Don't Use - Test Variant" in
-## Figma, so it was dropped rather than kept as a fourth thing to compare.
 const VARIANT_SCENES := [
 	preload("res://prefabs/ui/hud/prefab_hud_02.tscn"),
 	preload("res://prefabs/ui/hud/prefab_hud_03.tscn"),
 	preload("res://prefabs/ui/hud/prefab_hud_04.tscn"),
 ]
 
-## Dark, mid and bright. The middle one is roughly the value of the lit rock in the
-## mockups' backdrop; the bright one is the worst case a helmet lamp can produce.
 const BACKDROPS: PackedColorArray = [
 	Color(0.05, 0.06, 0.07),
 	Color(0.33, 0.36, 0.30),
@@ -39,9 +24,6 @@ var _sliders := {}
 
 @onready var _backdrop: ColorRect = $Backdrop
 @onready var _slot: Node = $Slot
-## Pinned to the middle of the right edge in the scene, that being the one region no
-## variant puts anything in: HUD 02's face and HUD 04's radar take the top right,
-## HUD 03's face the bottom right, and HUD 01's radar the bottom left.
 @onready var _panel: PanelContainer = $Controls/Panel
 @onready var _rows: VBoxContainer = $Controls/Panel/Margin/Rows
 @onready var _title: Label = $Controls/Panel/Margin/Rows/Title
@@ -68,8 +50,6 @@ func _unhandled_key_input(event: InputEvent) -> void:
 		return
 	match key.keycode:
 		KEY_2, KEY_3, KEY_4:
-			# Keyed by the variant's Figma number rather than by list position, so
-			# [3] is always HUDInterface_03 however many variants survive.
 			show_variant(key.keycode - KEY_2)
 		KEY_B:
 			_backdrop_index = (_backdrop_index + 1) % BACKDROPS.size()
@@ -82,8 +62,6 @@ func _unhandled_key_input(event: InputEvent) -> void:
 			_panel.visible = not _panel.visible
 
 
-## Swaps the live HUD. The old one is freed rather than hidden, so nothing that
-## survives the swap can be mistaken for something the new variant drew.
 func show_variant(index: int) -> void:
 	var wanted := clampi(index, 0, VARIANT_SCENES.size() - 1)
 	if wanted == _variant_index:
@@ -112,7 +90,8 @@ func _build_controls() -> void:
 	_add_slider("power", "power", 1.0)
 	_add_slider("oxygen", "oxygen", 1.0)
 	_add_slider("tether", "tether m", 33.0, 0.0, 60.0, 1.0)
-	_add_slider("contacts", "contacts", 5.0, 0.0, 8.0, 1.0)
+	_add_slider("contact_range", "contact m", 12.0, 0.0, 40.0, 1.0)
+	_add_slider("contact_height", "contact up", 0.0, -40.0, 40.0, 1.0)
 
 
 func _add_slider(
@@ -135,8 +114,6 @@ func _add_slider(
 	slider.step = step
 	slider.value = value
 	slider.custom_minimum_size.x = SLIDER_WIDTH
-	# A focused HSlider eats ui_left/ui_right, and a focused anything eats ui_accept.
-	# Same rule prototypes/AGENTS.md sets for the tuning panel, and the same reason.
 	slider.focus_mode = Control.FOCUS_NONE
 	slider.value_changed.connect(_on_SliderChanged.bind(key))
 	row.add_child(slider)
@@ -145,8 +122,6 @@ func _add_slider(
 	_sliders[key] = slider
 
 
-## Any slider movement takes the meters off the demo driver, because otherwise the
-## driver overwrites the value on the very next frame and the slider looks broken.
 func _on_SliderChanged(value: float, key: String) -> void:
 	_driver.enabled = false
 	match key:
@@ -157,15 +132,13 @@ func _on_SliderChanged(value: float, key: String) -> void:
 		"tether":
 			_state.tether_attached = value > 0.0
 			_state.tether_metres = value
-		"contacts":
-			_state.contacts = _ring_of_contacts(int(value))
+		"contact_range", "contact_height":
+			_state.contacts = _placed_contact()
 	_state.status = HudState.status_for(minf(_state.power, _state.oxygen))
 	_title.text = _title_text()
 
 
-func _ring_of_contacts(count: int) -> PackedVector2Array:
-	var contacts := PackedVector2Array()
-	for i in count:
-		var angle := TAU * float(i) / float(maxi(count, 1))
-		contacts.append(Vector2(cos(angle), sin(angle)) * (0.3 + 0.12 * float(i % 3)))
-	return contacts
+func _placed_contact() -> PackedVector3Array:
+	var reach: float = _sliders["contact_range"].value
+	var height: float = _sliders["contact_height"].value
+	return PackedVector3Array([Vector3(0.0, height, -reach)])

@@ -1,21 +1,22 @@
-[gd_scene load_steps=12 format=3]
+[gd_scene format=3]
 
-[ext_resource type="Script" path="res://systems/hud/hud_variant.gd" id="1_root"]
-[ext_resource type="Script" path="res://systems/hud/widgets/hud_border.gd" id="2_border"]
-[ext_resource type="Script" path="res://systems/hud/widgets/hud_power.gd" id="3_power"]
-[ext_resource type="Script" path="res://systems/hud/widgets/hud_oxygen_ring.gd" id="4_oxygen"]
-[ext_resource type="Script" path="res://systems/hud/widgets/hud_tethered_meter.gd" id="5_tether"]
-[ext_resource type="Script" path="res://systems/hud/widgets/hud_minimap.gd" id="6_minimap"]
-[ext_resource type="Script" path="res://systems/hud/widgets/hud_status.gd" id="7_status"]
-[ext_resource type="Script" path="res://systems/hud/widgets/hud_reticle.gd" id="8_reticle"]
-[ext_resource type="Texture2D" path="res://assets/art/ui/hud/power/ui_hud_power_bg_03.png" id="9_pbg"]
-[ext_resource type="Texture2D" path="res://assets/art/ui/hud/power/ui_hud_power_lines_03.png" id="10_plines"]
-[ext_resource type="Texture2D" path="res://assets/art/ui/hud/reticle/ui_hud_reticle_03.png" id="11_ret"]
+[ext_resource type="Script" uid="uid://cy1uj0gfcn0n2" path="res://prefabs/ui/hud/hud_variant.gd" id="1_root"]
+[ext_resource type="Script" uid="uid://cnuvn5m0rbwun" path="res://prefabs/ui/hud/widgets/hud_border.gd" id="2_border"]
+[ext_resource type="PackedScene" uid="uid://cykl4fganau2p" path="res://prefabs/ui/hud/widgets/power_indicator.tscn" id="3_power"]
+[ext_resource type="PackedScene" path="res://prefabs/ui/hud/widgets/oxygen_ring.tscn" id="4_oxygen"]
+[ext_resource type="PackedScene" uid="uid://dlufiuvd6wy2g" path="res://prefabs/ui/hud/widgets/tethered_indicator.tscn" id="5_tether"]
+[ext_resource type="PackedScene" uid="uid://h72h7bocnvr8" path="res://prefabs/ui/hud/widgets/minimap.tscn" id="6_minimap"]
+[ext_resource type="PackedScene" uid="uid://c1njs3qylfuj3" path="res://prefabs/ui/hud/widgets/status_face.tscn" id="7_status"]
+[ext_resource type="Script" uid="uid://bouftremitjgu" path="res://prefabs/ui/hud/widgets/hud_reticle.gd" id="8_reticle"]
+[ext_resource type="Texture2D" uid="uid://bmy6eqb34y2so" path="res://assets/art/ui/hud/power/ui_hud_power_bg_03.png" id="9_pbg"]
+[ext_resource type="Texture2D" uid="uid://d3xhh6p0o235x" path="res://assets/art/ui/hud/power/ui_hud_power_lines_03.png" id="10_plines"]
+[ext_resource type="Texture2D" uid="uid://cv8pf7bsi451g" path="res://assets/art/ui/hud/reticle/ui_hud_reticle_03.png" id="11_ret"]
 
 [node name="prefab_hud_03" type="CanvasLayer"]
 script = ExtResource("1_root")
 
 [node name="Chrome" type="Control" parent="."]
+layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -35,37 +36,47 @@ grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("2_border")
 
-[node name="Oxygen" type="Control" parent="Chrome"]
+[node name="Oxygen" parent="Chrome" instance=ExtResource("4_oxygen")]
+anchors_preset = 0
+anchor_right = 0.0
+anchor_bottom = 0.0
 offset_left = 59.0
 offset_top = 49.0
 offset_right = 260.0
 offset_bottom = 249.0
-script = ExtResource("4_oxygen")
+grow_horizontal = 1
+grow_vertical = 1
 
-[node name="Power" type="Control" parent="Chrome"]
+[node name="Power" parent="Chrome" instance=ExtResource("3_power")]
+anchors_preset = 0
+anchor_right = 0.0
+anchor_bottom = 0.0
 offset_left = 87.0
 offset_top = 127.0
 offset_right = 230.0
 offset_bottom = 208.0
-script = ExtResource("3_power")
+grow_horizontal = 1
+grow_vertical = 1
 background = ExtResource("9_pbg")
 lines = ExtResource("10_plines")
 lines_centre = Vector2(104, 34)
 
-[node name="TetheredMeter" type="Control" parent="Chrome"]
+[node name="TetheredMeter" parent="Chrome" instance=ExtResource("5_tether")]
 anchors_preset = 1
 anchor_left = 1.0
+anchor_top = 0.0
 anchor_right = 1.0
+anchor_bottom = 0.0
 offset_left = -361.0
 offset_top = 58.0
 offset_right = -81.0
 offset_bottom = 88.0
 grow_horizontal = 0
-script = ExtResource("5_tether")
+grow_vertical = 1
 attached_format = "TETHERED %dM"
 alignment = 2
 
-[node name="Minimap" type="Control" parent="Chrome"]
+[node name="Minimap" parent="Chrome" instance=ExtResource("6_minimap")]
 anchors_preset = 7
 anchor_left = 0.5
 anchor_top = 1.0
@@ -77,9 +88,9 @@ offset_right = 108.0
 offset_bottom = -32.0
 grow_horizontal = 2
 grow_vertical = 0
-script = ExtResource("6_minimap")
+radar_blips = PackedVector3Array(5, 2, -8)
 
-[node name="Status" type="Control" parent="Chrome"]
+[node name="Status" parent="Chrome" instance=ExtResource("7_status")]
 anchors_preset = 3
 anchor_left = 1.0
 anchor_top = 1.0
@@ -91,7 +102,6 @@ offset_right = -81.0
 offset_bottom = -35.0
 grow_horizontal = 0
 grow_vertical = 0
-script = ExtResource("7_status")
 
 [node name="Reticle" type="Control" parent="Chrome"]
 anchors_preset = 8

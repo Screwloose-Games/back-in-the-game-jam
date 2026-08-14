@@ -1,32 +1,8 @@
 class_name HudDraw
 extends RefCounted
 
-## What the HUD still draws rather than blits: the border, and text.
-##
-## Everything else comes out of Figma as a PNG now - see hud_art.gd. Two things
-## cannot:
-##
-## BORDER, because Figma states it at 1836x1024 and the repo's art gate blocks any
-## PNG over 1024 in either dimension. That is the rule doing its job rather than
-## getting in the way: the border is the one element that must meet all four screen
-## edges, and stretch/aspect="expand" hands the game a canvas wider than 1280x720 on
-## anything that is not 16:9, so a fixed bitmap would be wrong even if it fitted.
-##
-## TETHERED_METER, because its content changes every metre.
-##
-## The border is drawn on a HudMetrics.DOT lattice to match the Pixelate effect Figma
-## has on it. Note that a UV-quantising shader cannot reproduce that: quantising UV
-## only changes texture sampling, and draw_rect emits solid-colour primitives with no
-## source texture. Pixelating already-rasterised vector geometry means reading it
-## back, which on GL Compatibility means hint_screen_texture behind a BackBufferCopy -
-## a full framebuffer copy per frame on the web target, which would also pixelate the
-## 3D scene showing through the HUD. Drawing on the lattice is exact and free.
-
 const FONT := preload("res://assets/art/ui/font/PixelPurl.ttf")
 
-## How far apart consecutive arc samples are placed before snapping, as a fraction of
-## a dot. Below half a dot the dedupe throws most samples away for nothing; above it
-## the lattice starts showing gaps on tight corners.
 const ARC_STEP_RATIO := 0.4
 
 
@@ -106,10 +82,7 @@ static func text(
 	canvas.draw_string(FONT, origin, value, align, rect.size.x, size, color)
 
 
-## One dot, deduped against the ones already placed this call. Snapping alone is not
-## enough: consecutive arc samples routinely land on the same lattice cell, and
-## overdrawing a translucent chrome colour onto itself makes those cells darker than
-## their neighbours - a moire that follows the curvature.
+## One dot, deduped against the ones already placed this call.
 static func _stamp(canvas: CanvasItem, point: Vector2, color: Color, seen: Dictionary) -> void:
 	var cell := Vector2i(floori(point.x / HudMetrics.DOT), floori(point.y / HudMetrics.DOT))
 	if seen.has(cell):

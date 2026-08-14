@@ -145,30 +145,45 @@ prefabs/
 │       ├── prefab_starfield.tscn
 │       └── prefab_asteroid_field_distant.tscn
 │
-├── characters/
+├── character/
 │   ├── prefab_player.tscn
+│   │
+│   ├── alien/                                    # exists
+│   │   └── prefab_alien.tscn
 │   │
 │   └── creatures/
 │       ├── prefab_creature_stalker.tscn
 │       └── prefab_critter_ambient.tscn           # optional
 │
-└── gameplay/
-    ├── prefab_mining_laser.tscn
-    ├── prefab_tank_power_oxygen.tscn
-    ├── prefab_tether_cable.tscn
-    ├── prefab_flare.tscn
-    ├── prefab_canister_resource.tscn             # optional
-    ├── prefab_derelict_part.tscn                 # optional
-    └── prefab_remains_skull.tscn                 # optional
+├── gameplay/
+│   ├── prefab_mining_laser.tscn
+│   ├── prefab_tank_power_oxygen.tscn
+│   ├── prefab_tether_cable.tscn
+│   ├── prefab_flare.tscn
+│   ├── prefab_canister_resource.tscn             # optional
+│   ├── prefab_derelict_part.tscn                 # optional
+│   └── prefab_remains_skull.tscn                 # optional
+│
+└── ui/
+    └── hud/                                      # exists
+        ├── prefab_hud_02.tscn
+        ├── prefab_hud_03.tscn
+        └── prefab_hud_04.tscn
 ```
 
-2D assets — HUD, menu art, VFX textures, marketing — are not prefabs and do not
-appear here.
+2D **assets** — HUD art, menu art, VFX textures, marketing — are not prefabs and
+do not appear here; they live under `assets/art/`, same as the 3D art.
+
+A screen-space **scene** is a different thing, and `ui/` is where it goes. A HUD
+that drops into a level and works with no per-placement wiring meets the same
+contract every other prefab does, so it is one — the rule is about raw assets, not
+about which axis a scene draws on. The test is the contract, not the dimension:
+if it needs wiring at each placement it is not a prefab wherever it lives.
 
 `_a` and `_b` stand in for the two crystal colours until art names them; once
 named, use the colour (`prefab_crystal_azure_small.tscn`).
 
-Three of these exist today:
+Four of these exist today:
 
 - `environment/props/` — `prefab_rubble01.tscn` … `prefab_rubble10.tscn`,
   mirroring `assets/art/environment/props/`.
@@ -178,6 +193,12 @@ Three of these exist today:
   drives.
 - `gameplay/` — `prefab_mining_laser.tscn`, the digging laser the placement
   decision below already routed here.
+- `ui/hud/` — the three HUD layouts being compared, plus `hud_preview.tscn`, which
+  is the harness that swaps between them rather than a prefab itself. Their
+  state lives beside them in `ui/hud/` and each widget is its own scene under
+  `ui/hud/widgets/`; the three layouts instance those and carry node structure,
+  anchors and per-variant exports only. Node names match the Figma layer names, so
+  `Minimap`, `Status` and `Reticle` mean the same thing in both places.
 
 Every other directory above is still notional — add one when you have a prefab to
 put in it.
@@ -234,7 +255,7 @@ Distant asteroid field backdrop
 → environment/backdrop/
 
 Stalking creature
-→ characters/creatures/
+→ character/creatures/
 
 Digging laser the player carries
 → gameplay/

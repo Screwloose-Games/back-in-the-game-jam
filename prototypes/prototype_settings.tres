@@ -1,18 +1,20 @@
 [gd_resource type="Resource" script_class="PrototypeSettingsIndex" format=3]
 
-[ext_resource type="Resource" path="res://prototypes/elevator_cutscene/elevator_cutscene_settings.tres" id="1_86qw3"]
-[ext_resource type="Resource" path="res://prototypes/level_design_01/level_design_01_settings.tres" id="2_16jwu"]
-[ext_resource type="Resource" path="res://prototypes/navigation/navigation_settings.tres" id="3_0p2wx"]
-[ext_resource type="Resource" path="res://prototypes/object_carrying/carry_settings.tres" id="4_ii6fk"]
-[ext_resource type="Script" path="res://prototypes/shared/prototype_settings_index.gd" id="5_61e54"]
-[ext_resource type="Resource" path="res://prototypes/tentacle_crawler_chaser/chase_settings.tres" id="6_0s31v"]
-[ext_resource type="Resource" path="res://prototypes/tunnel_system/tunnel_settings.tres" id="7_083y0"]
+[ext_resource type="Resource" path="res://prototypes/alien_ai_pathfinding/alien_pathfinding_settings.tres" id="1_16jwu"]
+[ext_resource type="Resource" path="res://prototypes/elevator_cutscene/elevator_cutscene_settings.tres" id="2_0p2wx"]
+[ext_resource type="Resource" path="res://prototypes/level_design_01/level_design_01_settings.tres" id="3_ii6fk"]
+[ext_resource type="Resource" path="res://prototypes/navigation/navigation_settings.tres" id="4_61e54"]
+[ext_resource type="Resource" path="res://prototypes/object_carrying/carry_settings.tres" id="5_0s31v"]
+[ext_resource type="Script" path="res://prototypes/shared/prototype_settings_index.gd" id="6_083y0"]
+[ext_resource type="Resource" path="res://prototypes/tentacle_crawler_chaser/chase_settings.tres" id="7_sd8jl"]
+[ext_resource type="Resource" path="res://prototypes/tunnel_system/tunnel_settings.tres" id="8_yby5w"]
 
 [resource]
-script = ExtResource("5_61e54")
-navigation = ExtResource("3_0p2wx")
-object_carrying = ExtResource("4_ii6fk")
-tunnel_system = ExtResource("7_083y0")
-tentacle_crawler_chaser = ExtResource("6_0s31v")
-elevator_cutscene = ExtResource("1_86qw3")
-level_design_01 = ExtResource("2_16jwu")
+script = ExtResource("6_083y0")
+navigation = ExtResource("4_61e54")
+object_carrying = ExtResource("5_0s31v")
+tunnel_system = ExtResource("8_yby5w")
+tentacle_crawler_chaser = ExtResource("7_sd8jl")
+elevator_cutscene = ExtResource("2_0p2wx")
+level_design_01 = ExtResource("3_ii6fk")
+alien_ai_pathfinding = ExtResource("1_16jwu")

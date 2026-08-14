@@ -1,0 +1,14 @@
+[gd_scene format=3 uid="uid://h72h7bocnvr8"]
+
+[ext_resource type="Script" uid="uid://c0uogf7hqdwel" path="res://prefabs/ui/hud/widgets/hud_minimap.gd" id="1_f2xvd"]
+
+[node name="Radar" type="Control" unique_id=2120500752]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_f2xvd")
+radar_blips = PackedVector3Array(0, 30, 0)
+max_distance = 29.0

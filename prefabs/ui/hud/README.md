@@ -1,4 +1,4 @@
-# systems/hud/
+# prefabs/ui/hud/
 
 The in-world readouts: power, oxygen, tether, minimap and suit status, plus the
 widgets that draw them.
@@ -15,16 +15,32 @@ holds.
 Every component is named for the layer it came out of, so a conversation about
 `MINIMAP` or `POWER_LINES` means the same thing in both places:
 
-| Figma | Scene node | Script |
-|---|---|---|
-| `BORDER` | `Border` | `hud_border.gd` |
-| `POWER_BG` + `POWER_LINES` | `Power` | `hud_power.gd` |
-| `OXYGEN` | `Oxygen` | `hud_oxygen_ring.gd` / `hud_oxygen_bar.gd` |
-| `TETHERED_METER` | `TetheredMeter` | `hud_tethered_meter.gd` |
-| `MINIMAP` | `Minimap` | `hud_minimap.gd` |
-| `STATUS` | `Status` | `hud_status.gd` |
-| `RETICLE` | `Reticle` | `hud_reticle.gd` |
-| `Screw_01` | drawn by `Border` | — |
+| Figma | Node in a layout | Widget scene | Script |
+|---|---|---|---|
+| `BORDER` | `Border` | — | `hud_border.gd` |
+| `POWER_BG` + `POWER_LINES` | `Power` | `widgets/power_indicator.tscn` | `hud_power.gd` |
+| `OXYGEN` | `Oxygen` | `widgets/oxygen_ring.tscn` / `widgets/oxygen_bar.tscn` | `hud_oxygen_ring.gd` / `hud_oxygen_bar.gd` |
+| `TETHERED_METER` | `TetheredMeter` | `widgets/tethered_indicator.tscn` | `hud_tethered_meter.gd` |
+| `MINIMAP` | `Minimap` | `widgets/minimap.tscn` | `hud_minimap.gd` |
+| `STATUS` | `Status` | `widgets/status_face.tscn` | `hud_status.gd` |
+| `RETICLE` | `Reticle` | — | `hud_reticle.gd` |
+| `Screw_01` | drawn by `Border` | — | — |
+
+## One widget, one scene
+
+Each widget that reports something is its own scene under `widgets/`, and the three
+layouts instance it rather than re-attaching the script. Open one on its own and it
+draws — every widget script is `@tool`, so what you see in the editor is what the
+game draws. The layouts then override only what differs between them: where the
+widget sits, and which Figma texture or wording it carries.
+
+`Border` and `Reticle` are the exceptions and stay script-attached. They are pure
+chrome, they bind to no state, and neither has anything to preview that the layout
+it lives in does not already show.
+
+Oxygen is two scenes rather than one because it is two drawings: HUD 02's
+horizontal bar and HUD 03/04's ring. They share the `show_fraction` contract, so a
+layout swaps one for the other by swapping which scene it instances.
 
 ## What it is not
 

@@ -21,8 +21,25 @@ const TETHER_PERIOD := 11.0
 const TETHER_MIN := 4.0
 const TETHER_MAX := 38.0
 
-const CONTACT_COUNT := 5
+## One contact, because one is what the game has - the alien. Five was a stress test of
+## the old flat radar and it hid the thing that now matters, which is that a single blip
+## has to be readable on its own.
+const CONTACT_COUNT := 1
+
+## Radians per second around the dish.
 const CONTACT_BASE_SPEED := 0.22
+
+## Metres. The sweep runs past the radar's default 30m max_distance on purpose, so the
+## preview shows the cull happening rather than leaving you to trust that it would.
+const CONTACT_NEAR := 4.0
+const CONTACT_FAR := 38.0
+const CONTACT_RANGE_PERIOD := 19.0
+
+## Metres above and below, and the seconds for a full rise and fall. Slower than the
+## orbit and not a divisor of it, so the blip traces the whole bubble instead of
+## repeating one path.
+const CONTACT_HEIGHT := 22.0
+const CONTACT_HEIGHT_PERIOD := 13.0
 
 @export var enabled := true
 
@@ -59,17 +76,23 @@ func _drive_tether() -> void:
 	_state.tether_metres = lerpf(TETHER_MIN, TETHER_MAX, swing)
 
 
-## Contacts orbit at staggered radii and speeds, with one running retrograde, so the
-## radar never settles into a pattern that could be mistaken for a static image.
+## The contact orbits, rises and falls, and walks out of range and back, on three
+## periods that do not divide into each other. Three motions rather than one because
+## each demonstrates a different part of the radar - the ellipse, the height lift, and
+## the max_distance cull - and a blip doing only the first would leave the other two
+## looking broken rather than untested.
+##
+## Metres in the player's frame, which is what HudState.contacts is now: +X right,
+## +Y up, -Z forward.
 func _drive_contacts() -> void:
-	var contacts := PackedVector2Array()
+	var contacts := PackedVector3Array()
 	contacts.resize(CONTACT_COUNT)
 	for i in CONTACT_COUNT:
-		var radius := 0.28 + 0.16 * float(i % 3)
-		var direction := -1.0 if i % 2 == 0 else 1.0
-		var angle := _elapsed * CONTACT_BASE_SPEED * direction * (1.0 + 0.3 * float(i))
+		var angle := _elapsed * CONTACT_BASE_SPEED
 		angle += TAU * float(i) / float(CONTACT_COUNT)
-		contacts[i] = Vector2(cos(angle), sin(angle)) * radius
+		var reach := lerpf(CONTACT_NEAR, CONTACT_FAR, _triangle(_elapsed / CONTACT_RANGE_PERIOD))
+		var height := CONTACT_HEIGHT * sin(TAU * _elapsed / CONTACT_HEIGHT_PERIOD)
+		contacts[i] = Vector3(cos(angle) * reach, height, sin(angle) * reach)
 	_state.contacts = contacts
 	_state.set_objective(true, Vector2(0.62, -0.48))
 

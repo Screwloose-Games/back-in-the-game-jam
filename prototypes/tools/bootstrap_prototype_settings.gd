@@ -27,6 +27,7 @@ const SETTINGS_SCRIPTS := [
 	"res://prototypes/tentacle_crawler_chaser/chase_settings.gd",
 	"res://prototypes/elevator_cutscene/elevator_cutscene_settings.gd",
 	"res://prototypes/level_design_01/level_design_01_settings.gd",
+	"res://prototypes/alien_ai_pathfinding/alien_pathfinding_settings.gd",
 ]
 
 const INDEX_SCRIPT := "res://prototypes/shared/prototype_settings_index.gd"
@@ -40,6 +41,7 @@ const INDEX_PROPERTIES := [
 	"tentacle_crawler_chaser",
 	"elevator_cutscene",
 	"level_design_01",
+	"alien_ai_pathfinding",
 ]
 
 
