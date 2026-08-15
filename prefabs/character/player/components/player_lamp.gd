@@ -9,6 +9,10 @@ signal lamp_toggled(lit: bool)
 
 @export var settings: PlayerSettings
 
+## Set by PlayerNetworkDriver on a copy that only draws the beam, because peer 1
+## already spent the power for it.
+var presentation_only := false
+
 var _lit := true
 var _flicker_until := 0.0
 var _next_flicker := 0.0
@@ -32,7 +36,7 @@ func _ready() -> void:
 
 
 func _process(delta: float) -> void:
-	if _lit:
+	if _lit and not presentation_only:
 		# An unlit lamp costs nothing, which is what makes flying blind a real
 		# way to buy digging time.
 		power.spend(settings.lamp_power_per_second * delta)
@@ -41,6 +45,12 @@ func _process(delta: float) -> void:
 
 func is_lit() -> bool:
 	return _lit and power.has_power()
+
+
+## The switch itself, ignoring whether there is power to answer it. This is what
+## peer 1 replicates; the charge that dims the beam travels separately.
+func is_switched_on() -> bool:
+	return _lit
 
 
 func toggle() -> void:

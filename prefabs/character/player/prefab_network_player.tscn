@@ -1,4 +1,4 @@
-[gd_scene load_steps=5 format=3]
+[gd_scene load_steps=6 format=3]
 
 [ext_resource type="PackedScene" path="res://prefabs/character/player/prefab_player.tscn" id="1_player"]
 [ext_resource type="Script" path="res://common/network/prediction/client_predictor_3d.gd" id="2_prediction"]
@@ -27,6 +27,20 @@ properties/6/path = NodePath(".:snapshot_sequence")
 properties/6/spawn = true
 properties/6/replication_mode = 1
 
+[sub_resource type="SceneReplicationConfig" id="ReplicationConfig_player_presentation"]
+properties/0/path = NodePath(".:replicated_mining_firing")
+properties/0/spawn = true
+properties/0/replication_mode = 1
+properties/1/path = NodePath(".:replicated_lamp_lit")
+properties/1/spawn = true
+properties/1/replication_mode = 1
+properties/2/path = NodePath(".:replicated_suit_charge")
+properties/2/spawn = true
+properties/2/replication_mode = 1
+properties/3/path = NodePath(".:replicated_oxygen")
+properties/3/spawn = true
+properties/3/replication_mode = 1
+
 [node name="NetworkPlayer" instance=ExtResource("1_player")]
 
 [node name="Prediction" type="Node" parent="PlayerBody" index="3"]
@@ -41,3 +55,8 @@ replication_config = SubResource("ReplicationConfig_player_state")
 [node name="NetworkDriver" type="Node" parent="PlayerBody" index="5"]
 unique_name_in_owner = true
 script = ExtResource("3_network")
+
+[node name="PresentationSync" type="MultiplayerSynchronizer" parent="PlayerBody" index="6"]
+root_path = NodePath("../NetworkDriver")
+replication_interval = 0.05
+replication_config = SubResource("ReplicationConfig_player_presentation")

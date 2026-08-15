@@ -22,7 +22,8 @@ enum SimulationContext {
 const HOST_PEER_ID := 1
 const FLAG_STABILIZING := 1 << 0
 const FLAG_SPRINTING := 1 << 1
-const ALLOWED_FLAGS := FLAG_STABILIZING | FLAG_SPRINTING
+const FLAG_MINING := 1 << 2
+const ALLOWED_FLAGS := FLAG_STABILIZING | FLAG_SPRINTING | FLAG_MINING
 const MAX_LOOK_DELTA := 2048.0
 const MAX_REPLAY_COMMANDS := 32
 const INPUT_HOLD_USEC := 250_000
@@ -58,6 +59,7 @@ var _last_remote_input_usec := 0
 var _last_reconciled_input_sequence := 0
 var _last_consumed_snapshot_sequence := -1
 var _latest_authoritative_flags := 0
+var _latest_authoritative_thrust := Vector3.ZERO
 var _last_local_authoritative_transform := Transform3D.IDENTITY
 var _last_local_authoritative_velocity := Vector3.ZERO
 var _last_local_authoritative_auxiliary_state: Dictionary = {}
@@ -141,6 +143,7 @@ func authoritative_reset(active: bool) -> void:
 	_last_received_input_sequence = 0
 	_last_remote_input_usec = 0
 	_latest_authoritative_flags = 0
+	_latest_authoritative_thrust = Vector3.ZERO
 	_publish_authoritative_state()
 	_body.reset_physics_interpolation()
 
@@ -153,6 +156,12 @@ func set_authoritative_active(active: bool) -> void:
 
 func get_authoritative_flags() -> int:
 	return _latest_authoritative_flags
+
+
+## The thrust peer 1 last simulated. An adapter republishes this so components
+## that price themselves off thrust see a remote player's, not a disabled stub's.
+func get_authoritative_thrust() -> Vector3:
+	return _latest_authoritative_thrust
 
 
 func get_unacknowledged_input_count() -> int:
@@ -215,6 +224,7 @@ func _server_step(thrust: Vector3, look_delta: Vector2, roll: float, flags: int)
 		if _controlled_peer_id == multiplayer.get_unique_id():
 			var command := _sanitize_local_command(thrust, look_delta, roll, flags)
 			_latest_authoritative_flags = int(command["flags"])
+			_latest_authoritative_thrust = command["thrust"]
 			_simulate(command, SimulationContext.AUTHORITY)
 		else:
 			_simulate_latest_remote_command()
@@ -222,6 +232,7 @@ func _server_step(thrust: Vector3, look_delta: Vector2, roll: float, flags: int)
 		_pending_remote_command.clear()
 		_last_remote_command.clear()
 		_latest_authoritative_flags = 0
+		_latest_authoritative_thrust = Vector3.ZERO
 
 	_publish_authoritative_state()
 
@@ -393,6 +404,7 @@ func _simulate_latest_remote_command() -> void:
 		command["roll"] = 0.0
 		command["flags"] = 0
 	_latest_authoritative_flags = int(command["flags"])
+	_latest_authoritative_thrust = command["thrust"]
 	_simulate(command, SimulationContext.AUTHORITY)
 	# Mouse motion is an impulse sampled since the previous packet. The held
 	# command may run again on the next host tick, but its look delta must not.

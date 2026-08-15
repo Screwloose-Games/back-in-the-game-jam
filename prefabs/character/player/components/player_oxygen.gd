@@ -16,6 +16,9 @@ const CHANGE_EPSILON := 0.001
 
 var oxygen := 0.0
 
+## Set by PlayerNetworkDriver on a copy whose oxygen arrives over the network.
+var externally_driven := false
+
 var _announced_fraction := -1.0
 var _was_empty := false
 
@@ -33,8 +36,9 @@ func _ready() -> void:
 
 
 func _process(delta: float) -> void:
-	oxygen = PlayerOxygenModel.step(oxygen, settings.oxygen_capacity, rate_per_second(), delta)
-	_announce()
+	if not externally_driven:
+		oxygen = PlayerOxygenModel.step(oxygen, settings.oxygen_capacity, rate_per_second(), delta)
+		_announce()
 
 	var empty := oxygen <= 0.0
 	if empty and not _was_empty:
@@ -65,6 +69,12 @@ func seconds_remaining() -> float:
 
 func is_empty() -> bool:
 	return oxygen <= 0.0
+
+
+## The host's oxygen for this suit, for a networked copy.
+func set_oxygen(value: float) -> void:
+	oxygen = clampf(value, 0.0, settings.oxygen_capacity)
+	_announce()
 
 
 ## Refills the tank, for an oxygen pocket or a return to the elevator.

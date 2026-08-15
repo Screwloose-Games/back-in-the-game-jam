@@ -50,7 +50,9 @@ func _run() -> void:
 			Vector3(2.0, 0.0, 0.0),
 			Vector2(PredictorScript.MAX_LOOK_DELTA * 2.0, 0.0),
 			2.0,
-			7,
+			# Every supported bit plus one the protocol does not define, so the mask
+			# keeps proving something as ALLOWED_FLAGS grows.
+			PredictorScript.ALLOWED_FLAGS | (1 << 3),
 		)
 	)
 
@@ -75,6 +77,15 @@ func _run() -> void:
 		prediction.authoritative_auxiliary_state["angular_velocity"],
 		Vector3(1.0, 2.0, 3.0),
 		"the server publishes adapter-owned state",
+	)
+	_expect(
+		bool(prediction.get_authoritative_flags() & PredictorScript.FLAG_MINING),
+		"the host publishes the mining intent it simulated",
+	)
+	_expect_equal(
+		prediction.get_authoritative_thrust(),
+		Vector3.RIGHT,
+		"the host publishes the thrust it simulated",
 	)
 
 	_live_auxiliary_state["angular_velocity"] = Vector3.ZERO

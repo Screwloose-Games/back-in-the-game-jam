@@ -17,7 +17,7 @@ CharacterBody3D                 authority: peer 1
 The player script supplies one deterministic movement callback. The predictor
 uses that same callback in three contexts: host simulation, immediate local
 prediction, and replay after an authoritative correction. Commands carry
-bounded thrust, per-tick look motion, roll, and stabilizing/sprinting flags:
+bounded thrust, per-tick look motion, roll, and a flag word:
 
 ```gdscript
 func _simulate_network_command(
@@ -30,6 +30,18 @@ func _simulate_network_command(
 ) -> void:
 	pass
 ```
+
+A flag is the right home for any *held* control, not only ones that move the
+body. `FLAG_MINING` rides here because the command stream already gives it
+sender validation, epoch gating, sequence monotonicity, newest-intent
+coalescing, `ALLOWED_FLAGS` masking, and — the one that matters most — the
+250 ms stall zeroing that releases a disconnected client's trigger. A separate
+toggle RPC would have to re-earn all six. The movement callback ignores the bit
+entirely; the adapter reads it back from `get_authoritative_flags()` *after*
+`physics_step()` returns, which is the only place a one-shot effect is allowed.
+`get_authoritative_thrust()` is there for the same reason: on peer 1 a remote
+player's own input node is a disabled stub, so anything priced off thrust has to
+read what the host actually simulated.
 
 Each client input has an epoch and sequence number. Peer 1 validates its sender
 and bounds, uses the newest accepted held intent instead of accumulating stale
@@ -64,6 +76,12 @@ The sibling `MultiplayerSynchronizer` must replicate these seven properties
 from `Prediction`: `authoritative_transform`, `authoritative_velocity`,
 `authoritative_auxiliary_state`, `authoritative_epoch`,
 `acknowledged_input_sequence`, `simulation_active`, and `snapshot_sequence`.
+
+Presentation that is not movement belongs on its own synchronizer, never in
+`authoritative_auxiliary_state`. That dictionary is compared during
+reconciliation, so putting a lamp switch in it would make flipping the lamp fail
+the match test and trigger a movement rewind. The player prefab therefore
+carries a second `MultiplayerSynchronizer` rooted at its network driver.
 
 This is prediction with authoritative correction, not deterministic lockstep.
 The host advances at its own physics rate and may coalesce several newer input

@@ -14,6 +14,10 @@ const PHYSICS_PRIORITY := -40
 
 @export var settings: PlayerSettings
 
+## Set by PlayerNetworkDriver: peer 1 decides when this player grabs, so this
+## copy must not answer the grab key on its own.
+var externally_driven := false
+
 ## The carryable in your hands, or null.
 var _held: RigidBody3D
 ## A carryable under the crosshair, attached or not. The reticle reads this to
@@ -40,7 +44,8 @@ func _ready() -> void:
 		settings = PlayerSettings.new()
 		push_warning("PlayerGrab has no settings; running on PlayerSettings defaults.")
 	grab_ray.target_position = Vector3(0.0, 0.0, -settings.grab_range)
-	input.grab_toggled.connect(_on_grab_toggled)
+	if not externally_driven:
+		input.grab_toggled.connect(toggle_hold)
 
 
 func _physics_process(delta: float) -> void:
@@ -114,7 +119,8 @@ func take_hold_of(object: RigidBody3D, grab_point: Vector3) -> void:
 	took_hold.emit(object)
 
 
-func _on_grab_toggled() -> void:
+## Takes hold of what is targeted, or lets go of what is held.
+func toggle_hold() -> void:
 	if _held != null:
 		release()
 		return

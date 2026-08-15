@@ -8,6 +8,10 @@ extends Node
 
 signal respawned
 
+## Set by PlayerNetworkDriver: peer 1 decides when this player resets, because a
+## respawn has to bump the prediction epoch alongside moving the body.
+var externally_driven := false
+
 var _spawn_transform: Transform3D
 
 @onready var body: CharacterBody3D = get_parent()
@@ -16,7 +20,8 @@ var _spawn_transform: Transform3D
 
 func _ready() -> void:
 	_spawn_transform = body.global_transform
-	input.reset_requested.connect(respawn)
+	if not externally_driven:
+		input.reset_requested.connect(respawn)
 
 
 ## Overrides the remembered pose, for a level that moves the player after spawn

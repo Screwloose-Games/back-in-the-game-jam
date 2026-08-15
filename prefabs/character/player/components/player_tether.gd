@@ -14,6 +14,10 @@ const PHYSICS_PRIORITY := -30
 
 @export var settings: PlayerSettings
 
+## Set by PlayerNetworkDriver: peer 1 decides when this player clips on, so this
+## copy must not answer the tether key on its own.
+var externally_driven := false
+
 var _object: RigidBody3D
 var _object_anchor := Vector3.ZERO
 var _rope := PlayerTetherRope.new()
@@ -43,7 +47,8 @@ func _ready() -> void:
 	# The marker is driven by the setting rather than set in the scene, so the
 	# two can never disagree about where the harness point is.
 	anchor.position = settings.tether_anchor_offset
-	input.tether_toggled.connect(_on_tether_toggled)
+	if not externally_driven:
+		input.tether_toggled.connect(toggle_clip)
 
 	# The view is top_level, so parking its transform at the origin lets the rope
 	# be redrawn straight in world space every frame.
@@ -121,7 +126,8 @@ func _configure_rope() -> void:
 	_rope.collision_layers = settings.tether_rope_layers
 
 
-func _on_tether_toggled() -> void:
+## Clips the line to what is targeted, or unclips what it is already on.
+func toggle_clip() -> void:
 	if _object != null:
 		unclip()
 		return
