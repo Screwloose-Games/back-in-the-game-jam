@@ -51,11 +51,38 @@ rotate about `marker.global_basis.z`. Do **not** reach for
 generation. Parent through Empties.
 
 **Godot reinterprets node names.** Its importer matches `_wheel` and `$wheel` as
-well as `-wheel`, so an ordinary descriptive name can silently change a node's
-class — `steering_wheel` imports as a `VehicleWheel3D`. This is the same mechanism
-that makes `-convcolonly` work, so it cannot be disabled. The validator now checks
-this (`godot_node_suffixes`); the full list lives in
-`tools/gltf-validator/gltf_godot_import.py`.
+well as `-wheel`, and ignores trailing digits, so an ordinary descriptive name can
+silently change a node's class — `steering_wheel` and `steering_wheel2` both import
+as a `VehicleWheel3D`. This is the same mechanism that makes `-convcolonly` work,
+so it cannot be disabled. The validator now checks this (`godot_node_suffixes`);
+the full list lives in `tools/gltf-validator/gltf_godot_import.py`.
+
+**A looping animation is named `<clip>-loop`.** That suffix is how Godot is told a
+clip repeats: it imports the animation with `loop_mode = LOOP_LINEAR` and *strips
+the flag off the name*. Author `idle_float-loop` and the engine gives you
+`idle_float`, looping — so play it, and write it in the spec's
+`animations_expected`, without the suffix. Never set `loop_mode` by hand in a
+post-import script; the suffix is the supported switch and it survives re-export.
+
+A clip that does not loop simply carries no flag. `validate-model-files.py` fails
+(`animation_loop_suffix`) any other spelling Godot honours — `_loop`, `$loop`,
+`-cycle`, `-Loop` — because a clip that loops on purpose and one that loops by
+accident are otherwise indistinguishable. Matching is end-anchored and ignores
+trailing digits, so `idle_loop_fast` does not loop but `walk_loop2` does, arriving
+as `walk2`. Beware a name that merely ends in those letters: `walkloop` loops and
+keeps its name, which is exactly the accident the check exists to catch.
+
+Declare the intent in the spec so a missing suffix is caught rather than inferred:
+
+```yaml
+animations_expected:
+  - name: "idle_float"    # the imported name, no suffix
+    loops: true           # requires the glTF to call it idle_float-loop
+```
+
+This is an animation mechanism only. `loop` and `cycle` are **not** node suffixes —
+a mesh named `crate_loop` imports untouched, so it does not belong in
+`godot_node_suffixes_allowed`.
 
 **Collision proxies must stay inside the visual mesh.** The size checks measure
 the whole file, so a proxy sticking out past the art *becomes* the model's declared

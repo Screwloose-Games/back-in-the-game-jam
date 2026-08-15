@@ -63,13 +63,15 @@ gdformat --diff  <file> # preview what it would change
 pre-commit run          # both, on staged files (what the commit hook runs)
 ```
 
-`pre-commit` blocks commits on failure. Set it up once per clone with
-`pip install pre-commit && pre-commit install`. Use `git commit --no-verify` only
-in an emergency.
-
 `addons/` is third-party and excluded everywhere — `gdlintrc`, `gdformatrc`,
 `.pre-commit-config.yaml`, and CI. Don't lint or reformat it.
 
 Note: `excluded_directories` in `gdlintrc`/`gdformatrc` is ignored when you pass
 explicit file paths, so running `gdlint addons/some_file.gd` by hand will report
 errors that nothing actually enforces.
+
+## Comments
+
+- Include 1-3 sentences of docstring at the top of the file.
+- Include a maximum of 1 sentence docstring per function. Prefer no docstring and
+  instead, make the function name expressive and concise.

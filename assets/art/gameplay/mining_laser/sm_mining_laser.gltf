@@ -1,0 +1,268 @@
+{
+  "asset": {
+    "version": "2.0",
+    "generator": "tools/voxel-props/build_props.py",
+    "extras": {
+      "bufferSha1": "a427a6a8773e2221a9934be02d1b484ff6650f2c"
+    }
+  },
+  "scene": 0,
+  "scenes": [
+    {
+      "nodes": [
+        0,
+        1,
+        2,
+        3
+      ]
+    }
+  ],
+  "nodes": [
+    {
+      "name": "cutter_body",
+      "mesh": 0
+    },
+    {
+      "name": "muzzle_point",
+      "translation": [
+        0.0,
+        0.39,
+        -0.57
+      ]
+    },
+    {
+      "name": "fore_grip_point",
+      "translation": [
+        0.0,
+        0.15,
+        0.03
+      ]
+    },
+    {
+      "name": "rear_grip_point",
+      "translation": [
+        0.0,
+        0.15,
+        0.36
+      ]
+    }
+  ],
+  "meshes": [
+    {
+      "name": "sm_mining_laser_cutter_body",
+      "primitives": [
+        {
+          "attributes": {
+            "POSITION": 0,
+            "NORMAL": 1,
+            "TEXCOORD_0": 2
+          },
+          "indices": 3,
+          "material": 0,
+          "mode": 4
+        },
+        {
+          "attributes": {
+            "POSITION": 4,
+            "NORMAL": 5,
+            "TEXCOORD_0": 6
+          },
+          "indices": 7,
+          "material": 1,
+          "mode": 4
+        }
+      ]
+    }
+  ],
+  "materials": [
+    {
+      "name": "mat_mining_laser",
+      "pbrMetallicRoughness": {
+        "baseColorTexture": {
+          "index": 0
+        },
+        "baseColorFactor": [
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "metallicFactor": 0.0,
+        "roughnessFactor": 0.78
+      },
+      "doubleSided": false
+    },
+    {
+      "name": "mat_mining_laser_lamp",
+      "pbrMetallicRoughness": {
+        "baseColorTexture": {
+          "index": 0
+        },
+        "baseColorFactor": [
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "metallicFactor": 0.0,
+        "roughnessFactor": 1.0
+      },
+      "doubleSided": false,
+      "emissiveFactor": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "emissiveTexture": {
+        "index": 0
+      }
+    }
+  ],
+  "textures": [
+    {
+      "sampler": 0,
+      "source": 0
+    }
+  ],
+  "images": [
+    {
+      "mimeType": "image/png",
+      "name": "t_mining_laser_basecolor",
+      "uri": "t_mining_laser_basecolor.png"
+    }
+  ],
+  "samplers": [
+    {
+      "magFilter": 9728,
+      "minFilter": 9728,
+      "wrapS": 33071,
+      "wrapT": 33071
+    }
+  ],
+  "buffers": [
+    {
+      "uri": "sm_mining_laser.bin",
+      "byteLength": 15540
+    }
+  ],
+  "bufferViews": [
+    {
+      "buffer": 0,
+      "byteOffset": 0,
+      "byteLength": 5088,
+      "target": 34962
+    },
+    {
+      "buffer": 0,
+      "byteOffset": 5088,
+      "byteLength": 5088,
+      "target": 34962
+    },
+    {
+      "buffer": 0,
+      "byteOffset": 10176,
+      "byteLength": 3392,
+      "target": 34962
+    },
+    {
+      "buffer": 0,
+      "byteOffset": 13568,
+      "byteLength": 1272,
+      "target": 34963
+    },
+    {
+      "buffer": 0,
+      "byteOffset": 14840,
+      "byteLength": 240,
+      "target": 34962
+    },
+    {
+      "buffer": 0,
+      "byteOffset": 15080,
+      "byteLength": 240,
+      "target": 34962
+    },
+    {
+      "buffer": 0,
+      "byteOffset": 15320,
+      "byteLength": 160,
+      "target": 34962
+    },
+    {
+      "buffer": 0,
+      "byteOffset": 15480,
+      "byteLength": 60,
+      "target": 34963
+    }
+  ],
+  "accessors": [
+    {
+      "bufferView": 0,
+      "componentType": 5126,
+      "count": 424,
+      "type": "VEC3",
+      "min": [
+        -0.15,
+        0.0,
+        -0.51
+      ],
+      "max": [
+        0.15,
+        0.6599999999999999,
+        0.57
+      ]
+    },
+    {
+      "bufferView": 1,
+      "componentType": 5126,
+      "count": 424,
+      "type": "VEC3"
+    },
+    {
+      "bufferView": 2,
+      "componentType": 5126,
+      "count": 424,
+      "type": "VEC2"
+    },
+    {
+      "bufferView": 3,
+      "componentType": 5123,
+      "count": 636,
+      "type": "SCALAR"
+    },
+    {
+      "bufferView": 4,
+      "componentType": 5126,
+      "count": 20,
+      "type": "VEC3",
+      "min": [
+        -0.09,
+        0.3,
+        -0.57
+      ],
+      "max": [
+        0.09,
+        0.48,
+        -0.51
+      ]
+    },
+    {
+      "bufferView": 5,
+      "componentType": 5126,
+      "count": 20,
+      "type": "VEC3"
+    },
+    {
+      "bufferView": 6,
+      "componentType": 5126,
+      "count": 20,
+      "type": "VEC2"
+    },
+    {
+      "bufferView": 7,
+      "componentType": 5123,
+      "count": 30,
+      "type": "SCALAR"
+    }
+  ]
+}

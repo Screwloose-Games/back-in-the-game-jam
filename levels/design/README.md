@@ -339,9 +339,24 @@ and the ravine's chasm runs then carved twelve-metre spurs of air out through th
 wall at every station. `verify_walkthrough.gd` prints the worst offenders; a wide
 run near the top of that list with a gentle bend is the bug coming back.
 
-**This is a blockout, not shipping geometry.** The full carve is 246 brushes,
-about 300 ms and 23k triangles. Fine for walking the level, not fine for a web
-build - baking to static meshes is the way out when that matters.
+**This is a blockout, not shipping geometry.** The full carve is 638 brushes and
+124k triangles, and it costs one frozen frame of about 7 seconds headless - the
+whole carve lands in a single deferred CSG resolve, so nothing can draw over it.
+Fine for walking the level here, not fine for a web build.
+
+**So the shipping level does not carve.** `levels/asteroid_level` sets
+`build_on_ready = false` and instances the baked mesh instead, which drops that
+frame to about 20 ms. The scenes in this directory still carve at runtime, which
+is what makes them the place to work.
+
+**Re-bake after changing a blockout, or the game will not show your edit.**
+Nothing yet notices when the two drift apart:
+
+```
+godot --headless --path . --script res://tools/level_design/export_level_model.gd
+godot --headless --path . --import
+python .github/scripts/validate-model-files.py assets/art/environment/level_blockout/sm_level_full_blockout.gltf
+```
 
 ## Tools
 

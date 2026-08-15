@@ -37,6 +37,7 @@ from urllib.parse import unquote
 import numpy as np
 import yaml
 
+import gltf_godot_import
 from gltf_axes import get_model_facing_direction, get_model_up_direction
 from gltf_document import is_external_uri, resolve_uri
 from gltf_transforms import find_unapplied_transforms, format_report
@@ -454,14 +455,24 @@ def evaluate_model_against_spec(
                 textures_ok = False
         results["textures_expected"] = textures_ok
 
-    # Animations expected
+    # Animations expected. Matched on the name the clip has AFTER import, because
+    # that is the name everything downstream plays it by: Godot strips the `-loop`
+    # flag, so an authored `idle_float-loop` is `idle_float` to every caller.
     if "animations_expected" in spec:
-        anim_names = set(list_animations(gltf))
+        authored = list_animations(gltf)
+        imported = {gltf_godot_import.imported_animation_name(n): n for n in authored}
         anims_ok = True
         for anim in spec["animations_expected"]:
             name = anim.get("name", "")
-            if name and name not in anim_names:
+            if not name:
+                continue
+            if name not in imported:
                 anims_ok = False
+                continue
+            if "loops" in anim:
+                flag = gltf_godot_import.animation_loop_flag(imported[name])
+                if bool(anim["loops"]) != (flag is not None):
+                    anims_ok = False
         results["animations_expected"] = anims_ok
 
     for key, value in results.items():

@@ -108,7 +108,7 @@
     },
     "godot_node_suffixes_allowed": {
       "type": "array",
-      "description": "Godot node-type suffixes this model uses on purpose, beyond the collision and navmesh ones the pipeline already expects.\n\nGodot's scene importer reinterprets node names ending in certain words -- and it matches '_wheel' and '$wheel' as well as '-wheel'. That is the mechanism that makes -convcolonly work, so it cannot be switched off, and it means an ordinary descriptive name can silently change a node's class: a mesh named `steering_wheel` imports as a VehicleWheel3D, a physics node that only functions parented to a VehicleBody3D. The file is valid glTF throughout, so nothing else in this validator can see it.\n\nThe fix is normally to rename the node. List a suffix here only when the Godot node type really is what you want -- e.g. 'vehicle' or 'rigid'. Names: col, colonly, convcol, convcolonly, navmesh, vehicle, wheel, rigid, occ, occonly, noimp, cycle, loop.",
+      "description": "Godot node-type suffixes this model uses on purpose, beyond the collision and navmesh ones the pipeline already expects.\n\nGodot's scene importer reinterprets node names ending in certain words -- and it matches '_wheel' and '$wheel' as well as '-wheel'. That is the mechanism that makes -convcolonly work, so it cannot be switched off, and it means an ordinary descriptive name can silently change a node's class: a mesh named `steering_wheel` imports as a VehicleWheel3D, a physics node that only functions parented to a VehicleBody3D. The file is valid glTF throughout, so nothing else in this validator can see it.\n\nThe fix is normally to rename the node. List a suffix here only when the Godot node type really is what you want -- e.g. 'vehicle' or 'rigid'. Names: col, colonly, convcol, convcolonly, navmesh, vehicle, wheel, rigid, occ, occonly, noimp.\n\n'loop' and 'cycle' are NOT in that list: they are animation flags, not node flags. A node named `crate_loop` imports untouched. See animations_expected.",
       "items": {
         "type": "string",
         "minLength": 1
@@ -116,7 +116,7 @@
     },
     "animations_expected": {
       "type": "array",
-      "description": "Animations that must exist in the glTF. Matched by EXACT name, unlike textures_expected.",
+      "description": "Animations that must exist in the glTF. Matched by EXACT name, unlike textures_expected.\n\nThe name is the clip's name AFTER import, which is what every caller plays it by. Godot strips a trailing loop flag, so a clip authored as `idle_float-loop` is `idle_float` here and `idle_float` to AnimationPlayer. Do not write the '-loop' in this field.",
       "items": {
         "type": "object",
         "additionalProperties": false,
@@ -127,6 +127,10 @@
           "name": {
             "type": "string",
             "minLength": 1
+          },
+          "loops": {
+            "type": "boolean",
+            "description": "Whether this clip is meant to repeat. true requires the glTF to name it '{name}-loop', which is how Godot is told to import it with loop_mode LOOP_LINEAR; false requires the name to carry no loop flag at all. Omit only when the clip's intent genuinely is not settled -- an omitted value asserts nothing, and a looping clip that forgot its suffix plays once and stops with nothing to say so."
           }
         }
       }

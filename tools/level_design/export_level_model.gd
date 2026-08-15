@@ -22,6 +22,13 @@ extends SceneTree
 const DEFAULT_LEVEL := "res://levels/design/level_full_blockout.tscn"
 const OUTPUT_DIRECTORY := "res://assets/art/environment/level_blockout"
 
+## What gives the shipped level its collision. asteroid_level.tscn carries the baked
+## mesh rather than carving on load, so the CSG combiner is no longer there to hand
+## out a hull - Godot's importer reads this suffix and builds a StaticBody3D with a
+## trimesh shape, keeping the visual mesh. Layer 1 is `hull`, which the player and the
+## alien both mask against.
+const COLLISION_SUFFIX := "-col"
+
 ## Frames to let the CSG tree resolve before baking. The combiner rebuilds on a
 ## deferred call, and baking too early returns the mesh from before the carve.
 const SETTLE_FRAMES := 180
@@ -116,7 +123,7 @@ func _write_gltf(mesh: ArrayMesh, model_name: String) -> String:
 	var holder := Node3D.new()
 	holder.name = model_name
 	var surface := MeshInstance3D.new()
-	surface.name = "%s_mesh" % model_name
+	surface.name = "%s_mesh%s" % [model_name, COLLISION_SUFFIX]
 	surface.mesh = mesh
 	holder.add_child(surface)
 	surface.owner = holder

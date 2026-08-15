@@ -1,8 +1,9 @@
 # Multiplayer Requirements — Brief
 
 **Owner:** Michael
-**Source:** July 31, 2026 design kickoff; local multiplayer decision, August 1, 2026
-**Version:** 1.0
+**Source:** July 31, 2026 design kickoff; local multiplayer decision, August 1, 2026;
+network-only decision, August 14, 2026
+**Version:** 2.0
 
 ---
 
@@ -10,7 +11,11 @@
 
 Michael owns multiplayer implementation. No one else on the team is assigned to it.
 
-**Local multiplayer is to be working first. Network multiplayer follows.**
+**Networked multiplayer only.** The August 1 decision to build local split-screen
+first is reversed: there is one camera per machine, and nothing in the game is
+built for two viewports. That assumption is already load-bearing in code —
+`PlayerRenderLayers` gives the local player's own body a culled layer with no
+per-peer coordination, which works precisely because only one camera exists.
 
 ---
 
@@ -21,18 +26,11 @@ Michael owns multiplayer implementation. No one else on the team is assigned to 
 | Player count target | 2 |
 | 3–4 players | Not a design target. Acceptable if it works, acceptable if it doesn't |
 | Single-player | Must be a first-class experience, not a degraded mode |
-| Local multiplayer | Required. To be working before network multiplayer |
+| Local multiplayer | **Not a target.** Reversed August 14, 2026 |
 | Network multiplayer | Required. Real-time and synchronous |
 | Network authority model | Host-authoritative. Player 1 is the authority |
 | Session length | ~5 minutes per run, more if time permits |
 | Competitive play | None. PvE co-op only |
-
-### Local input configurations
-
-Both must be supported:
-
-1. Keyboard and mouse + one gamepad
-2. Two gamepads
 
 ---
 
@@ -54,18 +52,19 @@ Both must be supported:
 
 ## Multiplayer — Top Things to Think About
 
-### Local multiplayer
+Two of the local-multiplayer items survive the reversal, because they are about
+not hard-coding "the player" rather than about viewports:
 
-1. **Input device routing.** InputMap actions are global by default. Per-player input sources; no direct `Input` reads in gameplay code.
-2. **Device assignment.** Which gamepad is which player, and hot-plug.
-3. **Join flow.** Press-a-button-to-join, or assign at the menu. Mid-run joining or start-of-run only.
-4. **Leave flow.** Drop-out mid-run: what happens to the character, and to the tank if they were carrying it. Does the viewport collapse back to full screen.
-5. **6DoF on a gamepad.** Two sticks, four axes, six needed. Roll and vertical thrust have nowhere obvious to go.
-6. **Split-screen render cost.** Scene renders once per viewport. Sets the art and lighting budget.
-7. **Per-viewport audio listeners.** Otherwise both players hear from one position.
-8. **Mouse capture serves one player.** Gamepad look curve needs tuning to match.
-9. **Shared speakers.** Both players' audio cues mix together.
-10. **No singletons assuming one player.** Any "the player" autoload breaks with two.
+1. **Input device routing.** InputMap actions are global by default. Per-player
+   input sources; no direct `Input` reads in gameplay code. `PlayerInput` already
+   holds this seam.
+2. **No singletons assuming one player.** Any "the player" autoload breaks the
+   moment a second prefab exists — which it already can, via the pause menu's
+   debug second player.
+
+The rest — device assignment, join and leave flow, 6DoF on a gamepad,
+split-screen render cost, per-viewport listeners, mouse capture, shared speakers —
+were split-screen problems and are gone with it.
 
 ---
 

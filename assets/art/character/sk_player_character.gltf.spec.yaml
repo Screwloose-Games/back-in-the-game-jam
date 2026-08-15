@@ -1,0 +1,82 @@
+# Hand-authored. Source of truth for the art is
+# assets/art/character/source/sk_player_character.blend (kept out of Godot's
+# importer by a .gdignore, or it would import as a second character scene).
+#
+# Skinned: one armature, 15 bones on Godot's SkeletonProfileHumanoid names
+# (Hips, Spine, Head, and Left/Right UpperArm-LowerArm-Hand and
+# UpperLeg-LowerLeg-Foot). Weights are rigid -- every vertex belongs to exactly
+# one bone at 1.0 -- because the art is a 0.06 m voxel lattice and smooth
+# falloff would round off the blocky silhouette. gltf_transforms.py exempts skin
+# joints but still judges the scene roots, so the single root
+# player_character_armature is exported at identity.
+# #
+# # Authored facing -Y in Blender, which exports to +Z. That is the opposite of
+# # this project's -Z convention and therefore of Godot's Vector3.FORWARD. It is
+# # inherited from the original unrigged export, not introduced by the rig, and
+# # reversing it now would silently turn the character around in every scene that
+# # already places it. Recorded here so the next reader does not think it went
+# # unnoticed. facing_direction is INFO-only and can never fail, so nothing else
+# # will ever mention it.
+#
+# Three meshes: player_character_body, player_character_head and
+# player_character_helmet. The head is split from the body on the Head vertex
+# group -- an exact cut, because weights are rigid -- so that the first-person
+# camera, which sits inside both the head and the visor, can cull them per
+# MeshInstance3D and still draw the rest of the suit. See
+# prefabs/character/player/README.md. That split leaves the body open at the
+# collar, which is why camera_fov has a ceiling in PlayerSettings.
+#
+# 26 voxels tall on a 0.06 m lattice; measured bounds 1.80 x 1.56 x 0.66 m in
+# glTF space, arms in a T-pose. Budget is the current 4436 tris plus headroom
+# for the joint geometry any future re-authoring adds. gltf_measure.py takes a
+# skinned mesh at its bind pose, so the numbers above describe the T-pose and no
+# animation can move them.
+#
+# Clips are built by tools/blender-character/build_animations.py from a table of
+# pose offsets and periodic drift terms -- not hand-keyed -- so that every
+# component's period divides the loop and the last frame evaluates identically to
+# the first. idle_float is 121 keys over 0..4.0 s at 30 fps, an exact loop, posed
+# over the T-pose bind pose rather than replacing it.
+#
+# A clip is named <clip>-loop in the glTF when it repeats. Godot reads the
+# trailing -loop as "import this looping" and strips it, so the clip is idle_float
+# to every caller and animations_expected names it without the suffix. That is why
+# nothing here sets loop_mode by hand. laser_equip and laser_stow carry no flag.
+#
+# The four laser clips are the same tables with ONE arm redirected: the right arm
+# is solved by two-bone IK onto the tool's rear_grip_point, and everything else --
+# Hips, both legs, the spine, the head, the whole left arm -- is idle_float's own
+# data. Verified byte-identical in the exported buffer, which is the point: the
+# Godot AnimationTree filters the Spine subtree onto a base layer, so the lower
+# body has to agree exactly or the seam shows at the waist.
+#
+# The hold is one-handed because the rig cannot do otherwise. Shoulder to wrist is
+# 0.42 m, the shoulders are 0.60 m apart, and the tool's grips are 0.33 m apart,
+# so reaching the midline alone spends 0.30 m of the arm and a two-handed forward
+# hold puts the left hand 0.75 m from its own shoulder. The numbers in
+# build_animations.py were searched against reach, elbow angle and where the
+# muzzle lands in the first-person view, not chosen by eye.
+width: 1.8000
+height: 1.5600
+depth: 0.6600
+poly_count_budget: 5000
+up_direction: "+Y"
+facing_direction: "+Z"
+root_node_name: "player_character_armature"
+collision_expected: false
+navigation_expected: false
+min_material_count: 2
+rests_on_ground: true
+textures_expected:
+  - name: "t_player_character.png"
+animations_expected:
+  - name: "idle_float"
+    loops: true
+  - name: "laser_equip"
+    loops: false
+  - name: "laser_hold"
+    loops: true
+  - name: "laser_fire"
+    loops: true
+  - name: "laser_stow"
+    loops: false

@@ -234,10 +234,11 @@ code_mirrors:
     value: true
     note: >-
       Checks that a model is still correct after Godot has imported it: node names
-      the importer silently reinterprets as node types, and collision proxies
-      larger than the art they stand in for. Both describe files that are valid
-      glTF and wrong in the engine, so no other check here can see them. Each cost
-      a round trip through the Godot editor to find by hand before this existed.
+      the importer silently reinterprets as node types, animation names whose
+      loop flag is spelled some way other than -loop, and collision proxies larger
+      than the art they stand in for. All describe files that are valid glTF and
+      wrong in the engine, so no other check here can see them. Each cost a round
+      trip through the Godot editor to find by hand before this existed.
   - id: model_spec_required
     path: .github/scripts/validate-model-files.py
     symbol: ENFORCE_SPEC_REQUIRED
@@ -385,6 +386,36 @@ pipelines:
             - kind: script
               path: .github/scripts/validate-model-files.py
               note: Enforced under assets/art/ only, as for static meshes.
+        - id: animation_clip_name
+          pattern: "{clip}[-loop]"
+          regex: "^(?![a-z0-9_]*_(loop|cycle)\\d*$)[a-z0-9]+(_[a-z0-9]+)*(-loop)?$"
+          description: >-
+            Animation names inside a .gltf. A clip that repeats carries the
+            suffix -loop; Godot imports it with loop_mode LOOP_LINEAR and strips
+            the flag, so idle_float-loop reaches the engine as idle_float and is
+            played, and listed in the spec's animations_expected, under that
+            shorter name. A clip that does not repeat carries no flag. Godot also
+            honours _loop, $loop and -cycle, and matches case-insensitively while
+            ignoring trailing digits - all of them are rejected here so that a
+            clip looping on purpose cannot be confused with one looping by
+            accident. Distinct from the node-type suffixes: loop and cycle mean
+            nothing on a node name.
+          examples:
+            valid:
+              - idle_float-loop
+              - walk_cycle-loop
+              - attack_01
+            invalid:
+              - idle_float_loop
+              - run-cycle
+              - idle-Loop
+              - walk_loop2
+          enforced_by:
+            - kind: script
+              path: .github/scripts/validate-model-files.py
+              note: >-
+                The animation_loop_suffix check, via
+                tools/gltf-validator/gltf_godot_import.py.
         - id: gltf_binary_buffer
           pattern: "{mesh_stem}.bin"
           regex: "^s[mk]_[a-z0-9]+(_[a-z0-9]+)*\\.bin$"
@@ -1666,7 +1697,10 @@ pipelines:
         question: Should one-shot animations be required to set repeat = 1?
         context: >-
           ENFORCE_ONE_SHOT_REPEAT is False, with LOOP_TAG_SUFFIX = "_loop"
-          distinguishing looping tags. Same conflict as tags_required.
+          distinguishing looping tags. Same conflict as tags_required. Note the
+          2D suffix is "_loop" while a 3D clip uses "-loop": the 3D one is
+          Godot's own importer flag and its spelling is not ours to choose,
+          whereas an .aseprite tag is only ever read by our validator.
         blocks:
           - Documenting the 2D pipeline as authoritative.
 

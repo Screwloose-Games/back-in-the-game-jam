@@ -1,0 +1,5 @@
+[gd_scene format=3 uid="uid://c8womwsy4cki"]
+
+[ext_resource type="PackedScene" uid="uid://beytw4v488on7" path="res://assets/art/gameplay/mining_laser/sm_mining_laser.gltf" id="1_fcc49"]
+
+[node name="sm_mining_laser" instance=ExtResource("1_fcc49")]
