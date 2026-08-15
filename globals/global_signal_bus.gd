@@ -12,6 +12,3 @@ signal game_unpaused
 # UI
 signal ui_button_pressed
 signal ui_button_hovered
-
-# debug
-signal spawn_second_player_requested
