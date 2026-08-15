@@ -225,7 +225,9 @@ func _on_signaling_message_received(message: Dictionary) -> void:
 		"offer", "answer", "ice_candidate":
 			_forward_relay_message_to_webrtc(message)
 		"signal_rejected":
-			_fail(str(message.get("reason", "The signaling service rejected a message.")))
+			_handle_direct_connection_failure(
+				str(message.get("reason", "The signaling service rejected a message."))
+			)
 
 
 func _initialize_host_multiplayer() -> Error:
@@ -258,8 +260,8 @@ func _connect_host_to_client() -> Error:
 
 	_on_webrtc_diagnostic("Signaling reported a joiner; creating the host WebRTC offer.")
 	var result: Error = _webrtc_session.connect_host_to_client(ICE_SERVERS)
-	if result != OK and _state != State.FAILED:
-		_fail("Could not attach the joining peer. Error: %d" % result)
+	if result != OK:
+		_handle_direct_connection_failure("Could not attach the joining peer. Error: %d" % result)
 	return result
 
 
@@ -297,7 +299,9 @@ func _ensure_webrtc_session() -> Error:
 
 func _forward_relay_message_to_webrtc(message: Dictionary) -> void:
 	if _webrtc_session == null:
-		_fail("Received WebRTC signaling before direct connection setup.")
+		_handle_direct_connection_failure(
+			"Received WebRTC signaling before direct connection setup."
+		)
 		return
 	_webrtc_session.handle_signaling_message(message)
 
@@ -305,7 +309,7 @@ func _forward_relay_message_to_webrtc(message: Dictionary) -> void:
 func _on_webrtc_relay_message_ready(message_type: StringName, payload: Dictionary) -> void:
 	var result: Error = send_signaling_message(message_type, payload)
 	if result != OK:
-		_fail("Could not relay WebRTC signaling. Error: %d" % result)
+		_handle_direct_connection_failure("Could not relay WebRTC signaling. Error: %d" % result)
 
 
 func _on_multiplayer_peer_ready(peer: WebRTCMultiplayerPeer) -> void:
@@ -354,8 +358,23 @@ func _return_host_to_waiting(description: String, peer_id: int) -> void:
 
 
 func _on_webrtc_connection_failed(description: String) -> void:
-	if _state != State.FAILED:
+	_handle_direct_connection_failure(description)
+
+
+func _handle_direct_connection_failure(description: String) -> void:
+	if _state == State.FAILED:
+		return
+	# Only a host whose high-level peer is already installed can survive a guest
+	# route failure. Failure to create that server is a session-level error.
+	if _role != Role.HOST or _installed_multiplayer_peer == null:
 		_fail(description)
+		return
+	if _webrtc_session != null:
+		_webrtc_session.disconnect_remote_peer()
+	_return_host_to_waiting(
+		"Join attempt failed; continuing solo. %s" % description,
+		WebRTCSession.CLIENT_PEER_ID,
+	)
 
 
 func _on_webrtc_diagnostic(message: String) -> void:

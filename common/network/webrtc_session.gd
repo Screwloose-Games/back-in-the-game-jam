@@ -350,5 +350,11 @@ func _drop_remote_connection(emit_disconnected: bool) -> void:
 
 
 func _fail(description: String) -> void:
-	close_connection()
+	# A bad guest route must not tear down the host's high-level server. Keeping
+	# it installed lets peer 1 continue solo and accept another join attempt with
+	# the same code. A client failure still ends its entire connection.
+	if _is_host and _multiplayer_peer != null:
+		_drop_remote_connection(false)
+	else:
+		close_connection()
 	connection_failed.emit(description)
