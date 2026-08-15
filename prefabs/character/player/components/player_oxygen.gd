@@ -14,6 +14,9 @@ const CHANGE_EPSILON := 0.001
 
 @export var settings: PlayerSettings
 
+## A network driver advances authority and applies replica oxygen while true.
+var externally_driven := false
+
 var oxygen := 0.0
 
 var _announced_fraction := -1.0
@@ -33,7 +36,23 @@ func _ready() -> void:
 
 
 func _process(delta: float) -> void:
-	oxygen = PlayerOxygenModel.step(oxygen, settings.oxygen_capacity, rate_per_second(), delta)
+	if externally_driven:
+		return
+	authority_step(delta)
+
+
+## Advances authoritative oxygen. An explicit thrust fraction lets a host use
+## the accepted command for a remote player instead of that replica's idle Input.
+func authority_step(delta: float, thrust_fraction_override := -1.0) -> void:
+	oxygen = (
+		PlayerOxygenModel
+		. step(
+			oxygen,
+			settings.oxygen_capacity,
+			rate_per_second(thrust_fraction_override),
+			delta,
+		)
+	)
 	_announce()
 
 	var empty := oxygen <= 0.0
@@ -43,11 +62,14 @@ func _process(delta: float) -> void:
 
 
 ## Oxygen gained or lost this second. Negative is draining.
-func rate_per_second() -> float:
+func rate_per_second(thrust_fraction_override := -1.0) -> float:
+	var thrust_fraction := input.thrust_fraction()
+	if thrust_fraction_override >= 0.0:
+		thrust_fraction = clampf(thrust_fraction_override, 0.0, 1.0)
 	return PlayerOxygenModel.rate_per_second(
 		tether.is_attached(),
 		power.has_power(),
-		input.thrust_fraction(),
+		thrust_fraction,
 		settings.oxygen_regen_per_second,
 		settings.oxygen_idle_drain_per_second,
 		settings.oxygen_thrust_cost_per_second
@@ -65,6 +87,15 @@ func seconds_remaining() -> float:
 
 func is_empty() -> bool:
 	return oxygen <= 0.0
+
+
+## Applies a replicated ratio and updates presentation signals, but deliberately
+## does not emit the authority-only emptied gameplay event.
+func apply_network_fraction(value: float) -> void:
+	var safe_value := clampf(value, 0.0, 1.0) if is_finite(value) else 0.0
+	oxygen = maxf(settings.oxygen_capacity, 0.0) * safe_value
+	_was_empty = oxygen <= 0.0
+	_announce()
 
 
 ## Refills the tank, for an oxygen pocket or a return to the elevator.

@@ -18,6 +18,9 @@ const CHANGE_EPSILON := 0.0005
 
 @export var settings: PlayerSettings
 
+## A network driver advances authority and applies replica charge while true.
+var externally_driven := false
+
 ## The suit's own battery. Charge is in arbitrary units; only ratios matter.
 var charge := 0.0
 
@@ -37,6 +40,13 @@ func _ready() -> void:
 
 
 func _process(delta: float) -> void:
+	if externally_driven:
+		return
+	authority_step(delta)
+
+
+## Advances authoritative drain and any shared-box recharge.
+func authority_step(delta: float) -> void:
 	if settings.suit_drain_per_second > 0.0:
 		spend(settings.suit_drain_per_second * delta)
 	_recharge_from_box(delta)
@@ -50,6 +60,13 @@ func fraction() -> float:
 
 func has_power() -> bool:
 	return charge > 0.0
+
+
+## Applies a replicated ratio without drawing from or returning charge to a box.
+func apply_network_fraction(value: float) -> void:
+	var safe_value := clampf(value, 0.0, 1.0) if is_finite(value) else 0.0
+	charge = maxf(settings.suit_capacity, 0.0) * safe_value
+	_announce()
 
 
 ## Whether a live tether currently reaches the shared box.

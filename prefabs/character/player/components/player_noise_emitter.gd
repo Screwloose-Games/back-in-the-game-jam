@@ -17,6 +17,9 @@ const CHANGE_EPSILON := 0.05
 
 @export var settings: PlayerSettings
 
+## A network driver supplies accepted authority intent while true.
+var externally_driven := false
+
 var _strength := 0.0
 var _source: PlayerNoise.Source = PlayerNoise.Source.THRUST
 var _impact_strength := 0.0
@@ -37,10 +40,16 @@ func _ready() -> void:
 
 
 func _physics_process(delta: float) -> void:
-	var thrust_noise := PlayerNoise.thrust_strength(
-		input.thrust_fraction(), settings.thrust_noise_strength
-	)
-	var mining_noise := settings.mining_noise_strength if mining_tool.is_firing() else 0.0
+	if externally_driven:
+		return
+	authority_step(delta, input.thrust_fraction(), mining_tool.is_firing())
+
+
+## Advances authoritative noise from accepted gameplay intent.
+func authority_step(delta: float, thrust_fraction: float, mining_active: bool) -> void:
+	var safe_thrust := clampf(thrust_fraction, 0.0, 1.0) if is_finite(thrust_fraction) else 0.0
+	var thrust_noise := PlayerNoise.thrust_strength(safe_thrust, settings.thrust_noise_strength)
+	var mining_noise := settings.mining_noise_strength if mining_active else 0.0
 
 	# An impact is an instant, so it decays rather than persisting like the
 	# other two, which are held for as long as the player holds the control.

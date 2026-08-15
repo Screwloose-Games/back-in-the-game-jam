@@ -1,8 +1,9 @@
-[gd_scene load_steps=5 format=3]
+[gd_scene load_steps=7 format=3]
 
 [ext_resource type="PackedScene" path="res://prefabs/character/player/prefab_player.tscn" id="1_player"]
 [ext_resource type="Script" path="res://common/network/prediction/client_predictor_3d.gd" id="2_prediction"]
 [ext_resource type="Script" path="res://prefabs/character/player/components/player_network_driver.gd" id="3_network"]
+[ext_resource type="Script" path="res://prefabs/character/player/components/player_network_gameplay.gd" id="4_gameplay"]
 
 [sub_resource type="SceneReplicationConfig" id="ReplicationConfig_player_state"]
 properties/0/path = NodePath(".:authoritative_transform")
@@ -27,6 +28,29 @@ properties/6/path = NodePath(".:snapshot_sequence")
 properties/6/spawn = true
 properties/6/replication_mode = 1
 
+[sub_resource type="SceneReplicationConfig" id="ReplicationConfig_gameplay_state"]
+properties/0/path = NodePath(".:gameplay_lamp_requested")
+properties/0/spawn = true
+properties/0/replication_mode = 1
+properties/1/path = NodePath(".:gameplay_mining_active")
+properties/1/spawn = true
+properties/1/replication_mode = 1
+properties/2/path = NodePath(".:gameplay_mining_endpoint")
+properties/2/spawn = true
+properties/2/replication_mode = 1
+properties/3/path = NodePath(".:gameplay_power_fraction")
+properties/3/spawn = true
+properties/3/replication_mode = 1
+properties/4/path = NodePath(".:gameplay_oxygen_fraction")
+properties/4/spawn = true
+properties/4/replication_mode = 1
+properties/5/path = NodePath(".:gameplay_action_ack")
+properties/5/spawn = true
+properties/5/replication_mode = 1
+properties/6/path = NodePath(".:gameplay_state_sequence")
+properties/6/spawn = true
+properties/6/replication_mode = 1
+
 [node name="NetworkPlayer" instance=ExtResource("1_player")]
 
 [node name="Prediction" type="Node" parent="PlayerBody" index="3"]
@@ -41,3 +65,12 @@ replication_config = SubResource("ReplicationConfig_player_state")
 [node name="NetworkDriver" type="Node" parent="PlayerBody" index="5"]
 unique_name_in_owner = true
 script = ExtResource("3_network")
+
+[node name="NetworkGameplay" type="Node" parent="PlayerBody" index="6"]
+unique_name_in_owner = true
+script = ExtResource("4_gameplay")
+
+[node name="GameplaySync" type="MultiplayerSynchronizer" parent="PlayerBody" index="7"]
+root_path = NodePath("../NetworkGameplay")
+replication_interval = 0.05
+replication_config = SubResource("ReplicationConfig_gameplay_state")

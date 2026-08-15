@@ -27,8 +27,10 @@ signal reset_requested
 ## represent other peers; the spawner sets it alongside is_local_player.
 @export var captures_mouse: bool = true
 
-## Edge-triggered gameplay actions need explicit host request RPCs. The first
-## multiplayer slice disables them on clients while retaining movement input.
+## Whether this input source may publish edge-triggered gameplay requests.
+## A network driver can leave this on only for the locally controlled copy and
+## forward the signals to authority. Held intent such as mine_held is still
+## sampled below so the driver can include it in its own command stream.
 @export var gameplay_actions_enabled: bool = true
 
 ## Body-local thrust, clamped to a unit sphere.

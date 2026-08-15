@@ -1,41 +1,39 @@
 class_name PlayerNetworkDriver
 extends Node
 
-## Binds the production player components to host-authoritative prediction.
+## Binds production movement components to host-authoritative prediction.
 ##
 ## MultiplayerSpawner calls configure() before the prefab enters the tree. The
 ## body and replicated state remain owned by peer 1; only this machine's local
-## PlayerInput polls its devices. Shared gameplay effects are deliberately not
-## part of movement prediction.
+## PlayerInput polls its devices. Game-specific requests and resource state live
+## in the sibling PlayerNetworkGameplay so movement replay cannot repeat them.
 
 const HOST_PEER_ID := 1
+const AUTHORITY_COLLISION_LAYER := 2
+const REPLICA_COLLISION_LAYER := 0
 const HULL_COLLISION_MASK := 1
+const REPLICA_COLLISION_MASK := 0
 const PHYSICS_PRIORITY := -70
-const DISABLED_ONLINE_COMPONENTS: Array[StringName] = [
-	&"Grab",
-	&"Tether",
-	&"Hands",
-	&"PowerClient",
-	&"Oxygen",
-	&"Lamp",
-	&"MiningTool",
-	&"NoiseEmitter",
-	&"Respawn",
-]
 
 var _controlled_peer_id := HOST_PEER_ID
+var _is_authority_instance := true
+var _is_local_controller := true
 var _configured := false
+var _authoritative_thrust_fraction := 0.0
 
 var _body: CharacterBody3D
 var _input: PlayerInput
 var _locomotion: PlayerLocomotion
 var _collision: PlayerCollisionResponse
 var _prediction: ClientPredictor3D
+var _gameplay: PlayerNetworkGameplay
 
 
 ## Must run before MultiplayerSpawner inserts the prefab into SceneTree.
 func configure(controlled_peer_id: int, local_peer_id: int) -> void:
 	_controlled_peer_id = controlled_peer_id
+	_is_authority_instance = local_peer_id == HOST_PEER_ID
+	_is_local_controller = local_peer_id == controlled_peer_id
 	_body = get_parent() as CharacterBody3D
 	var player_root := _body.get_parent() if _body != null else null
 	if _body == null or player_root == null:
@@ -49,25 +47,25 @@ func configure(controlled_peer_id: int, local_peer_id: int) -> void:
 	var visibility := _body.get_node("Visibility") as PlayerVisibility
 	var camera := _body.get_node("Head/HeadCamera") as Camera3D
 	var view := _body.get_node("View") as PlayerView
-	var is_local := local_peer_id == _controlled_peer_id
-	visibility.is_local_player = is_local
-	_input.enabled = is_local
-	_input.captures_mouse = is_local
-	# Edge actions need individual request/validation protocols. Movement remains
-	# available while this first online slice keeps those effects host-owned.
-	_input.gameplay_actions_enabled = false
-	camera.current = is_local
-	view.applies_fog = is_local
-	_body.collision_mask = HULL_COLLISION_MASK
+	visibility.is_local_player = _is_local_controller
+	_input.enabled = _is_local_controller
+	_input.captures_mouse = _is_local_controller
+	camera.current = _is_local_controller
+	view.applies_fog = _is_local_controller
+	_body.collision_layer = (
+		AUTHORITY_COLLISION_LAYER if _is_authority_instance else REPLICA_COLLISION_LAYER
+	)
+	if _is_authority_instance:
+		_body.collision_mask = HULL_COLLISION_MASK
+	elif _is_local_controller:
+		_body.collision_mask = HULL_COLLISION_MASK
+	else:
+		_body.collision_mask = REPLICA_COLLISION_MASK
 
 	_locomotion = _body.get_node("Locomotion") as PlayerLocomotion
 	_collision = _body.get_node("CollisionResponse") as PlayerCollisionResponse
 	_locomotion.externally_driven = true
 	_collision.externally_driven = true
-	for component_name in DISABLED_ONLINE_COMPONENTS:
-		var component := _body.get_node_or_null(NodePath(component_name))
-		if component != null:
-			component.process_mode = Node.PROCESS_MODE_DISABLED
 
 	_prediction = _body.get_node("Prediction") as ClientPredictor3D
 	var presentation := _body.get_node("Head") as Node3D
@@ -83,6 +81,12 @@ func configure(controlled_peer_id: int, local_peer_id: int) -> void:
 			Callable(self, "_prediction_states_match"),
 		)
 	)
+
+	_gameplay = _body.get_node("NetworkGameplay") as PlayerNetworkGameplay
+	if _gameplay == null:
+		push_error("PlayerNetworkDriver requires a sibling NetworkGameplay node.")
+		return
+	_gameplay.configure(_controlled_peer_id, local_peer_id)
 	_configured = true
 
 
@@ -91,7 +95,7 @@ func controlled_peer_id() -> int:
 
 
 func is_locally_controlled() -> bool:
-	return multiplayer.get_unique_id() == _controlled_peer_id
+	return _is_local_controller
 
 
 func _ready() -> void:
@@ -109,7 +113,12 @@ func _physics_process(delta: float) -> void:
 		flags |= ClientPredictor3D.FLAG_STABILIZING
 	if _input.sprint_held:
 		flags |= ClientPredictor3D.FLAG_SPRINTING
+	if _is_authority_instance:
+		# If prediction is inactive or has no accepted command this tick, held
+		# thrust must not leak into resource drain or noise from the previous tick.
+		_authoritative_thrust_fraction = 0.0
 	_prediction.physics_step(delta, _input.thrust, _input.look, _input.roll, flags)
+	_gameplay.physics_step(delta, _authoritative_thrust_fraction)
 
 
 func _simulate_network_command(
@@ -122,7 +131,11 @@ func _simulate_network_command(
 ) -> void:
 	var stabilizing := bool(flags & ClientPredictor3D.FLAG_STABILIZING)
 	var sprinting := bool(flags & ClientPredictor3D.FLAG_SPRINTING)
-	# Shared rigid bodies and gameplay events are outside this movement protocol.
+	var is_authority := context == ClientPredictor3D.SimulationContext.AUTHORITY
+	if is_authority:
+		_authoritative_thrust_fraction = minf(thrust.length(), 1.0)
+	# Dynamic props are not replicated yet, so even authority only resolves the
+	# static hull. Host collision effects remain safe because replay suppresses them.
 	(
 		_locomotion
 		. step(
@@ -135,14 +148,7 @@ func _simulate_network_command(
 			false,
 		)
 	)
-	(
-		_collision
-		. step(
-			fixed_delta,
-			false,
-			context == ClientPredictor3D.SimulationContext.AUTHORITY,
-		)
-	)
+	_collision.step(fixed_delta, false, is_authority)
 
 
 func _capture_prediction_state() -> Dictionary:
@@ -181,4 +187,5 @@ func _prediction_states_match(predicted: Dictionary, authoritative: Dictionary) 
 
 
 func _on_authoritative_reset_received(_body_transform: Transform3D) -> void:
+	_authoritative_thrust_fraction = 0.0
 	_input.clear()
