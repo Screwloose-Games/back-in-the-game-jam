@@ -35,6 +35,7 @@ var _shown := 0.0
 var _order: Array[int] = []
 var _line := 0
 var _since_line := 0.0
+var _has_explicit_status := false
 
 @onready var _flavour_label: Label = %FlavourLabel
 @onready var _bar: ProgressBar = %ProgressBar
@@ -51,7 +52,7 @@ func _process(delta: float) -> void:
 	_bar.value = _shown
 	_percent_label.text = "%d%%" % roundi(_shown * 100.0)
 	_since_line += delta
-	if _since_line >= LINE_SECONDS:
+	if not _has_explicit_status and _since_line >= LINE_SECONDS:
 		_line = (_line + 1) % maxi(_order.size(), 1)
 		_show_line()
 
@@ -59,6 +60,13 @@ func _process(delta: float) -> void:
 ## Where the bar is told to go. Anything outside 0..1 is clamped rather than refused.
 func set_progress(ratio: float) -> void:
 	_target = clampf(ratio, 0.0, 1.0)
+
+
+## Reuses this screen for named connection stages without rotating load flavour.
+func set_status(description: String, ratio: float) -> void:
+	_has_explicit_status = true
+	_flavour_label.text = description
+	set_progress(ratio)
 
 
 ## Fills the bar and holds it there long enough to be read.
