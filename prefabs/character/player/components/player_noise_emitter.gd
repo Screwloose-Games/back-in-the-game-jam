@@ -69,10 +69,10 @@ func source() -> PlayerNoise.Source:
 
 ## Builds the stimulus the creature's perception layer consumes. Returns null
 ## while the player is making no noise at all.
-func to_stimulus() -> AlienStimulus:
-	if _strength <= 0.0:
-		return null
-	return AlienStimulus.create(AlienPerception.StimulusType.SOUND, body.global_position, _strength)
+# func to_stimulus() -> AlienStimulus:
+# 	if _strength <= 0.0:
+# 		return null
+# 	return AlienStimulus.create(AlienPerception.StimulusType.SOUND, body.global_position, _strength)
 
 
 func _on_impacted(closing_speed: float, _at: Vector3) -> void:

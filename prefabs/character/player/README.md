@@ -193,6 +193,12 @@ brightness, reach and thickness are the `mining_*` fields in the Mining group.
 The light casts no shadows, and the mesh casts none either — the lamp is a hand's
 width from the visor and would throw the beam's own shadow over the cut.
 
+`MiningTool`'s node header carries `node_paths=PackedStringArray("tool_model")`.
+Without it Godot leaves a `Node`-typed `@export` null however good the
+`NodePath` beside it looks, silently — which is what kept `tool_model` null, and
+`_apply_tool_visibility` a no-op, before the beam needed it. Any hand-edited
+`.tscn` that assigns a `Node`-typed export needs the same declaration.
+
 ## Not here yet
 
 - **The shared power and oxygen box.** `PowerClient` is the client half. The box
