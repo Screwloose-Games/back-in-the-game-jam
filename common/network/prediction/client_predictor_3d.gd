@@ -21,8 +21,9 @@ enum SimulationContext {
 
 const HOST_PEER_ID := 1
 const FLAG_STABILIZING := 1 << 0
-const FLAG_PRIMARY_ACTION := 1 << 1
-const ALLOWED_FLAGS := FLAG_STABILIZING | FLAG_PRIMARY_ACTION
+const FLAG_SPRINTING := 1 << 1
+const ALLOWED_FLAGS := FLAG_STABILIZING | FLAG_SPRINTING
+const MAX_LOOK_DELTA := 2048.0
 const MAX_REPLAY_COMMANDS := 32
 const INPUT_HOLD_USEC := 250_000
 const HARD_SNAP_DISTANCE := 2.0
@@ -35,6 +36,7 @@ const PRESENTATION_DECAY_RATE := 14.0
 
 @export var authoritative_transform := Transform3D.IDENTITY
 @export var authoritative_velocity := Vector3.ZERO
+@export var authoritative_auxiliary_state: Dictionary = {}
 @export var authoritative_epoch := 1
 @export var acknowledged_input_sequence := 0
 @export var simulation_active := true
@@ -44,6 +46,9 @@ var _body: CharacterBody3D
 var _presentation: Node3D
 var _controlled_peer_id := HOST_PEER_ID
 var _simulate_command := Callable()
+var _capture_auxiliary_state := Callable()
+var _restore_auxiliary_state := Callable()
+var _auxiliary_states_match := Callable()
 var _history := ClientPredictionHistory3D.new()
 var _pending_remote_command: Dictionary = {}
 var _last_remote_command: Dictionary = {}
@@ -55,6 +60,7 @@ var _last_consumed_snapshot_sequence := -1
 var _latest_authoritative_flags := 0
 var _last_local_authoritative_transform := Transform3D.IDENTITY
 var _last_local_authoritative_velocity := Vector3.ZERO
+var _last_local_authoritative_auxiliary_state: Dictionary = {}
 var _has_local_authoritative_snapshot := false
 var _snapshot_pending := false
 var _configured := false
@@ -65,10 +71,24 @@ func configure(
 	presentation: Node3D,
 	simulate_command: Callable,
 	initially_active := true,
+	capture_auxiliary_state := Callable(),
+	restore_auxiliary_state := Callable(),
+	auxiliary_states_match := Callable(),
 ) -> void:
+	if capture_auxiliary_state.is_valid() != restore_auxiliary_state.is_valid():
+		push_error("ClientPredictor3D auxiliary state requires both capture and restore callbacks.")
+		return
+	if auxiliary_states_match.is_valid() and not capture_auxiliary_state.is_valid():
+		push_error(
+			"ClientPredictor3D cannot compare auxiliary state without capture and restore callbacks."
+		)
+		return
 	_controlled_peer_id = controlled_peer_id
 	_presentation = presentation
 	_simulate_command = simulate_command
+	_capture_auxiliary_state = capture_auxiliary_state
+	_restore_auxiliary_state = restore_auxiliary_state
+	_auxiliary_states_match = auxiliary_states_match
 	simulation_active = initially_active
 	_history.reset(authoritative_epoch)
 	_configured = true
@@ -94,14 +114,20 @@ func _ready() -> void:
 		_snapshot_pending = true
 
 
-func physics_step(delta: float, thrust: Vector3, look: Quaternion, flags: int) -> void:
+func physics_step(
+	delta: float,
+	thrust: Vector3,
+	look_delta: Vector2,
+	roll: float,
+	flags: int,
+) -> void:
 	if _body == null:
 		return
 
 	if multiplayer.is_server():
-		_server_step(thrust, look, flags)
+		_server_step(thrust, look_delta, roll, flags)
 	else:
-		_client_step(delta, thrust, look, flags)
+		_client_step(delta, thrust, look_delta, roll, flags)
 
 
 func authoritative_reset(active: bool) -> void:
@@ -138,7 +164,8 @@ func _receive_input_command(
 	epoch: int,
 	sequence: int,
 	thrust: Vector3,
-	look: Quaternion,
+	look_delta: Vector2,
+	roll: float,
 	flags: int,
 ) -> void:
 	if not multiplayer.is_server():
@@ -150,26 +177,43 @@ func _receive_input_command(
 		return
 	if sequence <= _last_received_input_sequence:
 		return
-	if not thrust.is_finite() or not look.is_finite() or look.length_squared() <= 0.0001:
+	if not thrust.is_finite() or not look_delta.is_finite() or not is_finite(roll):
 		return
 
 	_last_received_input_sequence = sequence
+	_store_remote_command(epoch, sequence, thrust, look_delta, roll, flags)
+
+
+func _store_remote_command(
+	epoch: int,
+	sequence: int,
+	thrust: Vector3,
+	look_delta: Vector2,
+	roll: float,
+	flags: int,
+) -> void:
 	_last_remote_input_usec = Time.get_ticks_usec()
-	# Input fields describe held intent, not one-shot events. Keep only the newest
-	# packet so a slow host never works through a backlog of stale steering.
+	# Thrust, roll, and flags describe held intent, so keep only their newest
+	# values. Mouse look is a per-frame delta, though: accumulate every accepted
+	# delta that arrived before this host tick so motion is neither dropped nor
+	# repeated like a held input.
+	var accumulated_look_delta := look_delta
+	if not _pending_remote_command.is_empty():
+		accumulated_look_delta += _pending_remote_command["look_delta"]
 	_pending_remote_command = {
 		"epoch": epoch,
 		"sequence": sequence,
 		"thrust": thrust.limit_length(1.0),
-		"look": look.normalized(),
+		"look_delta": accumulated_look_delta.limit_length(MAX_LOOK_DELTA),
+		"roll": clampf(roll, -1.0, 1.0),
 		"flags": flags & ALLOWED_FLAGS,
 	}
 
 
-func _server_step(thrust: Vector3, look: Quaternion, flags: int) -> void:
+func _server_step(thrust: Vector3, look_delta: Vector2, roll: float, flags: int) -> void:
 	if simulation_active:
 		if _controlled_peer_id == multiplayer.get_unique_id():
-			var command := _sanitize_local_command(thrust, look, flags)
+			var command := _sanitize_local_command(thrust, look_delta, roll, flags)
 			_latest_authoritative_flags = int(command["flags"])
 			_simulate(command, SimulationContext.AUTHORITY)
 		else:
@@ -182,7 +226,13 @@ func _server_step(thrust: Vector3, look: Quaternion, flags: int) -> void:
 	_publish_authoritative_state()
 
 
-func _client_step(delta: float, thrust: Vector3, look: Quaternion, flags: int) -> void:
+func _client_step(
+	delta: float,
+	thrust: Vector3,
+	look_delta: Vector2,
+	roll: float,
+	flags: int,
+) -> void:
 	if _snapshot_pending and _consume_authoritative_snapshot():
 		# The caller sampled controls before this component consumed the snapshot.
 		# Wait one tick so a reset orientation cannot produce one stale command.
@@ -190,19 +240,25 @@ func _client_step(delta: float, thrust: Vector3, look: Quaternion, flags: int) -
 
 	if _controlled_peer_id == multiplayer.get_unique_id():
 		if simulation_active:
-			_predict_local_command(thrust, look, flags)
+			_predict_local_command(thrust, look_delta, roll, flags)
 		_decay_presentation(delta)
 	else:
 		_interpolate_remote_body()
 
 
-func _predict_local_command(thrust: Vector3, look: Quaternion, flags: int) -> void:
-	var sanitized := _sanitize_local_command(thrust, look, flags)
+func _predict_local_command(
+	thrust: Vector3,
+	look_delta: Vector2,
+	roll: float,
+	flags: int,
+) -> void:
+	var sanitized := _sanitize_local_command(thrust, look_delta, roll, flags)
 	var command := (
 		_history
 		. create_command(
 			sanitized["thrust"],
-			sanitized["look"],
+			sanitized["look_delta"],
+			float(sanitized["roll"]),
 			int(sanitized["flags"]),
 		)
 	)
@@ -213,6 +269,7 @@ func _predict_local_command(thrust: Vector3, look: Quaternion, flags: int) -> vo
 			int(command["sequence"]),
 			_body.global_transform,
 			_body.velocity,
+			_capture_current_auxiliary_state(),
 		)
 	)
 
@@ -225,7 +282,8 @@ func _predict_local_command(thrust: Vector3, look: Quaternion, flags: int) -> vo
 				int(command["epoch"]),
 				int(command["sequence"]),
 				command["thrust"],
-				command["look"],
+				command["look_delta"],
+				float(command["roll"]),
 				int(command["flags"]),
 			)
 		)
@@ -292,6 +350,7 @@ func _reconcile_advancing_acknowledgement() -> bool:
 		return true
 	_body.global_transform = authoritative_transform
 	_body.velocity = authoritative_velocity
+	_restore_current_auxiliary_state(authoritative_auxiliary_state)
 	for raw_command in remaining_commands:
 		var command: Dictionary = raw_command
 		_simulate(command, SimulationContext.REPLAY)
@@ -301,6 +360,7 @@ func _reconcile_advancing_acknowledgement() -> bool:
 				int(command["sequence"]),
 				_body.global_transform,
 				_body.velocity,
+				_capture_current_auxiliary_state(),
 			)
 		)
 
@@ -326,13 +386,17 @@ func _simulate_latest_remote_command() -> void:
 		return
 	var command := _last_remote_command.duplicate()
 	if Time.get_ticks_usec() - _last_remote_input_usec > INPUT_HOLD_USEC:
-		# Preserve zero-g inertia, but never leave thrust or an interaction held
+		# Preserve zero-g inertia, but never leave thrust or turning held
 		# indefinitely when input traffic stalls.
 		command["thrust"] = Vector3.ZERO
-		command["look"] = _body.global_transform.basis.get_rotation_quaternion()
+		command["look_delta"] = Vector2.ZERO
+		command["roll"] = 0.0
 		command["flags"] = 0
 	_latest_authoritative_flags = int(command["flags"])
 	_simulate(command, SimulationContext.AUTHORITY)
+	# Mouse motion is an impulse sampled since the previous packet. The held
+	# command may run again on the next host tick, but its look delta must not.
+	_last_remote_command["look_delta"] = Vector2.ZERO
 
 
 func _reset_local_for_new_epoch() -> void:
@@ -357,6 +421,7 @@ func _hard_resync_same_epoch() -> void:
 func _apply_hard_authoritative_state() -> void:
 	_body.global_transform = authoritative_transform
 	_body.velocity = authoritative_velocity
+	_restore_current_auxiliary_state(authoritative_auxiliary_state)
 	_presentation.transform = Transform3D.IDENTITY
 	_body.reset_physics_interpolation()
 
@@ -371,10 +436,15 @@ func _prediction_matches_authority(predicted_state: Dictionary) -> bool:
 		authoritative_transform.basis.get_rotation_quaternion().normalized()
 	)
 	var rotation_error := predicted_rotation.angle_to(authoritative_rotation)
+	var predicted_auxiliary_state: Dictionary = predicted_state.get("auxiliary_state", {})
 	return (
 		position_error <= MATCH_POSITION_EPSILON
 		and velocity_error <= MATCH_VELOCITY_EPSILON
 		and rotation_error <= MATCH_ROTATION_EPSILON
+		and _do_auxiliary_states_match(
+			predicted_auxiliary_state,
+			authoritative_auxiliary_state,
+		)
 	)
 
 
@@ -395,12 +465,17 @@ func _local_authority_snapshot_changed() -> bool:
 			> MATCH_VELOCITY_EPSILON
 		)
 		or previous_rotation.angle_to(current_rotation) > MATCH_ROTATION_EPSILON
+		or not _do_auxiliary_states_match(
+			_last_local_authoritative_auxiliary_state,
+			authoritative_auxiliary_state,
+		)
 	)
 
 
 func _remember_local_authority_snapshot() -> void:
 	_last_local_authoritative_transform = authoritative_transform
 	_last_local_authoritative_velocity = authoritative_velocity
+	_last_local_authoritative_auxiliary_state = authoritative_auxiliary_state.duplicate(true)
 	_has_local_authoritative_snapshot = true
 
 
@@ -489,19 +564,27 @@ func _decay_presentation(delta: float) -> void:
 func _publish_authoritative_state() -> void:
 	authoritative_transform = _body.global_transform
 	authoritative_velocity = _body.velocity
+	authoritative_auxiliary_state = _capture_current_auxiliary_state()
 	snapshot_sequence += 1
 
 
-func _sanitize_local_command(thrust: Vector3, look: Quaternion, flags: int) -> Dictionary:
+func _sanitize_local_command(
+	thrust: Vector3,
+	look_delta: Vector2,
+	roll: float,
+	flags: int,
+) -> Dictionary:
 	var safe_thrust := thrust.limit_length(1.0) if thrust.is_finite() else Vector3.ZERO
-	var safe_look := look
-	if not safe_look.is_finite() or safe_look.length_squared() <= 0.0001:
-		safe_look = _body.global_transform.basis.get_rotation_quaternion()
+	var safe_look_delta := (
+		look_delta.limit_length(MAX_LOOK_DELTA) if look_delta.is_finite() else Vector2.ZERO
+	)
+	var safe_roll := clampf(roll, -1.0, 1.0) if is_finite(roll) else 0.0
 	return {
 		"epoch": authoritative_epoch,
 		"sequence": 0,
 		"thrust": safe_thrust,
-		"look": safe_look.normalized(),
+		"look_delta": safe_look_delta,
+		"roll": safe_roll,
 		"flags": flags & ALLOWED_FLAGS,
 	}
 
@@ -512,9 +595,39 @@ func _simulate(command: Dictionary, context: SimulationContext) -> void:
 		_simulate_command
 		. call(
 			command["thrust"],
-			command["look"],
+			command["look_delta"],
+			float(command["roll"]),
 			int(command["flags"]),
 			fixed_delta,
 			context,
 		)
 	)
+
+
+func _capture_current_auxiliary_state() -> Dictionary:
+	if not _capture_auxiliary_state.is_valid():
+		return {}
+	var captured: Variant = _capture_auxiliary_state.call()
+	if captured is not Dictionary:
+		push_error("ClientPredictor3D auxiliary capture callback must return a Dictionary.")
+		return {}
+	return (captured as Dictionary).duplicate(true)
+
+
+func _restore_current_auxiliary_state(state: Dictionary) -> void:
+	if _restore_auxiliary_state.is_valid():
+		_restore_auxiliary_state.call(state.duplicate(true))
+
+
+func _do_auxiliary_states_match(predicted: Dictionary, authoritative: Dictionary) -> bool:
+	if _auxiliary_states_match.is_valid():
+		return bool(
+			(
+				_auxiliary_states_match
+				. call(
+					predicted.duplicate(true),
+					authoritative.duplicate(true),
+				)
+			)
+		)
+	return predicted == authoritative

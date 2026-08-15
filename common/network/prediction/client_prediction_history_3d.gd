@@ -30,13 +30,19 @@ func clear_pending_keep_sequence(minimum_sequence := 0) -> void:
 	_states.clear()
 
 
-func create_command(thrust: Vector3, look: Quaternion, flags: int) -> Dictionary:
+func create_command(
+	thrust: Vector3,
+	look_delta: Vector2,
+	roll: float,
+	flags: int,
+) -> Dictionary:
 	_next_sequence += 1
 	var command := {
 		"epoch": _epoch,
 		"sequence": _next_sequence,
 		"thrust": thrust,
-		"look": look,
+		"look_delta": look_delta,
+		"roll": roll,
 		"flags": flags,
 	}
 	_commands.append(command)
@@ -44,16 +50,25 @@ func create_command(thrust: Vector3, look: Quaternion, flags: int) -> Dictionary
 	return command
 
 
-func record_state(sequence: int, body_transform: Transform3D, velocity: Vector3) -> void:
+func record_state(
+	sequence: int,
+	body_transform: Transform3D,
+	velocity: Vector3,
+	auxiliary_state: Dictionary = {},
+) -> void:
 	_states[sequence] = {
 		"transform": body_transform,
 		"velocity": velocity,
+		# Movement adapters often have small pieces of state that affect the next
+		# tick without living on CharacterBody3D, such as angular velocity or a
+		# sprint cap. Own a deep copy so later simulation cannot rewrite history.
+		"auxiliary_state": auxiliary_state.duplicate(true),
 	}
 
 
 func state_for(sequence: int) -> Dictionary:
 	var raw_state: Variant = _states.get(sequence, {})
-	return raw_state as Dictionary
+	return (raw_state as Dictionary).duplicate(true)
 
 
 func acknowledge(sequence: int) -> Array:
