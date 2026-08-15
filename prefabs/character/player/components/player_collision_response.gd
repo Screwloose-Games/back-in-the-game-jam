@@ -14,6 +14,9 @@ const PHYSICS_PRIORITY := 100
 
 @export var settings: PlayerSettings
 
+## Set by PlayerNetworkDriver so prediction owns the single move_and_slide call.
+var externally_driven := false
+
 var _was_touching_surface := false
 
 @onready var body: CharacterBody3D = get_parent()
@@ -28,9 +31,31 @@ func _ready() -> void:
 
 
 func _physics_process(delta: float) -> void:
+	if externally_driven:
+		return
+	step(delta, true, true)
+
+
+## Moves once and resolves contacts from explicit simulation policy.
+func step(delta: float, allow_shared_body_effects: bool, emit_effects: bool) -> void:
 	var approach_velocity := body.velocity
 	body.move_and_slide()
-	_resolve_surface_contact(delta, approach_velocity)
+	_resolve_surface_contact(delta, approach_velocity, allow_shared_body_effects, emit_effects)
+
+
+func capture_prediction_state() -> Dictionary:
+	return {"was_touching_surface": _was_touching_surface}
+
+
+func restore_prediction_state(state: Dictionary) -> void:
+	_was_touching_surface = bool(state.get("was_touching_surface", false))
+
+
+func prediction_states_match(predicted: Dictionary, authoritative: Dictionary) -> bool:
+	return (
+		bool(predicted.get("was_touching_surface", false))
+		== bool(authoritative.get("was_touching_surface", false))
+	)
 
 
 ## Forgets that the body was touching anything, so the next contact counts as a
@@ -41,7 +66,12 @@ func clear_contact() -> void:
 
 ## Immovable hull and loose bodies need different answers, so the frame's
 ## contacts are split before either is resolved.
-func _resolve_surface_contact(delta: float, approach_velocity: Vector3) -> void:
+func _resolve_surface_contact(
+	delta: float,
+	approach_velocity: Vector3,
+	allow_shared_body_effects: bool,
+	emit_effects: bool,
+) -> void:
 	var contact_count := body.get_slide_collision_count()
 	if contact_count == 0:
 		_was_touching_surface = false
@@ -75,11 +105,13 @@ func _resolve_surface_contact(delta: float, approach_velocity: Vector3) -> void:
 			approach_velocity,
 			hull_normal,
 			hull_point / hull_contact_count,
-			was_already_touching
+			was_already_touching,
+			emit_effects,
 		)
 
-	for contact in loose_contacts:
-		_shove_loose_body(contact, approach_velocity, was_already_touching)
+	if allow_shared_body_effects:
+		for contact in loose_contacts:
+			_shove_loose_body(contact, approach_velocity, was_already_touching, emit_effects)
 
 
 ## Only the frame an impact begins gets a bounce. Re-applying restitution every
@@ -89,7 +121,8 @@ func _resolve_hull_contact(
 	approach_velocity: Vector3,
 	summed_normal: Vector3,
 	contact_point: Vector3,
-	was_already_touching: bool
+	was_already_touching: bool,
+	emit_effects: bool,
 ) -> void:
 	if was_already_touching:
 		body.velocity = PlayerContact.scrape(body.velocity, settings.scrape_friction, delta)
@@ -115,14 +148,18 @@ func _resolve_hull_contact(
 	_apply_impact_spin(
 		PlayerContact.along_surface(approach_velocity, contact_normal), contact_point
 	)
-	impacted.emit(closing_speed, contact_point)
+	if emit_effects:
+		impacted.emit(closing_speed, contact_point)
 
 
 ## A two-body momentum exchange, so the same hit both redirects the player and
 ## sends the object tumbling. `move_and_slide` has already stripped the closing
 ## speed out of velocity, so the exchange runs off the pre-move approach.
 func _shove_loose_body(
-	contact: KinematicCollision3D, approach_velocity: Vector3, was_already_touching: bool
+	contact: KinematicCollision3D,
+	approach_velocity: Vector3,
+	was_already_touching: bool,
+	emit_effects: bool,
 ) -> void:
 	var loose_body := contact.get_collider() as RigidBody3D
 	if loose_body == null or loose_body.mass <= 0.0:
@@ -147,7 +184,8 @@ func _shove_loose_body(
 	var mass_ratio := loose_body.mass / (loose_body.mass + settings.player_mass)
 	var along := PlayerContact.along_surface(relative_velocity, contact_normal)
 	_apply_impact_spin(along * mass_ratio, contact_point)
-	impacted.emit(closing_speed, contact_point)
+	if emit_effects:
+		impacted.emit(closing_speed, contact_point)
 
 
 ## Friction acts where the body touched, not at its centre, so it applies a
