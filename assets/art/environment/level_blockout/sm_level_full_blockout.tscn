@@ -1,0 +1,8 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="PackedScene" uid="uid://cmvqie0i01fsl" path="res://assets/art/environment/level_blockout/sm_level_full_blockout.gltf" id="1_blockout"]
+
+[node name="sm_level_full_blockout" instance=ExtResource("1_blockout")]
+
+[node name="StaticBody3D" parent="sm_level_full_blockout_mesh" index="0"]
+collision_mask = 0

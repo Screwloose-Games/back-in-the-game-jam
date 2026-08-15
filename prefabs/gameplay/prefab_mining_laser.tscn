@@ -1,0 +1,38 @@
+[gd_scene load_steps=5 format=3 uid="uid://dp3bwl1dg7glm"]
+
+[ext_resource type="PackedScene" uid="uid://c8womwsy4cki" path="res://assets/art/gameplay/mining_laser/sm_mining_laser.tscn" id="1_51fe6"]
+[ext_resource type="Script" path="res://prefabs/gameplay/mining_laser_beam.gd" id="2_beam"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_beam"]
+resource_local_to_scene = true
+shading_mode = 0
+albedo_color = Color(1, 0.15, 0.08, 1)
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_beam"]
+top_radius = 1.0
+bottom_radius = 1.0
+height = 1.0
+radial_segments = 6
+rings = 0
+cap_top = false
+cap_bottom = false
+
+[node name="prefab_mining_laser" type="Node3D"]
+script = ExtResource("2_beam")
+
+[node name="sm_mining_laser" parent="." instance=ExtResource("1_51fe6")]
+
+[node name="Beam" type="Node3D" parent="."]
+visible = false
+
+[node name="BeamMesh" type="MeshInstance3D" parent="Beam"]
+top_level = true
+material_override = SubResource("StandardMaterial3D_beam")
+cast_shadow = 0
+mesh = SubResource("CylinderMesh_beam")
+
+[node name="ImpactLight" type="OmniLight3D" parent="Beam"]
+top_level = true
+light_color = Color(1, 0.15, 0.08, 1)
+light_energy = 4.0
+omni_range = 5.0

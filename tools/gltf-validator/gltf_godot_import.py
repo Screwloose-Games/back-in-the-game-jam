@@ -1,14 +1,15 @@
 """Checks for models that are valid glTF but wrong once Godot imports them.
 
-Everything in the rest of this validator asks "is this file correct". These three
-checks ask a different question: "will this file still be correct after Godot has
+Everything in the rest of this validator asks "is this file correct". These checks
+ask a different question: "will this file still be correct after Godot has
 finished with it". A model can satisfy the glTF spec, the size checks, the poly
 budget and the transform rules, and still arrive in the engine as the wrong kind
-of node, resting below the floor, or claiming a size no render agrees with.
+of node, resting below the floor, playing an animation that does not repeat, or
+claiming a size no render agrees with.
 
-All three came out of building assets/art/vehicles/jeep_turret, and each of them
-cost a full round trip -- export, import, open the scene, read the tree -- to find
-by hand. They are cheap to compute from the glTF JSON, so they belong in the gate
+Most of them came out of building assets/art/vehicles/jeep_turret, and each cost a
+full round trip -- export, import, open the scene, read the tree -- to find by
+hand. They are cheap to compute from the glTF JSON, so they belong in the gate
 rather than in a checklist.
 
 * **Node type suffixes.** Godot's importer reinterprets node names, and its
@@ -17,6 +18,11 @@ rather than in a checklist.
   descriptive name can silently change a node's class. A mesh called
   `steering_wheel` imported as a `VehicleWheel3D`: a physics node that only
   functions parented to a `VehicleBody3D`, from a file where nothing was wrong.
+* **Animation loop flags.** The same importer reads a trailing `loop` or `cycle`
+  on an *animation* name and imports that clip looping, with the flag stripped
+  from the name. It is the supported way to ship a looping clip, so this pipeline
+  uses it -- and checks that a clip which loops says so as `-loop`, because every
+  other spelling Godot honours also loops clips nobody meant to loop.
 * **Oversized collision.** The size checks measure the whole file, so a collision
   proxy larger than the art it stands in for *becomes* the model's declared width,
   height or depth. The failure then reads as a modelling error against a number
@@ -24,6 +30,10 @@ rather than in a checklist.
 * **Ground contact.** Nothing else checks that a model rests on the floor, and
   everything downstream assumes it. Opt-in, because plenty of assets legitimately
   do not -- a wall bracket, a ceiling lamp, a floating drone.
+
+Node suffixes and animation flags are separate mechanisms and are easy to conflate.
+`loop` and `cycle` are animation-only: a *node* named `crate_loop` imports
+untouched. Everything above is verified against Godot 4.7.1.
 
 Standard library and numpy only, like the rest of the non-Docker checks.
 """
@@ -39,6 +49,10 @@ from gltf_measure import node_bounds
 # Godot's ResourceImporterScene node-type suffixes, and what each one produces.
 # Sourced from its _pre_fix_node handling; the values are what an artist sees in
 # the scene tree afterwards.
+#
+# `loop` and `cycle` are deliberately NOT here. They are animation flags, not node
+# flags -- see the animation section below. Verified against 4.7.1: a node named
+# `crate_loop` imports as an untouched MeshInstance3D still called `crate_loop`.
 GODOT_NODE_SUFFIXES = {
     "col": "StaticBody3D with trimesh collision",
     "colonly": "StaticBody3D, visual mesh discarded",
@@ -51,8 +65,6 @@ GODOT_NODE_SUFFIXES = {
     "occ": "OccluderInstance3D",
     "occonly": "OccluderInstance3D, visual mesh discarded",
     "noimp": "nothing -- the node is skipped entirely on import",
-    "cycle": "an animation loop flag",
-    "loop": "an animation loop flag",
 }
 
 # The suffixes this pipeline uses on purpose. documentation/pipeline/pipeline.yaml
@@ -66,6 +78,10 @@ COLLISION_SUFFIXES = frozenset({"col", "colonly", "convcol", "convcolonly"})
 
 # Godot separates a suffix from the rest of the name with any of these.
 SUFFIX_SEPARATORS = "-_$"
+
+# Godot strips trailing digits before testing a suffix and puts them back after,
+# so `steering_wheel2` is still a VehicleWheel3D -- it imports as `steering2`.
+TRAILING_DIGITS = re.compile(r"\d*$")
 
 # Millimetres past the art are the faceting of a curved proxy against the flat
 # mesh approximating it; centimetres are a proxy that is genuinely the wrong size.
@@ -82,6 +98,7 @@ def node_suffix(name):
     if not name:
         return None
     tail = re.split(f"[{re.escape(SUFFIX_SEPARATORS)}]", str(name).lower())[-1]
+    tail = TRAILING_DIGITS.sub("", tail)
     return tail if tail in GODOT_NODE_SUFFIXES else None
 
 
@@ -91,6 +108,10 @@ def is_collision_node(name):
 
 def _node_names(document):
     return [(node.get("name") or "") for node in (document.get("nodes") or [])]
+
+
+def _animation_names(document):
+    return [(anim.get("name") or "") for anim in (document.get("animations") or [])]
 
 
 def find_surprising_suffixes(document, allowed=()):
@@ -107,6 +128,84 @@ def find_surprising_suffixes(document, allowed=()):
         if suffix is not None and suffix not in permitted:
             found.append((name, suffix, GODOT_NODE_SUFFIXES[suffix]))
     return found
+
+
+# --- animation loop flags -----------------------------------------------------
+#
+# A trailing `loop` or `cycle` on an ANIMATION name is how Godot is told the clip
+# repeats: it imports with loop_mode LOOP_LINEAR and the flag is stripped off the
+# name. Verified against 4.7.1 -- `idle_float-loop` imports as `idle_float`,
+# looping. Matching is case-insensitive, end-anchored, and ignores trailing digits
+# (`walk_loop2` imports as `walk2`), so a flag in the middle of a name is inert:
+# `idle_loop_fast` does not loop.
+#
+# This pipeline writes `-loop` and nothing else. Every other spelling Godot
+# accepts still loops the clip, which is exactly what makes them worth failing:
+# the ones nobody chose on purpose are indistinguishable from the ones they did.
+ANIMATION_LOOP_FLAGS = ("loop", "cycle")
+CANONICAL_LOOP_SUFFIX = "-loop"
+
+LOOP_FLAG_PATTERN = re.compile(
+    r"(?P<flag>[{separators}]?(?:{flags}))(?P<digits>\d*)$".format(
+        separators=re.escape(SUFFIX_SEPARATORS),
+        flags="|".join(ANIMATION_LOOP_FLAGS),
+    ),
+    re.IGNORECASE,
+)
+
+
+def animation_loop_flag(name):
+    """How Godot reads a loop flag off an animation name.
+
+    Returns (flag as authored, name after import) for a clip that will import
+    looping, or None for one that will not.
+    """
+    match = LOOP_FLAG_PATTERN.search(str(name or ""))
+    if match is None:
+        return None
+    flag = match.group("flag")
+    if flag[0] not in SUFFIX_SEPARATORS:
+        # Without a separator Godot still loops the clip but has nothing to strip,
+        # so the flag stays: `walkloop` imports as `walkloop`.
+        return flag, name
+    return flag, name[: match.start()] + match.group("digits")
+
+
+def imported_animation_name(name):
+    """What a clip is called once Godot has imported it."""
+    found = animation_loop_flag(name)
+    return found[1] if found else name
+
+
+def find_animation_loop_issues(document):
+    """Animations Godot will loop that are not spelled this pipeline's way.
+
+    Returns [(name, flag, imported name)]. Covers both halves of the problem: a
+    clip that loops by accident because its name happens to end in those letters,
+    and one that loops on purpose but says so in a spelling the rest of the
+    repository does not use.
+    """
+    issues = []
+    for name in _animation_names(document):
+        found = animation_loop_flag(name)
+        if found is None:
+            continue
+        flag, imported = found
+        # Compared exactly, not case-folded: `-Loop` loops the clip just as well,
+        # and names are lowercase everywhere else in this repository.
+        if flag == CANONICAL_LOOP_SUFFIX:
+            continue
+        issues.append((name, flag, imported))
+    return issues
+
+
+def looping_animations(document):
+    """The imported names of every clip that will loop."""
+    return [
+        imported_animation_name(name)
+        for name in _animation_names(document)
+        if animation_loop_flag(name) is not None
+    ]
 
 
 def split_bounds(document):

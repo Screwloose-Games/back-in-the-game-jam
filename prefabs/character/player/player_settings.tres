@@ -1,0 +1,11 @@
+[gd_resource type="Resource" script_class="PlayerSettings" format=3 uid="uid://bqn30uml0yxuc"]
+
+[ext_resource type="Script" uid="uid://ogypvu8dpvks" path="res://prefabs/character/player/player_settings.gd" id="1_settings"]
+
+[resource]
+script = ExtResource("1_settings")
+oxygen_idle_drain_per_second = 0.1
+suit_start_fraction = 1.0
+suit_drain_per_second = 0.1
+lamp_power_per_second = 0.1
+fog_density = 0.0

@@ -96,6 +96,71 @@ def test_a_name_that_merely_contains_a_suffix_is_not_flagged():
     assert godot.find_surprising_suffixes(document([{"name": "wheelhouse"}])) == []
 
 
+def test_trailing_digits_do_not_hide_a_suffix():
+    """`steering_wheel2` imports as `steering2`, still a VehicleWheel3D."""
+    found = godot.find_surprising_suffixes(document([{"name": "steering_wheel2"}]))
+    assert [(name, suffix) for name, suffix, _ in found] == [("steering_wheel2", "wheel")]
+    assert godot.is_collision_node("crate_col3")
+
+
+# --- animation loop flags -----------------------------------------------------
+#
+# Every expectation below was read off Godot 4.7.1 rather than off its source: the
+# clips were exported into a throwaway project, imported headless, and the
+# resulting names and loop_modes printed. That is why the odd-looking ones are
+# here -- `walkloop` really does loop without a separator, and `idle_loop_fast`
+# really does not loop at all.
+
+
+def animations(*names):
+    return {"asset": {"version": "2.0"}, "animations": [{"name": n} for n in names]}
+
+
+def test_the_canonical_suffix_is_accepted():
+    assert godot.find_animation_loop_issues(animations("idle_float-loop")) == []
+
+
+def test_the_suffix_is_stripped_on_import():
+    """The name callers play the clip by is the authored name minus the flag."""
+    assert godot.imported_animation_name("idle_float-loop") == "idle_float"
+    assert godot.imported_animation_name("attack_01") == "attack_01"
+
+
+def test_other_spellings_godot_honours_are_rejected():
+    """`_loop`, `$loop` and `-cycle` all loop the clip, so they cannot be silent."""
+    flagged = godot.find_animation_loop_issues(
+        animations("walk_loop", "swim$loop", "run-cycle", "fall-Loop")
+    )
+    assert [name for name, _, _ in flagged] == [
+        "walk_loop", "swim$loop", "run-cycle", "fall-Loop",
+    ]
+    assert [imported for _, _, imported in flagged] == ["walk", "swim", "run", "fall"]
+
+
+def test_a_clip_that_loops_by_accident_is_caught():
+    """No separator: Godot loops it and has nothing to strip, so the name stays."""
+    assert godot.find_animation_loop_issues(animations("walkloop")) == [
+        ("walkloop", "loop", "walkloop")
+    ]
+
+
+def test_a_flag_in_the_middle_of_a_name_is_inert():
+    """Matching is end-anchored -- `idle_loop_fast` does not loop."""
+    assert godot.find_animation_loop_issues(animations("idle_loop_fast", "a_cycle_b")) == []
+    assert godot.imported_animation_name("idle_loop_fast") == "idle_loop_fast"
+
+
+def test_trailing_digits_survive_the_strip():
+    """`walk_loop2` imports as `walk2`, looping."""
+    assert godot.imported_animation_name("walk_loop2") == "walk2"
+
+
+def test_ordinary_clip_names_do_not_loop():
+    for name in ("idle_float", "attack_01", "die_once", "plainname"):
+        assert godot.animation_loop_flag(name) is None, name
+    assert godot.looping_animations(animations("idle_float", "run-loop")) == ["run"]
+
+
 # --- oversized collision ------------------------------------------------------
 
 

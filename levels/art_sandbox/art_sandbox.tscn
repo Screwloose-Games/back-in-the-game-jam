@@ -1,0 +1,20 @@
+[gd_scene format=3 uid="uid://dvclptge5q5cp"]
+
+[ext_resource type="PackedScene" uid="uid://beytw4v488on7" path="res://assets/art/gameplay/mining_laser/sm_mining_laser.gltf" id="1_3yvde"]
+[ext_resource type="PackedScene" uid="uid://ddnehb4delwdp" path="res://assets/art/character/sk_player_character.gltf" id="2_mb4bg"]
+[ext_resource type="PackedScene" uid="uid://d2rsjfnwejjoa" path="res://prefabs/character/player/prefab_player.tscn" id="4_3yvde"]
+[ext_resource type="PackedScene" uid="uid://det0tpc4l3wl" path="res://assets/art/gameplay/mining_laser/sm_mining_laser3.gltf" id="4_q0jxn"]
+
+[node name="ArtSandbox" type="Node3D" unique_id=2076687673]
+
+[node name="sm_mining_laser" parent="." unique_id=469709200 instance=ExtResource("1_3yvde")]
+transform = Transform3D(-1, 0, 8.742278e-08, 0, 1, 0, -8.742278e-08, 0, -1, 0.819999, 0.28321147, 0.5599023)
+
+[node name="sk_player_character" parent="." unique_id=819363702 instance=ExtResource("2_mb4bg")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.2975695, 0, 0)
+
+[node name="sm_mining_laser3" parent="." unique_id=900738884 instance=ExtResource("4_q0jxn")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.81525266, 0)
+
+[node name="prefab_player" parent="." unique_id=26846662 instance=ExtResource("4_3yvde")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.0433702, 0.5821414, 0)

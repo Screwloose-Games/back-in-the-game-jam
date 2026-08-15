@@ -19,10 +19,14 @@ func _ready() -> void:
 	if OS.has_feature("web"):
 		quit_button.visible = false
 
+	# Nothing else wants these seconds, and a level warmed while the player reads the
+	# menu is a level that starts the moment they press the button.
+	AsyncLoader.request(SceneManager.MAIN_LEVEL_PATH)
+
 
 func _on_start_pressed():
-	SceneTransitionManager.change_scene_with_transition(
-		SceneManager.main_level, SceneManager.fade_transition
+	SceneTransitionManager.change_scene_to_path(
+		SceneManager.MAIN_LEVEL_PATH, SceneManager.fade_transition
 	)
 
 

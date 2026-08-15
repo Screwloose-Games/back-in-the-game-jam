@@ -8,6 +8,7 @@ var options_menu_scene: PackedScene = SceneManager.options_menu
 @onready var main_menu_button = %MainMenuButton
 @onready var pause_menu_body = %PauseMenuBody
 @onready var quit_button: Button = %QuitButton
+@onready var spawn_second_player_button: Button = %SpawnSecondPlayerButton
 
 
 func _ready():
@@ -16,12 +17,21 @@ func _ready():
 	main_menu_button.pressed.connect(on_main_menu_pressed)
 	options_button.pressed.connect(on_options_pressed)
 	quit_button.pressed.connect(_on_quit_button_pressed)
+	spawn_second_player_button.pressed.connect(_on_spawn_second_player_button_pressed)
+	spawn_second_player_button.visible = OS.is_debug_build()
 	if OS.has_feature("web"):
 		quit_button.hide()
 
 
 func _on_quit_button_pressed():
 	get_tree().quit(0)
+
+
+## Asks whichever level is listening for a second character; unpauses so the
+## result is visible straight away.
+func _on_spawn_second_player_button_pressed():
+	GlobalSignalBus.spawn_second_player_requested.emit()
+	unpause()
 
 
 func _unhandled_input(event: InputEvent) -> void:

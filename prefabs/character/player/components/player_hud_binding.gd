@@ -1,0 +1,80 @@
+class_name PlayerHudBinding
+extends Node
+
+## Instances this player's HUD and keeps its HudState fed. The HUD hangs off the
+## player rather than the level so a remote peer's copy can simply be switched
+## off with the rest of their prefab.
+
+## Swap layouts by pointing this at a different prefab_hud_*.tscn. Leave it null
+## for a headless player, or for one whose HUD the level owns.
+@export var hud_scene: PackedScene = preload("res://prefabs/ui/hud/prefab_hud_04.tscn")
+
+## The HUD is hidden for a player who is not looking through their own camera.
+@export var hud_visible: bool = true
+
+var _hud: HudVariant
+
+@onready var state: HudState = %HudState
+@onready var oxygen: PlayerOxygen = %Oxygen
+@onready var power: PlayerPowerClient = %PowerClient
+@onready var tether: PlayerTether = %Tether
+
+
+func _ready() -> void:
+	_instance_hud()
+	oxygen.oxygen_changed.connect(_on_oxygen_changed)
+	power.charge_changed.connect(_on_power_changed)
+	tether.clipped.connect(_on_tether_changed.unbind(1))
+	tether.unclipped.connect(_on_tether_changed.unbind(1))
+	_push_all()
+
+
+func _process(_delta: float) -> void:
+	# Only the tether length changes continuously; the rest arrive on signals.
+	if tether.is_attached():
+		state.tether_metres = tether.distance()
+
+
+## The instanced HUD, or null when hud_scene was left empty.
+func hud() -> HudVariant:
+	return _hud
+
+
+func _instance_hud() -> void:
+	if hud_scene == null:
+		return
+	_hud = hud_scene.instantiate() as HudVariant
+	if _hud == null:
+		push_warning("PlayerHudBinding.hud_scene is not a HudVariant; nothing was instanced.")
+		return
+	add_child(_hud)
+	_hud.visible = hud_visible
+	_hud.bind(state)
+
+
+func _push_all() -> void:
+	state.oxygen = oxygen.fraction()
+	state.power = power.fraction()
+	_on_tether_changed()
+	_update_status()
+
+
+func _on_oxygen_changed(fraction: float) -> void:
+	state.oxygen = fraction
+	_update_status()
+
+
+func _on_power_changed(fraction: float) -> void:
+	state.power = fraction
+	_update_status()
+
+
+func _on_tether_changed() -> void:
+	state.tether_attached = tether.is_attached()
+	state.tether_metres = tether.distance()
+
+
+## Status reads off whichever of the two resources is in worse shape, because
+## either one running out kills you and the face should say so.
+func _update_status() -> void:
+	state.status = HudState.status_for(minf(state.oxygen, state.power))

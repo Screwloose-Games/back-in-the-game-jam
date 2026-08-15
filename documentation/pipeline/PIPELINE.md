@@ -114,6 +114,7 @@ flowchart LR
 | --- | --- | --- | --- |
 | static mesh gltf | `sm_{object}.gltf or sm_{object}_{variation}.gltf` | `sm_rain_barrel.gltf` | `sm_RainBarrel.gltf` |
 | skeletal mesh gltf | `sk_{object}.gltf` | `sk_wolf.gltf` | `sm_wolf.gltf` |
+| animation clip name | `{clip}[-loop]` | `idle_float-loop` | `idle_float_loop` |
 | gltf binary buffer | `{mesh_stem}.bin` | `sm_rain_barrel.bin` | `rain_barrel.bin` |
 | texture map | `t_{asset_name}_{descriptor}.png or t_{asset_name}_{descriptor}_{variant}.png` | `t_rain_barrel_basecolor.png` | `T_RainBarrel_BaseColor.png` |
 | model container scene | `{mesh_stem}.tscn` | `sm_rain_barrel.tscn` | `rain_barrel.tscn` |
@@ -124,6 +125,7 @@ flowchart LR
 
 - **static mesh gltf** - Static mesh. The variation suffix is optional - an object with only one form does not need one.
 - **skeletal mesh gltf** - Skeletal mesh - a model with an armature.
+- **animation clip name** - Animation names inside a .gltf. A clip that repeats carries the suffix -loop; Godot imports it with loop_mode LOOP_LINEAR and strips the flag, so idle_float-loop reaches the engine as idle_float and is played, and listed in the spec's animations_expected, under that shorter name. A clip that does not repeat carries no flag. Godot also honours _loop, $loop and -cycle, and matches case-insensitively while ignoring trailing digits - all of them are rejected here so that a clip looping on purpose cannot be confused with one looping by accident. Distinct from the node-type suffixes: loop and cycle mean nothing on a node name.
 - **gltf binary buffer** - The buffer Blender writes beside a separate-format glTF. Its name is generated - never rename it, the .gltf references it by name.
 - **texture map** - Same [prefix]_[name]_[descriptor]_[variant] shape as the meshes, with the texture prefix t_. Set this as the filename pattern in the exporter rather than renaming files afterwards - see the never_hand_rename_textures rule.
 - **model container scene** - The inherited scene wrapping a model. Shares the mesh's stem and sits in the same directory, so the pair is obvious at a glance.
@@ -686,7 +688,7 @@ Blocks:
 
 ### Should one-shot animations be required to set repeat = 1?
 
-ENFORCE_ONE_SHOT_REPEAT is False, with LOOP_TAG_SUFFIX = "_loop" distinguishing looping tags. Same conflict as tags_required.
+ENFORCE_ONE_SHOT_REPEAT is False, with LOOP_TAG_SUFFIX = "_loop" distinguishing looping tags. Same conflict as tags_required. Note the 2D suffix is "_loop" while a 3D clip uses "-loop": the 3D one is Godot's own importer flag and its spelling is not ours to choose, whereas an .aseprite tag is only ever read by our validator.
 
 Blocks:
 - Documenting the 2D pipeline as authoritative.

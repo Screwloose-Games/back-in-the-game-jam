@@ -83,7 +83,10 @@ does never opening the editor. CI is the copy that decides.
 
 - **Naming:** `[prefix]_[asset_name]_[descriptor]_[variant]`, lowercase with
   underscores. `sm_` static mesh, `sk_` skeletal, `t_` texture,
-  `prefab_`/`level_` scenes. No hyphens, no `.fbx`, ever.
+  `prefab_`/`level_` scenes. No hyphens in a file name, no `.fbx`, ever.
+- **Looping 3D animations end in `-loop`** — the one hyphen in the conventions, and
+  Godot's flag rather than ours. The importer strips it, so `idle_float-loop` in the
+  `.gltf` is `idle_float` everywhere else. See `.claude/rules/3d-assets.md`.
 - **Facing:** models are built facing +Y in Blender, which exports to −Z — Godot's
   `Vector3.FORWARD`. This is deliberately *not* the glTF spec's +Z-front
   convention; matching the engine matters more than matching viewers.

@@ -22,6 +22,10 @@ How files are named in this project, for Godot 4.7.
 Everything is **lowercase with underscores between words**. No spaces, no hyphens,
 no camelCase, no PascalCase.
 
+The one hyphen in the whole convention is the `-loop` suffix on a 3D animation
+name *inside* a `.gltf` — Godot's own importer flag, not a file name. See
+[3D animation names](#3d-animation-names).
+
 ```
 sm_office_building_small.gltf     ✅
 t_rain_barrel_basecolor_02.png    ✅
@@ -90,7 +94,35 @@ Notes:
 - **Sprite sheets** exported from Aseprite feed `SpriteFrames` / `AnimatedSprite2D` — see
   [2D sprite animation](https://docs.godotengine.org/en/stable/tutorials/2d/2d_sprite_animation.html).
   Animation tag names inside an `.aseprite` file follow the same lowercase-underscore
-  rule and must be unique within the file.
+  rule and must be unique within the file. A looping tag is marked `_loop`, with an
+  underscore — that suffix is read only by our own validator, unlike the 3D `-loop`
+  below.
+
+## 3D animation names
+
+Animation names inside a `.gltf` follow the same lowercase-underscore rule, with one
+addition: **a clip that repeats ends in `-loop`.** Godot's scene importer reads that
+suffix as "import this looping", sets `loop_mode = LOOP_LINEAR`, and strips the flag
+from the name — so `idle_float-loop` in the file is `idle_float` in the engine, and
+that shorter name is what code plays and what the model spec's `animations_expected`
+lists. A clip that plays once carries no flag.
+
+The hyphen is not ours to change: Godot also accepts `_loop`, `$loop` and `-cycle`,
+matches case-insensitively, and ignores trailing digits, so `walk_loop2` imports as
+`walk2`, looping. `validate-model-files.py` accepts only `-loop` so that a clip
+looping on purpose cannot be mistaken for one looping by accident — and `walkloop`,
+which loops while keeping its name, is exactly that accident.
+
+```
+idle_float-loop     ✅  imports as idle_float, looping
+attack_01           ✅  plays once
+idle_float_loop     ❌  underscore — loops, but not the agreed spelling
+run-cycle           ❌  loops, but not the agreed spelling
+walkloop            ❌  loops by accident and keeps the name
+```
+
+This is an animation-only mechanism. `loop` and `cycle` mean nothing on a *node*
+name: a mesh called `crate_loop` imports untouched.
 
 ## Texture descriptors
 

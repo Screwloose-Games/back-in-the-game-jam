@@ -42,7 +42,7 @@ body:
         ## Acceptance Criteria:
 
         - [ ] The animations file name contains the prefix "anim_", is all lowercase, and is underscore separated, i.e. "anim_{model_name}.blend"
-        - [ ] When adding animations, looping animations should be tagges as "-loop"
+        - [ ] Any animation that repeats is named `{clip}-loop`, e.g. `idle_float-loop`. Godot strips the suffix on import, so the clip is `idle_float` in the engine. Non-looping clips carry no suffix.
         - [ ] The model is saved in `.blend` file format.
         - [ ] The model is saved to the specified filepath: `assets/art/{category}/{object_name}/anim_{model_name}.blend`.
         - [ ] The model is exported as gltf to the specified filepath: `assets/art/{category}/{object_name}/anim_{model_name}.gltf`.
@@ -56,7 +56,7 @@ body:
       label: Subtasks
       value: |
         - [ ] The animations file name contains the prefix "anim_", is all lowercase, and is underscore separated, i.e. "anim_{model_name}.blend"
-        - [ ] When adding animations, looping animations should be tagges as "-loop"
+        - [ ] Any animation that repeats is named `{clip}-loop`, e.g. `idle_float-loop`. Godot strips the suffix on import, so the clip is `idle_float` in the engine. Non-looping clips carry no suffix.
         - [ ] The model is saved in `.blend` file format.
         - [ ] The model is saved to the specified filepath: `assets/art/{category}/{object_name}/anim_{model_name}.blend`.
         - [ ] The model is exported as gltf to the specified filepath: `assets/art/{category}/{object_name}/anim_{model_name}.gltf`.

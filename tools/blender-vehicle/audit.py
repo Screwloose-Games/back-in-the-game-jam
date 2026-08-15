@@ -31,6 +31,10 @@ from mathutils import Vector
 # Its _teststr() accepts BOTH "-suffix" and "_suffix" (and "$suffix"), which is
 # why an innocuous-looking `steering_wheel` matches the VehicleWheel3D rule. The
 # same mechanism is what makes -convcolonly work, so it cannot be switched off.
+#
+# "loop" and "cycle" are absent on purpose: they are ANIMATION flags, not node
+# flags. A node named `crate_loop` imports untouched -- verified against 4.7.1.
+# The animation side of it lives in tools/gltf-validator/gltf_godot_import.py.
 GODOT_NODE_SUFFIXES = {
     "col": "StaticBody3D + trimesh collision",
     "colonly": "StaticBody3D, visual mesh discarded",
@@ -43,8 +47,6 @@ GODOT_NODE_SUFFIXES = {
     "occ": "OccluderInstance3D",
     "occonly": "OccluderInstance3D, visual mesh discarded",
     "noimp": "skipped entirely on import",
-    "cycle": "animation loop flag",
-    "loop": "animation loop flag",
 }
 
 ROTATION_EPS = 1e-6

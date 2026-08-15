@@ -300,6 +300,21 @@ def check_godot_import(report, document, spec, gltf_godot_import):
     else:
         report.ok("godot_node_suffixes")
 
+    loop_issues = gltf_godot_import.find_animation_loop_issues(document)
+    if loop_issues:
+        for name, flag, imported in loop_issues:
+            report.fail(
+                "animation_loop_suffix",
+                f"animation '{name}' ends in '{flag}', so Godot imports it "
+                f"looping and calls it '{imported}'. A clip that loops is named "
+                f"'{{clip}}{gltf_godot_import.CANONICAL_LOOP_SUFFIX}' here -- rename "
+                f"it, or rename it away from those letters if it is not meant to "
+                f"repeat. Godot honours '_loop', '$loop' and '-cycle' too, which "
+                "is why only one of them is allowed to mean it.",
+            )
+    else:
+        report.ok("animation_loop_suffix")
+
     if spec.get("allow_oversized_collision", False):
         report.info("collision_within_visual", "opted out by the spec")
     else:

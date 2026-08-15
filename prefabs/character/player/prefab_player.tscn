@@ -1,0 +1,246 @@
+[gd_scene format=3 uid="uid://d2rsjfnwejjoa"]
+
+[ext_resource type="PackedScene" uid="uid://oju4tyl0vcdi" path="res://assets/art/character/sk_player_character.tscn" id="1_model"]
+[ext_resource type="Resource" uid="uid://bqn30uml0yxuc" path="res://prefabs/character/player/player_settings.tres" id="2_settings"]
+[ext_resource type="Script" uid="uid://b5dewqk5xvrpq" path="res://prefabs/character/player/components/player_input.gd" id="3_input"]
+[ext_resource type="Script" uid="uid://bsrx8pc8eq3xe" path="res://prefabs/character/player/components/player_locomotion.gd" id="4_locomotion"]
+[ext_resource type="Script" uid="uid://g7s62ju7degg" path="res://prefabs/character/player/components/player_collision_response.gd" id="5_collision"]
+[ext_resource type="Script" uid="uid://kk8o0trqqvvk" path="res://prefabs/character/player/components/player_grab.gd" id="6_grab"]
+[ext_resource type="Script" uid="uid://5673jsec5omo" path="res://prefabs/character/player/components/player_tether.gd" id="7_tether"]
+[ext_resource type="Script" uid="uid://b5yljlrn55a5g" path="res://prefabs/character/player/components/player_hands.gd" id="8_hands"]
+[ext_resource type="Script" uid="uid://c2lxtq3oqqv06" path="res://prefabs/character/player/components/player_power_client.gd" id="9_power"]
+[ext_resource type="Script" uid="uid://cacn0s1unkjhl" path="res://prefabs/character/player/components/player_oxygen.gd" id="10_oxygen"]
+[ext_resource type="Script" uid="uid://deee4os4n3dqc" path="res://prefabs/character/player/components/player_lamp.gd" id="11_lamp"]
+[ext_resource type="Script" uid="uid://ckrom7807pg1q" path="res://prefabs/character/player/components/player_mining_tool.gd" id="12_mining"]
+[ext_resource type="Script" uid="uid://b7rynia6ljlej" path="res://prefabs/character/player/components/player_noise_emitter.gd" id="13_noise"]
+[ext_resource type="Script" uid="uid://c783cmfeekxbo" path="res://prefabs/character/player/components/player_view.gd" id="14_view"]
+[ext_resource type="Script" uid="uid://dpmjx33ndih4a" path="res://prefabs/character/player/components/player_respawn.gd" id="15_respawn"]
+[ext_resource type="Script" uid="uid://2mm7qgty0jt8" path="res://prefabs/character/player/components/player_hud_binding.gd" id="16_hud"]
+[ext_resource type="Script" uid="uid://b4bfpv4dnou66" path="res://prefabs/ui/hud/hud_state.gd" id="17_hud_state"]
+[ext_resource type="Script" uid="uid://dm4aur51nkr6l" path="res://prefabs/character/player/components/player_visibility.gd" id="18_visibility"]
+[ext_resource type="Script" uid="uid://bmuucs25vxd5q" path="res://prefabs/character/player/components/player_ui.gd" id="19_ui"]
+[ext_resource type="PackedScene" uid="uid://b8b6q7g4bsaw5" path="res://common/ui/pause_menu/pause_menu.tscn" id="20_pause"]
+[ext_resource type="Script" uid="uid://boeblupp05d2k" path="res://prefabs/character/player/components/player_rig_animation.gd" id="21_riganim"]
+[ext_resource type="PackedScene" uid="uid://dp3bwl1dg7glm" path="res://prefabs/gameplay/prefab_mining_laser.tscn" id="22_laser"]
+
+[sub_resource type="SphereShape3D" id="SphereShape3D_hull"]
+radius = 0.4
+
+[sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_base"]
+animation = &"idle_float"
+
+[sub_resource type="AnimationNodeBlend2" id="AnimationNodeBlend2_upper"]
+filter_enabled = true
+filters = ["player_character_armature/Skeleton3D:Head", "player_character_armature/Skeleton3D:LeftHand", "player_character_armature/Skeleton3D:LeftLowerArm", "player_character_armature/Skeleton3D:LeftUpperArm", "player_character_armature/Skeleton3D:RightHand", "player_character_armature/Skeleton3D:RightLowerArm", "player_character_armature/Skeleton3D:RightUpperArm", "player_character_armature/Skeleton3D:Spine"]
+
+[sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_upperidle"]
+animation = &"idle_float"
+
+[sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_equip"]
+animation = &"laser_equip"
+
+[sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_fire"]
+animation = &"laser_fire"
+
+[sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_hold"]
+animation = &"laser_hold"
+
+[sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_stow"]
+animation = &"laser_stow"
+
+[sub_resource type="AnimationNodeStateMachineTransition" id="AnimationNodeStateMachineTransition_boot"]
+advance_mode = 2
+
+[sub_resource type="AnimationNodeStateMachineTransition" id="AnimationNodeStateMachineTransition_on"]
+xfade_time = 0.1
+
+[sub_resource type="AnimationNodeStateMachineTransition" id="AnimationNodeStateMachineTransition_atend"]
+xfade_time = 0.15
+switch_mode = 2
+advance_mode = 2
+
+[sub_resource type="AnimationNodeStateMachineTransition" id="AnimationNodeStateMachineTransition_sync"]
+xfade_time = 0.12
+switch_mode = 1
+
+[sub_resource type="AnimationNodeStateMachine" id="AnimationNodeStateMachine_upper"]
+states/idle_float/node = SubResource("AnimationNodeAnimation_upperidle")
+states/idle_float/position = Vector2(200, 100)
+states/laser_equip/node = SubResource("AnimationNodeAnimation_equip")
+states/laser_equip/position = Vector2(400, 100)
+states/laser_fire/node = SubResource("AnimationNodeAnimation_fire")
+states/laser_fire/position = Vector2(800, 100)
+states/laser_hold/node = SubResource("AnimationNodeAnimation_hold")
+states/laser_hold/position = Vector2(600, 100)
+states/laser_stow/node = SubResource("AnimationNodeAnimation_stow")
+states/laser_stow/position = Vector2(600, 240)
+transitions = ["Start", "idle_float", SubResource("AnimationNodeStateMachineTransition_boot"), "idle_float", "laser_equip", SubResource("AnimationNodeStateMachineTransition_on"), "laser_equip", "laser_hold", SubResource("AnimationNodeStateMachineTransition_atend"), "laser_hold", "laser_fire", SubResource("AnimationNodeStateMachineTransition_sync"), "laser_fire", "laser_hold", SubResource("AnimationNodeStateMachineTransition_sync"), "laser_hold", "laser_stow", SubResource("AnimationNodeStateMachineTransition_on"), "laser_stow", "idle_float", SubResource("AnimationNodeStateMachineTransition_atend")]
+
+[sub_resource type="AnimationNodeBlendTree" id="AnimationNodeBlendTree_rig"]
+nodes/output/position = Vector2(680, 140)
+nodes/base/node = SubResource("AnimationNodeAnimation_base")
+nodes/base/position = Vector2(60, 60)
+nodes/blend/node = SubResource("AnimationNodeBlend2_upper")
+nodes/blend/position = Vector2(420, 120)
+nodes/upper/node = SubResource("AnimationNodeStateMachine_upper")
+nodes/upper/position = Vector2(60, 240)
+node_connections = [&"output", 0, &"blend", &"blend", 0, &"base", &"blend", 1, &"upper"]
+
+[node name="prefab_player" type="Node3D" unique_id=512546844]
+
+[node name="PlayerBody" type="CharacterBody3D" parent="." unique_id=1318507332 groups=["player"]]
+collision_layer = 2
+collision_mask = 29
+motion_mode = 1
+
+[node name="HullShape" type="CollisionShape3D" parent="PlayerBody" unique_id=1579091015]
+shape = SubResource("SphereShape3D_hull")
+
+[node name="Collider" type="Node3D" parent="PlayerBody" unique_id=433850247]
+
+[node name="Rig" type="Node3D" parent="PlayerBody" unique_id=1588703828]
+unique_name_in_owner = true
+transform = Transform3D(-1, 0, -8.74228e-08, 0, 1, 0, 8.74228e-08, 0, -1, 0, -1.32, 0)
+
+[node name="sk_player_character" parent="PlayerBody/Rig" unique_id=1701427299 instance=ExtResource("1_model")]
+
+[node name="AnimationTree" type="AnimationTree" parent="PlayerBody/Rig" unique_id=1838859480]
+unique_name_in_owner = true
+root_node = NodePath("%AnimationTree/../sk_player_character")
+tree_root = SubResource("AnimationNodeBlendTree_rig")
+anim_player = NodePath("../sk_player_character/AnimationPlayer")
+parameters/blend/blend_amount = 1.0
+
+[node name="LaserAttachment" type="BoneAttachment3D" parent="PlayerBody/Rig" unique_id=598779186]
+transform = Transform3D(0, -0.99999994, 0, 4.371139e-08, 0, 1, -1, 0, 4.371139e-08, -0.72, 0.84, -0.03)
+bone_name = "RightHand"
+bone_idx = 14
+use_external_skeleton = true
+external_skeleton = NodePath("../sk_player_character/player_character_armature/Skeleton3D")
+
+[node name="prefab_mining_laser" parent="PlayerBody/Rig/LaserAttachment" unique_id=2015893798 instance=ExtResource("22_laser")]
+transform = Transform3D(1, 0, 0, 0, -1, 0, 0, 0, -1, 0, 0.24, 0.36)
+settings = ExtResource("2_settings")
+
+[node name="Head" type="Node3D" parent="PlayerBody" unique_id=1753483824]
+unique_name_in_owner = true
+
+[node name="HeadCamera" type="Camera3D" parent="PlayerBody/Head" unique_id=1794859922]
+unique_name_in_owner = true
+current = true
+far = 38.0
+
+[node name="AudioListener3D" type="AudioListener3D" parent="PlayerBody/Head" unique_id=424896739]
+
+[node name="HelmetLamp" type="SpotLight3D" parent="PlayerBody/Head" unique_id=1959473006]
+unique_name_in_owner = true
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.14, -0.12, 0)
+light_color = Color(1, 0.96, 0.89, 1)
+light_energy = 3.5
+shadow_enabled = true
+spot_range = 30.0
+spot_angle_attenuation = 0.75
+
+[node name="GrabRay" type="RayCast3D" parent="PlayerBody/Head" unique_id=294590671]
+unique_name_in_owner = true
+target_position = Vector3(0, 0, -2)
+collision_mask = 8
+
+[node name="HandSocket" type="Marker3D" parent="PlayerBody/Head" unique_id=1756950994]
+unique_name_in_owner = true
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.5, -0.8)
+
+[node name="TetherAnchor" type="Marker3D" parent="PlayerBody" unique_id=43065438]
+unique_name_in_owner = true
+
+[node name="TetherRopeView" type="MeshInstance3D" parent="PlayerBody" unique_id=1262462849]
+unique_name_in_owner = true
+top_level = true
+visible = false
+cast_shadow = 0
+
+[node name="Input" type="Node" parent="PlayerBody" unique_id=671682410]
+unique_name_in_owner = true
+script = ExtResource("3_input")
+
+[node name="Locomotion" type="Node" parent="PlayerBody" unique_id=868521018]
+unique_name_in_owner = true
+script = ExtResource("4_locomotion")
+settings = ExtResource("2_settings")
+
+[node name="CollisionResponse" type="Node" parent="PlayerBody" unique_id=1763853917]
+unique_name_in_owner = true
+script = ExtResource("5_collision")
+settings = ExtResource("2_settings")
+
+[node name="Grab" type="Node" parent="PlayerBody" unique_id=370003779]
+unique_name_in_owner = true
+script = ExtResource("6_grab")
+settings = ExtResource("2_settings")
+
+[node name="Tether" type="Node" parent="PlayerBody" unique_id=628621058]
+unique_name_in_owner = true
+script = ExtResource("7_tether")
+settings = ExtResource("2_settings")
+
+[node name="Hands" type="Node" parent="PlayerBody" unique_id=2047107473]
+unique_name_in_owner = true
+script = ExtResource("8_hands")
+
+[node name="PowerClient" type="Node" parent="PlayerBody" unique_id=1204671211]
+unique_name_in_owner = true
+script = ExtResource("9_power")
+settings = ExtResource("2_settings")
+
+[node name="Oxygen" type="Node" parent="PlayerBody" unique_id=337753664]
+unique_name_in_owner = true
+script = ExtResource("10_oxygen")
+settings = ExtResource("2_settings")
+
+[node name="Lamp" type="Node" parent="PlayerBody" unique_id=1027649032]
+unique_name_in_owner = true
+script = ExtResource("11_lamp")
+settings = ExtResource("2_settings")
+
+[node name="MiningTool" type="Node" parent="PlayerBody" node_paths=PackedStringArray("tool_model") unique_id=1733438372]
+unique_name_in_owner = true
+script = ExtResource("12_mining")
+settings = ExtResource("2_settings")
+tool_model = NodePath("../Rig/LaserAttachment/prefab_mining_laser")
+
+[node name="RigAnimation" type="Node" parent="PlayerBody" unique_id=612356352]
+unique_name_in_owner = true
+script = ExtResource("21_riganim")
+
+[node name="NoiseEmitter" type="Node" parent="PlayerBody" unique_id=1844583049]
+unique_name_in_owner = true
+script = ExtResource("13_noise")
+settings = ExtResource("2_settings")
+
+[node name="View" type="Node" parent="PlayerBody" unique_id=1122051187]
+unique_name_in_owner = true
+script = ExtResource("14_view")
+settings = ExtResource("2_settings")
+
+[node name="Visibility" type="Node" parent="PlayerBody" unique_id=1405140534]
+unique_name_in_owner = true
+script = ExtResource("18_visibility")
+
+[node name="Respawn" type="Node" parent="PlayerBody" unique_id=936594900]
+unique_name_in_owner = true
+script = ExtResource("15_respawn")
+
+[node name="UI" type="Node" parent="PlayerBody" unique_id=1423616342]
+unique_name_in_owner = true
+script = ExtResource("19_ui")
+
+[node name="HudBinding" type="Node" parent="PlayerBody/UI" unique_id=1848953573]
+unique_name_in_owner = true
+script = ExtResource("16_hud")
+
+[node name="HudState" type="Node" parent="PlayerBody/UI/HudBinding" unique_id=234366836]
+unique_name_in_owner = true
+script = ExtResource("17_hud_state")
+
+[node name="PauseScreen" parent="PlayerBody/UI" unique_id=532115693 instance=ExtResource("20_pause")]
+unique_name_in_owner = true
