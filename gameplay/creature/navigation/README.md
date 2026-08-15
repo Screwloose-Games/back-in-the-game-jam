@@ -37,6 +37,7 @@ All nine phases are implemented. In dependency order:
 |---|---|---|
 | 1–2 | clearance sampling, the candidate lattice, decimation, the sparse `AStar3D` graph, shape-cast edge validation, endpoint attachment, monotonic waypoint following, locomotion-aware smoothing | `graph/`, `route/` |
 | 3–6 | surface crawl, tunnel swim, wiggle, leap, and the local planner that chooses between them | `locomotion/` |
+| 8.1, 9.2, 21 | local obstacle avoidance and surface adhesion, plus the numbers they steer by | `locomotion/avoidance/` |
 | 7 | runtime graph patching after mining | `graph/nav_graph_patcher.gd` |
 | 8–9 | the believed graph, and the inspection chain that updates it | `knowledge/` |
 | 35 | imperfect route selection | `route/nav_route_chooser.gd` |
@@ -201,6 +202,7 @@ exist to protect.
 | Only `creature_navigation.gd` calls `get_world_3d` | Same seam, from the other end |
 | `graph/` never names a probe, a builder or the facade | The graph must not know where it came from. That is the entire mechanism behind Invariant 9: a believed graph and a real one are the same type |
 | `route/` never names the builder | Planning must never trigger a bake, or a stale graph hides behind a frame spike instead of reporting a partial route |
+| `locomotion/avoidance/` never names a probe, a config, a command, a controller or the surface field | Avoidance takes a reading and a preferred direction and returns a vector. A solver that could cast is a second movement system deciding where the body goes, and only one of the two is subject to Invariant 3; one that could sample would re-take a ten-ray fan it was already handed |
 | Nothing outside `tools/` reads a wall clock | `Time.get_ticks_msec()` ignores `get_tree().paused` and `Engine.time_scale`, and cannot be driven from a test |
 | Nothing names `NavigationServer3D` / `NavigationAgent3D` / `NavigationRegion3D` | This module replaces Godot's navigation rather than wrapping it; a stray agent means two systems quietly disagreeing |
 | The overlay sets `vertex_color_use_as_albedo` and is unshaded | Godot infers neither. Without them the overlay renders flat white and the wiggle-versus-normal edge colouring — §39's most useful signal — silently disappears |
@@ -260,7 +262,7 @@ which when an alien is behaving oddly.
 
 | Mechanism | Where | Against |
 |---|---|---|
-| **Adhesion** | `NavAvoidance.adhesion`, applied by both `SurfaceCrawlController` and `TunnelSwimController` | §8.1's "maintaining body contact". The module's definition of contact is "within tentacle reach" and nothing else closes the gap, so a body nudged outward drifts to the reach limit and then past it |
+| **Adhesion** | `NavAdhesion.pull`, applied by both `SurfaceCrawlController` and `TunnelSwimController` | §8.1's "maintaining body contact". The module's definition of contact is "within tentacle reach" and nothing else closes the gap, so a body nudged outward drifts to the reach limit and then past it |
 | **Two-sided recovery** | `NavLocalPlanner._back_off` and `_reacquire` | Too close to cast from, and too far to see anything. `is_slipped` is Invariant 3 as a predicate: the only legal unsupported state is airborne |
 | **The escape fan** | `SurfaceCrawlController.steer` | The ±60° candidate arc, which contains nothing when the way out is behind. One retry per tick, at 360°, casting every candidate and ignoring `crawl_minimum_score` — a body with no legal move should take a bad move over no move |
 | **The watchdog** | `NavProgressMonitor`, ticked by the facade | Everything above failing anyway. Displacement under a window, excluding deliberate stillness; on a trip it resets the mode, forces a replan and raises a §30 inspection |

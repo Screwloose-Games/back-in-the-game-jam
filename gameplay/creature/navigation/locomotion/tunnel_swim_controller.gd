@@ -49,7 +49,9 @@ static func desired_direction(
 	# bore the two agree and it never showed; at a bend the swimmer stayed beautifully
 	# centred while driving its shoulder into the outside wall, and the only recovery was
 	# the swept cast refusing the tick.
-	return NavAvoidance.steer_clear(blended.normalized(), reading, profile.avoid_margin, strength)
+	return NavAvoidance.steer_clear(
+		blended.normalized(), reading, profile.avoidance.margin, strength
+	)
 
 
 ## Section 8.1's adhesion, but only while leaving.
@@ -68,8 +70,8 @@ static func exit_pull(reading: NavSurfaceReading, profile: LocomotionProfile) ->
 	var leaving: float = clampf(1.0 - reading.enclosure / profile.tunnel_enter_enclosure, 0.0, 1.0)
 	if leaving <= 0.0:
 		return Vector3.ZERO
-	var pull: Vector3 = NavAvoidance.adhesion(
-		reading, profile.crawl_hold_distance, profile.crawl_adhesion_gain, 1.0
+	var pull: Vector3 = NavAdhesion.pull(
+		reading, profile.avoidance.hold_distance, profile.avoidance.adhesion_gain, 1.0
 	)
 	return pull * leaving
 
@@ -114,7 +116,7 @@ func steer(
 
 	var direction := Vector3.ZERO
 	var cleared: bool = false
-	for attempt: int in maxi(profile.tunnel_avoid_attempts, 1):
+	for attempt: int in maxi(profile.avoidance.retry_attempts, 1):
 		direction = desired_direction(
 			toward - body.position, reading, profile, 1.0 + float(attempt)
 		)

@@ -1,28 +1,19 @@
 class_name NavigationSource
 extends Node3D
 
-This bases the navigation mesh for the leve.
-It turns arbitrary terrain collision into a NavGraph.
-
-## To use
-
-- Place into the level
-
-## Notes
-
+## This bakes the navigation graph for the level.
+## It turns arbitrary terrain collision into a NavGraph.
+##
+## To use: place it into the level.
+##
 ## WHAT LIVES HERE               WHAT STAYS ON THE CREATURE
 ##     the probe binding             its own probe, for locomotion
 ##     the bake and its budget       the route, the follower, the local planner
 ##     the patch and its budget      the believed graph and the inspection chain
 ##     world_graph                   which graph it plans against
 ##
-
-
-##
 ## HOW IT DECIDES WHAT IS AIR. By flooding outward from seeds, not by asking whether a point
-## is rock -- see NavGraphBuilder.begin_flood. 
-
-That question has no answer for a concave
+## is rock -- see NavGraphBuilder.begin_flood. That question has no answer for a concave
 ## trimesh under Jolt (NavigationProbe.is_solid's docstring, pinned by
 ## tools/verify_navigation_csg.tscn), and a concave trimesh is what CSG and voxel meshing
 ## both produce. Reachability needs no solidity oracle, so this works on any collider the

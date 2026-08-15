@@ -12,8 +12,8 @@ extends "res://gameplay/creature/navigation/tests/navigation_test_case.gd"
 ## in `test_slip_recovery.gd`.
 
 
-func _profile() -> LocomotionProfile:
-	return _config.locomotion_profile
+func _avoidance() -> AvoidanceProfile:
+	return _config.locomotion_profile.avoidance
 
 
 # ----- section 21's sixth term, which used to do nothing -----
@@ -21,18 +21,18 @@ func _profile() -> LocomotionProfile:
 
 func test_a_direction_with_nothing_ahead_is_risk_free() -> void:
 	var reading: NavSurfaceReading = _reading_of([[Vector3.DOWN, 1.0]])
-	assert_eq(NavAvoidance.risk(Vector3.RIGHT, reading, _profile().avoid_margin), 0.0)
+	assert_eq(NavAvoidance.risk(Vector3.RIGHT, reading, _avoidance().margin), 0.0)
 
 
 ## A wall the body is moving AWAY from is not a collision risk, and charging for it is how
 ## a creature refuses to leave the surface it is standing on.
 func test_a_surface_behind_the_heading_is_not_charged_for() -> void:
 	var reading: NavSurfaceReading = _reading_of([[Vector3.LEFT, 0.5]])
-	assert_eq(NavAvoidance.risk(Vector3.RIGHT, reading, _profile().avoid_margin), 0.0)
+	assert_eq(NavAvoidance.risk(Vector3.RIGHT, reading, _avoidance().margin), 0.0)
 
 
 func test_risk_rises_as_the_wall_gets_closer() -> void:
-	var margin: float = _profile().avoid_margin
+	var margin: float = _avoidance().margin
 	var far: float = NavAvoidance.risk(
 		Vector3.RIGHT, _reading_of([[Vector3.RIGHT, margin * 0.9]]), margin
 	)
@@ -47,7 +47,7 @@ func test_risk_rises_as_the_wall_gets_closer() -> void:
 ## both sides and is in no danger from either; summing would make the safest place in a
 ## tunnel score as the most dangerous, and the swimmer would refuse to use tunnels.
 func test_two_opposing_walls_do_not_add_up() -> void:
-	var margin: float = _profile().avoid_margin
+	var margin: float = _avoidance().margin
 	var corridor: NavSurfaceReading = _reading_of(
 		[[Vector3.LEFT, margin * 0.5], [Vector3.RIGHT, margin * 0.5]]
 	)
@@ -96,13 +96,13 @@ func test_collision_risk_changes_which_direction_the_crawler_picks() -> void:
 func test_steer_clear_leaves_a_clear_heading_alone() -> void:
 	var reading: NavSurfaceReading = _reading_of([[Vector3.DOWN, 1.0]])
 	var steered: Vector3 = NavAvoidance.steer_clear(
-		Vector3.RIGHT, reading, _profile().avoid_margin, 1.0
+		Vector3.RIGHT, reading, _avoidance().margin, 1.0
 	)
 	assert_almost_eq(steered.dot(Vector3.RIGHT), 1.0, 0.001)
 
 
 func test_steer_clear_turns_away_from_a_wall_it_is_angling_at() -> void:
-	var margin: float = _profile().avoid_margin
+	var margin: float = _avoidance().margin
 	var reading: NavSurfaceReading = _reading_of([[Vector3.RIGHT, margin * 0.2]])
 	var steered: Vector3 = NavAvoidance.steer_clear(
 		Vector3(1.0, 0.0, 1.0).normalized(), reading, margin, 1.0
@@ -117,7 +117,7 @@ func test_steer_clear_turns_away_from_a_wall_it_is_angling_at() -> void:
 ## The knob the swimmer's retries turn. Without a monotone response, asking again more
 ## firmly would produce the same refused direction three times.
 func test_more_strength_turns_further() -> void:
-	var margin: float = _profile().avoid_margin
+	var margin: float = _avoidance().margin
 	var reading: NavSurfaceReading = _reading_of([[Vector3.RIGHT, margin * 0.2]])
 	var wanted: Vector3 = Vector3(1.0, 0.0, 1.0).normalized()
 	var gentle: Vector3 = NavAvoidance.steer_clear(wanted, reading, margin, 1.0)
@@ -129,48 +129,37 @@ func test_more_strength_turns_further() -> void:
 
 
 func test_adhesion_is_zero_within_the_hold_distance() -> void:
-	var profile: LocomotionProfile = _profile()
-	var reading: NavSurfaceReading = _reading_of(
-		[[Vector3.DOWN, profile.crawl_hold_distance - 0.1]]
-	)
+	var profile: AvoidanceProfile = _avoidance()
+	var reading: NavSurfaceReading = _reading_of([[Vector3.DOWN, profile.hold_distance - 0.1]])
 	assert_eq(
-		NavAvoidance.adhesion(
-			reading, profile.crawl_hold_distance, profile.crawl_adhesion_gain, 1.0
-		),
-		Vector3.ZERO
+		NavAdhesion.pull(reading, profile.hold_distance, profile.adhesion_gain, 1.0), Vector3.ZERO
 	)
 
 
 func test_adhesion_pulls_toward_the_surface_it_found() -> void:
-	var profile: LocomotionProfile = _profile()
-	var reading: NavSurfaceReading = _reading_of(
-		[[Vector3.DOWN, profile.crawl_hold_distance + 1.0]]
-	)
-	var pull: Vector3 = NavAvoidance.adhesion(
-		reading, profile.crawl_hold_distance, profile.crawl_adhesion_gain, 4.0
-	)
+	var profile: AvoidanceProfile = _avoidance()
+	var reading: NavSurfaceReading = _reading_of([[Vector3.DOWN, profile.hold_distance + 1.0]])
+	var pull: Vector3 = NavAdhesion.pull(reading, profile.hold_distance, profile.adhesion_gain, 4.0)
 	assert_almost_eq(pull.normalized().dot(Vector3.DOWN), 1.0, 0.001)
-	assert_almost_eq(pull.length(), profile.crawl_adhesion_gain, 0.001)
+	assert_almost_eq(pull.length(), profile.adhesion_gain, 0.001)
 
 
 ## Adhesion is a correction, not a destination. Uncapped, a body that has drifted 10 m
 ## returns a pull that dwarfs the step it was taking, and the crawler stops making
 ## progress in order to hug a wall.
 func test_adhesion_is_capped() -> void:
-	var profile: LocomotionProfile = _profile()
+	var profile: AvoidanceProfile = _avoidance()
 	var reading: NavSurfaceReading = _reading_of([[Vector3.DOWN, 100.0]])
-	var pull: Vector3 = NavAvoidance.adhesion(
-		reading, profile.crawl_hold_distance, profile.crawl_adhesion_gain, 0.75
+	var pull: Vector3 = NavAdhesion.pull(
+		reading, profile.hold_distance, profile.adhesion_gain, 0.75
 	)
 	assert_almost_eq(pull.length(), 0.75, 0.001)
 
 
 func test_a_body_with_no_surface_has_nothing_to_adhere_to() -> void:
-	var profile: LocomotionProfile = _profile()
+	var profile: AvoidanceProfile = _avoidance()
 	assert_eq(
-		NavAvoidance.adhesion(
-			_reading_of([]), profile.crawl_hold_distance, profile.crawl_adhesion_gain, 1.0
-		),
+		NavAdhesion.pull(_reading_of([]), profile.hold_distance, profile.adhesion_gain, 1.0),
 		Vector3.ZERO
 	)
 
@@ -180,8 +169,8 @@ func test_a_body_with_no_surface_has_nothing_to_adhere_to() -> void:
 ## which is how it eventually leaves tentacle reach entirely.
 func test_a_drifted_crawler_steps_back_toward_its_floor() -> void:
 	_flat_floor()
-	var profile: LocomotionProfile = _profile()
-	var high: float = profile.crawl_hold_distance + 1.0
+	var profile: AvoidanceProfile = _avoidance()
+	var high: float = profile.hold_distance + 1.0
 	var body: NavBodyState = _body_state(Vector3(0.0, high, 0.0), Vector3.RIGHT)
 	var reading: NavSurfaceReading = _reading_of([[Vector3.DOWN, high]])
 	var command: NavMotionCommand = SurfaceCrawlController.new().steer(

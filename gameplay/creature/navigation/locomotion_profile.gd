@@ -142,26 +142,18 @@ extends Resource
 # ----- local avoidance and adhesion (sections 8.1, 9.2, 21) -----
 
 @export_group("Local avoidance")
-## How close terrain has to be before steering treats it as something to avoid.
-##
-## Read off the same fan `NavSurfaceField` already takes, so this costs no rays -- see
-## `NavAvoidance`. Deliberately its own number rather than a reuse of
-## `tunnel_enclosure_reach`, which happens to share this value today and answers the
-## unrelated question of whether the body is in a tunnel at all.
-@export_range(0.2, 20.0, 0.1, "or_greater", "suffix:m") var avoid_margin: float = 3.0
-## The stand-off a crawler tries to keep from the surface it is holding (section 8.1).
-##
-## MUST SIT BETWEEN THE BODY'S OWN ENVELOPE AND ITS REACH, and NavigationConfig asserts
-## both ends because either mistake is fatal and silent. Below `normal_clearance()` the
-## crawler adheres into its own collision radius and every swept cast fails from the origin
-## overlap. Above `crawl_surface_reach - crawl_step_distance` a body at the hold distance
-## can still step out of reach in one tick, which is the drift this exists to stop.
-@export_range(0.1, 12.0, 0.1, "or_greater", "suffix:m") var crawl_hold_distance: float = 1.6
-## Fraction of the excess distance adhesion closes per step. At 1 the body snaps back to
-## the hold distance in a single tick and reads as magnetic; at 0 adhesion is off and the
-## alien drifts off its surface until the fan goes blind.
-@export_range(0.0, 1.0, 0.05) var crawl_adhesion_gain: float = 0.6
+## Everything `locomotion/avoidance/` steers by, in one sub-resource beside the code that
+## reads it. See `AvoidanceProfile` for why these four are not fields here any more.
+@export var avoidance: AvoidanceProfile = AvoidanceProfile.new()
+
+# ----- slip recovery (Invariant 3) -----
+
+@export_group("Recovery")
 ## How far the recovery fan looks when the ordinary one has found nothing at all.
+##
+## NOT AN AVOIDANCE NUMBER, DESPITE HAVING SHARED A GROUP HEADING WITH THEM. Avoidance
+## biases a body that is somewhere legal; this belongs to `NavLocalPlanner._reacquire`,
+## which is the escape from somewhere the body may not be at all.
 ##
 ## LONG, AND ONLY EVER PAID FOR ON A TICK THAT ALREADY FAILED. A body with no surface
 ## within `crawl_surface_reach` has slipped (Invariant 3: the only legal unsupported state
@@ -169,10 +161,6 @@ extends Resource
 ## the demo cave's largest room is 19 m. A longer default fan would charge every ordinary
 ## tick for an answer only a slipped body needs.
 @export_range(1.0, 200.0, 1.0, "or_greater", "suffix:m") var recovery_reach: float = 24.0
-## How many progressively firmer avoidance corrections the swimmer tries before handing the
-## tick back. The swim mode has no fan of alternatives to fall back on -- one blocked cast
-## used to be the end of it -- so this is where its second opinion comes from.
-@export_range(1, 8, 1) var tunnel_avoid_attempts: int = 3
 
 # ----- wiggle (sections 10, 40.2) -----
 
@@ -301,28 +289,32 @@ func invariant_failures() -> PackedStringArray:
 		failures.append(
 			"crawl_escape_arc_degrees %.0f is below crawl_candidate_arc_degrees %.0f" % arcs
 		)
-	if avoid_margin <= 0.0:
-		failures.append("avoid_margin must be positive, or nothing is ever avoided")
-	if crawl_hold_distance > crawl_surface_reach - crawl_step_distance:
-		# A body at the hold distance must still be able to take a full step without
-		# leaving reach, or adhesion permits the very drift it exists to prevent.
-		var holds: Array = [crawl_hold_distance, crawl_surface_reach, crawl_step_distance]
-		(
-			failures
-			. append(
-				(
-					"crawl_hold_distance %.2f leaves no room inside crawl_surface_reach %.2f for a %.2f step"
-					% holds
+	if avoidance == null:
+		# Every avoidance call site dereferences it, so a null here is a crash on the first
+		# tick of the first mode rather than a number that is merely wrong.
+		failures.append("avoidance profile is null")
+	else:
+		failures.append_array(avoidance.invariant_failures())
+		if avoidance.hold_distance > crawl_surface_reach - crawl_step_distance:
+			# A body at the hold distance must still be able to take a full step without
+			# leaving reach, or adhesion permits the very drift it exists to prevent. Checked
+			# here rather than in AvoidanceProfile because it is the only place that can see
+			# the reach and the step as well as the hold.
+			var holds: Array = [avoidance.hold_distance, crawl_surface_reach, crawl_step_distance]
+			(
+				failures
+				. append(
+					(
+						"avoidance.hold_distance %.2f leaves no room inside crawl_surface_reach %.2f for a %.2f step"
+						% holds
+					)
 				)
 			)
-		)
 	if recovery_reach <= crawl_surface_reach:
 		# A recovery fan no longer than the ordinary one re-asks the question that just
 		# came back empty.
 		var reaches: Array = [recovery_reach, crawl_surface_reach]
 		failures.append("recovery_reach %.2f does not exceed crawl_surface_reach %.2f" % reaches)
-	if tunnel_avoid_attempts < 1:
-		failures.append("tunnel_avoid_attempts must be at least 1")
 	if orientation_slew_rate <= 0.0:
 		failures.append("orientation_slew_rate must be positive")
 	if tunnel_enclosure_reach <= 0.0:

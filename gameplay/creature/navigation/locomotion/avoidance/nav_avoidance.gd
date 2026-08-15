@@ -4,6 +4,12 @@ extends RefCounted
 ## Local obstacle avoidance, from rays that have already been paid for (navigation.md
 ## sections 9.2, 21).
 ##
+## THE OBSTACLE HALF OF `avoidance/`. Its sibling `NavAdhesion` answers the opposite
+## failure -- too far from the surface rather than too close to a wall -- off the same
+## reading. Both are here, and nothing else in the directory is, because a solver that
+## could take a ray or issue a command would be a second movement system running beside
+## the four modes rather than a bias applied to them.
+##
 ## THE MODULE HAD FOUR THINGS THAT LOOKED LIKE AVOIDANCE AND NONE THAT DID IT. Section 21's
 ## `collision_penalty` was set by `SurfaceCrawlController` only AFTER a swept cast had
 ## already failed -- which is after scoring is over, so it never influenced which direction
@@ -91,30 +97,3 @@ static func steer_clear(
 	if steered.is_zero_approx():
 		return heading
 	return steered.normalized()
-
-
-## Toward the surface the body is holding, when it has drifted off it (section 8.1).
-##
-## SECTION 8.1 SAYS "MAINTAINING BODY CONTACT" AND THE MODULE'S DEFINITION OF CONTACT WAS
-## "WITHIN TENTACLE REACH", WITH NOTHING EVER CLOSING THE GAP. So a crawler drifts outward
-## -- pushed by the swimmer's centring at a tunnel mouth, or simply by velocity that
-## outlasts the steer that created it -- until it passes `crawl_surface_reach`, at which
-## point the fan finds nothing, the crawler refuses, and the alien is finished for the rest
-## of the run. Observed at (15.9, 5.4, 6.6) in the demo cave: floating mid-room, 1.9 m from
-## its next anchor, holding a COMPLETE route, with all ten rays missing.
-##
-## THE PULL COMES FROM `nearest.direction`, NOT FROM THE NORMAL. That field is the fan ray
-## that found the surface, so it already points from the body at it: no normal to flip, no
-## sign to get wrong, and it stays correct on an overhang where the surface normal and the
-## direction to the surface are not opposite.
-##
-## Capped, because adhesion is a correction and not a destination. Uncapped, a body that
-## has drifted 3 m returns a pull that dwarfs the step it was taking and the crawler stops
-## making progress in order to hug a wall.
-static func adhesion(reading: NavSurfaceReading, hold: float, gain: float, cap: float) -> Vector3:
-	if reading == null or not reading.has_surface() or gain <= 0.0 or cap <= 0.0:
-		return Vector3.ZERO
-	var excess: float = reading.nearest_distance() - hold
-	if excess <= 0.0:
-		return Vector3.ZERO
-	return reading.nearest.direction.normalized() * minf(excess * gain, cap)

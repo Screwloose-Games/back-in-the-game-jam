@@ -24,7 +24,7 @@ extends RefCounted
 ## and nothing ever closed the gap, so a body nudged outward -- by the swimmer's centring at
 ## a tunnel mouth, or by velocity outlasting the steer that made it -- drifted to the reach
 ## limit and then past it, and past it there is no surface to score against and no way back.
-## `NavAvoidance.adhesion` is that missing half, and it is applied to the candidate step
+## `NavAdhesion.pull` is that missing half, and it is applied to the candidate step
 ## points so the pull is part of what gets validated.
 ##
 ## NULL IS A NORMAL ANSWER. Section 8.2: if the required surface cannot be reached while
@@ -281,10 +281,10 @@ func _score_fan(
 	)
 	var arc: float = deg_to_rad(arc_degrees)
 	var count: int = maxi(profile.crawl_candidate_count, 1)
-	var pull: Vector3 = NavAvoidance.adhesion(
+	var pull: Vector3 = NavAdhesion.pull(
 		reading,
-		profile.crawl_hold_distance,
-		profile.crawl_adhesion_gain,
+		profile.avoidance.hold_distance,
+		profile.avoidance.adhesion_gain,
 		profile.crawl_step_distance
 	)
 	for index: int in count:
@@ -316,7 +316,9 @@ func _score_fan(
 		# it never influenced the choice and existed only for the overlay. Scored here from
 		# the body fan's own rays it costs nothing and does the job the spec gave it:
 		# discouraging a direction BEFORE the cast, rather than explaining the cast after.
-		candidate.collision_penalty = NavAvoidance.risk(direction, reading, profile.avoid_margin)
+		candidate.collision_penalty = NavAvoidance.risk(
+			direction, reading, profile.avoidance.margin
+		)
 		candidate.score = score(candidate, profile)
 		last_candidates.append(candidate)
 

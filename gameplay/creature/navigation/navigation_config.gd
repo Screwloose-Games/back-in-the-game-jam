@@ -371,7 +371,8 @@ func invariant_failures() -> PackedStringArray:
 			failures.append("clearance_profile: " + line)
 		if (
 			locomotion_profile != null
-			and locomotion_profile.crawl_hold_distance < clearance_profile.normal_clearance()
+			and locomotion_profile.avoidance != null
+			and locomotion_profile.avoidance.hold_distance < clearance_profile.normal_clearance()
 		):
 			# THE LOWER HALF OF THE ADHESION BOUND, and it lives here because this is the
 			# only class that sees both resources. A crawler told to hold closer than the
@@ -381,9 +382,9 @@ func invariant_failures() -> PackedStringArray:
 			# it is the freeze documented in creature_nav_demo_creature.gd, arrived at by a
 			# collider 0.15 m too small rather than by a knob, but the same pose either way.
 			var hold: Array = [
-				locomotion_profile.crawl_hold_distance, clearance_profile.normal_clearance()
+				locomotion_profile.avoidance.hold_distance, clearance_profile.normal_clearance()
 			]
-			failures.append("crawl_hold_distance %.2f is inside the body envelope %.2f" % hold)
+			failures.append("avoidance.hold_distance %.2f is inside the body envelope %.2f" % hold)
 		if flood_passage_radius > clearance_profile.min_traversal_clearance():
 			# A flood tighter than the candidate gate cannot reach every candidate it is
 			# supposed to enumerate: the sampler would refuse to step through a gap the alien

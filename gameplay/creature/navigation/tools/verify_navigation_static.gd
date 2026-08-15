@@ -78,6 +78,41 @@ const KNOWLEDGE_BANNED: Array[String] = [
 ## than inferred so that adding a third is a decision somebody makes on purpose.
 const GRAPH_TOOLS: Array[String] = ["nav_graph_builder.gd", "nav_graph_patcher.gd"]
 
+## Local avoidance steers from rays somebody else already paid for, and that is the whole
+## reason it is a directory rather than a habit.
+##
+## A SOLVER THAT COULD CAST WOULD BE A SECOND MOVEMENT SYSTEM. Every mode above it composes
+## a heading and then validates it with one swept cast; avoidance biases that heading and
+## the cast still has the final say. Give avoidance a probe and it can prove its own
+## correction, at which point there are two things deciding where the body goes and only one
+## of them is subject to Invariant 3. Give it a NavMotionCommand and it can emit motion
+## directly, which is the same failure with fewer steps.
+##
+## `NavSurfaceField` is banned for the mirror-image reason: avoidance must consume a reading
+## it did not take. The fan costs ten rays a tick and is shared with mode selection, the
+## leap planner and route smoothing -- an avoidance layer that could sample would quietly
+## double that, to learn what it was already handed.
+##
+## "Controller" is a substring rather than four names, so a fifth mode is covered the day
+## it is written.
+const AVOIDANCE_BANNED: Array[String] = [
+	"NavigationProbe",
+	"NavigationConfig",
+	"NavMotionCommand",
+	"NavBodyState",
+	"RouteFollower",
+	"NavSurfaceField",
+	"NavLocalPlanner",
+	"Controller",
+]
+## Every file the directory is allowed to contain. ENUMERATED AND CLASSIFIED, for the same
+## reason GRAPH_FILES is -- see _check_graph_is_pure_data. A bare ban list would exempt a
+## new file from nothing, but a new file is also the most likely place for a fourth
+## responsibility to appear, and this is where somebody has to say out loud that it belongs.
+const AVOIDANCE_FILES: Array[String] = [
+	"nav_avoidance.gd", "nav_adhesion.gd", "avoidance_profile.gd"
+]
+
 ## Planning never triggers a bake. Section 24.2 patches the graph on terrain change, not
 ## on a route query, and a planner that could rebuild would hide a stale graph behind a
 ## frame spike instead of reporting a partial route.
@@ -118,6 +153,7 @@ func _process(_delta: float) -> bool:
 	_check_uid_sidecars()
 	_check_world_seam()
 	_check_graph_is_pure_data()
+	_check_avoidance_is_contained()
 	_check_route_does_not_bake()
 	_check_knowledge_never_measures()
 	_check_no_wall_clock()
@@ -154,7 +190,9 @@ func _check_layout() -> void:
 		"locomotion/nav_surface_reading.gd",
 		"locomotion/nav_surface_field.gd",
 		"locomotion/nav_crawl_candidate.gd",
-		"locomotion/nav_avoidance.gd",
+		"locomotion/avoidance/nav_avoidance.gd",
+		"locomotion/avoidance/nav_adhesion.gd",
+		"locomotion/avoidance/avoidance_profile.gd",
 		"locomotion/nav_progress_monitor.gd",
 		"locomotion/surface_crawl_controller.gd",
 		"locomotion/tunnel_swim_controller.gd",
@@ -265,6 +303,47 @@ func _check_graph_is_pure_data() -> void:
 					)
 				)
 	_pass_if("graph", before, "the graph is data and nothing else")
+
+
+## Avoidance takes a reading and a preferred direction and returns a vector. See
+## AVOIDANCE_BANNED for what each name on the list would cost.
+func _check_avoidance_is_contained() -> void:
+	var before: int = _failures
+	var found: int = 0
+	for path: String in _files(".gd"):
+		if not path.contains("/avoidance/"):
+			continue
+		var file: String = path.get_file()
+		found += 1
+		if not AVOIDANCE_FILES.has(file):
+			_fail(
+				"avoidance",
+				(
+					(
+						"%s is in avoidance/ but is not a declared member; add it to "
+						+ "AVOIDANCE_FILES and say what steering it owns"
+					)
+					% file
+				)
+			)
+		var code: String = _read_code(path)
+		for token: String in AVOIDANCE_BANNED:
+			if code.contains(token):
+				_fail(
+					"avoidance",
+					(
+						(
+							"%s names %s; avoidance takes a reading and a preferred direction "
+							+ "and returns a vector -- it never casts and never commands"
+						)
+						% [file, token]
+					)
+				)
+	# Zero files is not a pass. The directory disappearing, or the check being pointed at a
+	# path that no longer exists, would otherwise read as "the rule holds everywhere".
+	if found == 0:
+		_fail("avoidance", "no files found in avoidance/; the directory is part of the module")
+	_pass_if("avoidance", before, "%d avoidance file(s) steer from rays they did not take" % found)
 
 
 func _check_route_does_not_bake() -> void:
