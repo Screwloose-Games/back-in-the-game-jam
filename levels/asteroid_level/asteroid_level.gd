@@ -34,8 +34,9 @@ func _ready() -> void:
 	multiplayer.peer_connected.connect(_on_scene_peer_connected)
 	player_spawner.spawned.connect(_on_player_spawned)
 
-	if OnlineSession.is_online():
-		_show_connection_screen()
+	# Shown in every mode, not just online: the screen is what the shader warm-up
+	# hides behind, and solo needs that as much as a joining peer does.
+	_show_connection_screen()
 	var result: Error = OnlineSession.begin_queued_entry()
 	if result != OK:
 		_return_to_main_menu("Could not enter the selected session. Error: %d" % result)
@@ -130,6 +131,9 @@ func _on_entry_ready() -> void:
 	_transport_ready = true
 	if OnlineSession.mode() == OnlineSession.EntryMode.SOLO:
 		_spawn_solo_player()
+		# The solo player never goes through player_spawner.spawned, so the hook
+		# that warms the local view has to be called for it explicitly.
+		_prepare_local_player_presentation()
 	elif OnlineSession.is_host():
 		_prepare_host_player()
 	elif _connection_screen != null:
@@ -158,8 +162,29 @@ func _prepare_local_player_presentation() -> void:
 	await _present_connection_frame()
 	if not is_inside_tree() or _returning_to_menu:
 		return
+	await _warm_local_player()
+	if not is_inside_tree() or _returning_to_menu:
+		return
 	_local_player_ready = true
 	_finish_connection_screen_if_ready()
+
+
+## Draws the laser and the rope once behind the screen, so their first real use
+## does not stop the game to compile shaders. Skipped if the prefab has no warm-up.
+func _warm_local_player() -> void:
+	var warmup := _local_player_warmup()
+	if warmup == null:
+		return
+	await warmup.warm()
+
+
+func _local_player_warmup() -> PlayerWarmup:
+	for player: Node in players.get_children():
+		var driver := player.get_node_or_null("PlayerBody/NetworkDriver") as PlayerNetworkDriver
+		if driver != null and not driver.is_locally_controlled():
+			continue
+		return player.get_node_or_null("PlayerBody/Warmup") as PlayerWarmup
+	return null
 
 
 func _present_connection_frame() -> void:
@@ -193,7 +218,10 @@ func _on_peer_left(peer_id: int) -> void:
 func _show_connection_screen() -> void:
 	_connection_screen = SceneManager.loading_screen.instantiate() as LoadingScreen
 	add_child(_connection_screen)
-	_connection_screen.set_status("Preparing online descent", 0.05)
+	if OnlineSession.is_online():
+		_connection_screen.set_status("Preparing online descent", 0.05)
+	else:
+		_connection_screen.set_status("Preparing descent", 0.05)
 
 
 func _finish_connection_screen_if_ready() -> void:
@@ -202,7 +230,7 @@ func _finish_connection_screen_if_ready() -> void:
 	var local_peer_id := multiplayer.get_unique_id()
 	if OnlineSession.is_online() and players.get_node_or_null(str(local_peer_id)) == null:
 		return
-	if OnlineSession.is_online() and not _local_player_ready:
+	if not _local_player_ready:
 		return
 	_connection_screen.set_status("Descent ready", 1.0)
 	_connection_screen.queue_free()

@@ -1,0 +1,9 @@
+width: 0.6000
+height: 0.6000
+depth: 0.6000
+up_direction: "+Y"
+root_node_name: "battery_pack"
+collision_expected: false
+navigation_expected: false
+min_material_count: 1
+rests_on_ground: true

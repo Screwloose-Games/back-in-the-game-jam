@@ -58,6 +58,11 @@ func beam_endpoint() -> Vector3:
 	return _beam_endpoint
 
 
+## The beam this tool draws with, or null when the model is not the laser prefab.
+func laser_beam() -> MiningLaserBeam:
+	return _beam
+
+
 ## Gives the controlling client an immediate beam while authority catches up.
 ## This performs a read-only ray query and presentation transition only.
 func preview_step(held: bool) -> void:
@@ -65,7 +70,7 @@ func preview_step(held: bool) -> void:
 	if not active:
 		apply_network_presentation(false, _beam_endpoint)
 		return
-	var hit := _query_beam_hit()
+	var hit := query_beam_hit()
 	apply_network_presentation(true, _endpoint_for_hit(hit))
 
 
@@ -89,7 +94,7 @@ func can_fire() -> bool:
 func _cut(delta: float) -> void:
 	power.spend(settings.mining_power_per_second * delta)
 
-	var hit := _query_beam_hit()
+	var hit := query_beam_hit()
 	_beam_endpoint = _endpoint_for_hit(hit)
 	if _beam != null:
 		# Nothing in range still draws a beam — it just runs out at the far end.
@@ -105,7 +110,9 @@ func _cut(delta: float) -> void:
 		target.take_mining_damage(settings.mining_damage_per_second * delta, hit["position"])
 
 
-func _query_beam_hit() -> Dictionary:
+## Where the beam would land right now. Read-only, so a warm-up can pay for the
+## first query against the level before gameplay asks for it.
+func query_beam_hit() -> Dictionary:
 	var origin := mine_ray.global_position
 	var beam_end := _maximum_beam_endpoint()
 	var query := PhysicsRayQueryParameters3D.create(origin, beam_end)

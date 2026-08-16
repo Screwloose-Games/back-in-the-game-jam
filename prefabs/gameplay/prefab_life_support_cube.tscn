@@ -1,0 +1,58 @@
+[gd_scene format=3 uid="uid://b3kx7mqp2wvda"]
+
+[ext_resource type="PackedScene" uid="uid://c7wq2fj4nyv8x" path="res://assets/art/environment/props/sm_battery_pack.tscn" id="1_art"]
+[ext_resource type="Script" uid="uid://mysuiun4x5rq" path="res://prefabs/gameplay/life_support_cube.gd" id="2_cube"]
+[ext_resource type="Script" uid="uid://c0j6y2kxpmknt" path="res://prefabs/gameplay/battery_bar.gd" id="3_bar"]
+[ext_resource type="Shader" uid="uid://bik76lgi16ygh" path="res://prefabs/gameplay/battery_bar.gdshader" id="4_bar_shader"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_cube"]
+size = Vector3(0.6, 0.6, 0.6)
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_bar"]
+resource_local_to_scene = true
+render_priority = 0
+shader = ExtResource("4_bar_shader")
+shader_parameter/lit_segments = 5.0
+shader_parameter/lit_color = Color(0.35, 1, 0.45, 1)
+shader_parameter/unlit_color = Color(0.1, 0.12, 0.15, 1)
+shader_parameter/backing_color = Color(0.03, 0.04, 0.05, 1)
+shader_parameter/blink = 0.0
+shader_parameter/blink_rate = 2.4
+shader_parameter/blink_depth = 0.45
+
+[sub_resource type="QuadMesh" id="QuadMesh_bar"]
+size = Vector2(0.4, 0.09)
+
+[node name="prefab_life_support_cube" type="RigidBody3D" unique_id=1378263215 groups=["life_support_box"]]
+collision_layer = 8
+collision_mask = 15
+mass = 400.0
+gravity_scale = 0.0
+linear_damp = 0.2
+angular_damp = 0.4
+script = ExtResource("2_cube")
+start_fraction = 1.0
+
+[node name="sm_battery_pack" parent="." unique_id=1771400855 instance=ExtResource("1_art")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.3, 0)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="." unique_id=2008044967]
+shape = SubResource("BoxShape3D_cube")
+
+[node name="ChargeLamp" type="OmniLight3D" parent="." unique_id=939504825]
+omni_range = 8.0
+
+[node name="BatteryBar" type="Node3D" parent="." unique_id=481945070]
+script = ExtResource("3_bar")
+
+[node name="Top" type="MeshInstance3D" parent="BatteryBar" unique_id=224114410]
+transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, 0, 0.304, 0)
+material_override = SubResource("ShaderMaterial_bar")
+cast_shadow = 0
+mesh = SubResource("QuadMesh_bar")
+
+[node name="Bottom" type="MeshInstance3D" parent="BatteryBar" unique_id=1195354033]
+transform = Transform3D(-1, 0, 0, 0, 0, -1, 0, -1, 0, 0, -0.304, 0)
+material_override = SubResource("ShaderMaterial_bar")
+cast_shadow = 0
+mesh = SubResource("QuadMesh_bar")
