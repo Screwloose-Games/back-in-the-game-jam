@@ -1,6 +1,8 @@
 [gd_resource type="Resource" script_class="PrototypeSettingsIndex" format=3]
 
 [ext_resource type="Resource" path="res://prototypes/alien_ai_pathfinding/alien_pathfinding_settings.tres" id="1_16jwu"]
+[ext_resource type="Resource" path="res://prototypes/creature_awareness/creature_awareness_settings.tres" id="9_crawa"]
+[ext_resource type="Resource" path="res://prototypes/creature_navigation/creature_nav_demo_settings.tres" id="10_crnav"]
 [ext_resource type="Resource" path="res://prototypes/elevator_cutscene/elevator_cutscene_settings.tres" id="2_0p2wx"]
 [ext_resource type="Resource" path="res://prototypes/level_design_01/level_design_01_settings.tres" id="3_ii6fk"]
 [ext_resource type="Resource" path="res://prototypes/navigation/navigation_settings.tres" id="4_61e54"]
@@ -22,3 +24,5 @@ level_design_01 = ExtResource("3_ii6fk")
 alien_ai_pathfinding = ExtResource("1_16jwu")
 drill_and_mining = ExtResource("9_up0nj")
 core_loop = ExtResource("10_86qw3")
+creature_navigation = ExtResource("10_crnav")
+creature_awareness = ExtResource("9_crawa")

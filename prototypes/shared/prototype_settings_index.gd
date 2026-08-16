@@ -23,6 +23,7 @@ const INDEX_PATH := "res://prototypes/prototype_settings.tres"
 @export var drill_and_mining: DrillSettings
 @export var core_loop: CoreLoopSettings
 @export var creature_navigation: CreatureNavDemoSettings
+@export var creature_awareness: CreatureAwarenessSettings
 
 
 ## The children that are actually present, in declaration order.
@@ -43,6 +44,7 @@ func all() -> Array[PrototypeSettings]:
 		drill_and_mining,
 		core_loop,
 		creature_navigation,
+		creature_awareness,
 	]:
 		if child != null:
 			found.append(child)
