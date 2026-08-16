@@ -64,7 +64,7 @@ first replan and after every `clear_goal()`, and "the creature has not been give
 to go" is not the same claim as "the creature cannot reach you". A false here fires the
 Director's `−w_stall` term against an alien that is behaving perfectly.
 
-**`attack_window_open` and `lurking_at_crevice` are hardcoded `false`** until the `HUNTING`
+**`attack_window_open` and `lurking_at_tunnel_mouth` are hardcoded `false`** until the `HUNTING`
 tree exists, which silently zeroes `w_attack` and `w_lurk`. That is a stub, not tuning.
 
 ## Names this module reserves project-wide

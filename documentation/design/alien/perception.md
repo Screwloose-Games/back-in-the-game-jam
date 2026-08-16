@@ -669,7 +669,7 @@ SuspicionEvidence.new(
 Touch may also help identify:
 
 ```text
-player recently entered crevice
+player recently entered a non-creature passable tunnel
 ```
 
 but the behavioral inference:

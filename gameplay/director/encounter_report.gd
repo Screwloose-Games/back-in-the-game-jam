@@ -34,7 +34,7 @@ var has_visual_contact: bool = false
 ## Owed to the HUNTING tree. Ships false, which zeroes the Director's w_attack term.
 var attack_window_open: bool = false
 ## Owed to the HUNTING tree. Ships false, which zeroes the Director's w_lurk term.
-var lurking_at_crevice: bool = false
+var lurking_at_tunnel_mouth: bool = false
 
 
 func to_dictionary() -> Dictionary:
@@ -46,5 +46,5 @@ func to_dictionary() -> Dictionary:
 		"target_reachable": target_reachable,
 		"has_visual_contact": has_visual_contact,
 		"attack_window_open": attack_window_open,
-		"lurking_at_crevice": lurking_at_crevice,
+		"lurking_at_tunnel_mouth": lurking_at_tunnel_mouth,
 	}

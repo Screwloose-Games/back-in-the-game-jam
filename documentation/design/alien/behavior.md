@@ -377,7 +377,7 @@ Examples:
 ```text
 direct player collision
 near-contact
-player entering/leaving immediate crevice area
+player entering/leaving a non-creature passable tunnel
 ```
 
 It normally produces strong and spatially precise evidence.
@@ -748,7 +748,7 @@ investigate this position
 
 chase this target estimate
 
-move near this crevice
+move to this tunnel mouth
 
 retreat toward this nest
 ```
@@ -979,7 +979,7 @@ HUNTING
 ├── Target confidently located?
 │      └── Chase
 │
-├── Target likely hiding in crevice?
+├── Target likely hiding beyond reach?
 │      └── Lurk
 │
 └── Recent target evidence exists?
@@ -1024,16 +1024,16 @@ Hunting therefore remains a behavioral commitment while Suspicion describes wher
 
 ---
 
-# 29. Crevice Lurk
+# 29. Tunnel Mouth Lurk
 
-The alien cannot enter designated crevices.
+The alien cannot enter tunnels that are too narrow.
 
 If:
 
 ```text
 target evidence disappears
 +
-target was recently near a known crevice
+target was recently near a known non-creature passable tunnel
 ```
 
 the creature may infer that the player is inside.
@@ -1041,7 +1041,7 @@ the creature may infer that the player is inside.
 Behavior:
 
 ```text
-Approach crevice
+Approach non-creature passable tunnel
     ↓
 Take reachable position nearby
     ↓
@@ -1056,7 +1056,7 @@ CHASE         eventual RETREAT
 
 Lurk duration should vary.
 
-A crevice therefore protects the player physically without clearing the creature's suspicion.
+A non-creature passable tunnel therefore protects the player physically without clearing the creature's suspicion.
 
 ---
 
@@ -1128,7 +1128,7 @@ proximity to player
 short path distance
 line of sight
 attack pressure
-crevice pressure
+lurk pressure
 ```
 
 At sufficient menace:
@@ -1331,9 +1331,9 @@ The Director selects Player 1.
 
 The alien chases.
 
-Player 1 enters a crevice.
+Player 1 enters a tunnel the alien cannot follow into.
 
-The alien loses direct evidence near the crevice.
+The alien loses direct evidence near the tunnel mouth.
 
 ```text
 HUNTING
@@ -1368,93 +1368,124 @@ The behavior emerges from the interaction between independent systems.
 
 ---
 
-# 36. Recommended Project Structure
+# 36. Project Structure
+
+Four modules ship today and they share one shape: the facade and the config resource at the
+top, domain types in named subdirectories, and the same support directories underneath — so a
+fifth is laid out by pattern rather than by argument.
+
+```text
+debug/      an overlay (Node3D) and a panel (Control), each taking its facade as a property
+sandbox/    somewhere to LOOK at it, for the claims that are only checkable by eye
+tests/      the GUT suite, plus a `*_test_case.gd` fixture with no `test_` prefix
+tools/      verify_<module>_static.gd, verify_<module>_runtime.tscn, and — where an overlay
+            is worth pinning down — capture_sandbox.tscn
+README.md   scope, how to run the suites, the deliberate deviations from this document
+```
 
 ```text
 res://gameplay/creature/
 │
-├── creature.tscn
-├── creature.gd
+├── perception/                      29 scripts
+│   ├── creature_perception.gd       the facade
+│   ├── perception_config.gd
+│   ├── hearing.gd  vision.gd  touch.gd  geometry_perception.gd
+│   ├── perception_probe.gd          the only door to the physics world
+│   ├── perception_scan.gd
+│   ├── observations/                noise_event, suspicion_evidence,
+│   │                                geometry_observation, disconfirmation_observation
+│   └── debug/  sandbox/  tests/  tools/
 │
-├── perception/
-│   ├── creature_perception.gd
-│   ├── hearing.gd
-│   ├── vision.gd
-│   ├── touch.gd
-│   ├── geometry_perception.gd
-│   ├── perception_evidence.gd
-│   └── perception_config.gd
+├── suspicion/                       22 scripts
+│   ├── creature_suspicion.gd        the facade
+│   ├── suspicion_config.gd
+│   ├── evidence_memory.gd  hotspot_field.gd  player_beliefs.gd
+│   ├── records/                     suspicion_hotspot, suspicion_evidence_record,
+│   │                                suspicion_disconfirmation, player_suspicion_candidate
+│   └── debug/  sandbox/  tests/  tools/
 │
-├── suspicion/
-│   ├── creature_suspicion.gd
-│   ├── suspicion_evidence.gd
-│   ├── suspicion_hotspot.gd
-│   ├── suspicion_disconfirmation.gd
-│   ├── player_suspicion.gd
-│   └── suspicion_config.gd
-│
-├── spatial_memory/
-│   ├── creature_spatial_memory.gd
-│   ├── geometry_observation.gd
-│   ├── geometry_memory_cell.gd
-│   └── spatial_memory_config.gd
-│
-├── behavior/
-│   ├── creature_hfsm.gd
-│   ├── creature_state.gd
+├── behavior/                        the subject of this document
+│   ├── creature_behavior.gd         the facade; owns the nine-step tick
+│   ├── behavior_config.gd
+│   ├── behavior_context.gd          the typed per-tick view every tree node is handed
+│   ├── behavior_goal.gd             the one place Behavior commands Navigation
+│   ├── creature_state.gd            the four-state enum
 │   │
-│   ├── states/
-│   │   ├── unalerted_state.gd
-│   │   ├── investigating_state.gd
-│   │   ├── hunting_state.gd
-│   │   └── retreating_state.gd
+│   ├── tree/                        the framework, and DOMAIN-FREE by static check
+│   │   ├── bt_node.gd  behavior_tree.gd
+│   │   ├── bt_action.gd  bt_condition.gd
+│   │   ├── bt_composite.gd  bt_selector.gd  bt_sequence.gd
+│   │   └── bt_decorator.gd  bt_cooldown.gd  bt_inverter.gd
 │   │
-│   ├── trees/
-│   │   ├── unalerted_behavior.gd
-│   │   ├── investigating_behavior.gd
-│   │   ├── hunting_behavior.gd
-│   │   └── retreating_behavior.gd
+│   ├── hfsm/
+│   │   ├── creature_hfsm.gd  behavior_state.gd  behavior_transition.gd
+│   │   └── states/
+│   │       ├── unalerted_state.gd      + unalerted_memory.gd
+│   │       ├── investigating_state.gd  + investigating_memory.gd
+│   │       ├── hunting_state.gd
+│   │       └── retreating_state.gd
 │   │
-│   └── actions/
-│       ├── idle_at_nest.gd
-│       ├── investigate_location.gd
-│       ├── search_area.gd
-│       ├── chase_target.gd
-│       ├── lurk_at_crevice.gd
-│       └── retreat_to_nest.gd
+│   ├── actions/                     `bt_` prefix, one file per leaf
+│   │   ├── bt_idle_at_nest.gd  bt_travel_to_nest.gd
+│   │   ├── bt_investigate_location.gd  bt_search_area.gd
+│   │   └── bt_do_nothing.gd
+│   │
+│   ├── conditions/                  `bt_` prefix; SUCCESS or FAILURE only, never
+│   │   ├── bt_at_nest.gd            side-effecting, and checked separately
+│   │   └── bt_arrived_at_goal.gd
+│   │
+│   ├── world/                       level markers this module reads
+│   │   ├── creature_nest.gd         a Marker3D in a group, and nothing else
+│   │   └── nest_memory.gd
+│   │
+│   └── debug/  sandbox/  tests/  tools/
 │
-├── navigation/
-│   ├── creature_navigator.gd
-│   ├── creature_nav_graph.gd
-│   ├── creature_nav_builder.gd
-│   ├── navigation_expectation.gd
-│   └── nav_debug_draw.gd
-│
-├── movement/
-│   ├── creature_motor.gd
-│   └── creature_movement_config.gd
-│
-├── world/
-│   ├── creature_nest.gd
-│   └── creature_crevice.gd
-│
-└── debug/
-    ├── creature_ai_debug_panel.gd
-    ├── suspicion_debug_draw.gd
-    ├── spatial_memory_debug_draw.gd
-    └── creature_ai_debug_draw.gd
+└── navigation/                      77 scripts
+    ├── creature_navigation.gd       the facade
+    ├── navigation_config.gd  clearance_profile.gd  locomotion_profile.gd
+    ├── navigation_probe.gd          the only door to the physics world
+    ├── navigation_source.gd         a level-scoped bake shared between creatures
+    ├── graph/                       nav_graph, nav_graph_builder, nav_astar, patching
+    ├── route/                       route_planner, route_follower, nav_route, chooser
+    ├── locomotion/                  surface crawl, tunnel swim, wiggle, leap, avoidance/
+    ├── knowledge/                   what the creature believes the graph is
+    └── debug/  sandbox/  tests/  tools/
 ```
 
-The Director is not under `creature/`, because it is not part of a creature:
+There is no `creature.tscn` and no shared `creature.gd`. The four facades are assembled by
+whatever owns the creature, and `behavior/README.md`'s "Wiring one up" is the whole of it.
+**Spatial Memory and Movement are not built** — see §21 and §34 for what they owe.
+
+Three things earlier drafts of this section recommended, which the build deliberately did not
+adopt:
+
+```text
+trees/ as a directory      A state builds its own tree in `_init()`. A tree is four lines
+                           of composition, not a file.
+
+actions/chase_target.gd    Leaves carry a `bt_` prefix and split into actions/ and
+                           conditions/, because the two obey different rules -- an action
+                           may command, a condition may never -- and the static verifier
+                           checks each directory against its own list.
+
+world/creature_crevice.gd  There is no crevice type. A non-creature passable tunnel is a
+                           passage narrower than the alien, and navigation refuses it with
+                           no marker, flag or layer anywhere (§29).
+```
+
+The Director is not under `creature/`, because it is not part of a creature. Only the two
+value types exist; the Director itself is owed.
 
 ```text
 res://gameplay/director/
 │
-├── encounter_director.gd
-├── encounter_directive.gd
-├── encounter_report.gd
-├── encounter_track.gd
-└── director_config.gd
+├── encounter_directive.gd           what the Director asks of one creature, for one tick
+├── encounter_report.gd              what Behavior tells it back
+├── tests/
+└── README.md
+
+    encounter_director.gd, encounter_track.gd and director_config.gd are not built.
+    See director.md.
 ```
 
 ---

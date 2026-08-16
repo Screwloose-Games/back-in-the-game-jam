@@ -3,7 +3,7 @@ extends BehaviorState
 
 ## Pursue a credible PLAYER (fsm.md; behavior.md section 26).
 ##
-## THE TREE IS NOT BUILT. Hunting needs an attack, a crevice model and a target estimate,
+## THE TREE IS NOT BUILT. Hunting needs an attack, a tunnel-mouth lurk and a target estimate,
 ## none of which exist; what is here is every guard into and out of the state, and the
 ## commitment machinery those guards need. The placeholder tree holds still and reports
 ## RUNNING, which is honest -- a state with nothing to do is a fact, not a success.

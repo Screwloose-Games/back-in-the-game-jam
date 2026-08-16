@@ -168,7 +168,7 @@ not reached again, `abort()` is called on it** before any new leaf ticks. `abort
 fires on state change and on teardown.
 
 This is not optional bookkeeping. Actions own a navigation goal. Without abort,
-`chase_target` yielding to `lurk_at_crevice` leaves the chase goal live, and the alien walks
+`chase_target` yielding to `lurk_at_tunnel_mouth` leaves the chase goal live, and the alien walks
 to a position nothing asked for. Every action that calls `set_goal` must `clear_goal` in
 `abort`.
 
@@ -220,8 +220,8 @@ Selector
 │   ├── Condition  has_target_estimate
 │   └── Action     chase_target
 ├── Sequence
-│   ├── Condition  target_lost_near_crevice
-│   └── Action     lurk_at_crevice
+│   ├── Condition  target_beyond_reach
+│   └── Action     lurk_at_tunnel_mouth
 └── Action         search_area             (last credible region, §28)
 
 RETREATING
@@ -232,7 +232,7 @@ Selector
 └── Action         retreat_to_nest(quiet)
 ```
 
-`HUNTING`'s ordering is the priority claim: strike beats pursue beats wait beats search. The
+`HUNTING`'s ordering is the priority claim: bite beats pursue beats wait beats search. The
 `RETREATING` split reads `directive.disengage_reason` — a `SATED` exit leaves loudly and
 unhurried so the player gets the exhale; a `STALLED` exit leaves quietly, because nothing
 was earned.
@@ -250,7 +250,7 @@ Every action: what it reads, what it commands, how it terminates, what `abort` m
 | `investigate_location` | `set_goal(location)` | `RUNNING` until arrival; `FAILURE` on a dead hotspot |
 | `search_area` | `request_activity_scan(region, thoroughness)` | `RUNNING` while `is_activity_scan_active()` |
 | `chase_target` | `set_goal(estimate)` on drift | `RUNNING`; `FAILURE` with no estimate |
-| `lurk_at_crevice` | `set_goal(reachable spot near crevice)` | `SUCCESS` at a randomised deadline |
+| `lurk_at_tunnel_mouth` | `set_goal(estimate)`; a PARTIAL route stops at the mouth | `SUCCESS` at a randomised deadline |
 | `attack` | damage, per `directive.lethality` | `SUCCESS` either way |
 | `retreat_to_nest` | `set_goal(far nest)` | `RUNNING` until arrival |
 
@@ -283,7 +283,7 @@ from `search_half_extent` and must never hand over an empty volume.
 only when the target estimate has moved more than `goal_refresh_m`.
 
 **Lurk duration must vary** (`behavior.md` §29). A fixed timer is something the player counts,
-and a crevice with a known safe interval stops being a gamble.
+and a tunnel with a known safe interval stops being a gamble.
 
 ### Two rules actions may not break
 

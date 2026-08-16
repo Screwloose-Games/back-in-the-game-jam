@@ -93,7 +93,7 @@ func test_a_bare_report_claims_no_contact_of_any_kind() -> void:
 	var report := EncounterReport.new()
 	assert_false(report.has_visual_contact)
 	assert_false(report.attack_window_open)
-	assert_false(report.lurking_at_crevice)
+	assert_false(report.lurking_at_tunnel_mouth)
 	assert_eq(report.state, CreatureState.State.UNALERTED)
 
 

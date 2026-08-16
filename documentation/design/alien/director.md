@@ -80,7 +80,7 @@ menace_rate =
     + w_proximity  × (1 − clamp(route_distance / menace_range))
     + w_sight      × has_visual_contact
     + w_attack     × attack_pressure       (lunge, block, near-miss)
-    + w_lurk       × lurking_at_crevice
+    + w_lurk       × lurking_at_tunnel_mouth
     − w_stall      × target_unreachable
 ```
 
@@ -115,7 +115,7 @@ SATED     menace reached peak_threshold.
           lull resets fully.
 
 STALLED   hunt exceeded hunt_max_duration with menace still low —
-          the alien could not reach you, or you went silent in a crevice.
+          the alien could not reach you, or you went silent somewhere it could not follow.
           The unearned exit. The alien leaves quietly.
           lull resets only partially, so the Director rebuilds sooner.
 ```
@@ -165,7 +165,7 @@ var target_reachable: bool        ## NavRoute.status != UNREACHABLE
 
 var has_visual_contact: bool
 var attack_window_open: bool
-var lurking_at_crevice: bool
+var lurking_at_tunnel_mouth: bool
 ```
 
 One struct up, one struct down, once per tick. The entire coupling is a pure function of
@@ -354,7 +354,7 @@ t+44   menace climbing on closing route distance and held visual contact.
        Attack window → near-miss, stagger, overshoot.
        lethality flips to LETHAL for the rest of this encounter.
 
-t+52   player reaches a crevice, goes silent. menace .87 on lurk pressure.
+t+52   player reaches a tunnel it cannot enter, goes silent. menace .87 on lurk pressure.
 
 t+58   menace 1.00 → PEAK. force_disengage, reason SATED. The HFSM
        consumes the latch after the lurk action completes → RETREATING.

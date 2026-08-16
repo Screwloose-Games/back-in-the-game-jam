@@ -3,7 +3,7 @@ extends "res://gameplay/creature/behavior/tests/bt_test_case.gd"
 ## fsm.md's abort contract, and the ordering hazard it cannot state.
 ##
 ## "A RUNNING leaf that is not reached again gets abort()" is the rule. Without it,
-## `chase_target` yielding to `lurk_at_crevice` leaves the chase goal live and the alien
+## `chase_target` yielding to `lurk_at_tunnel_mouth` leaves the chase goal live and the alien
 ## walks to a position nothing asked for -- a stall with no error in it, and the reason
 ## fsm.md calls this "not optional bookkeeping".
 ##

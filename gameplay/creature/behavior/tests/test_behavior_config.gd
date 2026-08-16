@@ -90,7 +90,7 @@ func test_a_direct_hunt_threshold_below_the_hunt_threshold_is_reported() -> void
 	assert_gt(config.invariant_failures().size(), 0)
 
 
-## A fixed lurk is something the player counts, and a crevice with a known safe interval
+## A fixed lurk is something the player counts, and a tunnel with a known safe interval
 ## stops being a gamble.
 func test_a_fixed_lurk_duration_is_reported() -> void:
 	var config := BehaviorConfig.new()

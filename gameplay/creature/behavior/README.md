@@ -41,7 +41,7 @@ reads, not a transition the tree performs.
 | **`INVESTIGATING`** | Real tree: travel to the best unresolved location, search, re-aim. |
 | **`HUNTING`, `RETREATING`** | **Guards only.** Both trees are one node that holds still. |
 
-`HUNTING` needs an attack, a crevice model and a target estimate; `RETREATING` needs nest
+`HUNTING` needs an attack, a tunnel-mouth lurk and a target estimate; `RETREATING` needs nest
 scoring with the distance term inverted and a loud/quiet split on `disengage_reason`. Neither
 is stubbed into something that *appears* to work: `BtDoNothing` reports `RUNNING`, because a
 state with nothing to do is a fact and not a success.
@@ -269,8 +269,8 @@ than re-guessed: `investigate_threshold 0.25`, `investigate_timeout_s 45.0`, `ne
 
 ## Not included
 
-The `HUNTING` and `RETREATING` trees, and everything they need: an attack, crevices, a target
-estimate that ages, `attack_window_open` and `lurking_at_crevice` on the encounter report (both
+The `HUNTING` and `RETREATING` trees, and everything they need: an attack, a tunnel-mouth lurk, a target
+estimate that ages, `attack_window_open` and `lurking_at_tunnel_mouth` on the encounter report (both
 ship hardcoded `false`, which silently zeroes the Director's `w_attack` and `w_lurk` terms — a
 stub, not tuning).
 

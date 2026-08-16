@@ -124,9 +124,9 @@ const MINIMUM_GOAL_REFRESH_M: float = 2.0
 @export_range(0.0, 30.0, 0.1, "suffix:s") var search_cooldown_s: float = 1.0
 ## See MINIMUM_GOAL_REFRESH_M. Asserted in invariant_failures().
 @export_range(0.0, 20.0, 0.1, "suffix:m") var goal_refresh_m: float = 3.0
-## Shortest a lurk outside a crevice lasts.
+## Shortest a lurk outside an impassable tunnel lasts.
 ##
-## The RANGE is the mechanic. A fixed timer is something the player counts, and a crevice
+## The RANGE is the mechanic. A fixed timer is something the player counts, and a tunnel
 ## with a known safe interval stops being a gamble.
 @export_range(0.0, 120.0, 0.1, "suffix:s") var lurk_min_s: float = 6.0
 @export_range(0.0, 120.0, 0.1, "suffix:s") var lurk_max_s: float = 14.0
@@ -236,7 +236,7 @@ func invariant_failures(perception: PerceptionConfig = null) -> PackedStringArra
 			failures
 			. append(
 				(
-					"lurk_min_s and lurk_max_s are both %.2f: a fixed lurk is something the player counts, and a crevice with a known safe interval is not a gamble"
+					"lurk_min_s and lurk_max_s are both %.2f: a fixed lurk is something the player counts, and a tunnel with a known safe interval is not a gamble"
 					% lurk_max_s
 				)
 			)

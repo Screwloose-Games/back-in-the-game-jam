@@ -4,7 +4,7 @@ extends BtComposite
 ## Ticks children in order and returns the first non-FAILURE. All failed -> FAILURE.
 ##
 ## The priority node. In every tree here the order IS the claim: HUNTING's
-## strike-beats-pursue-beats-wait-beats-search, INVESTIGATING's search-here-before-going-
+## bite-beats-pursue-beats-wait-beats-search, INVESTIGATING's search-here-before-going-
 ## somewhere-else. Re-entered from child zero every tick, so a higher-priority branch that
 ## becomes viable takes over on the frame it does.
 

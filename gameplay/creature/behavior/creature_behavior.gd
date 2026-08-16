@@ -145,7 +145,7 @@ func build_report() -> EncounterReport:
 	# Owed to the HUNTING tree. Hardcoded false zeroes the Director's w_attack and w_lurk
 	# terms, so this is a stub rather than tuning.
 	report.attack_window_open = false
-	report.lurking_at_crevice = false
+	report.lurking_at_tunnel_mouth = false
 	return report
 
 

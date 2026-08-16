@@ -291,7 +291,7 @@ Move to the last heard noise.
 
 Move toward the target.
 
-Move to this crevice entrance.
+Move to this tunnel mouth.
 
 Return to this nesting area.
 ```
