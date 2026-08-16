@@ -52,10 +52,10 @@ Behavior then decides what action to take based on that belief.
     Memory
         │              │              │
         └──────────────┼──────────────┘
-                       ▼
-                    BEHAVIOR
-                  /          \
-                HFSM        Director
+              ┌────────┴────────┐
+              ▼                 ▼
+          BEHAVIOR          DIRECTOR
+        HFSM + trees      (level-scoped)
 ```
 
 The Suspicion system therefore transforms **momentary perception** into **persistent belief**.
@@ -373,9 +373,7 @@ func get_overall_suspicion() -> float
 
 Returns a normalized `0..1` value representing the creature's total current concern.
 
-It is useful for HFSM transitions.
-
-For example:
+It is a useful summary of concern:
 
 ```text
 0.00–0.20
@@ -387,6 +385,12 @@ For example:
 0.70–1.00
     sufficiently suspicious to support hunting
 ```
+
+It is **not** what opens the investigate transition. Overall suspicion is a scalar with no
+location — it can cross a threshold while giving Behavior nowhere to walk. Behavior keys
+`UNALERTED → INVESTIGATING` off the strongest hotspot instead, so that entering the state
+comes with a destination. Overall suspicion serves the calm-down guard, the Director, and
+debug. See `fsm.md`.
 
 Exact thresholds belong to Behavior configuration.
 
@@ -788,11 +792,11 @@ Suspicion may reference positions and spatial-region IDs, but should not own geo
                      │             SYSTEM
                      │            /       \
                      ▼           ▼         ▼
-                NAVIGATION      HFSM    DIRECTOR
-                     ▲           │         │
-                     │           └────┬────┘
-                     │                │
-                     └────────── BEHAVIOR
+                NAVIGATION    BEHAVIOR  DIRECTOR
+                     ▲        HFSM+trees    │
+                     │           ▲          │
+                     │           └──────────┘
+                     └───────────┘   directive
 ```
 
 Expanded:
@@ -815,12 +819,11 @@ PERCEPTION
                           ┌────────────────┴──────────────┐
                           │                               │
                           ▼                               ▼
-                        HFSM                          DIRECTOR
-                          │                               │
-                          └─────────── BEHAVIOR ──────────┘
-                                         │
-                                         ▼
-                                    NAVIGATION
+                       BEHAVIOR ◄──────────────────── DIRECTOR
+                      HFSM + trees      directive     (level-scoped)
+                          │
+                          ▼
+                     NAVIGATION
 ```
 
 ---

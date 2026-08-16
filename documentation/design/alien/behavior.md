@@ -107,9 +107,9 @@ The major systems are:
 
    * HFSM
    * per-state behavior trees
-   * Director
 5. **Navigation**
 6. **Movement**
+7. **Director** — level-scoped, outside the creature
 
 High-level flow:
 
@@ -136,11 +136,11 @@ High-level flow:
                   │ about players               │ geometry
                   ▼                             │
             ┌─────────────────┐                 │
-            │    BEHAVIOR     │                 │
-            │                 │                 │
-            │ HFSM            │                 │
-            │ Behavior Trees  │                 │
-            │ Director        │                 │
+            │    BEHAVIOR     │◄── DIRECTOR     │
+            │                 │    directive    │
+            │ HFSM            │    down,        │
+            │ Behavior Trees  │    report up    │
+            │                 │    (per level)  │
             └────────┬────────┘                 │
                      │                          │
                      │ navigation intent        │
@@ -196,9 +196,9 @@ PERCEPTION
   ├────────────────────► SUSPICION
   │                       │
   │                       ▼
-  │                    BEHAVIOR
-  │                   /    │    \
-  │                 HFSM   BT   Director
+  │                    BEHAVIOR ◄──── DIRECTOR
+  │                   /     \         (level-scoped)
+  │                 HFSM     BT
   │                       │
   │                       ▼
   │                   NAVIGATION
@@ -236,7 +236,11 @@ Behavior → Suspicion
 Behavior → Navigation
 
 Director → Suspicion
+    read-only
 Director → Navigation metrics
+    read-only, carried on Behavior's encounter report
+Behavior → Director
+    report up, directive down, once per tick
 
 Navigation → Spatial Memory
 Navigation → Perception
@@ -853,15 +857,15 @@ Behavior consists of:
 Creature HFSM
         +
 per-state Behavior Trees
-        +
-Director
 ```
 
 The HFSM handles large, persistent behavioral modes.
 
 Behavior trees handle short-term choices within those modes.
 
-The Director controls encounter-level pacing and multiplayer arbitration.
+Encounter-level pacing and multiplayer arbitration come from the Director, which is
+level-scoped and sits outside the creature. Behavior reads its directive; it does not
+contain it.
 
 ---
 
@@ -929,21 +933,20 @@ The investigation behavior tree might resemble:
 ```text
 INVESTIGATING
 │
-├── Hunt threshold reached?
-│      └── escalate
-│
 ├── Current hotspot resolved?
 │      └── select another hotspot
-│
-├── Strong unresolved location?
-│      └── navigate there
 │
 ├── At search location?
 │      └── inspect/search
 │
-└── No meaningful suspicion?
-       └── finish investigation
+└── Strong unresolved location?
+       └── navigate there
 ```
+
+Two conditions that belong to this mode are deliberately **not** in the tree: the hunt
+threshold being reached, and there being no meaningful suspicion left. Both are HFSM
+transition guards, evaluated before the tree ticks. A tree selects actions; it never
+changes state.
 
 Behavior repeatedly asks Suspicion:
 
@@ -979,12 +982,12 @@ HUNTING
 ├── Target likely hiding in crevice?
 │      └── Lurk
 │
-├── Recent target evidence exists?
-│      └── Search
-│
-└── Hunt no longer sustainable?
-       └── transition
+└── Recent target evidence exists?
+       └── Search
 ```
+
+"Hunt no longer sustainable" is an HFSM transition guard rather than a tree branch, for
+the same reason as in §25.
 
 Hunting should retain commitment despite brief perception loss.
 
@@ -1071,19 +1074,21 @@ The alien selects a destination that:
 
 Retreat has a commitment period.
 
-Normal suspicion should not immediately cause:
-
-```text
-RETREATING → HUNTING
-```
-
-otherwise the Director cannot reliably terminate encounters.
-
-Once enough separation/time is achieved:
+`RETREATING` has exactly one exit, and it is not `HUNTING`:
 
 ```text
 RETREATING → UNALERTED
 ```
+
+once enough separation and time are achieved.
+
+There is no path back to `HUNTING` from a retreat, at any suspicion level, for any
+evidence type — otherwise the Director cannot reliably terminate encounters, and an
+encounter that cannot be terminated has no rhythm.
+
+The visible consequence is real: an alien walking away will ignore a player who attacks
+it. That should read as a predator that has lost interest, which is more unsettling than
+one that can always be re-provoked. See `fsm.md` for the guard and the caveat.
 
 ---
 
@@ -1095,11 +1100,15 @@ The Director answers:
 
 > **What should happen for this to remain a good horror encounter?**
 
-It deliberately operates above the creature's logical reasoning.
+It deliberately operates above the creature's logical reasoning, and outside it: the
+Director is level-scoped, one per level rather than one per creature, because it owns
+encounter-level and party-level facts that no single creature should own.
 
 The alien may logically want to keep hunting.
 
 The Director may decide the encounter has already delivered sufficient pressure.
+
+Full specification: `director.md`.
 
 ---
 
@@ -1414,10 +1423,6 @@ res://gameplay/creature/
 │       ├── lurk_at_crevice.gd
 │       └── retreat_to_nest.gd
 │
-├── director/
-│   ├── creature_director.gd
-│   └── director_config.gd
-│
 ├── navigation/
 │   ├── creature_navigator.gd
 │   ├── creature_nav_graph.gd
@@ -1438,6 +1443,18 @@ res://gameplay/creature/
     ├── suspicion_debug_draw.gd
     ├── spatial_memory_debug_draw.gd
     └── creature_ai_debug_draw.gd
+```
+
+The Director is not under `creature/`, because it is not part of a creature:
+
+```text
+res://gameplay/director/
+│
+├── encounter_director.gd
+├── encounter_directive.gd
+├── encounter_report.gd
+├── encounter_track.gd
+└── director_config.gd
 ```
 
 ---

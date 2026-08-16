@@ -5,8 +5,10 @@ The creature AI is divided into five major systems:
 1. **Perception** — observes the world.
 2. **Spatial Memory** — stores the creature's remembered understanding of geometry.
 3. **Navigation** — plans movement through remembered geometry.
-4. **Aggression** — interprets evidence about players and determines how interested, suspicious, or committed the creature is.
-5. **Behavior** — decides what the creature should do, including encounter pacing through the Director.
+4. **Suspicion** — interprets evidence about players and determines how interested, suspicious, or committed the creature is.
+5. **Behavior** — decides what the creature should do, acting on encounter pacing supplied by the Director.
+
+Above these sits the **Director**, which paces the encounter. It is deliberately not one of the five: it is level-scoped rather than per-creature, and is not part of the creature's own reasoning. It is described separately below.
 
 The systems deliberately separate **knowledge** from **decision-making**.
 
@@ -41,7 +43,8 @@ At the highest level:
        └───────┬────────┘ commands └────────────────┘
                │                           │
                │                           │
-               │             includes HFSM + Director
+               │        includes HFSM + per-state behavior trees
+               │        (encounter directives arrive from the Director)
                ▼
             MOVEMENT
                │
@@ -142,7 +145,7 @@ signal strength
 observation confidence
 ```
 
-This information flows primarily into the **Aggression system**.
+This information flows primarily into the **Suspicion system**.
 
 ### Geometry observations
 
@@ -387,17 +390,17 @@ whether a noise is interesting
 
 ---
 
-# 4. Aggression System
+# 4. Suspicion System
 
 ## Responsibility
 
-The Aggression system answers:
+The Suspicion system answers:
 
 > **Given the creature's evidence about the players, how interested or committed should it be?**
 
 Perception describes observations.
 
-Aggression interprets those observations over time.
+Suspicion interprets those observations over time.
 
 This distinction is important.
 
@@ -412,11 +415,11 @@ player becoming compelling
 hunt commitment increasing
 ```
 
-Those belong to Aggression.
+Those belong to Suspicion.
 
 ## Inputs
 
-Aggression receives player-related observations from Perception.
+Suspicion receives player-related observations from Perception.
 
 Examples:
 
@@ -456,7 +459,7 @@ last evidence age:    3.2 sec
 
 ## Accumulation and Decay
 
-Aggression persists beyond individual perception events.
+Suspicion persists beyond individual perception events.
 
 For example:
 
@@ -480,7 +483,7 @@ A player does not become completely unknown the instant they stop making noise.
 
 ## Target Evidence
 
-Aggression should calculate how compelling each player currently appears.
+Suspicion should calculate how compelling each player currently appears.
 
 This can combine:
 
@@ -508,7 +511,7 @@ last credible target position: ...
 
 ## Important Boundary
 
-Aggression determines:
+Suspicion determines:
 
 ```text
 how strong the creature's interest is
@@ -535,12 +538,14 @@ The Behavior system answers:
 
 > **Given what the creature currently believes, what should it do?**
 
-Behavior contains the high-level creature state machine and the Director.
+Behavior contains the high-level creature state machine and its per-state behavior trees.
+
+Encounter pacing arrives from the Director as a directive Behavior reads. The Director is not part of Behavior and is not part of the creature.
 
 Its inputs primarily come from:
 
 ```text
-Aggression
+Suspicion
 Spatial/target context
 Navigation status
 Director encounter state
@@ -568,18 +573,18 @@ HUNTING
 RETREATING
 ```
 
-Behavior uses Aggression to decide when those modes are appropriate.
+Behavior uses Suspicion to decide when those modes are appropriate.
 
 For example:
 
 ```text
-low aggression
+low suspicion
     → remain territorial
 
-moderate aggression
+moderate suspicion
     → investigate evidence
 
-high aggression
+high suspicion
     → hunt
 
 forced disengagement
@@ -590,9 +595,9 @@ forced disengagement
 
 # Director
 
-The Director is part of the Behavior system because it affects **what behavior should happen**, rather than what the creature perceives or remembers.
+The Director affects **what behavior should happen**, rather than what the creature perceives or remembers.
 
-However, it operates at a different level from the creature HFSM.
+It is level-scoped — one per level, not one per creature — because it owns encounter-level and party-level facts that no single creature should own. It therefore operates at a different level from the creature HFSM, and outside it.
 
 The HFSM answers:
 
@@ -632,7 +637,7 @@ HUNTING
 RETREATING
 ```
 
-This can occur even when Aggression says the creature still has strong evidence of the player.
+This can occur even when Suspicion says the creature still has strong evidence of the player.
 
 The Director therefore provides a game-design override to otherwise logical creature behavior.
 
@@ -642,7 +647,7 @@ The Director therefore provides a game-design override to otherwise logical crea
 
 The Director also handles final target selection.
 
-Aggression provides values such as:
+Suspicion provides values such as:
 
 ```text
 Player 1 interest = 0.71
@@ -673,11 +678,11 @@ Player 2 suddenly drills nearby.
 → switch to Player 2
 ```
 
-Target stickiness therefore belongs in the Behavior/Director layer rather than Perception or Aggression.
+Target stickiness therefore belongs in the Director rather than Perception or Suspicion.
 
 Perception reports evidence.
 
-Aggression evaluates its significance.
+Suspicion evaluates its significance.
 
 The Director decides whether that difference is important enough to change the current encounter.
 
@@ -714,13 +719,13 @@ The primary dependency direction is:
                   │ remembered                │ interest /
                   │ geometry                  │ suspicion
                   ▼                           ▼
-          ┌────────────────┐          ┌────────────────┐
-          │   NAVIGATION   │◄─────────│    BEHAVIOR    │
-          └───────┬────────┘ commands └───────┬────────┘
-                  │                           │
-                  │                     ┌─────┴─────┐
-                  │                     │           │
-                  │                    HFSM      Director
+          ┌────────────────┐          ┌────────────────┐    ┌──────────┐
+          │   NAVIGATION   │◄─────────│    BEHAVIOR    │◄───│ DIRECTOR │
+          └───────┬────────┘ commands └───────┬────────┘    └──────────┘
+                  │                           │             directive down,
+                  │                     ┌─────┴─────┐       report up
+                  │                     │           │       (level-scoped)
+                  │                    HFSM        Trees
                   │
                   ▼
              ┌──────────┐
@@ -771,17 +776,23 @@ Perception → actual World
 
 Spatial Memory ← Perception
 
-Aggression ← Perception
+Suspicion ← Perception
 
 Navigation → Spatial Memory
 
-Behavior → Aggression
+Behavior → Suspicion
 
 Behavior → Navigation
 
-Director → Aggression
+Director → Suspicion
+    read-only
 
 Director → Navigation metrics
+    read-only, and carried on Behavior's encounter report
+    rather than read from the creature's navigator directly
+
+Behavior → Director
+    encounter report up, directive down, once per tick
 
 Movement ← Navigation
 
@@ -801,11 +812,19 @@ Spatial Memory → actual terrain
 
 Spatial Memory → Behavior
 
-Aggression → Navigation
+Suspicion → Navigation
 
-Aggression → HFSM transitions
+Suspicion → HFSM transitions
 
-Navigation → Aggression
+Director → Suspicion mutation
+
+Director → HFSM transitions
+
+Director → Perception
+
+Director → Navigation destinations
+
+Navigation → Suspicion
 
 Navigation → direct Spatial Memory mutation
 
@@ -837,7 +856,7 @@ WORLD
 PERCEPTION
     ↓
 
-3. Aggression increases suspicion toward Player 1.
+3. Suspicion rises toward Player 1.
 
 AGGRESSION
     ↓
@@ -884,7 +903,7 @@ SPATIAL MEMORY
 NAVIGATION
     ↓
 
-11. New noises increase aggression further.
+11. New noises increase suspicion further.
 
 AGGRESSION
     ↓
@@ -928,7 +947,7 @@ Perception:
 Spatial Memory:
     What do I remember about the world?
 
-Aggression:
+Suspicion:
     How much do I care about the evidence?
 
 Behavior:
