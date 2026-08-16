@@ -4,6 +4,7 @@
 [ext_resource type="PackedScene" uid="uid://dbo3lgrb3ynv7" path="res://levels/design/level_full_blockout.tscn" id="2_nnglo"]
 [ext_resource type="Script" uid="uid://dqak1y4u3bt1o" path="res://levels/design/level_geometry_builder.gd" id="3_builder"]
 [ext_resource type="PackedScene" path="res://assets/art/environment/level_blockout/sm_level_full_blockout.tscn" id="4_baked"]
+[ext_resource type="PackedScene" uid="uid://b3kx7mqp2wvda" path="res://prefabs/gameplay/prefab_life_support_cube.tscn" id="5_life_support"]
 
 [sub_resource type="Environment" id="Environment_void"]
 background_mode = 1
@@ -24,6 +25,9 @@ environment = SubResource("Environment_void")
 script = ExtResource("3_builder")
 level_path = NodePath("../LevelFullBlockout")
 build_on_ready = false
+
+[node name="LifeSupportCube" parent="." unique_id=1904722615 instance=ExtResource("5_life_support")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -90.7799, -32.95, 33.8)
 
 [node name="PlayerSpawn" type="Marker3D" parent="." unique_id=2094374759]
 unique_name_in_owner = true

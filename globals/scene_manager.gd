@@ -14,18 +14,15 @@ var fade_transition = load("res://common/ui/scene_transitions/fade_transition.ts
 var loading_screen = load("res://common/ui/loading_screen/loading_screen.tscn")
 var credits = load("res://common/ui/screens/credits.tscn")
 
-## The level, loaded on the spot if nothing warmed it first.
+## The level if something warmed it, and null if nothing has. Never blocks.
 ##
 ## Deliberately not one of the eager vars above. Loading it at autoload time meant the
 ## whole asteroid was read off disk before the main menu drew its first frame, and
 ## nothing could show the player that was happening. AsyncLoader warms it in the
-## background instead, which makes this a cache hit by the time Start is pressed - so
-## pass MAIN_LEVEL_PATH to SceneTransitionManager.change_scene_to_path rather than
-## reading this, which is the one path that can still block.
+## background instead, so pass MAIN_LEVEL_PATH to
+## SceneTransitionManager.change_scene_to_path rather than reading this - a blocking
+## load() here would freeze the game for as long as the asteroid takes to read, which
+## is the whole thing AsyncLoader exists to prevent.
 var main_level: PackedScene:
 	get:
-		if _main_level == null:
-			_main_level = load(MAIN_LEVEL_PATH)
-		return _main_level
-
-var _main_level: PackedScene = null
+		return AsyncLoader.take(MAIN_LEVEL_PATH) as PackedScene

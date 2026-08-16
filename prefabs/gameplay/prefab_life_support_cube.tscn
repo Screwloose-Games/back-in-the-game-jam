@@ -1,0 +1,25 @@
+[gd_scene format=3 uid="uid://b3kx7mqp2wvda"]
+
+[ext_resource type="PackedScene" uid="uid://c7wq2fj4nyv8x" path="res://assets/art/environment/props/sm_battery_pack.tscn" id="1_art"]
+[ext_resource type="Script" path="res://prefabs/gameplay/life_support_cube.gd" id="2_cube"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_cube"]
+size = Vector3(0.6, 0.6, 0.6)
+
+[node name="prefab_life_support_cube" type="RigidBody3D" groups=["life_support_box"]]
+collision_layer = 8
+collision_mask = 15
+mass = 400.0
+gravity_scale = 0.0
+linear_damp = 0.2
+angular_damp = 0.4
+script = ExtResource("2_cube")
+
+[node name="sm_battery_pack" parent="." instance=ExtResource("1_art")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.3, 0)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+shape = SubResource("BoxShape3D_cube")
+
+[node name="ChargeLamp" type="OmniLight3D" parent="."]
+omni_range = 8.0

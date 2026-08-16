@@ -30,6 +30,8 @@ prefab_player (Node3D)
     ├── Oxygen                     this player's personal air
     ├── Lamp                       beam energy and reach, from charge
     ├── MiningTool                 the laser
+    ├── Warmup                     draws the laser and rope once, behind the loading screen
+    │   └── ShaderWarmup           holds them visible for a few frames, then puts them back
     ├── NoiseEmitter               what the creature can hear
     ├── View                       lens and fog
     ├── Visibility                 what you see of your own suit

@@ -118,6 +118,15 @@ func unclip() -> void:
 	unclipped.emit(released)
 
 
+## Lays a throwaway span into the view mesh so the rope's first draw is paid for
+## during a warm-up rather than the first time the line is clipped.
+func build_warmup_span() -> void:
+	var suit_point := anchor.global_position
+	var object_point := suit_point - body.global_transform.basis.z * settings.tether_length
+	_rope.reset(object_point, suit_point, settings.tether_length)
+	_rope_mesh.rebuild(_rope.read_points())
+
+
 func _configure_rope() -> void:
 	_rope.segment_spacing = settings.tether_rope_segment
 	_rope.iterations = settings.tether_rope_iterations

@@ -42,6 +42,7 @@ var roll := 0.0
 var stabilize_held := false
 var sprint_held := false
 var mine_held := false
+var crank_held := false
 
 var _accumulated_mouse_motion := Vector2.ZERO
 var _is_mouse_captured := false
@@ -94,6 +95,7 @@ func _physics_process(_delta: float) -> void:
 	stabilize_held = _action_pressed("stabilize")
 	sprint_held = _action_pressed("sprint")
 	mine_held = _action_pressed("mine")
+	crank_held = _action_pressed("crank")
 	look = _accumulated_mouse_motion
 	_accumulated_mouse_motion = Vector2.ZERO
 
@@ -113,6 +115,7 @@ func clear() -> void:
 	stabilize_held = false
 	sprint_held = false
 	mine_held = false
+	crank_held = false
 	_accumulated_mouse_motion = Vector2.ZERO
 
 

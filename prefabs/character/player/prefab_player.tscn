@@ -22,6 +22,8 @@
 [ext_resource type="PackedScene" uid="uid://b8b6q7g4bsaw5" path="res://common/ui/pause_menu/pause_menu.tscn" id="20_pause"]
 [ext_resource type="Script" uid="uid://boeblupp05d2k" path="res://prefabs/character/player/components/player_rig_animation.gd" id="21_riganim"]
 [ext_resource type="PackedScene" uid="uid://dp3bwl1dg7glm" path="res://prefabs/gameplay/prefab_mining_laser.tscn" id="22_laser"]
+[ext_resource type="Script" path="res://prefabs/character/player/components/player_warmup.gd" id="23_warmup"]
+[ext_resource type="Script" path="res://systems/rendering/shader_warmup.gd" id="24_shader_warmup"]
 
 [sub_resource type="SphereShape3D" id="SphereShape3D_hull"]
 radius = 0.4
@@ -207,6 +209,13 @@ unique_name_in_owner = true
 script = ExtResource("12_mining")
 settings = ExtResource("2_settings")
 tool_model = NodePath("../Rig/LaserAttachment/prefab_mining_laser")
+
+[node name="Warmup" type="Node" parent="PlayerBody" unique_id=1109334721]
+unique_name_in_owner = true
+script = ExtResource("23_warmup")
+
+[node name="ShaderWarmup" type="Node" parent="PlayerBody/Warmup" unique_id=1109334722]
+script = ExtResource("24_shader_warmup")
 
 [node name="RigAnimation" type="Node" parent="PlayerBody" unique_id=612356352]
 unique_name_in_owner = true
