@@ -72,4 +72,14 @@ Issue templates under `.github/ISSUE_TEMPLATE/` cover the asset-request workflow
 
 Renderer is GL Compatibility for web (itch.io) export. Presets exist for Web, Windows, macOS, and Linux; the release pipeline uses **Web**.
 
+### Deploying the web build to Cloudflare
+
+`python tools/deploy-cloudflare.py --apply` puts `releases/web/` on a URL we control: the
+files go to an R2 bucket and a small Worker serves them with the cross-origin isolation
+headers the threaded build needs. Dry run by default; add `--build` to export first. Setup
+(API token, account ID, `.env`) and the reason this is R2 rather than Cloudflare Pages — Pages
+caps assets at 25 MiB and `index.pck` is 78 MiB — are in `tools/cloudflare/README.md`.
+
+This is independent of the itch.io pipeline, which is unchanged.
+
 `ATTRIBUTION.md` is a *non-resource* file. Godot ships it only because every export preset lists `*.md` under "Filters to export non-resource files/folders" (`include_filter` in `export_presets.cfg`). If you rename the file or add a preset, keep that filter — otherwise the credits screen renders its fallback text instead of your credits. Losing the filter does not fail the export, so CI asserts `ATTRIBUTION.md` is inside the exported pack and fails the build if it is not. `export_presets.cfg` cannot carry comments (the Godot editor strips them whenever it rewrites the file), which is why this note lives here.

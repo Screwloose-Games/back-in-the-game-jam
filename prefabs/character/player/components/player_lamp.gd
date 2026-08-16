@@ -87,11 +87,14 @@ func _apply_static_settings() -> void:
 	lamp.spot_angle = settings.helmet_lamp_angle
 	lamp.spot_angle_attenuation = settings.helmet_lamp_angle_attenuation
 	lamp.spot_attenuation = settings.helmet_lamp_attenuation
-	# Your own laser hangs a hand's width from the visor, so a shadow cast off it
-	# would black out your own beam. Only this machine's own lamp drops it; a
-	# remote peer's lamp keeps the full mask, so an ally's light still throws it.
-	if visibility.is_local_player:
-		lamp.shadow_caster_mask = PlayerRenderLayers.own_lamp_shadow_caster_mask()
+	# A lamp inside a visor, a hand's width from a laser, casts shadows off both
+	# and blacks out its own beam. Each lamp drops the suit it is mounted on and
+	# keeps the other one, so an ally's light still throws your shadow.
+	lamp.shadow_caster_mask = (
+		PlayerRenderLayers.own_lamp_shadow_caster_mask()
+		if visibility.is_local_player
+		else PlayerRenderLayers.peer_lamp_shadow_caster_mask()
+	)
 
 
 ## Brightness and reach both follow the charge, so a dying suit does not simply
