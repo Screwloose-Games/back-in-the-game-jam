@@ -1,0 +1,10 @@
+[gd_scene load_steps=2 format=3]
+
+; A .tscn wrapper, and NOT optional. A node added during SceneTree._initialize() never
+; receives _ready(), so `--script verify_behavior_runtime.gd` would run nothing, print
+; nothing and exit 0 -- which looks exactly like a pass.
+
+[ext_resource type="Script" path="verify_behavior_runtime.gd" id="1"]
+
+[node name="VerifyBehaviorRuntime" type="Node"]
+script = ExtResource("1")

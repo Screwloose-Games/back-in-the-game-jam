@@ -201,8 +201,12 @@ func get_suspicion_near(position: Vector3, radius: float) -> float:
 ## repeatedly as it searches: each completed search feeds a disconfirmation back in,
 ## and the answer moves into whatever is still unchecked.
 ##
-## Returns the hotspot's own centre for an unknown id, so a caller that raced a
-## `hotspot_resolved` still gets somewhere to stand rather than the origin.
+## RETURNS Vector3.ZERO FOR AN UNKNOWN ID -- the world origin, not the hotspot centre. A
+## caller that raced a `hotspot_resolved` and navigated to the answer unguarded will send the
+## creature to the middle of the level. Check `get_hotspot(id) != null` first: for a LIVE
+## hotspot the sampler falls back to the hotspot's own position, so the origin is returned on
+## that path and no other, and the id check is exact where a coordinate check would also
+## condemn a hotspot legitimately sitting near zero.
 func get_best_unresolved_location(hotspot_id: int) -> Vector3:
 	var hotspot: SuspicionHotspot = hotspot_field.find(hotspot_id)
 	if hotspot == null:

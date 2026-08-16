@@ -44,9 +44,15 @@ var _alertness: float = 1.0
 
 
 func _ready() -> void:
+	# THE CREATURE BEFORE THE ROOM, AND THE ORDER IS LOAD-BEARING. CreaturePerception
+	# collects its own collision shapes in _ready() by walking its PARENT's descendants,
+	# and excludes them from every line-of-sight ray so it does not report itself as a
+	# wall. The creature is parented to this node, so building the room first put all
+	# eight walls in that exclusion list and the divider stopped blocking vision -- the
+	# one thing this scene has a divider for.
+	_perception = _build_creature()
 	_build_room()
 	_player = _build_player()
-	_perception = _build_creature()
 	_build_debug()
 	_build_camera()
 	_perception.set_alertness_context(_alertness)

@@ -174,7 +174,7 @@ Behavior reads and then acts on its own thresholds — Suspicion transitions not
 if suspicion.get_overall_suspicion() > my_investigate_threshold:
     var hotspot := suspicion.get_strongest_hotspot()
     var where := suspicion.get_best_unresolved_location(hotspot.id)
-    navigation.move_to(where)
+    navigation.set_goal(where)
     perception.request_activity_scan(AABB(where - Vector3.ONE * 4, Vector3.ONE * 8), 1.0)
     # ...and the disconfirmation that search produces is what lowers the suspicion.
     # Nothing here tells Suspicion the area is clear.

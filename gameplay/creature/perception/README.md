@@ -139,6 +139,9 @@ perception.geometry_observed.connect(spatial_memory.observe_geometry_batch)
 # Suspicion feeds alertness back as READ-ONLY context (section 14): it changes how
 # hard the creature looks, never what it finds.
 perception.set_alertness_context(suspicion.get_overall_suspicion())
+# ...unless Behavior is wired up, in which case IT owns this line and publishes a per-state
+# value instead (fsm.md's tick contract, step 6). Do not do both: the last writer of the
+# frame wins, and which one that is depends on node order.
 ```
 
 Noises are pushed in — nothing polls for them:

@@ -169,6 +169,77 @@ jobs:
             runtime.log
           if-no-files-found: ignore
 
+  # The HFSM, the behavior tree framework and the two Director value types. The only job
+  # that exercises all four creature modules at once -- its GUT suite assembles a real
+  # perception, suspicion and navigation behind fake PROBES, so the seams are real and the
+  # world is not.
+  behavior:
+    runs-on: ubuntu-latest
+    container:
+      image: barichello/godot-ci:${{ vars.GODOT_VERSION || '4.7.1' }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Import resources
+        run: godot --headless --path . --import
+        continue-on-error: true
+
+      - name: Unit tests (GUT)
+        run: |
+          set -o pipefail
+          godot --headless --path . -s addons/gut/gut_cmdln.gd \
+            -gconfig=res://.gutconfig.json -gdir=res://gameplay/creature/behavior/tests \
+            -glog=1 -gexit | tee gut.log
+          if ! grep -q "All tests passed" gut.log; then
+            echo "::error::GUT did not report a green run"
+            exit 1
+          fi
+          if ! grep -qE "Scripts +[1-9]" gut.log; then
+            echo "::error::GUT collected no test scripts -- check .gutconfig.json dirs"
+            exit 1
+          fi
+
+      # The domain-free rule for tree/, the no-belief-writes rule, the no-wall-clock rule and
+      # the .uid sidecars. Comments are stripped before every token check -- two of these
+      # rules lived in the GUT suite first and both failed on their own explanatory prose.
+      - name: Static checks
+        run: |
+          set -o pipefail
+          godot --headless --path . \
+            --script res://gameplay/creature/behavior/tools/verify_behavior_static.gd \
+            | tee static.log
+          grep -q "all checks passed" static.log || {
+            echo "::error::behavior static checks failed"; exit 1; }
+
+      # All four creature systems in one tree over real Jolt geometry, and the two things no
+      # unit test can see: that _physics_process is wired to advance(), and that driving the
+      # tick MUTES the other three facades rather than double-advancing every clock.
+      #
+      # A .tscn wrapper, NOT --script. A node added during SceneTree._initialize() never
+      # receives _ready(), so the bare-script form runs nothing, prints nothing and exits 0 --
+      # which looks exactly like a pass.
+      - name: Runtime checks
+        run: |
+          set -o pipefail
+          godot --headless --path . \
+            res://gameplay/creature/behavior/tools/verify_behavior_runtime.tscn \
+            | tee runtime.log
+          grep -q "all checks passed" runtime.log || {
+            echo "::error::behavior runtime checks failed"; exit 1; }
+
+      - name: Upload logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: behavior-test-logs
+          path: |
+            gut.log
+            static.log
+            runtime.log
+          if-no-files-found: ignore
+
   # Phases 1-9 of documentation/design/alien/navigation.md. Needs no voxel extension:
   # the module reaches the world only through NavigationProbe, and the runtime suite
   # builds its cave from StaticBody3D boxes. `verify_navigation_static.gd` is what keeps

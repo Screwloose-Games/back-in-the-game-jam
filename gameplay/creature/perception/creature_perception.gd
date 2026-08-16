@@ -229,6 +229,28 @@ func is_activity_scan_complete() -> bool:
 	return _activity_scan.is_complete()
 
 
+## Stops a sweep that Behavior has changed its mind about.
+##
+## Without this, an alien that abandons a search mid-scan -- a hotspot resolving, a hunt
+## starting -- leaves the scan running, and it later reports a disconfirmation for a region
+## the creature is no longer standing in. The alien would clear a place it never checked,
+## which is the one thing searching must not be able to do. Emits nothing: a cancelled scan
+## observed nothing, so there is nothing to report.
+func cancel_activity_scan() -> void:
+	_activity_scan.cancel()
+
+
+## Whether the last activity scan gave up rather than finishing.
+##
+## "Never looked" and "checked and found nothing" are different claims, and only this tells
+## them apart -- an aborted scan still reaches FINISHED so a caller's request-then-poll loop
+## cannot hang, and still reports a disconfirmation, but at ZERO strength, which suppresses
+## nothing. A caller that treated it as a completed search would believe an area was cleared
+## by a scan that never ran.
+func activity_scan_aborted() -> bool:
+	return _activity_scan.aborted
+
+
 func is_geometry_scan_complete() -> bool:
 	return _geometry_scan.is_complete()
 

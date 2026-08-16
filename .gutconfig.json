@@ -1,8 +1,10 @@
 {
   "dirs": [
+    "res://gameplay/creature/behavior/tests",
     "res://gameplay/creature/navigation/tests",
     "res://gameplay/creature/perception/tests",
-    "res://gameplay/creature/suspicion/tests"
+    "res://gameplay/creature/suspicion/tests",
+    "res://gameplay/director/tests"
   ],
   "include_subdirs": true,
   "log_level": 1,
