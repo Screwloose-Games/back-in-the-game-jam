@@ -56,12 +56,14 @@ var _cranking := false
 var _announced_fraction := -1.0
 
 @onready var lamp: OmniLight3D = $ChargeLamp
+@onready var bar: BatteryBar = $BatteryBar
 
 
 func _ready() -> void:
 	add_to_group(BOX_GROUP)
 	charge = capacity * clampf(start_fraction, 0.0, 1.0)
 	_apply_lamp()
+	_apply_bar()
 	_announce()
 
 
@@ -139,6 +141,7 @@ func _set_cranking(value: bool) -> void:
 
 func _after_change() -> void:
 	_apply_lamp()
+	_apply_bar()
 	_announce()
 
 
@@ -150,6 +153,14 @@ func _apply_lamp() -> void:
 	var level := fraction()
 	lamp.light_color = empty_color.lerp(full_color, level)
 	lamp.light_energy = lamp_energy * level
+
+
+## Driven from _after_change rather than from charge_changed, which is
+## epsilon-gated - the same reason the lamp is.
+func _apply_bar() -> void:
+	if bar == null:
+		return
+	bar.show_fraction(fraction())
 
 
 func _announce() -> void:
