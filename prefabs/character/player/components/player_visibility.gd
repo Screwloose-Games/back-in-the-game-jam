@@ -101,7 +101,7 @@ func apply() -> void:
 ## camera or a rig.
 func layers_for(mesh_name: StringName) -> int:
 	if not is_local_player:
-		return PlayerRenderLayers.world_mask()
+		return _peer_layers_for(mesh_name)
 	if parts_only_visible_to_self.has(mesh_name):
 		return PlayerRenderLayers.own_viewmodel_mask()
 	if not _first_person or self_view == SelfView.SHOW_EVERYTHING:
@@ -111,4 +111,13 @@ func layers_for(mesh_name: StringName) -> int:
 		return PlayerRenderLayers.own_body_mask()
 	if parts_on_own_tool_layer.has(mesh_name):
 		return PlayerRenderLayers.own_tool_mask()
+	return PlayerRenderLayers.world_mask()
+
+
+## A remote peer is drawn whole, so this is a lighting split rather than a hiding
+## one: their lamp sits inside their visor and beside their laser exactly as yours
+## does, and the layer their own lamp skips is what keeps their beam alive.
+func _peer_layers_for(mesh_name: StringName) -> int:
+	if parts_hidden_from_self.has(mesh_name) or parts_on_own_tool_layer.has(mesh_name):
+		return PlayerRenderLayers.peer_suit_mask()
 	return PlayerRenderLayers.world_mask()

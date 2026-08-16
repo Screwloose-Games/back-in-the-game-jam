@@ -22,6 +22,11 @@ const OWN_VIEWMODEL_LAYER := 12
 ## width from the visor otherwise throws its shadow across everything you dig.
 const OWN_TOOL_LAYER := 13
 
+## A remote player's own visor, head and tool. Drawn like the world, but kept out
+## of that player's own lamp's shadow casters: their visor encloses their lamp,
+## so it would otherwise swallow their beam entirely and you would see no light.
+const PEER_SUIT_LAYER := 14
+
 ## Godot has 20 render layers.
 const ALL_LAYERS := 0xFFFFF
 
@@ -47,10 +52,21 @@ static func own_tool_mask() -> int:
 	return bit(OWN_TOOL_LAYER)
 
 
-## What the local player's own lamp may cast shadows from. Their own tool is not
-## in it; an ally's lamp keeps the full mask, so their light still throws it.
+static func peer_suit_mask() -> int:
+	return bit(PEER_SUIT_LAYER)
+
+
+## What the local player's own lamp may cast shadows from. Their own tool and the
+## visor around the lamp are not in it; a remote peer's suit is, so an ally you
+## light still throws a shadow.
 static func own_lamp_shadow_caster_mask() -> int:
-	return ALL_LAYERS & ~own_tool_mask()
+	return ALL_LAYERS & ~(own_tool_mask() | own_body_mask())
+
+
+## What a remote player's lamp may cast shadows from. The same rule seen from the
+## other side: their own suit is dropped, yours and the asteroid are not.
+static func peer_lamp_shadow_caster_mask() -> int:
+	return ALL_LAYERS & ~peer_suit_mask()
 
 
 ## Everything except the local player's own body. Remote players stay on the

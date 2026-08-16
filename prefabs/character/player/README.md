@@ -102,21 +102,31 @@ No layer coordination between machines, and no player index to collide.
 
 ```
                        local camera cull mask
-world         (1)      drawn   ← remote players, the asteroid, everything else
-own_body      (11)     culled  ← your own suit
+world         (1)      drawn   ← the asteroid, an ally's torso, everything else
+own_body      (11)     culled  ← your own head and visor
 own_viewmodel (12)     drawn   ← your arms; switched off on a remote instance
 own_tool      (13)     drawn   ← the laser in your own hands
+peer_suit     (14)     drawn   ← an ally's head, visor and laser
 ```
 
-`own_tool` is a lighting layer rather than a visibility one: you see the laser
-like anything else, but `PlayerLamp` drops that layer from your own helmet lamp's
-`shadow_caster_mask`, because a tool held a hand's width from the visor otherwise
-throws its shadow across everything you are trying to dig. An ally's lamp keeps
-the full mask, so their light still casts the laser's shadow — and a remote
-instance leaves the mesh on `world`, so no coordination is needed between
-machines. Use `shadow_caster_mask` and not `light_cull_mask` for this:
-`light_cull_mask` stops the object being *lit* while it goes on blocking the
-light, which is the opposite of what is wanted.
+`own_tool` and `peer_suit` are lighting layers rather than visibility ones: the
+meshes are drawn like anything else, but a helmet lamp drops the suit it is
+mounted on from its `shadow_caster_mask`. A lamp sits *inside* the visor and a
+hand's width from the laser, so with the full mask its own suit throws a shadow
+across everything the beam is pointed at — the laser's shadow over the cut, and,
+for an ally, the visor blacking the beam out entirely so you see no light coming
+off their helmet at all. Each lamp drops only its own suit, so an ally you light
+still casts a shadow and so do you in theirs.
+
+Two lamp masks are needed rather than one because a lamp cannot ask for "the mesh
+I am parented to" — only for a layer. `PlayerVisibility` puts your own head and
+visor on `own_body` and an ally's on `peer_suit`; `PlayerLamp` picks the matching
+mask from `is_local_player`. With more than two players in a session, one ally's
+lamp would also skip another ally's visor shadow; the level spawns two.
+
+Use `shadow_caster_mask` and not `light_cull_mask` for this: `light_cull_mask`
+stops the object being *lit* while it goes on blocking the light, which is the
+opposite of what is wanted.
 
 Three modes, on `PlayerVisibility.self_view`:
 
@@ -150,11 +160,11 @@ Layers are written in code, not saved on the meshes, because the meshes live
 inside an instanced glTF scene: overriding their properties in the `.tscn` needs
 editable children and those overrides do not survive a re-import.
 
-Shadows are not affected by a camera's cull mask, so your hidden head and visor
-still cast one. That is usually what you want — you see your own shadow — but the
-suit is now lit and visible while the head is shadow-only, and `HelmetLamp` is a
-shadow-casting `SpotLight3D` parented inside the hidden geometry, so it is worth a
-look in the real level.
+`HelmetLamp` is a shadow-casting `SpotLight3D` parented inside the head and visor,
+which is exactly the case the two lamp masks above exist for. Culling a mesh from
+the camera does *not* reliably stop it casting, so neither lamp may be left on the
+default mask: an ally's lamp on the full mask is swallowed by their own visor and
+throws no light into the level at all.
 
 ## Collision layers
 

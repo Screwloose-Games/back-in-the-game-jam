@@ -1,8 +1,6 @@
 import errno
-import glob
 import os
 import re
-import shutil
 import signal
 import socket
 import subprocess
@@ -12,73 +10,9 @@ from functools import partial
 from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 
+from godot_bin import WINDOWS, find_godot, find_project_root
+
 PORT = int(os.environ.get("PORT", 8002))
-WINDOWS = os.name == "nt"
-
-# Godot is not on PATH on every machine here, so look for it in the usual places.
-if WINDOWS:
-    GODOT_SEARCH_GLOBS = [
-        "D:/Godot_v*_win64.exe",
-        "C:/Program Files/Godot/Godot_v*_win64.exe",
-        str(Path.home() / "AppData/Local/Programs/Godot/Godot_v*_win64.exe"),
-    ]
-elif sys.platform == "darwin":
-    # Homebrew's cask installs the bundle into /Applications; its `godot` shim, if
-    # any, is already covered by the PATH lookup below.
-    GODOT_SEARCH_GLOBS = [
-        "/Applications/Godot.app/Contents/MacOS/Godot",
-        "/Applications/Godot_v*.app/Contents/MacOS/Godot",
-        str(Path.home() / "Applications/Godot.app/Contents/MacOS/Godot"),
-        str(Path.home() / "Applications/Godot_v*.app/Contents/MacOS/Godot"),
-    ]
-else:
-    GODOT_SEARCH_GLOBS = [
-        str(Path.home() / ".local/bin/[Gg]odot*"),
-        str(Path.home() / "Applications/Godot_v*_linux.x86_64"),
-        "/usr/local/bin/[Gg]odot*",
-        "/opt/[Gg]odot*/[Gg]odot*",
-        "/opt/Godot_v*_linux.x86_64",
-    ]
-
-
-def find_project_root(start):
-    current = start.resolve()
-    for candidate in [current, *current.parents]:
-        if (candidate / "project.godot").is_file() or (candidate / ".git").is_dir():
-            return candidate
-    return start.resolve()
-
-
-def find_godot():
-    override = os.environ.get("GODOT_BIN") or os.environ.get("GODOT")
-    if override:
-        # A macOS bundle is a directory; the binary is buried inside it.
-        if override.rstrip("/").endswith(".app") and Path(override).is_dir():
-            override = str(Path(override) / "Contents/MacOS/Godot")
-        if not Path(override).is_file():
-            sys.exit(f"GODOT_BIN points at a missing file: {override}")
-        return override
-
-    for name in ("godot", "godot4", "Godot", "Godot_v4"):
-        found = shutil.which(name)
-        # A .cmd/.bat shim mangles the arguments we pass through it, so keep looking
-        # for the real executable instead.
-        if found and not (WINDOWS and found.lower().endswith((".cmd", ".bat"))):
-            return found
-
-    candidates = []
-    for pattern in GODOT_SEARCH_GLOBS:
-        candidates += [
-            p
-            for p in glob.glob(pattern)
-            if "console" not in p and Path(p).is_file() and os.access(p, os.X_OK)
-        ]
-    if candidates:
-        # Newest wins. The version is in the file name on Windows and Linux but only
-        # in the directory on macOS, where every candidate is named "Godot".
-        return max(candidates, key=lambda p: (Path(p).name, p))
-
-    sys.exit("Could not find the Godot binary. Set GODOT_BIN to its full path.")
 
 
 def is_port_busy_error(error):
@@ -252,6 +186,18 @@ class Server(ThreadingHTTPServer):
 
 
 class Handler(SimpleHTTPRequestHandler):
+    # Windows records .js as text/plain in HKCR, and Python's mimetypes honours the
+    # registry, so the default map serves the engine's scripts as plain text. Chrome
+    # refuses an AudioWorklet module with a non-JavaScript MIME type, and Godot then
+    # has no audio driver at all - the build runs completely silent, which makes it
+    # useless for testing anything to do with sound.
+    extensions_map = {
+        **SimpleHTTPRequestHandler.extensions_map,
+        ".js": "text/javascript",
+        ".mjs": "text/javascript",
+        ".wasm": "application/wasm",
+    }
+
     def end_headers(self):
         self.send_header("Cross-Origin-Opener-Policy", "same-origin")
         self.send_header("Cross-Origin-Embedder-Policy", "require-corp")

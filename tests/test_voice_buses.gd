@@ -50,8 +50,8 @@ func test_each_speaker_slot_owns_its_own_low_pass_filter() -> void:
 	var filters: Array[AudioEffectLowPassFilter] = []
 	for bus_name in VOICE_SLOT_BUSES:
 		var index := AudioServer.get_bus_index(bus_name)
-		var filter := AudioServer.get_bus_effect(index, 0) as AudioEffectLowPassFilter
-		assert_true(filter != null, "%s needs a low-pass at effect 0 for occlusion" % bus_name)
+		var filter := _find_effect(index, "AudioEffectLowPassFilter") as AudioEffectLowPassFilter
+		assert_true(filter != null, "%s needs a low-pass somewhere for occlusion" % bus_name)
 		if filter != null:
 			assert_gt(filter.cutoff_hz, 15000.0, "%s must start open, not muffled" % bus_name)
 			filters.append(filter)
@@ -61,6 +61,32 @@ func test_each_speaker_slot_owns_its_own_low_pass_filter() -> void:
 			filters[1].get_instance_id(),
 			"a shared filter would give both speakers one cutoff"
 		)
+
+
+## Order is the whole point: the radio chain shapes the voice, then occlusion
+## takes the high end away last. Distortion after the low-pass would generate
+## harmonics above its cutoff and undo the muffling a wall is meant to cause.
+func test_the_radio_chain_runs_before_occlusion() -> void:
+	for bus_name in VOICE_SLOT_BUSES:
+		var index := AudioServer.get_bus_index(bus_name)
+		var high_pass := _effect_slot(index, "AudioEffectHighPassFilter")
+		var distortion := _effect_slot(index, "AudioEffectDistortion")
+		var low_pass := _effect_slot(index, "AudioEffectLowPassFilter")
+		assert_gt(high_pass + 1, 0, "%s needs a high-pass for the radio band" % bus_name)
+		assert_gt(distortion + 1, 0, "%s needs a distortion for the radio grit" % bus_name)
+		assert_gt(low_pass, distortion, "%s occlusion must run after distortion" % bus_name)
+		assert_gt(low_pass, high_pass, "%s occlusion must run last" % bus_name)
+
+
+func test_the_radio_band_leaves_speech_intact() -> void:
+	for bus_name in VOICE_SLOT_BUSES:
+		var index := AudioServer.get_bus_index(bus_name)
+		var high_pass := (
+			_find_effect(index, "AudioEffectHighPassFilter") as AudioEffectHighPassFilter
+		)
+		if high_pass != null:
+			# Above this the radio starts eating vowels rather than colouring them.
+			assert_true(high_pass.cutoff_hz <= 400.0, "%s high-pass is too aggressive" % bus_name)
 
 
 func test_capture_reads_the_bus_before_it_is_silenced() -> void:
@@ -86,3 +112,15 @@ func test_the_capture_bus_is_muted_but_not_bypassed() -> void:
 		AudioServer.is_bus_mute(index),
 		"a second, non-effect guarantee that the microphone never reaches the speakers"
 	)
+
+
+func _find_effect(bus_index: int, class_name_wanted: String) -> AudioEffect:
+	var slot := _effect_slot(bus_index, class_name_wanted)
+	return null if slot < 0 else AudioServer.get_bus_effect(bus_index, slot)
+
+
+func _effect_slot(bus_index: int, class_name_wanted: String) -> int:
+	for i in AudioServer.get_bus_effect_count(bus_index):
+		if AudioServer.get_bus_effect(bus_index, i).is_class(class_name_wanted):
+			return i
+	return -1

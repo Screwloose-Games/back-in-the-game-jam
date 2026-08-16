@@ -1,7 +1,21 @@
 [gd_resource type="AudioBusLayout" format=3 uid="uid://ups1oc5asek6"]
 
+[sub_resource type="AudioEffectHighPassFilter" id="AudioEffectHighPassFilter_voice0"]
+cutoff_hz = 300.0
+
+[sub_resource type="AudioEffectDistortion" id="AudioEffectDistortion_voice0"]
+mode = 1
+drive = 0.35
+
 [sub_resource type="AudioEffectLowPassFilter" id="AudioEffectLowPassFilter_voice0"]
 cutoff_hz = 20000.0
+
+[sub_resource type="AudioEffectHighPassFilter" id="AudioEffectHighPassFilter_voice1"]
+cutoff_hz = 300.0
+
+[sub_resource type="AudioEffectDistortion" id="AudioEffectDistortion_voice1"]
+mode = 1
+drive = 0.35
 
 [sub_resource type="AudioEffectLowPassFilter" id="AudioEffectLowPassFilter_voice1"]
 cutoff_hz = 20000.0
@@ -50,16 +64,24 @@ bus/6/mute = false
 bus/6/bypass_fx = false
 bus/6/volume_db = 0.0
 bus/6/send = &"VoiceChat"
-bus/6/effect/0/effect = SubResource("AudioEffectLowPassFilter_voice0")
+bus/6/effect/0/effect = SubResource("AudioEffectHighPassFilter_voice0")
 bus/6/effect/0/enabled = true
+bus/6/effect/1/effect = SubResource("AudioEffectDistortion_voice0")
+bus/6/effect/1/enabled = true
+bus/6/effect/2/effect = SubResource("AudioEffectLowPassFilter_voice0")
+bus/6/effect/2/enabled = true
 bus/7/name = &"Voice_1"
 bus/7/solo = false
 bus/7/mute = false
 bus/7/bypass_fx = false
 bus/7/volume_db = 0.0
 bus/7/send = &"VoiceChat"
-bus/7/effect/0/effect = SubResource("AudioEffectLowPassFilter_voice1")
+bus/7/effect/0/effect = SubResource("AudioEffectHighPassFilter_voice1")
 bus/7/effect/0/enabled = true
+bus/7/effect/1/effect = SubResource("AudioEffectDistortion_voice1")
+bus/7/effect/1/enabled = true
+bus/7/effect/2/effect = SubResource("AudioEffectLowPassFilter_voice1")
+bus/7/effect/2/enabled = true
 bus/8/name = &"VoiceCapture"
 bus/8/solo = false
 bus/8/mute = true
