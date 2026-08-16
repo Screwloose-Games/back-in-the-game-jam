@@ -8,6 +8,10 @@ extends Node
 
 signal respawned
 
+## A network driver sets this before the node enters the tree and forwards reset
+## requests to the host rather than letting a client teleport itself directly.
+var externally_driven := false
+
 var _spawn_transform: Transform3D
 
 @onready var body: CharacterBody3D = get_parent()
@@ -16,7 +20,8 @@ var _spawn_transform: Transform3D
 
 func _ready() -> void:
 	_spawn_transform = body.global_transform
-	input.reset_requested.connect(respawn)
+	if not externally_driven:
+		input.reset_requested.connect(respawn)
 
 
 ## Overrides the remembered pose, for a level that moves the player after spawn

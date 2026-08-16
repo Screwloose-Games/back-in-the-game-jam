@@ -14,6 +14,10 @@ const PHYSICS_PRIORITY := -40
 
 @export var settings: PlayerSettings
 
+## A network driver sets this before the node enters the tree and forwards grab
+## requests to authority instead of letting a client mutate a shared body.
+var externally_driven := false
+
 ## The carryable in your hands, or null.
 var _held: RigidBody3D
 ## A carryable under the crosshair, attached or not. The reticle reads this to
@@ -40,10 +44,13 @@ func _ready() -> void:
 		settings = PlayerSettings.new()
 		push_warning("PlayerGrab has no settings; running on PlayerSettings defaults.")
 	grab_ray.target_position = Vector3(0.0, 0.0, -settings.grab_range)
-	input.grab_toggled.connect(_on_grab_toggled)
+	if not externally_driven:
+		input.grab_toggled.connect(_on_grab_toggled)
 
 
 func _physics_process(delta: float) -> void:
+	if externally_driven:
+		return
 	_update_target()
 	_apply_grip(delta)
 

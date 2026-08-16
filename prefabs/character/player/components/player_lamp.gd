@@ -9,6 +9,10 @@ signal lamp_toggled(lit: bool)
 
 @export var settings: PlayerSettings
 
+## A network driver sets this before the node enters the tree, forwards toggle
+## requests to authority, and applies replicated presentation explicitly.
+var externally_driven := false
+
 var _lit := true
 var _flicker_until := 0.0
 var _next_flicker := 0.0
@@ -28,10 +32,18 @@ func _ready() -> void:
 	_random.randomize()
 	_apply_static_settings()
 	_lit = settings.lamp_starts_on
-	input.lamp_toggled.connect(toggle)
+	if not externally_driven:
+		input.lamp_toggled.connect(toggle)
 
 
 func _process(delta: float) -> void:
+	if externally_driven:
+		return
+	authority_step(delta)
+
+
+## Advances authoritative lamp state, including its power cost.
+func authority_step(delta: float) -> void:
 	if _lit:
 		# An unlit lamp costs nothing, which is what makes flying blind a real
 		# way to buy digging time.
@@ -43,6 +55,11 @@ func is_lit() -> bool:
 	return _lit and power.has_power()
 
 
+## The switch position independent of whether the battery can light the beam.
+func requested_lit() -> bool:
+	return _lit
+
+
 func toggle() -> void:
 	set_lit(not _lit)
 
@@ -52,6 +69,16 @@ func set_lit(lit: bool) -> void:
 		return
 	_lit = lit
 	lamp_toggled.emit(_lit)
+
+
+## Applies transport-owned state without spending power or producing gameplay.
+func apply_network_presentation(
+	requested: bool,
+	effective: bool,
+	charge_fraction: float,
+) -> void:
+	set_lit(requested)
+	_apply_beam(effective, charge_fraction, 0.0, false)
 
 
 func _apply_static_settings() -> void:
@@ -70,15 +97,25 @@ func _apply_static_settings() -> void:
 ## Brightness and reach both follow the charge, so a dying suit does not simply
 ## get dimmer — the dark closes in.
 func _update_beam(delta: float) -> void:
-	if not is_lit():
+	_apply_beam(is_lit(), power.fraction(), delta, true)
+
+
+func _apply_beam(
+	effective: bool,
+	charge_fraction: float,
+	delta: float,
+	allow_flicker: bool,
+) -> void:
+	if not effective:
 		lamp.visible = false
 		return
 	lamp.visible = true
 
-	var charge := power.fraction()
+	var charge := clampf(charge_fraction, 0.0, 1.0) if is_finite(charge_fraction) else 0.0
 	var reach_floor := settings.helmet_lamp_min_range_fraction
 	lamp.spot_range = settings.helmet_lamp_range * lerpf(reach_floor, 1.0, charge)
-	lamp.light_energy = settings.helmet_lamp_energy * charge * _flicker_scale(delta, charge)
+	var flicker := _flicker_scale(delta, charge) if allow_flicker else 1.0
+	lamp.light_energy = settings.helmet_lamp_energy * charge * flicker
 
 
 ## Flickers get more frequent as the charge falls. Above the flicker depth the

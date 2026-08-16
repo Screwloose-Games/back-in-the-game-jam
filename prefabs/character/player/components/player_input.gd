@@ -27,6 +27,12 @@ signal reset_requested
 ## represent other peers; the spawner sets it alongside is_local_player.
 @export var captures_mouse: bool = true
 
+## Whether this input source may publish edge-triggered gameplay requests.
+## A network driver can leave this on only for the locally controlled copy and
+## forward the signals to authority. Held intent such as mine_held is still
+## sampled below so the driver can include it in its own command stream.
+@export var gameplay_actions_enabled: bool = true
+
 ## Body-local thrust, clamped to a unit sphere.
 var thrust := Vector3.ZERO
 ## Look motion in raw device pixels since the last physics frame.
@@ -52,8 +58,11 @@ func _ready() -> void:
 # Read here rather than in _unhandled_input: while the mouse is captured the
 # cursor sits at screen centre, so a Control there would eat the motion first.
 func _input(event: InputEvent) -> void:
+	# Disabled remote copies must not react to this machine's mouse or hotkeys.
+	if not enabled:
+		return
 	if event is InputEventMouseMotion:
-		if _is_mouse_captured and enabled:
+		if _is_mouse_captured:
 			# screen_relative is the raw device delta; relative is divided by the
 			# stretch scale, which would tie look sensitivity to window size.
 			_accumulated_mouse_motion += event.screen_relative
@@ -61,7 +70,7 @@ func _input(event: InputEvent) -> void:
 	if event.is_action_pressed("toggle_mouse_capture"):
 		toggle_mouse_capture()
 		return
-	if not enabled:
+	if not gameplay_actions_enabled:
 		return
 	if event.is_action_pressed("reset_player"):
 		reset_requested.emit()

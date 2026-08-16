@@ -19,6 +19,7 @@ config/icon="res://icon.svg"
 [autoload]
 
 GlobalSignalBus="*res://globals/global_signal_bus.gd"
+OnlineSession="*res://globals/online_session.gd"
 AsyncLoader="*res://globals/async_loader.gd"
 SceneManager="*res://globals/scene_manager.gd"
 SceneTransitionManager="*res://globals/scene_transition_manager.gd"

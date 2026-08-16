@@ -14,6 +14,10 @@ const PHYSICS_PRIORITY := -80
 var angular_velocity := Vector3.ZERO
 var stabilizers_engaged := false
 
+## A network driver calls step() itself so prediction and replay do not also
+## receive a second movement step from this node's normal physics callback.
+var externally_driven := false
+
 ## Raised while sprint is held and eased back down after, so letting go coasts
 ## rather than braking.
 var _current_speed_cap := 0.0
@@ -31,10 +35,82 @@ func _ready() -> void:
 
 
 func _physics_process(delta: float) -> void:
-	stabilizers_engaged = input.stabilize_held
-	_update_orientation(delta)
-	_update_speed_cap(delta)
-	_update_velocity(delta)
+	if externally_driven:
+		return
+	step(
+		delta,
+		input.thrust,
+		input.look,
+		input.roll,
+		input.stabilize_held,
+		input.sprint_held,
+		true,
+	)
+
+
+## Advances one complete locomotion tick from explicit controls.
+##
+## Prediction and replay pass allow_shared_body_effects=false: rewinding a
+## player must never apply a second impulse to a held world object.
+func step(
+	delta: float,
+	thrust: Vector3,
+	look_delta: Vector2,
+	roll_input: float,
+	stabilizing: bool,
+	sprinting: bool,
+	allow_shared_body_effects: bool,
+) -> void:
+	stabilizers_engaged = stabilizing
+	_update_orientation(delta, look_delta, roll_input)
+	_update_speed_cap(delta, sprinting)
+	_update_velocity(delta, thrust, sprinting, allow_shared_body_effects)
+
+
+func capture_prediction_state() -> Dictionary:
+	return {
+		"angular_velocity": angular_velocity,
+		"speed_cap": _current_speed_cap,
+	}
+
+
+func restore_prediction_state(state: Dictionary) -> void:
+	var raw_angular_velocity: Variant = state.get("angular_velocity", Vector3.ZERO)
+	if typeof(raw_angular_velocity) == TYPE_VECTOR3:
+		var restored_angular_velocity: Vector3 = raw_angular_velocity
+		angular_velocity = (
+			restored_angular_velocity.limit_length(settings.max_angular_speed)
+			if restored_angular_velocity.is_finite()
+			else Vector3.ZERO
+		)
+
+	var restored_speed_cap := float(state.get("speed_cap", settings.max_speed))
+	if is_finite(restored_speed_cap):
+		_current_speed_cap = clampf(
+			restored_speed_cap,
+			settings.max_speed,
+			settings.max_speed * settings.sprint_speed_multiplier,
+		)
+	else:
+		_current_speed_cap = settings.max_speed
+
+
+func prediction_states_match(predicted: Dictionary, authoritative: Dictionary) -> bool:
+	var raw_predicted_angular: Variant = predicted.get("angular_velocity", Vector3.ZERO)
+	var raw_authoritative_angular: Variant = authoritative.get("angular_velocity", Vector3.ZERO)
+	if (
+		typeof(raw_predicted_angular) != TYPE_VECTOR3
+		or typeof(raw_authoritative_angular) != TYPE_VECTOR3
+	):
+		return false
+	var predicted_angular_velocity: Vector3 = raw_predicted_angular
+	var authoritative_angular_velocity: Vector3 = raw_authoritative_angular
+	var predicted_speed_cap := float(predicted.get("speed_cap", settings.max_speed))
+	var authoritative_speed_cap := float(authoritative.get("speed_cap", settings.max_speed))
+	return (
+		predicted_angular_velocity.distance_to(authoritative_angular_velocity) <= 0.02
+		and absf(predicted_speed_cap - authoritative_speed_cap) <= 0.05
+	)
 
 
 ## The suit's tumble in world space. `angular_velocity` is kept in body-local
@@ -95,13 +171,13 @@ func halt() -> void:
 	_current_speed_cap = settings.max_speed
 
 
-func _update_orientation(delta: float) -> void:
+func _update_orientation(delta: float, look_delta: Vector2, roll_input: float) -> void:
 	var is_inertial := settings.rotation_mode == PlayerFlight.RotationMode.INERTIAL
 	if is_inertial:
 		angular_velocity = PlayerFlight.accumulate_spin(
 			angular_velocity,
-			input.look,
-			input.roll,
+			look_delta,
+			roll_input,
 			settings.aim_gain(),
 			settings.roll_rate,
 			settings.max_angular_speed,
@@ -122,9 +198,9 @@ func _update_orientation(delta: float) -> void:
 	var aim_yaw := 0.0
 	var aim_roll := 0.0
 	if not is_inertial:
-		aim_pitch = -input.look.y * settings.mouse_sensitivity
-		aim_yaw = -input.look.x * settings.mouse_sensitivity
-		aim_roll = -input.roll * settings.roll_rate * delta
+		aim_pitch = -look_delta.y * settings.mouse_sensitivity
+		aim_yaw = -look_delta.x * settings.mouse_sensitivity
+		aim_roll = -roll_input * settings.roll_rate * delta
 
 	body.global_transform.basis = PlayerFlight.rotate_about_own_axes(
 		body.global_transform.basis,
@@ -136,9 +212,9 @@ func _update_orientation(delta: float) -> void:
 
 ## Sprint raises the cap at once and it eases back down, so releasing sprint
 ## coasts to the walking cap instead of braking to it.
-func _update_speed_cap(delta: float) -> void:
+func _update_speed_cap(delta: float, sprinting: bool) -> void:
 	var sprint_cap := settings.max_speed * settings.sprint_speed_multiplier
-	if input.sprint_held:
+	if sprinting:
 		_current_speed_cap = maxf(_current_speed_cap, sprint_cap)
 		return
 	_current_speed_cap = maxf(
@@ -149,12 +225,14 @@ func _update_speed_cap(delta: float) -> void:
 	)
 
 
-func _update_velocity(delta: float) -> void:
-	var held_object := _held_object()
-	var acceleration := settings.thrust_acceleration_for(input.sprint_held)
+func _update_velocity(
+	delta: float, thrust: Vector3, sprinting: bool, allow_shared_body_effects: bool
+) -> void:
+	var held_object := _held_object() if allow_shared_body_effects else null
+	var acceleration := settings.thrust_acceleration_for(sprinting)
 	apply_braced_velocity_change(
 		PlayerFlight.thrust_velocity_change(
-			body.global_transform.basis, input.thrust, acceleration, delta
+			body.global_transform.basis, thrust, acceleration, delta
 		),
 		held_object
 	)
