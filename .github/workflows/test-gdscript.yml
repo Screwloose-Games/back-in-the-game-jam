@@ -324,3 +324,75 @@ jobs:
             static.log
             runtime.log
           if-no-files-found: ignore
+
+  # documentation/design/alien/director.md. Level-scoped, so it is not one of the five
+  # creature systems -- but CreatureBehavior duck-types it, and `verify_director_static.gd`
+  # is what turns the spec's "Design invariants" into build failures rather than prose.
+  director:
+    runs-on: ubuntu-latest
+    container:
+      image: barichello/godot-ci:${{ vars.GODOT_VERSION || '4.7.1' }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Import resources
+        run: godot --headless --path . --import
+        continue-on-error: true
+
+      - name: Unit tests (GUT)
+        run: |
+          set -o pipefail
+          godot --headless --path . -s addons/gut/gut_cmdln.gd \
+            -gconfig=res://.gutconfig.json -gdir=res://gameplay/director/tests \
+            -glog=1 -gexit | tee gut.log
+          if ! grep -q "All tests passed" gut.log; then
+            echo "::error::GUT did not report a green run"
+            exit 1
+          fi
+          if ! grep -qE "Scripts +[1-9]" gut.log; then
+            echo "::error::GUT collected no test scripts -- check .gutconfig.json dirs"
+            exit 1
+          fi
+
+      # The invariants: never writes belief, never issues a destination, never names a sense,
+      # never transitions an HFSM, never reads a wall clock -- and the one that matters most,
+      # that exactly one file in the module knows where anybody actually is. Comments are
+      # stripped before every token check, because most of the prose here names the things it
+      # refuses to do.
+      - name: Static checks
+        run: |
+          set -o pipefail
+          godot --headless --path . \
+            --script res://gameplay/director/tools/verify_director_static.gd \
+            | tee static.log
+          grep -q "all checks passed" static.log || {
+            echo "::error::director static checks failed"; exit 1; }
+
+      # A real Director pacing a real creature, and the check no unit test can make: that
+      # CreatureBehavior._mute_subsystems() still leaves the Director ticking. A muted one
+      # publishes a permanently neutral directive, which is indistinguishable from no Director
+      # at all -- no error, no warning, and every GUT assertion still green.
+      #
+      # A .tscn wrapper, NOT --script. A node added during SceneTree._initialize() never
+      # receives _ready(), so the bare-script form runs nothing, prints nothing and exits 0.
+      - name: Runtime checks
+        run: |
+          set -o pipefail
+          godot --headless --path . \
+            res://gameplay/director/tools/verify_director_runtime.tscn \
+            | tee runtime.log
+          grep -q "all checks passed" runtime.log || {
+            echo "::error::director runtime checks failed"; exit 1; }
+
+      - name: Upload logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: director-test-logs
+          path: |
+            gut.log
+            static.log
+            runtime.log
+          if-no-files-found: ignore

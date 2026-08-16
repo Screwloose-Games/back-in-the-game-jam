@@ -10,14 +10,26 @@ extends Node3D
 ##             you go into the refuge and direct evidence stops
 ##             chase gives way to lurk: the route comes back PARTIAL, it stops at the mouth
 ##             of the slot and waits a length of time it draws rather than one it is told
-##     hunting -> retreating (lost)           nothing new arrives
-##             it walks off to the furthest nest it knows, and says so
+##     hunting -> retreating (director)       the ENCOUNTER ends, rather than the trail
+##             SATED if the lurk filled the meter, STALLED if it never did
 ##     retreating -> unalerted (separated)
 ##
+## THAT SECOND-TO-LAST LINE USED TO READ `(lost)`, AND THE CHANGE IS THE POINT. Without a
+## Director every hunt here ended in suspicion starvation -- the alien gave up because its
+## belief ran out, which is a fact about its memory rather than a decision about the scene.
+## With one attached the same chase ends because the encounter has delivered what it had to
+## deliver, and `disengage_reason` says which of the two exits it earned. `(lost)` still
+## happens; it is now the exception rather than the only ending there is.
+##
 ## NO STATE MACHINE IN THIS FILE DRIVES ANY OF THAT. The only inputs are moving and making
-## noise; every transition above comes out of Perception, Suspicion and the HFSM disagreeing
-## and agreeing with each other. If a beat needs a keypress, something upstream has stopped
-## feeding the next one, and that is the bug this scene exists to show.
+## noise; every transition above comes out of Perception, Suspicion, the Director and the HFSM
+## disagreeing and agreeing with each other. If a beat needs a keypress, something upstream has
+## stopped feeding the next one, and that is the bug this scene exists to show.
+##
+## FOR THE DIRECTOR ITSELF, USE `gameplay/director/sandbox/director_sandbox.tscn`. This scene
+## has one attached so its arc terminates honestly, but it runs on the shipped cadence with no
+## way to hurry it -- a lull takes 200 s to fill here. That one adds a clock multiplier, a
+## panel showing menace and lull as bars, and a player whose mining you can hold down.
 ##
 ## IT BUILDS ITS OWN CAVE, unlike `behavior_sandbox.tscn`, which instantiates suspicion's
 ## sandbox whole and perception's under that. Their room is 24 x 6 x 24 with a 3 m doorway
@@ -61,6 +73,7 @@ const COLOR_PLAYER := Color(0.95, 0.75, 0.25, 1.0)
 const COLOR_CREATURE := Color(0.55, 0.25, 0.60, 1.0)
 
 var behavior: CreatureBehavior = null
+var director: EncounterDirector = null
 
 var _creature: CreaturePerception = null
 var _suspicion: CreatureSuspicion = null
@@ -74,6 +87,7 @@ var _perception_panel: PerceptionDebugPanel = null
 var _suspicion_panel: SuspicionDebugPanel = null
 var _behavior_panel: BehaviorDebugPanel = null
 var _navigation_panel: NavigationDebugPanel = null
+var _director_panel: DirectorDebugPanel = null
 var _perception_overlay: PerceptionDebugDraw = null
 var _suspicion_overlay: SuspicionDebugDraw = null
 ## The applied heading, which is what gets reported back to navigation. NEVER
@@ -104,6 +118,7 @@ func _ready() -> void:
 	await get_tree().physics_frame
 
 	_build_navigation()
+	_build_director()
 	_build_behavior()
 	_build_debug()
 	_prove_the_refuge_is_out_of_reach()
@@ -395,6 +410,8 @@ func _reset() -> void:
 	_navigation.clear_goal()
 	_navigation.set_body_state(_creature.global_position, Vector3.ZERO, _forward, Vector3.UP)
 	_suspicion.reset()
+	# Session history too, so the first encounter after a reset teaches rather than kills.
+	director.reset()
 	behavior.hfsm.reset_to(CreatureState.State.UNALERTED, behavior.context)
 	print("[encounter] reset")
 
@@ -402,7 +419,7 @@ func _reset() -> void:
 func _toggle_debug() -> void:
 	_debug_visible = not _debug_visible
 	for node: CanvasItem in [
-		_perception_panel, _suspicion_panel, _behavior_panel, _navigation_panel
+		_perception_panel, _suspicion_panel, _behavior_panel, _navigation_panel, _director_panel
 	]:
 		node.visible = _debug_visible
 	for node: Node3D in [
@@ -472,6 +489,23 @@ func _build_navigation() -> void:
 	_navigation.motion_planned.connect(_on_motion_planned)
 
 
+## Level-scoped, so it is a sibling of the creature rather than a child of it, and it is added
+## BEFORE the behavior on purpose: Godot ticks in tree order, so the directive a creature reads
+## was integrated this frame rather than last. A freshness preference, never a correctness
+## requirement -- see EncounterDirector's class docstring.
+##
+## Shipped defaults, and there is deliberately no way to hurry them from this scene. A sandbox
+## with a tuned config proves only that SOME config works, which is the trap
+## `navigation_sandbox.gd` names; `director_sandbox.tscn` scales the CLOCK instead and leaves
+## the numbers alone.
+func _build_director() -> void:
+	director = EncounterDirector.new()
+	director.name = "EncounterDirector"
+	director.config = DirectorConfig.new()
+	director.players = [_player]
+	add_child(director)
+
+
 func _build_behavior() -> void:
 	behavior = CreatureBehavior.new()
 	behavior.name = "CreatureBehavior"
@@ -482,14 +516,17 @@ func _build_behavior() -> void:
 	behavior.suspicion = _suspicion
 	behavior.perception = _creature
 	behavior.navigation = _navigation
+	behavior.director = director
 	# THE PERCEPTION NODE IS THE BODY. It is a Node3D and measures hearing and touch from its
 	# own position, so moving it moves the creature and there is no second transform to keep in
 	# step. Added last: on its first tick it mutes the other three facades' own
-	# `_physics_process` and drives steps 1-8 itself.
+	# `_physics_process` and drives steps 1-8 itself. NOT the Director's, which runs its own --
+	# `_mute_subsystems` names three nodes and this is not one of them.
 	behavior.body = _creature
 	add_child(behavior)
 	behavior.state_changed.connect(_on_state_changed)
 	behavior.attack_landed.connect(_on_attack)
+	director.register(behavior, _suspicion)
 	# Publish the resting alertness NOW rather than at the first tick: perception runs its own
 	# _physics_process until Behavior mutes it, and one frame at full sharpness with the player
 	# standing in the sightline opens the scene already hunting.
@@ -574,6 +611,19 @@ func _build_debug() -> void:
 	_navigation_panel.grow_vertical = Control.GROW_DIRECTION_BEGIN
 	_navigation_panel.position = Vector2(-12, -12)
 	layer.add_child(_navigation_panel)
+
+	# The fifth panel, at the top, because the four corners were already spoken for and the
+	# question this scene now raises -- "why did it leave?" -- is answered here rather than in
+	# any of them.
+	_director_panel = DirectorDebugPanel.new()
+	_director_panel.director = director
+	_director_panel.creature = behavior
+	_director_panel.behavior = behavior
+	_director_panel.anchor_left = 0.5
+	_director_panel.anchor_right = 0.5
+	_director_panel.grow_horizontal = Control.GROW_DIRECTION_BOTH
+	_director_panel.position = Vector2(0.0, 12.0)
+	layer.add_child(_director_panel)
 
 
 ## Above the cave and off to one side, aimed with look_at rather than left on its default

@@ -103,6 +103,10 @@ func _check_layout() -> void:
 		"observations/disconfirmation_observation.gd",
 		"observations/geometry_observation.gd",
 		"observations/noise_event.gd",
+		# Not in section 4, because section 4 describes the creature and this is the level side
+		# of it -- the same place `behavior/world/creature_nest.gd` sits. Nothing in the project
+		# emitted a NoiseEvent before it existed.
+		"world/player_noise_relay.gd",
 	]
 	for relative: String in expected:
 		if not FileAccess.file_exists(MODULE.path_join(relative)):

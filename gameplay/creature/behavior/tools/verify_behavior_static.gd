@@ -88,13 +88,26 @@ const COMMAND_TOKENS: Array[String] = [
 ## call. Nothing in this module ever invokes either method -- Perception emits, Suspicion
 ## receives, and the sandbox only introduces them. The rule keeps its teeth everywhere that
 ## decides anything, which is the whole of what it is for.
-const BELIEF_EXEMPT: Array[String] = ["encounter_sandbox.gd"]
+const BELIEF_EXEMPT: Array[String] = ["encounter_sandbox.gd", "director_sandbox.gd"]
 
+## THE DIRECTOR IS THE ONE SYSTEM PERMITTED TO KNOW THE TRUTH, and this list is where that
+## permission is spent. director.md: "Real player positions may inform `roam_anchor` and
+## target arbitration." That is a legitimate world read and this check spans `gameplay/director`
+## -- so without an exemption the Director's defining behaviour would fail the build.
+##
+## IT IS SPENT ON EXACTLY ONE FILE, WHICH IS THE POINT. `director_party.gd` is the only place
+## in that module allowed to say `global_position` or `get_nodes_in_group`, and
+## `verify_director_static.gd` enforces the other half: that file may not name
+## EncounterDirective, EncounterTrack, menace, permit_hunt or escalation_bias. Truth goes in;
+## a Vector3 and an Array[Node3D] come out. Exempting the whole module instead would have made
+## the invariant a promise again.
 const WORLD_EXEMPT: Array[String] = [
 	"creature_behavior.gd",
 	"behavior_sandbox.gd",
 	"encounter_sandbox.gd",
 	"encounter_sandbox_geometry.gd",
+	"director_party.gd",
+	"director_sandbox.gd",
 ]
 
 ## This file names every banned token, in code rather than in a comment, in order to ban them
@@ -157,13 +170,28 @@ func _check_layout() -> void:
 		"sandbox/encounter_sandbox_geometry.gd",
 		"README.md",
 	]
+	# The Director's spine, checked from here because this file already scans that module for
+	# the tokens it is not allowed to name and there is no reason to walk it twice.
+	var director: Array[String] = [
+		"encounter_directive.gd",
+		"encounter_report.gd",
+		"director_config.gd",
+		"encounter_track.gd",
+		"encounter_pacing.gd",
+		"director_party.gd",
+		"encounter_director.gd",
+		"debug/director_debug_panel.gd",
+		"sandbox/director_sandbox.gd",
+		"sandbox/director_sandbox.tscn",
+		"README.md",
+	]
 	for relative: String in expected:
 		if not FileAccess.file_exists(MODULE.path_join(relative)):
 			_fail("layout", "%s is missing" % relative)
-	for relative: String in ["encounter_directive.gd", "encounter_report.gd", "README.md"]:
+	for relative: String in director:
 		if not FileAccess.file_exists(DIRECTOR.path_join(relative)):
 			_fail("layout", "director/%s is missing" % relative)
-	_pass_if("layout", before, "%d expected files present" % (expected.size() + 3))
+	_pass_if("layout", before, "%d expected files present" % (expected.size() + director.size()))
 
 
 ## This repo commits .uid sidecars alongside every script. A missing one is not cosmetic:
@@ -234,10 +262,16 @@ func _check_no_world_reads() -> void:
 	_pass_if("world", before, "no part of the decision layer reads the world directly")
 
 
+## `_is_harness` rather than only SELF_FILE, which the belief and world checks above already
+## use and which this one needed the moment a SECOND verifier existed. `_all_scripts()` spans
+## `gameplay/director`, and `verify_director_static.gd` names every physics and clock token in
+## code in order to ban them -- the same self-reference SELF_FILE exists to solve here, one
+## module over. A verifier is a harness; exempting `/tools/` is the consistent answer rather
+## than a growing list of file names.
 func _check_no_physics() -> void:
 	var before: int = _failures
 	for path: String in _all_scripts():
-		if path.get_file() == SELF_FILE:
+		if _is_harness(path):
 			continue
 		var code: String = _read_code(path)
 		for token: String in PHYSICS_TOKENS:
@@ -255,8 +289,8 @@ func _check_no_physics() -> void:
 func _check_no_wall_clock() -> void:
 	var before: int = _failures
 	for path: String in _all_scripts():
-		if path.get_file() == SELF_FILE:
-			continue  # This file names them in order to ban them.
+		if _is_harness(path):
+			continue  # These files name them in order to ban them. See _check_no_physics.
 		var code: String = _read_code(path)
 		for token: String in CLOCK_TOKENS:
 			if code.contains(token):
