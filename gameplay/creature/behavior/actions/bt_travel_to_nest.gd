@@ -11,16 +11,26 @@ extends BtAction
 ## on is stamped as visited, so it goes to the back of the queue rather than being chosen
 ## again immediately.
 ##
-## `prefer_distant` is what `retreat_to_nest` will set when it is built; ambient wandering
-## wants a near nest and a retreat wants a far one, and fsm.md gives one scoring function for
-## both without saying which way the sign goes.
+## `prefer_distant` is what `retreat_to_nest` sets; ambient wandering wants a near nest and a
+## retreat wants a far one, and fsm.md gives one scoring function for both without saying
+## which way the sign goes. `CreatureNestMemory.score` flips only the distance term, so a
+## retreating alien still avoids nests it used recently and still obeys the Director's roam
+## bias.
+##
+## `loud` CHANGES THE NAME AND NOTHING ELSE, and that is the whole of fsm.md's loud/quiet
+## split. director.md wants a SATED exit to read as an unhurried departure and a STALLED one
+## to slip away, but Behavior cannot play a sound: `NoiseEvent` is world state that only
+## another creature's hearing consumes, and this module may not move the body either. What it
+## does own is `action_changed`, which README's "Wiring one up" already names as the animation
+## channel -- so the distinction is carried there, where a presentation layer can hear it and
+## a test can assert it.
 
 var memory: UnalertedMemory = null
 var prefer_distant: bool = false
 
 
-func _init(p_memory: UnalertedMemory, p_prefer_distant: bool = false) -> void:
-	super(&"retreat_to_nest" if p_prefer_distant else &"travel_to_nest")
+func _init(p_memory: UnalertedMemory, p_prefer_distant: bool = false, p_loud: bool = false) -> void:
+	super(_action_name(p_prefer_distant, p_loud))
 	memory = p_memory
 	prefer_distant = p_prefer_distant
 
@@ -63,6 +73,12 @@ func _run(ctx) -> Status:
 	if ctx.goal.is_arrived(ctx.body_position):
 		return Status.SUCCESS
 	return Status.RUNNING
+
+
+static func _action_name(prefers_distant: bool, loud: bool) -> StringName:
+	if not prefers_distant:
+		return &"travel_to_nest"
+	return &"retreat_to_nest_loud" if loud else &"retreat_to_nest"
 
 
 ## Excludes whatever nest the creature is standing in, which is the degenerate half of the

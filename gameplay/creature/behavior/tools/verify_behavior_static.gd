@@ -79,7 +79,23 @@ const COMMAND_TOKENS: Array[String] = [
 ## walks the body on a keypress -- debug scaffolding outside the decision layer, and `/sandbox/`
 ## is not covered by `_is_harness`. Exempting these two by name is what lets the rule stay
 ## absolute for everything that DECIDES anything.
-const WORLD_EXEMPT: Array[String] = ["creature_behavior.gd", "behavior_sandbox.gd"]
+## The one file that assembles a whole creature from nothing, so it has to make the two-line
+## Perception-to-Suspicion connection every level makes. `behavior_sandbox.gd` never trips this
+## because it instantiates suspicion's sandbox whole and inherits the wiring; this one builds
+## its own cave on purpose and pays for it here.
+##
+## EXEMPTING IT COSTS THE RULE NOTHING, because what it names is a CONNECTION rather than a
+## call. Nothing in this module ever invokes either method -- Perception emits, Suspicion
+## receives, and the sandbox only introduces them. The rule keeps its teeth everywhere that
+## decides anything, which is the whole of what it is for.
+const BELIEF_EXEMPT: Array[String] = ["encounter_sandbox.gd"]
+
+const WORLD_EXEMPT: Array[String] = [
+	"creature_behavior.gd",
+	"behavior_sandbox.gd",
+	"encounter_sandbox.gd",
+	"encounter_sandbox_geometry.gd",
+]
 
 ## This file names every banned token, in code rather than in a comment, in order to ban them
 ## -- so comment stripping cannot save it and it has to exclude itself.
@@ -129,10 +145,16 @@ func _check_layout() -> void:
 		"hfsm/states/investigating_state.gd",
 		"hfsm/states/hunting_state.gd",
 		"hfsm/states/retreating_state.gd",
+		"hfsm/states/search_memory.gd",
+		"hfsm/states/hunting_memory.gd",
+		"hfsm/states/retreating_memory.gd",
 		"world/creature_nest.gd",
 		"world/nest_memory.gd",
 		"sandbox/behavior_sandbox.gd",
 		"sandbox/behavior_sandbox.tscn",
+		"sandbox/encounter_sandbox.gd",
+		"sandbox/encounter_sandbox.tscn",
+		"sandbox/encounter_sandbox_geometry.gd",
 		"README.md",
 	]
 	for relative: String in expected:
@@ -178,7 +200,7 @@ func _check_tree_is_domain_free() -> void:
 func _check_no_belief_writes() -> void:
 	var before: int = _failures
 	for path: String in _all_scripts():
-		if _is_harness(path):
+		if _is_harness(path) or BELIEF_EXEMPT.has(path.get_file()):
 			continue
 		var code: String = _read_code(path)
 		for token: String in BELIEF_TOKENS:

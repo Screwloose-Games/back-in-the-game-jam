@@ -39,12 +39,20 @@ reads, not a transition the tree performs.
 | **The HFSM** | All four states, every transition guard, `min_dwell_s`, the `force_disengage` latch, hunt sustain. |
 | **`UNALERTED`** | Real tree: nest choice, travel, dwell. |
 | **`INVESTIGATING`** | Real tree: travel to the best unresolved location, search, re-aim. |
-| **`HUNTING`, `RETREATING`** | **Guards only.** Both trees are one node that holds still. |
+| **`HUNTING`** | Real tree: bite, chase, wait out a gap it cannot fit through, sweep the last credible region. |
+| **`RETREATING`** | Real tree: a far nest, loudly or quietly depending on how the encounter ended. |
 
-`HUNTING` needs an attack, a tunnel-mouth lurk and a target estimate; `RETREATING` needs nest
-scoring with the distance term inverted and a loud/quiet split on `disengage_reason`. Neither
-is stubbed into something that *appears* to work: `BtDoNothing` reports `RUNNING`, because a
-state with nothing to do is a fact and not a success.
+`BtDoNothing` survives with no caller, and should. A state with nothing to do is a fact rather
+than a success, and the next mode that needs a placeholder should get one that reports
+`RUNNING` rather than one that pretends.
+
+**There is no crevice type, no tunnel marker and no passability flag**, and there must not be.
+A passage the alien cannot follow you through is a passage narrower than twice
+`ClearanceProfile.min_traversal_clearance` — no candidate survives inside it, no edge is ever
+validated through it, and the route to anything beyond it comes back `PARTIAL`. So `HUNTING`
+infers "they went somewhere I cannot go" from its own navigation graph, which is the only
+thing it legitimately knows, and the inference covers every gap too tight for it rather than
+the ones somebody remembered to tag. See `behavior.md` §29 and §36.
 
 The Director itself is not built either — see [`gameplay/director/`](../../director/README.md).
 `EncounterDirective.neutral()` is what a creature runs on without one.
@@ -86,7 +94,7 @@ one adds:
 
 | Key | |
 |---|---|
-| `6` | **Force `UNALERTED`.** The way back out of the two stub trees. |
+| `6` | force `UNALERTED`, without a transition reason |
 | `7` | plant a nest where the player is standing |
 | `8` | put the creature and its nests back the way they started |
 | `B` | toggle the behavior panel and the goal marker |
@@ -121,14 +129,55 @@ watching, and neither is checkable any other way:
   the best unresolved location quietly walks off without it. That is `arrived_at_goal` having
   lost its first clause, and it reads as a bug in disconfirmation when it is a bug in the tree.
 
-`HUNTING` and `RETREATING` hold perfectly still, because both trees are one `BtDoNothing`
-that reports `RUNNING`. An alien that escalates has not hung — press `6`. And
-`feedback_alertness` starts off: press `L` once to turn suspicion's own alertness write back
-on and watch it fight Behavior's step 6 for the readout, which is what
+This room has no gap too narrow for the alien, so an escalation here reads as chase, bite and
+walk-away and never as a lurk. **The tunnel-mouth beat lives in `encounter_sandbox.tscn`**,
+below, which builds its own cave for exactly that reason. And `feedback_alertness` starts off:
+press `L` once to turn suspicion's own alertness write back on and watch it fight Behavior's
+step 6 for the readout, which is what
 [`perception/README.md`](../perception/README.md) means by "the last writer of the frame
 wins".
 
-## Six deliberate deviations from the spec
+### The whole encounter
+
+```sh
+$GODOT --path . res://gameplay/creature/behavior/sandbox/encounter_sandbox.tscn
+```
+
+`behavior.md` §35 end to end, in a 60 m cave this scene builds itself. Walk with `WASD`,
+make noise with `1` and `2`, and the arc comes out of the systems rather than out of this
+file: a noise becomes a lead, the alien comes to look, it sees you, it chases, you slip into
+a gap 1 m across that it cannot fit through, it stops at the mouth and waits, and eventually
+it gives up and walks home. `G` toggles the graph, `F` the scored crawl fan, `R` resets.
+
+**It proves its own premise on startup** and prints the line, in the three parts
+`verify_navigation_runtime.gd` uses — no edge crosses the slot; the refuge has 30 nodes and
+none is `reachable_from` this side; the route to it is `PARTIAL` and stops short. A cave
+whose refuge simply had no nodes would pass the first part for entirely the wrong reason.
+
+Five things are worth watching, and none of them is checkable any other way:
+
+- **The wait must be a different length every time.** Press `R` and do it again. A countable
+  wait turns a gamble into a known safe interval, and a gap with a known safe interval is
+  just a door.
+- **The creature must stop at the mouth and not clip into it.** `G` is the check: green is
+  `NORMAL_VOLUME`, amber is `WIGGLE`, and **nothing at all** may cross the slot. The standoff
+  is not tuned — it is where a `PARTIAL` route ends.
+- **Hiding must not clear suspicion.** The hunt ends on sustain loss, never because the
+  hotspot resolved: the alien cannot sweep a region it cannot walk into, so the belief it
+  holds about you can only be worn down by the clock. You are physically safe and still
+  believed in. The transition log must read `lost`, never anything about the hotspot.
+- **A retreating alien must ignore you.** Stand up and drill at it mid-retreat. If it turns
+  round, `RETREATING`'s single exit is broken and the Director can no longer end an
+  encounter.
+- **The arc must run without intervention.** `hotspot → candidate → lost → separated` in the
+  panel's transition log, with only walking and noise as input. If a beat needs a keypress,
+  something upstream has stopped feeding the next one.
+
+**`F` is the avoidance demo**, and it is the only overlay in the project that shows
+`NavAvoidance.risk` changing a decision: length carries the score, so the winner is the
+longest ray, and you can watch the fan bend around the pillar mid-chase.
+
+## Seven deliberate deviations from the spec
 
 **1. The abort contract cannot be implemented as written, so goals are owned rather than
 cleared.** fsm.md wants a `RUNNING` leaf that is not reached again aborted *"before any new
@@ -170,9 +219,15 @@ tracked the party could hold an alien in `RETREATING` indefinitely. The chain is
 credible target position, then the strongest hotspot captured *once* on entry, then the
 creature's own position. It is Euclidean, unlike the Director's menace term.
 
-`retreat_max_s` is an addition, not a deviation to be proud of: fsm.md gives `retreat_to_nest`
-no `UNREACHABLE` failure clause where `travel_to_nest` has one, so an unreachable far nest plus
-unmet separation leaves the state with no reachable exit. That asymmetry looks like a doc bug.
+`retreat_max_s` is an addition rather than a deviation, and it survives the `RETREATING` tree
+landing. The doc-bug half is fixed: the state reuses `travel_to_nest` outright, so both modes
+now carry the same `UNREACHABLE` clause and fsm.md's asymmetry is gone. But that clause turns
+out to be narrower than it reads — **against a baked graph, a target outside it comes back
+`PARTIAL`, not `UNREACHABLE`**, because a partial route is deliberately not a failure. So an
+alien sent to a nest it can only get halfway to walks at rock without ever failing, and an
+alien whose every known nest sits inside `retreat_separation_m` of where it gave up has nowhere
+to walk that would end the encounter at all. Neither is a per-nest failure and neither can be
+made into one.
 
 **6. The table order means the direct hunt is rare, and that is kept.** fsm.md lists
 `UNALERTED → INVESTIGATING` above `UNALERTED → HUNTING`, and evaluates first-match-wins. A touch
@@ -180,6 +235,23 @@ strong enough to name a player also raises a hotspot well above `investigate_thr
 investigate row nearly always wins and the alien spends `min_dwell_s` coming to look before it
 commits. That reads as a beat — *something is coming* before *it is coming for me* — so the
 order is followed rather than quietly reversed.
+
+**7. `HUNTING` decides once per tick whether it can reach the target, because the spec's tree
+cannot be read literally.** fsm.md orders the selector bite → chase → wait → search, and gives
+`chase_target` no failure clause for a route that reaches toward the estimate and stops short.
+Taken at its word, the `lurk_at_tunnel_mouth` branch is unreachable in exactly the situation it
+exists for: whenever there is an estimate to lurk at, chase claims the tick first.
+
+Making chase fail on `PARTIAL` instead looks like the small fix and is not. The two leaves
+would then hand the goal back and forth every tick, and `BehaviorGoal` re-issues
+unconditionally on a change of owner — which nulls the route and resets navigation's stuck
+watchdog every frame, which is the one thing `goal_refresh_m` exists to prevent.
+
+So `HuntingState.refresh` answers it once, before the tree, and the two conditions read
+complementary halves of the latch. It is the same shape as deviation 3 and for the same
+reason: a question whose answer moves cannot be asked from inside a condition. It costs one
+`plan_route` query on the ticks where nobody holds a goal at the estimate, and nothing at all
+on the rest — while chase or the lurk is committed there, the live route has already answered.
 
 ## Two consequences of the alertness table worth knowing
 
@@ -269,10 +341,16 @@ than re-guessed: `investigate_threshold 0.25`, `investigate_timeout_s 45.0`, `ne
 
 ## Not included
 
-The `HUNTING` and `RETREATING` trees, and everything they need: an attack, a tunnel-mouth lurk, a target
-estimate that ages, `attack_window_open` and `lurking_at_tunnel_mouth` on the encounter report (both
-ship hardcoded `false`, which silently zeroes the Director's `w_attack` and `w_lurk` terms — a
-stub, not tuning).
+**Damage, and the one-near-miss-per-encounter latch.** `attack` reads `directive.lethality`,
+resolves nothing itself, and emits `attack_landed(target, lethality)` — which is where a hit
+animation and a health system attach when either exists. Nothing in `gameplay/` has health
+today. The `GRACE → LETHAL` flip after a near-miss lands is the *Director's*, per
+`director.md`: it needs session history that Behavior does not have and must not acquire.
+
+**A gait, a noise, or anything else that would make the loud retreat literally loud.** The
+split is carried on `action_changed` as `retreat_to_nest_loud`, because that is the animation
+channel this module already owns; `NoiseEvent` is world state that only another creature's
+hearing consumes, and Behavior may not move the body.
 
 The Director. Spatial Memory, so `roam_anchor` has no producer yet. Any `.tres` config presets —
 every field has a working default, so `BehaviorConfig.new()` runs without one.

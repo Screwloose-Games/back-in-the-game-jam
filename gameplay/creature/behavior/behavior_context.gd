@@ -45,6 +45,20 @@ var body_position: Vector3 = Vector3.ZERO
 ## their own nodes are constructed.
 var clock: float = 0.0
 
+## Behavior's own generator, for the one decision that must not be countable: how long a lurk
+## outside an impassable gap lasts (behavior.md section 29).
+##
+## SEEDED BY THE FACADE FROM `behavior_seed`, the same arrangement CreaturePerception uses for
+## `hearing.rng` and CreatureNavigation for the route chooser -- RandomNumberGenerator
+## randomises itself on construction, so a test can only pin a draw if the seed is assigned
+## from outside. It lives here rather than on a leaf so the next action that needs a draw
+## inherits the seeding instead of repeating it.
+##
+## Constructed here rather than assigned by the facade, so a hand-built context in a test can
+## never hand an action a null generator -- and the fallback an action would need for that
+## case is a fixed duration, which is precisely the thing the range exists to prevent.
+var rng: RandomNumberGenerator = RandomNumberGenerator.new()
+
 
 ## True when every subsystem a tree needs is present. Actions guard on this rather than
 ## null-checking one reference each, so a half-wired creature fails visibly at the tree

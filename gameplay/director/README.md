@@ -64,8 +64,12 @@ first replan and after every `clear_goal()`, and "the creature has not been give
 to go" is not the same claim as "the creature cannot reach you". A false here fires the
 Director's `−w_stall` term against an alien that is behaving perfectly.
 
-**`attack_window_open` and `lurking_at_tunnel_mouth` are hardcoded `false`** until the `HUNTING`
-tree exists, which silently zeroes `w_attack` and `w_lurk`. That is a stub, not tuning.
+**`attack_window_open` and `lurking_at_tunnel_mouth` are one tick behind.** The report goes up
+at step 4 of the tick contract — before the transition check and before the tree — so both
+carry what the previous tick's `HuntingState.refresh` worked out. Recomputing them at report
+time would mean running the reachability probe and the range test twice per tick to be 16 ms
+fresher, against a menace curve priced in seconds. Both are `false` outright in any state but
+`HUNTING`.
 
 ## Names this module reserves project-wide
 

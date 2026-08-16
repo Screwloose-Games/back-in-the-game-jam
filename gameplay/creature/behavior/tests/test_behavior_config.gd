@@ -114,6 +114,31 @@ func test_a_lurk_duration_lands_inside_its_range() -> void:
 		assert_between(config.lurk_duration(rng), config.lurk_min_s, config.lurk_max_s)
 
 
+## `attack` returns SUCCESS either way, so with no gap the bite branch wins every tick for as
+## long as the target stays close and the alien machine-guns.
+func test_an_attack_with_no_cooldown_is_reported() -> void:
+	var config := BehaviorConfig.new()
+	config.attack_cooldown_s = 0.0
+	assert_gt(config.invariant_failures().size(), 0)
+
+
+## Every estimate would be stale on arrival, so the alien could never chase -- only lurk and
+## sweep, which reads as a creature that has forgotten how to run.
+func test_an_estimate_that_is_never_fresh_is_reported() -> void:
+	var config := BehaviorConfig.new()
+	config.target_estimate_max_age_s = 0.0
+	assert_gt(config.invariant_failures().size(), 0)
+
+
+## Otherwise the alien stops chasing something the encounter report still says it can see, and
+## the Director prices a sighting the creature has already given up on.
+func test_an_estimate_that_ages_faster_than_visual_contact_is_reported() -> void:
+	var config := BehaviorConfig.new()
+	config.visual_contact_grace_s = 5.0
+	config.target_estimate_max_age_s = 2.0
+	assert_gt(config.invariant_failures().size(), 0)
+
+
 ## The backstop must not fire before the retreat is allowed to end normally.
 func test_a_retreat_cap_below_its_floor_is_reported() -> void:
 	var config := BehaviorConfig.new()

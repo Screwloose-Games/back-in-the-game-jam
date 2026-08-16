@@ -8,7 +8,7 @@ extends PanelContainer
 ##     fired:          hotspot  0.31 vs 0.25
 ##     goal:           (5.1, 2.0, -1.3)
 ##     directive:      quiet  bias +0.30  roam +0.60  hunt
-##     report:         route 8.4m  reachable  seen
+##     report:         route 8.4m  reachable  seen  LURKING
 ##
 ##     TRANSITIONS
 ##     unalerted -> investigating (hotspot)
@@ -94,7 +94,14 @@ func _report_line(report: EncounterReport) -> String:
 	)
 	var reach: String = "reachable" if report.target_reachable else "UNREACHABLE"
 	var seen: String = "seen" if report.has_visual_contact else "unseen"
-	return "%s  %s  %s" % [distance, reach, seen]
+	# The two the Director prices attack and lurk pressure from. Printed only when true: a
+	# line that reads "-- --" for the whole of UNALERTED trains the eye to skip it.
+	var hunt: String = ""
+	if report.attack_window_open:
+		hunt += "  IN-REACH"
+	if report.lurking_at_tunnel_mouth:
+		hunt += "  LURKING"
+	return "%s  %s  %s%s" % [distance, reach, seen, hunt]
 
 
 func _fired() -> String:

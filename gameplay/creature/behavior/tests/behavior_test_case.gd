@@ -29,6 +29,10 @@ const TICK: float = 1.0 / 60.0
 ## A single open room big enough to route across. Bounded, because unbounded void has
 ## unlimited clearance and every candidate in it survives the bake.
 const ROOM := AABB(Vector3(-30.0, -6.0, -30.0), Vector3(60.0, 12.0, 60.0))
+## A solid slab from floor to ceiling and wall to wall at x = 10, for the suites that need
+## somewhere the alien cannot get to. Nothing about it is flagged as impassable -- it is
+## simply rock, and the graph declines to cross it the way it declines to cross any other.
+const DIVIDER := AABB(Vector3(10.0, -6.0, -30.0), Vector3(2.0, 12.0, 60.0))
 
 var _behavior: CreatureBehavior = null
 var _config: BehaviorConfig = null
@@ -39,6 +43,10 @@ var _body: Node3D = null
 var _directive: EncounterDirective = null
 var _transitions: Array = []
 var _actions: Array = []
+## One entry per strike, as [target, lethality]. The attack is the one action with no RUNNING
+## phase -- it succeeds on the tick it fires -- so `running_action()` never shows it and the
+## signal is the only way to see that it happened at all.
+var _attacks: Array = []
 
 
 func before_each() -> void:
@@ -80,6 +88,10 @@ func before_each() -> void:
 			_transitions.append([from, to, reason])
 	)
 	_behavior.action_changed.connect(func(action: StringName) -> void: _actions.append(action))
+	_attacks = []
+	_behavior.attack_landed.connect(
+		func(target: Node, lethality: int) -> void: _attacks.append([target, lethality])
+	)
 
 	# A zero-length tick, which is what `_ready()` would have done for a creature in a scene:
 	# it binds the goal handle, subscribes to Perception and Suspicion, and enters UNALERTED.
@@ -90,9 +102,17 @@ func before_each() -> void:
 
 ## Attaches a real CreatureNavigation over a baked open room. Opt-in, because a bake costs
 ## more than most transition assertions need.
-func _add_navigation() -> CreatureNavigation:
+##
+## `obstructions` are solid boxes dropped into the room before the bake, which is the only way
+## to give a suite somewhere the creature genuinely cannot route to. A full-height slab across
+## the room leaves the far side full of perfectly good nodes and no edge reaching any of them,
+## so `plan_route` comes back PARTIAL -- which is what HUNTING reads as "they went somewhere I
+## cannot follow", with no flag, marker or layer involved. See DIVIDER.
+func _add_navigation(obstructions: Array[AABB] = []) -> CreatureNavigation:
 	var probe := FakeNavigationProbe.new()
 	probe.add_room(ROOM)
+	for box: AABB in obstructions:
+		probe.add_solid(box)
 	_navigation = autofree(CreatureNavigation.new())
 	_navigation.config = NavigationConfig.new()
 	_navigation.probe = probe

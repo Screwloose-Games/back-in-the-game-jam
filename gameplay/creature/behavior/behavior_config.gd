@@ -85,12 +85,15 @@ const MINIMUM_GOAL_REFRESH_M: float = 2.0
 ## is no route to the point separation is measured from -- navigation's route goes to a nest
 ## -- so it could not be a path length even if that were wanted.
 @export_range(1.0, 200.0, 0.5, "suffix:m") var retreat_separation_m: float = 25.0
-## Hard cap on a retreat. NOT IN fsm.md, and it is a workaround rather than a fix.
+## Hard cap on a retreat. NOT IN fsm.md, and it is the backstop rather than a workaround.
 ##
-## fsm.md gives `retreat_to_nest` no UNREACHABLE failure clause while `travel_to_nest` has
-## one, so an unreachable far nest plus unmet separation leaves RETREATING with no reachable
-## exit and the encounter can never end. Until that asymmetry is resolved in the spec, this
-## is what guarantees the alien comes back.
+## RETREATING reuses `travel_to_nest` outright, so the asymmetry fsm.md left -- one node with
+## an UNREACHABLE failure clause and one without -- is gone. What remains is the case no
+## per-nest failure can express. Against a baked graph a target outside it comes back PARTIAL
+## rather than UNREACHABLE, because a partial route is deliberately not a failure, so an alien
+## sent to a nest it can only half reach walks at rock without ever failing; and an alien whose
+## every known nest sits inside `retreat_separation_m` of where it gave up has nowhere to walk
+## that would end the encounter at all. This is what guarantees it comes back.
 @export_range(1.0, 300.0, 0.5, "suffix:s") var retreat_max_s: float = 45.0
 
 @export_group("Actions")
@@ -130,6 +133,33 @@ const MINIMUM_GOAL_REFRESH_M: float = 2.0
 ## with a known safe interval stops being a gamble.
 @export_range(0.0, 120.0, 0.1, "suffix:s") var lurk_min_s: float = 6.0
 @export_range(0.0, 120.0, 0.1, "suffix:s") var lurk_max_s: float = 14.0
+## How close the alien has to be to strike, MEASURED TO THE TARGET ESTIMATE.
+##
+## Not to a player transform, and that is the whole reason this number is here rather than on
+## a collision shape. Behavior decides from belief; an attack keyed off where the player
+## actually is would be the alien reaching around its own senses, and
+## `test_behavior_invariants.gd` asserts it never reads a target's position. The consequence
+## is legible in play: an alien with a stale estimate swipes at where it thinks you are.
+@export_range(0.1, 20.0, 0.1, "suffix:m") var attack_range_m: float = 2.5
+## Shortest gap between two attacks.
+##
+## Load-bearing rather than polite. `attack` returns SUCCESS either way, so with no cooldown
+## the bite branch wins every tick for as long as the estimate stays close -- the alien
+## machine-guns, the Director's `attack_window_open` never falls, and nothing errors.
+@export_range(0.05, 30.0, 0.05, "suffix:s") var attack_cooldown_s: float = 2.0
+## How long after the last evidence NAMING the target a strike at its estimated position is
+## still honest (behavior.md section 27, "less trustworthy as evidence ages").
+##
+## It gates the bite, not the chase. An alien that has lost you still walks to where it last
+## believed you were and sweeps it -- section 28 -- because standing still and scanning a
+## region twenty metres away is not searching. Swinging at a position nobody has confirmed in
+## four seconds, on the other hand, is the alien getting a free hit off its own memory.
+##
+## AGED ON SUSPICION'S CLOCK, not Behavior's. `PlayerSuspicionCandidate.last_evidence_at` is
+## stamped by CreatureSuspicion, whose clock starts when that node is constructed; the two
+## agree only if the nodes were built on the same frame. Subtracting Behavior's clock from it
+## compiles, runs, and produces garbage.
+@export_range(0.1, 60.0, 0.1, "suffix:s") var target_estimate_max_age_s: float = 4.0
 
 @export_subgroup("Nest choice")
 ## How much a nest being close counts. Negated for retreat, which wants a far one.
@@ -256,6 +286,36 @@ func invariant_failures(perception: PerceptionConfig = null) -> PackedStringArra
 			(
 				"search_half_extent %.2f encloses no volume: every scan aborts and clears nothing"
 				% search_half_extent
+			)
+		)
+	if attack_cooldown_s <= 0.0:
+		(
+			failures
+			. append(
+				(
+					"attack_cooldown_s %.2f leaves no gap between attacks: the bite branch wins every tick and the alien machine-guns"
+					% attack_cooldown_s
+				)
+			)
+		)
+	if target_estimate_max_age_s <= 0.0:
+		(
+			failures
+			. append(
+				(
+					"target_estimate_max_age_s %.2f makes every estimate stale on arrival: the alien could never chase, only lurk and search"
+					% target_estimate_max_age_s
+				)
+			)
+		)
+	elif target_estimate_max_age_s <= visual_contact_grace_s:
+		(
+			failures
+			. append(
+				(
+					"target_estimate_max_age_s %.2f is at or below visual_contact_grace_s %.2f: the alien would stop chasing something the encounter report still says it can see"
+					% [target_estimate_max_age_s, visual_contact_grace_s]
+				)
 			)
 		)
 	failures.append_array(_perception_failures(perception))

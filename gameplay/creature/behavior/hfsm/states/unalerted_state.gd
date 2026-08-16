@@ -63,6 +63,10 @@ func next_transition(ctx, _time_in_state: float) -> BehaviorTransition:
 	return hunt_transition(ctx, ctx.config.direct_hunt_threshold, &"direct_evidence")
 
 
+func nest_journey() -> UnalertedMemory:
+	return memory
+
+
 func _bias(ctx) -> float:
 	if ctx.directive == null:
 		return 0.0

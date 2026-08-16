@@ -1,5 +1,5 @@
 class_name InvestigatingMemory
-extends RefCounted
+extends SearchMemory
 
 ## What INVESTIGATING remembers between ticks: which hotspot, and where inside it to look.
 ##
@@ -21,3 +21,11 @@ func forget() -> void:
 	hotspot_id = -1
 	desired_location = Vector3.ZERO
 	has_location = false
+
+
+func has_search_centre() -> bool:
+	return has_location
+
+
+func search_centre() -> Vector3:
+	return desired_location

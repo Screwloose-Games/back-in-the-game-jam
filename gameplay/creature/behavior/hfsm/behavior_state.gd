@@ -56,6 +56,17 @@ func next_transition(_ctx, _time_in_state: float) -> BehaviorTransition:
 	return null
 
 
+## This state's nest journey, or null for the two modes that do not travel to nests.
+##
+## EXISTS SO THE FACADE CAN HAND EVERY STATE ONE CreatureNestMemory without naming which
+## states those are. Sharing it rather than giving each mode its own is the point: a visit
+## stamp is a fact about where the creature has been, not about the mood it was in, so an
+## alien that has just retreated to a nest must not turn round and wander back to it. With
+## two visit logs it would, and `nest_recent_penalty_s` would look broken.
+func nest_journey() -> UnalertedMemory:
+	return null
+
+
 ## The `-> HUNTING` guard, which both UNALERTED and INVESTIGATING carry with different
 ## thresholds and different reasons.
 ##

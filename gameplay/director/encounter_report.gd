@@ -31,9 +31,12 @@ var route_distance: float = NO_ROUTE_DISTANCE
 var target_reachable: bool = true
 
 var has_visual_contact: bool = false
-## Owed to the HUNTING tree. Ships false, which zeroes the Director's w_attack term.
+## Whether a strike would connect right now, measured to the creature's TARGET ESTIMATE
+## rather than to a player transform -- so an alien with a stale idea of where you are
+## reports a window over the place it believes you to be.
 var attack_window_open: bool = false
-## Owed to the HUNTING tree. Ships false, which zeroes the Director's w_lurk term.
+## Whether the creature is waiting out a gap its own graph says it cannot follow through.
+## False in every state but HUNTING.
 var lurking_at_tunnel_mouth: bool = false
 
 

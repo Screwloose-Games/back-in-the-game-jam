@@ -103,6 +103,17 @@ func is_unreachable() -> bool:
 	return navigation.route.status == NavRoute.Status.UNREACHABLE
 
 
+## The route reaches as far as it can and stops short. NOT a failure -- it is the alien
+## discovering the gap is too tight for it, which is the whole of Invariant 5 seen from the
+## inside, and the far end of the route is where it waits.
+##
+## `NavRoute` has no `is_partial()` of its own; the status is the test.
+func is_partial() -> bool:
+	if navigation == null or navigation.route == null:
+		return false
+	return navigation.route.status == NavRoute.Status.PARTIAL
+
+
 func _refresh_distance() -> float:
 	if config == null:
 		return BehaviorConfig.MINIMUM_GOAL_REFRESH_M

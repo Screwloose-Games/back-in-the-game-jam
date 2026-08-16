@@ -43,6 +43,11 @@ extends Node
 signal state_changed(from: CreatureState.State, to: CreatureState.State, reason: StringName)
 ## The running leaf changed. Animation and audio read this rather than the state.
 signal action_changed(action: StringName)
+## A strike landed. `lethality` came off the directive; the Director owns that flag and this
+## module never decides it. Nothing in the project has health yet, so this is where damage and
+## the hit animation attach when they exist -- outside the decision layer, which may not read
+## a player node at all.
+signal attack_landed(target: Node, lethality: EncounterDirective.Lethality)
 
 @export var suspicion: CreatureSuspicion = null
 @export var perception: CreaturePerception = null
@@ -58,6 +63,10 @@ signal action_changed(action: StringName)
 ## Explicit nests win; the CreatureNest group is the fallback. Empty and ungrouped means the
 ## alien has nowhere to wander, and UNALERTED will say so once rather than every frame.
 @export var nests: Array[Node3D] = []
+## Pins the one decision that must not be countable: how long a lurk lasts. Two creatures with
+## the same seed wait out a gap identically, which is wrong in play and essential in a test --
+## the same trade `CreaturePerception.hearing_seed` makes for hearing jitter.
+@export var behavior_seed: int = 0
 ## When true this node owns the whole tick and mutes the other three facades. See the class
 ## docstring. Set false and `advance()` runs only steps 4-7.
 @export var drive_subsystems: bool = true
@@ -70,6 +79,9 @@ var goal: BehaviorGoal = null
 var context: BehaviorContext = null
 ## The directive in effect for this tick. Replaced once per tick, never mid-tick.
 var directive: EncounterDirective = null
+## THE CREATURE'S ONE NEST MEMORY, shared by every state that travels to nests. See
+## BehaviorState.nest_journey for why it is not one per mode.
+var nest_memory: CreatureNestMemory = null
 
 var _last_vision_at: float = -INF
 var _muted: bool = false
@@ -85,6 +97,7 @@ func _init() -> void:
 	hfsm = CreatureHfsm.new()
 	goal = BehaviorGoal.new()
 	context = BehaviorContext.new()
+	nest_memory = CreatureNestMemory.new()
 	hfsm.add_state(UnalertedState.new())
 	hfsm.add_state(InvestigatingState.new())
 	hfsm.add_state(HuntingState.new())
@@ -142,10 +155,17 @@ func build_report() -> EncounterReport:
 	report.route_distance = _route_distance()
 	report.target_reachable = _target_reachable()
 	report.has_visual_contact = clock - _last_vision_at <= config.visual_contact_grace_s
-	# Owed to the HUNTING tree. Hardcoded false zeroes the Director's w_attack and w_lurk
-	# terms, so this is a stub rather than tuning.
-	report.attack_window_open = false
-	report.lurking_at_tunnel_mouth = false
+	# Both are HUNTING's, and both are false outright in any other state -- an alien that is
+	# not hunting is not about to bite anybody and is not waiting outside anything.
+	#
+	# ONE TICK BEHIND, AND HONESTLY SO. The report goes up at step 4, before the transition
+	# check and before the tree; these two latches were written by the previous tick's
+	# refresh. Recomputing them here would mean running the reach probe and the range test a
+	# second time per tick to be 16 ms fresher, and the Director prices menace over seconds.
+	var hunting: HuntingState = _hunting()
+	if hunting != null and hfsm.current == CreatureState.State.HUNTING:
+		report.attack_window_open = hunting.memory.attack_window_open
+		report.lurking_at_tunnel_mouth = hunting.memory.lurk_until > clock
 	return report
 
 
@@ -190,6 +210,10 @@ func _start() -> void:
 	if _started:
 		return
 	_started = true
+	# Once, here. Re-seeding every tick would restart the sequence and hand every lurk the
+	# same duration -- which is the countable timer the range exists to prevent, arrived at
+	# by a different route.
+	context.rng.seed = behavior_seed
 	_refresh_context()
 	hfsm.reset_to(CreatureState.State.UNALERTED, context)
 
@@ -200,9 +224,26 @@ func _start() -> void:
 func _bind() -> void:
 	goal.navigation = navigation
 	goal.config = config
+	_share_nests()
 	if not _nests_loaded:
 		_load_nests()
 	_connect_signals()
+
+
+## Gives every nest-travelling state the same CreatureNestMemory. Idempotent, because this
+## runs every tick: a state that already holds it is left alone, and only one that does not
+## forgets its journey -- clearing the intent unconditionally here would wipe the chosen nest
+## every frame and the alien would never arrive anywhere.
+func _share_nests() -> void:
+	for id: int in CreatureState.State.values():
+		var state: BehaviorState = hfsm.state_of(id)
+		if state == null:
+			continue
+		var journey: UnalertedMemory = state.nest_journey()
+		if journey == null or journey.nests == nest_memory:
+			continue
+		journey.nests = nest_memory
+		journey.forget_intent()
 
 
 func _refresh_context() -> void:
@@ -283,6 +324,9 @@ func _connect_signals() -> void:
 			CreatureState.State.RETREATING,
 		]:
 			hfsm.state_of(id).tree.running_leaf_changed.connect(_on_action)
+	var hunting: HuntingState = _hunting()
+	if hunting != null and not hunting.memory.attack_landed.is_connected(_on_attack):
+		hunting.memory.attack_landed.connect(_on_attack)
 
 
 ## Explicit wiring wins; the group is the fallback. Positions are copied out once -- the HFSM
@@ -304,11 +348,21 @@ func _load_nests() -> void:
 
 
 ## Nests as data. Public so a test, a tool or a level script can supply them without a scene.
+##
+## Every journey forgets its intent, because `travel_target` is an INDEX into the list that
+## just changed -- an alien left holding one would walk confidently to a nest that is now
+## somebody else.
 func set_nest_positions(positions: PackedVector3Array) -> void:
 	_nests_loaded = true
-	var unalerted := hfsm.state_of(CreatureState.State.UNALERTED) as UnalertedState
-	if unalerted != null:
-		unalerted.memory.nests.remember(positions, config)
+	_share_nests()
+	nest_memory.remember(positions, config)
+	for id: int in CreatureState.State.values():
+		var state: BehaviorState = hfsm.state_of(id)
+		if state == null:
+			continue
+		var journey: UnalertedMemory = state.nest_journey()
+		if journey != null:
+			journey.forget_intent()
 
 
 func _on_evidence(evidence: SuspicionEvidence) -> void:
@@ -320,6 +374,10 @@ func _on_evidence(evidence: SuspicionEvidence) -> void:
 	if target != null and evidence.source_player != target:
 		return
 	_last_vision_at = clock
+
+
+func _hunting() -> HuntingState:
+	return hfsm.state_of(CreatureState.State.HUNTING) as HuntingState
 
 
 func _on_hotspot_resolved(hotspot_id: int) -> void:
@@ -336,3 +394,7 @@ func _on_state_changed(
 
 func _on_action(_from: StringName, to: StringName) -> void:
 	action_changed.emit(to)
+
+
+func _on_attack(target: Node, lethality: EncounterDirective.Lethality) -> void:
+	attack_landed.emit(target, lethality)

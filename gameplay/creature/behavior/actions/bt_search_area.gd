@@ -22,16 +22,23 @@ extends BtAction
 ## scan reports a ZERO-STRENGTH disconfirmation that suppresses nothing -- so the alien
 ## arrives, searches, and the hotspot never resolves. It looks like disconfirmation is
 ## broken when it is the region that is.
+##
+## TYPED AGAINST `SearchMemory` RATHER THAN AGAINST EITHER STATE. INVESTIGATING searches a
+## hotspot's unresolved location and HUNTING searches around the last credible target
+## position (behavior.md section 28); this node is the same sweep either way and there must
+## not be two of it. The interface was widened rather than the fields duplicated, because a
+## value refreshed every tick and stored twice under two names drifts the first time one
+## refresh path is added and the other is not.
 
 ## Below this the region is not a volume Perception can sample.
 const MINIMUM_HALF_EXTENT: float = 0.5
 
-var memory: InvestigatingMemory = null
+var memory: SearchMemory = null
 
 var _requested: bool = false
 
 
-func _init(p_memory: InvestigatingMemory) -> void:
+func _init(p_memory: SearchMemory) -> void:
 	super(&"search_area")
 	memory = p_memory
 
@@ -46,13 +53,13 @@ func abort(ctx) -> void:
 
 
 func _run(ctx) -> Status:
-	if memory == null or not memory.has_location or ctx.perception == null:
+	if memory == null or not memory.has_search_centre() or ctx.perception == null:
 		return Status.FAILURE
 
 	if not _requested:
 		_requested = true
 		ctx.perception.request_activity_scan(
-			_region(memory.desired_location, ctx.config), ctx.config.search_thoroughness
+			_region(memory.search_centre(), ctx.config), ctx.config.search_thoroughness
 		)
 		# Deliberately falls through rather than returning: a synchronous completion has
 		# already happened by now, and reporting RUNNING would cost a frame for nothing.

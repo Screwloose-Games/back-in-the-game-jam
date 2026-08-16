@@ -36,17 +36,22 @@ extends Node3D
 ##     R           forget everything                     (suspicion sandbox)
 ##     Y           toggle the belief overlay             (suspicion sandbox)
 ##
-##     6           FORCE UNALERTED -- the way back out of the two stub trees
+##     6           force UNALERTED, without a transition reason
 ##     7           plant a nest where the player is standing
 ##     8           put the creature and its nests back the way they started
 ##     B           toggle the behavior panel and the goal marker
 ##
-## KEY 6 IS NOT A CONVENIENCE. The HUNTING and RETREATING trees are one `BtDoNothing` that
-## reports RUNNING, so an alien that escalates stands perfectly still and looks broken. It is
-## not: a state with nothing to do is a fact rather than a success. There is no public
+## KEY 6 REACHES THE HFSM DIRECTLY, and there is no other way it could. There is no public
 ## `set_state` on the facade -- `test_behavior_invariants.gd` asserts its absence, because a
-## second way to change state makes the transition table decorative -- so this reaches the
-## HFSM directly, which is what the GUT fixtures do too.
+## second way to change state makes the transition table decorative -- so this calls
+## `reset_to`, which is what the GUT fixtures do too. It emits no `state_changed`, on purpose:
+## a synthetic reason in the transition log would be a lie.
+##
+## THIS ROOM HAS NO GAP THE ALIEN CANNOT FIT THROUGH, so an escalation here reads as chase,
+## bite and walk-away and never as a tunnel-mouth lurk. Every edge across the 3 m doorway comes
+## back NORMAL_VOLUME, which is the point of the doorway. The lurk beat lives in
+## `encounter_sandbox.tscn`, which builds its own cave for exactly that reason rather than
+## widening this one -- see the bargain three paragraphs up.
 ##
 ## KEY L IS WORTH PRESSING ONCE, TO WATCH IT GO WRONG. `feedback_alertness` starts FALSE
 ## here. Suspicion's sandbox writes `set_alertness_context(get_overall_suspicion())` every
