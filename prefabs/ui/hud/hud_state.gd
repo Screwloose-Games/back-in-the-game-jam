@@ -7,6 +7,7 @@ signal tether_changed(attached: bool, metres: float)
 signal contacts_changed(contacts: PackedVector3Array)
 signal objective_changed(shown: bool, at: Vector2)
 signal status_changed(status: int)
+signal voice_changed(live: bool, transmitting: bool, loudness: float)
 
 enum Status { NOMINAL, STRAINED, CRITICAL }
 
@@ -56,10 +57,30 @@ var status: Status = Status.NOMINAL:
 		status = value
 		status_changed.emit(status)
 
+## Whether the microphone is open at all. A voice-activated gate means an enabled
+## microphone is a hot one, so this has to be visible whenever it is true.
+var voice_live := false:
+	set(value):
+		voice_live = value
+		_announce_voice()
+
+var voice_transmitting := false:
+	set(value):
+		voice_transmitting = value
+		_announce_voice()
+
+var voice_loudness := 0.0:
+	set(value):
+		voice_loudness = clampf(value, 0.0, 1.0)
+		_announce_voice()
+
 var _announced_power := -1.0
 var _announced_oxygen := -1.0
 var _announced_metres := -1
 var _announced_attached := false
+var _announced_voice_live := false
+var _announced_voice_transmitting := false
+var _announced_voice_loudness := -1.0
 
 
 func announce_all() -> void:
@@ -69,6 +90,7 @@ func announce_all() -> void:
 	contacts_changed.emit(contacts)
 	objective_changed.emit(objective_shown, objective_at)
 	status_changed.emit(status)
+	voice_changed.emit(voice_live, voice_transmitting, voice_loudness)
 
 
 static func status_for(fraction: float) -> Status:
@@ -85,6 +107,19 @@ func set_objective(shown: bool, at: Vector2) -> void:
 	objective_shown = shown
 	objective_at = at
 	objective_changed.emit(objective_shown, objective_at)
+
+
+func _announce_voice() -> void:
+	if (
+		voice_live == _announced_voice_live
+		and voice_transmitting == _announced_voice_transmitting
+		and absf(voice_loudness - _announced_voice_loudness) < CHANGE_EPSILON
+	):
+		return
+	_announced_voice_live = voice_live
+	_announced_voice_transmitting = voice_transmitting
+	_announced_voice_loudness = voice_loudness
+	voice_changed.emit(voice_live, voice_transmitting, voice_loudness)
 
 
 func _announce_tether() -> void:

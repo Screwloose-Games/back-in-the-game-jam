@@ -26,6 +26,8 @@ func _ready() -> void:
 	power.charge_changed.connect(_on_power_changed)
 	tether.clipped.connect(_on_tether_changed.unbind(1))
 	tether.unclipped.connect(_on_tether_changed.unbind(1))
+	VoiceService.microphone_state_changed.connect(_on_microphone_state_changed)
+	VoiceService.local_level_changed.connect(_on_local_level_changed)
 	_push_all()
 
 
@@ -56,7 +58,19 @@ func _push_all() -> void:
 	state.oxygen = oxygen.fraction()
 	state.power = power.fraction()
 	_on_tether_changed()
+	_on_microphone_state_changed(VoiceService.is_microphone_live(), VoiceService.is_transmitting())
 	_update_status()
+
+
+func _on_microphone_state_changed(live: bool, transmitting: bool) -> void:
+	state.voice_live = live
+	state.voice_transmitting = transmitting
+	if not live:
+		state.voice_loudness = 0.0
+
+
+func _on_local_level_changed(level: float) -> void:
+	state.voice_loudness = level
 
 
 func _on_oxygen_changed(fraction: float) -> void:

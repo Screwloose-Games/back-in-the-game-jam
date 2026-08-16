@@ -17,6 +17,9 @@ signal session_closed(close_code: int, reason: String)
 signal direct_connection_opened
 signal peer_left(peer_id: int)
 signal transport_diagnostic(message: String)
+signal voice_channel_opened(peer_id: int)
+signal voice_channel_closed(peer_id: int)
+signal voice_packet_received(payload: PackedByteArray)
 
 enum Role {
 	NONE,
@@ -166,6 +169,14 @@ func get_multiplayer_peer() -> WebRTCMultiplayerPeer:
 	return _installed_multiplayer_peer
 
 
+## Voice rides its own channel, not the high-level peer, so a burst of speech
+## cannot head-of-line block a state update.
+func send_voice_packet(payload: PackedByteArray) -> Error:
+	if _webrtc_session == null:
+		return ERR_UNCONFIGURED
+	return _webrtc_session.send_voice_packet(payload)
+
+
 func _connect_to_signaling(signaling_base_url: String) -> Error:
 	_set_state(State.CONNECTING_SIGNALING, "Connecting to signaling service")
 	var signaling_role := (
@@ -294,6 +305,9 @@ func _ensure_webrtc_session() -> Error:
 	_webrtc_session.remote_peer_disconnected.connect(_on_webrtc_peer_disconnected)
 	_webrtc_session.connection_failed.connect(_on_webrtc_connection_failed)
 	_webrtc_session.diagnostic.connect(_on_webrtc_diagnostic)
+	_webrtc_session.voice_channel_opened.connect(voice_channel_opened.emit)
+	_webrtc_session.voice_channel_closed.connect(voice_channel_closed.emit)
+	_webrtc_session.voice_packet_received.connect(voice_packet_received.emit)
 	return OK
 
 

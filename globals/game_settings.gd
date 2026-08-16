@@ -12,7 +12,10 @@ func _ready():
 	set_audio_bus("SFX", settings.sfx_volume)
 	set_audio_bus("Ambient", settings.ambient_volume)
 	set_audio_bus("Dialogue", settings.dialogue_volume)
+	set_audio_bus("VoiceChat", settings.voice_chat_volume)
 	set_window_mode(settings.window_mode)
+	# Selecting a device is not the same as opening it; VoiceService owns that.
+	set_audio_input_device(settings.voice_input_device)
 
 
 func load_settings_file():
@@ -59,4 +62,32 @@ func write_back_volume_setting(bus_name: String, percent: float):
 
 func write_back_display_settings(mode: DisplayServer.WindowMode):
 	settings.set_window_mode(mode)
+	write_settings()
+
+
+# A device that has been unplugged since the last run falls back to the system
+# default rather than leaving AudioServer pointed at nothing.
+func set_audio_input_device(device: String):
+	if device.is_empty() or not AudioServer.get_input_device_list().has(device):
+		device = "Default"
+	AudioServer.input_device = device
+
+
+func write_back_audio_input_device(device: String):
+	settings.set_voice_input_device(device)
+	write_settings()
+
+
+func write_back_voice_enabled(enabled: bool):
+	settings.set_voice_enabled(enabled)
+	write_settings()
+
+
+func write_back_voice_push_to_talk(push_to_talk: bool):
+	settings.set_voice_push_to_talk(push_to_talk)
+	write_settings()
+
+
+func write_back_voice_open_dbfs(dbfs: float):
+	settings.set_voice_open_dbfs(dbfs)
 	write_settings()
