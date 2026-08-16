@@ -34,6 +34,9 @@ var _ray_elapsed := 0.0
 var _jitter: VoiceJitterBuffer
 var _playback: AudioStreamGeneratorPlayback
 var _filter: AudioEffectLowPassFilter
+var _squelch: AudioStreamPlayer3D
+var _squelch_on: AudioStreamWAV
+var _squelch_off: AudioStreamWAV
 
 @onready var _voice_output: AudioStreamPlayer3D = $VoiceOutput
 @onready var _voice_input: AudioStreamPlayer = $VoiceInput
@@ -127,7 +130,8 @@ func _begin_playback(config: VoiceConfig) -> void:
 	_bus_index = AudioServer.get_bus_index(bus_name)
 	_owns_bus = bus_name != VoiceService.SHARED_BUS and _bus_index >= 0
 	if _owns_bus:
-		_filter = AudioServer.get_bus_effect(_bus_index, 0) as AudioEffectLowPassFilter
+		_filter = _find_occlusion_filter(_bus_index)
+		_build_squelch(bus_name)
 
 	# Built here rather than in the .tscn so a single sub-resource cannot end up
 	# shared between two players, and so VoiceConfig stays the only source.
@@ -154,6 +158,57 @@ func _begin_playback(config: VoiceConfig) -> void:
 	_playback = _voice_output.get_stream_playback() as AudioStreamGeneratorPlayback
 	_target_queued = _samples_per_frame * maxi(config.jitter_target_frames, 1)
 	_apply_bus_mix()
+
+
+## Sought by type rather than taken from a fixed slot, because the radio chain
+## sits ahead of it: occlusion has to run last or the distortion would put back
+## the high end a wall is supposed to be taking away.
+func _find_occlusion_filter(bus_index: int) -> AudioEffectLowPassFilter:
+	for i in AudioServer.get_bus_effect_count(bus_index):
+		var filter := AudioServer.get_bus_effect(bus_index, i) as AudioEffectLowPassFilter
+		if filter != null:
+			return filter
+	return null
+
+
+## Keying clicks play on the speaker's own bus, so they arrive spatialised and
+## radio-filtered exactly like the voice they bracket.
+func _build_squelch(bus_name: StringName) -> void:
+	var config: VoiceConfig = VoiceService.config
+	_squelch = AudioStreamPlayer3D.new()
+	_squelch.name = "Squelch"
+	_squelch.bus = bus_name
+	# Sample playback would route around the mixer, and with it the radio chain.
+	_squelch.playback_type = AudioServer.PLAYBACK_TYPE_STREAM
+	_squelch.attenuation_model = AudioStreamPlayer3D.ATTENUATION_INVERSE_DISTANCE
+	_squelch.doppler_tracking = AudioStreamPlayer3D.DOPPLER_TRACKING_DISABLED
+	_squelch.max_distance = config.audible_radius
+	_squelch.unit_size = config.unit_size
+	_squelch.max_polyphony = 2
+	add_child(_squelch)
+
+	_squelch_on = VoiceSquelch.key_on()
+	_squelch_off = VoiceSquelch.key_off()
+	VoiceService.peer_started_speaking.connect(_on_peer_started_speaking)
+	VoiceService.peer_stopped_speaking.connect(_on_peer_stopped_speaking)
+
+
+func _on_peer_started_speaking(peer_id: int) -> void:
+	_play_squelch(peer_id, _squelch_on)
+
+
+func _on_peer_stopped_speaking(peer_id: int) -> void:
+	_play_squelch(peer_id, _squelch_off)
+
+
+func _play_squelch(peer_id: int, stream: AudioStreamWAV) -> void:
+	if peer_id != _controlled_peer_id or _squelch == null or stream == null:
+		return
+	# A peer that stops speaking because it left takes its avatar with it.
+	if not is_inside_tree():
+		return
+	_squelch.stream = stream
+	_squelch.play()
 
 
 ## Paced against how fast the generator is draining, not against how much room
