@@ -13,6 +13,7 @@ var options_menu_scene: PackedScene = SceneManager.options_menu
 @onready var session_code_row: HBoxContainer = %SessionCodeRow
 @onready var session_code_input: LineEdit = %SessionCodeInput
 @onready var copy_session_code_button: Button = %CopySessionCodeButton
+@onready var voice_peer_list: VoicePeerList = %VoicePeerList
 
 
 func _ready():
@@ -85,8 +86,12 @@ func _refresh_session_status() -> void:
 		pause_title.text = "Paused"
 		session_status_label.visible = false
 		session_code_row.visible = false
+		voice_peer_list.visible = false
 		return
 	pause_title.text = "Session Menu"
+	# Rebuilt on every open: who you can hear changes with the session, and
+	# muting somebody has to be one interaction away from gameplay.
+	voice_peer_list.refresh()
 	session_status_label.visible = true
 	session_code_row.visible = true
 	session_code_input.text = OnlineSession.session_code()

@@ -87,6 +87,12 @@ func configure(controlled_peer_id: int, local_peer_id: int) -> void:
 		push_error("PlayerNetworkDriver requires a sibling NetworkGameplay node.")
 		return
 	_gameplay.configure(_controlled_peer_id, local_peer_id)
+
+	# Optional on purpose: a player prefab without voice must still be playable,
+	# so this degrades to a silent game rather than a broken one.
+	var voice := _body.get_node_or_null("ProximityVoiceChat") as PlayerProximityVoiceChat
+	if voice != null:
+		voice.configure(_controlled_peer_id, local_peer_id)
 	_configured = true
 
 

@@ -13,6 +13,9 @@ signal host_code_ready(code: String)
 signal multiplayer_peer_ready(peer: WebRTCMultiplayerPeer)
 signal peer_left(peer_id: int)
 signal session_ended(description: String)
+signal voice_channel_opened(peer_id: int)
+signal voice_channel_closed(peer_id: int)
+signal voice_packet_received(payload: PackedByteArray)
 
 enum EntryMode {
 	SOLO,
@@ -46,6 +49,9 @@ func _ready() -> void:
 	_network_session.session_failed.connect(_on_session_failed)
 	_network_session.session_closed.connect(_on_session_closed)
 	_network_session.peer_left.connect(peer_left.emit)
+	_network_session.voice_channel_opened.connect(voice_channel_opened.emit)
+	_network_session.voice_channel_closed.connect(voice_channel_closed.emit)
+	_network_session.voice_packet_received.connect(voice_packet_received.emit)
 
 
 func queue_solo() -> void:
@@ -138,6 +144,12 @@ func consume_last_error() -> String:
 
 func network_session() -> NetworkSession:
 	return _network_session
+
+
+func send_voice_packet(payload: PackedByteArray) -> Error:
+	if _network_session == null:
+		return ERR_UNCONFIGURED
+	return _network_session.send_voice_packet(payload)
 
 
 func _start_network_request(result: Error) -> Error:

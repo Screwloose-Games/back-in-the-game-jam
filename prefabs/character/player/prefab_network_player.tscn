@@ -1,9 +1,10 @@
-[gd_scene load_steps=7 format=3]
+[gd_scene format=3 uid="uid://bdrmdisaeymlg"]
 
-[ext_resource type="PackedScene" path="res://prefabs/character/player/prefab_player.tscn" id="1_player"]
-[ext_resource type="Script" path="res://common/network/prediction/client_predictor_3d.gd" id="2_prediction"]
-[ext_resource type="Script" path="res://prefabs/character/player/components/player_network_driver.gd" id="3_network"]
-[ext_resource type="Script" path="res://prefabs/character/player/components/player_network_gameplay.gd" id="4_gameplay"]
+[ext_resource type="PackedScene" uid="uid://d2rsjfnwejjoa" path="res://prefabs/character/player/prefab_player.tscn" id="1_player"]
+[ext_resource type="Script" uid="uid://446xm2jvurf8" path="res://common/network/prediction/client_predictor_3d.gd" id="2_prediction"]
+[ext_resource type="Script" uid="uid://d3l8bnujqq17o" path="res://prefabs/character/player/components/player_network_driver.gd" id="3_network"]
+[ext_resource type="Script" uid="uid://qgd8g44ncpmy" path="res://prefabs/character/player/components/player_network_gameplay.gd" id="4_gameplay"]
+[ext_resource type="Script" uid="uid://dodmqlrfedyq3" path="res://prefabs/character/player/components/player_proximity_voice_chat.gd" id="5_voice"]
 
 [sub_resource type="SceneReplicationConfig" id="ReplicationConfig_player_state"]
 properties/0/path = NodePath(".:authoritative_transform")
@@ -51,26 +52,40 @@ properties/6/path = NodePath(".:gameplay_state_sequence")
 properties/6/spawn = true
 properties/6/replication_mode = 1
 
-[node name="NetworkPlayer" instance=ExtResource("1_player")]
+[sub_resource type="AudioStreamMicrophone" id="AudioStreamMicrophone_wccwa"]
 
-[node name="Prediction" type="Node" parent="PlayerBody" index="3"]
+[node name="NetworkPlayer" unique_id=782850788 instance=ExtResource("1_player")]
+
+[node name="Prediction" type="Node" parent="PlayerBody" parent_id_path=PackedInt32Array(1318507332) index="3" unique_id=743531167]
 unique_name_in_owner = true
 script = ExtResource("2_prediction")
 
-[node name="StateSync" type="MultiplayerSynchronizer" parent="PlayerBody" index="4"]
+[node name="StateSync" type="MultiplayerSynchronizer" parent="PlayerBody" parent_id_path=PackedInt32Array(1318507332) index="4" unique_id=1688921993]
 root_path = NodePath("../Prediction")
 replication_interval = 0.05
 replication_config = SubResource("ReplicationConfig_player_state")
 
-[node name="NetworkDriver" type="Node" parent="PlayerBody" index="5"]
+[node name="NetworkDriver" type="Node" parent="PlayerBody" parent_id_path=PackedInt32Array(1318507332) index="5" unique_id=452149932]
 unique_name_in_owner = true
 script = ExtResource("3_network")
 
-[node name="NetworkGameplay" type="Node" parent="PlayerBody" index="6"]
+[node name="NetworkGameplay" type="Node" parent="PlayerBody" parent_id_path=PackedInt32Array(1318507332) index="6" unique_id=1652485958]
 unique_name_in_owner = true
 script = ExtResource("4_gameplay")
 
-[node name="GameplaySync" type="MultiplayerSynchronizer" parent="PlayerBody" index="7"]
+[node name="GameplaySync" type="MultiplayerSynchronizer" parent="PlayerBody" parent_id_path=PackedInt32Array(1318507332) index="7" unique_id=952515579]
 root_path = NodePath("../NetworkGameplay")
 replication_interval = 0.05
 replication_config = SubResource("ReplicationConfig_gameplay_state")
+
+[node name="ProximityVoiceChat" type="Node3D" parent="PlayerBody" parent_id_path=PackedInt32Array(1318507332) index="28" unique_id=805032584]
+unique_name_in_owner = true
+script = ExtResource("5_voice")
+
+[node name="VoiceOutput" type="AudioStreamPlayer3D" parent="PlayerBody/ProximityVoiceChat" index="0" unique_id=1339547802]
+playback_type = 1
+
+[node name="VoiceInput" type="AudioStreamPlayer" parent="PlayerBody/ProximityVoiceChat" index="1" unique_id=1582960537]
+stream = SubResource("AudioStreamMicrophone_wccwa")
+bus = &"VoiceCapture"
+playback_type = 1

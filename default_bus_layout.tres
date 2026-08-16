@@ -1,5 +1,17 @@
 [gd_resource type="AudioBusLayout" format=3 uid="uid://ups1oc5asek6"]
 
+[sub_resource type="AudioEffectLowPassFilter" id="AudioEffectLowPassFilter_voice0"]
+cutoff_hz = 20000.0
+
+[sub_resource type="AudioEffectLowPassFilter" id="AudioEffectLowPassFilter_voice1"]
+cutoff_hz = 20000.0
+
+[sub_resource type="AudioEffectCapture" id="AudioEffectCapture_voice"]
+buffer_length = 0.25
+
+[sub_resource type="AudioEffectAmplify" id="AudioEffectAmplify_voice_silence"]
+volume_db = -80.0
+
 [resource]
 bus/0/volume_db = -0.328256
 bus/1/name = &"SFX"
@@ -26,3 +38,35 @@ bus/4/mute = false
 bus/4/bypass_fx = false
 bus/4/volume_db = 0.0
 bus/4/send = &"Master"
+bus/5/name = &"VoiceChat"
+bus/5/solo = false
+bus/5/mute = false
+bus/5/bypass_fx = false
+bus/5/volume_db = 0.0
+bus/5/send = &"Master"
+bus/6/name = &"Voice_0"
+bus/6/solo = false
+bus/6/mute = false
+bus/6/bypass_fx = false
+bus/6/volume_db = 0.0
+bus/6/send = &"VoiceChat"
+bus/6/effect/0/effect = SubResource("AudioEffectLowPassFilter_voice0")
+bus/6/effect/0/enabled = true
+bus/7/name = &"Voice_1"
+bus/7/solo = false
+bus/7/mute = false
+bus/7/bypass_fx = false
+bus/7/volume_db = 0.0
+bus/7/send = &"VoiceChat"
+bus/7/effect/0/effect = SubResource("AudioEffectLowPassFilter_voice1")
+bus/7/effect/0/enabled = true
+bus/8/name = &"VoiceCapture"
+bus/8/solo = false
+bus/8/mute = true
+bus/8/bypass_fx = false
+bus/8/volume_db = 0.0
+bus/8/send = &"Master"
+bus/8/effect/0/effect = SubResource("AudioEffectCapture_voice")
+bus/8/effect/0/enabled = true
+bus/8/effect/1/effect = SubResource("AudioEffectAmplify_voice_silence")
+bus/8/effect/1/enabled = true

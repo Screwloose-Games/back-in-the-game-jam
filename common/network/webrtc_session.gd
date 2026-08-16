@@ -12,6 +12,9 @@ signal multiplayer_peer_ready(peer: WebRTCMultiplayerPeer)
 signal remote_peer_disconnected(peer_id: int)
 signal connection_failed(description: String)
 signal diagnostic(message: String)
+signal voice_channel_opened(peer_id: int)
+signal voice_channel_closed(peer_id: int)
+signal voice_packet_received(payload: PackedByteArray)
 
 const HOST_PEER_ID := 1
 const CLIENT_PEER_ID := 2
@@ -36,6 +39,7 @@ var _local_candidate_count := 0
 var _remote_candidate_count := 0
 var _high_level_channels_open := false
 var _is_host := false
+var _voice_channel := VoiceDataChannel.new()
 
 
 ## Creates the host's high-level server immediately, before a joiner exists.
@@ -124,6 +128,14 @@ func get_multiplayer_peer() -> WebRTCMultiplayerPeer:
 	return _multiplayer_peer
 
 
+func send_voice_packet(payload: PackedByteArray) -> Error:
+	return _voice_channel.send(payload)
+
+
+func voice_buffered_amount() -> int:
+	return _voice_channel.buffered_amount()
+
+
 func get_diagnostic_summary() -> String:
 	var ice_state := "not initialized"
 	if _connection != null:
@@ -159,11 +171,19 @@ func close_connection() -> void:
 	_is_host = false
 
 
+func _ready() -> void:
+	_voice_channel.opened.connect(voice_channel_opened.emit)
+	_voice_channel.closed.connect(voice_channel_closed.emit)
+	_voice_channel.packet_received.connect(voice_packet_received.emit)
+
+
 ## SceneTree polls WebRTCMultiplayerPeer. This process hook only observes the
-## underlying ICE state so a failed route gets a useful player-facing error.
+## underlying ICE state so a failed route gets a useful player-facing error, and
+## drives the voice channel, which the high-level peer knows nothing about.
 func _process(delta: float) -> void:
 	if _connection == null:
 		return
+	_voice_channel.poll()
 	var connection_state := _connection.get_connection_state()
 	if connection_state != _last_connection_state:
 		_last_connection_state = connection_state
@@ -235,6 +255,12 @@ func _attach_remote_connection(remote_peer_id: int, ice_servers: Array) -> Error
 		_connection = null
 		_fail("Could not add remote peer %d. Error: %d" % [remote_peer_id, result])
 		return result
+
+	# create_data_channel only works while the connection is STATE_NEW, which
+	# ends at the first create_offer() or set_remote_description(). Both peers
+	# reach this line before that, so neither needs to be told about the other's.
+	if _voice_channel.open(_connection, remote_peer_id) != OK:
+		diagnostic.emit("Voice channel unavailable; the session continues without voice.")
 
 	_remote_peer_id = remote_peer_id
 	_disconnected_elapsed = 0.0
@@ -340,6 +366,11 @@ func _drop_remote_connection(emit_disconnected: bool) -> void:
 		and _multiplayer_peer.has_peer(disconnected_peer_id)
 	):
 		_multiplayer_peer.remove_peer(disconnected_peer_id)
+
+	# Released before the connection that owns it: a rejoin builds a new
+	# WebRTCPeerConnection, and a stale channel reference would accept sends
+	# into a dead stream without reporting anything.
+	_voice_channel.close()
 
 	if _connection != null:
 		_connection.close()
