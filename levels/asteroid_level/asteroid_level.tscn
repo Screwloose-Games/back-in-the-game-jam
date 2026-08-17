@@ -33,10 +33,14 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -90.7799, -32.95, 33.8)
 unique_name_in_owner = true
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -90.7799, -32.8231, 35.425)
 
+[node name="CreatureInitialSpawnMarker3D" type="Marker3D" parent="." unique_id=1509833471]
+unique_name_in_owner = true
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -67.3292, -36.5714, 33.2497)
+
 [node name="Players" type="Node3D" parent="." unique_id=47916019]
 unique_name_in_owner = true
 
-[node name="PlayerSpawner" type="MultiplayerSpawner" parent="."]
+[node name="PlayerSpawner" type="MultiplayerSpawner" parent="." unique_id=123898832]
 unique_name_in_owner = true
 spawn_path = NodePath("../Players")
 spawn_limit = 2

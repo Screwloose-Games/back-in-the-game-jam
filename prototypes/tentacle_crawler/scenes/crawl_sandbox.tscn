@@ -4,7 +4,7 @@
 [ext_resource type="Material" path="../materials/corridor_floor.tres" id="2_floor"]
 [ext_resource type="PackedScene" path="../components/marker_pilot/marker_pilot.tscn" id="3_pilot"]
 [ext_resource type="PackedScene" path="../components/camera/crawler_camera_director.tscn" id="4_camera"]
-[ext_resource type="PackedScene" path="../actors/crawler/crawler.tscn" id="5_crawler"]
+[ext_resource type="PackedScene" path="../../../prefabs/character/creature/prefab_creature.tscn" id="5_crawler"]
 
 ; A FLAT COLOUR BACKGROUND (mode 1), not a procedural sky.
 ;

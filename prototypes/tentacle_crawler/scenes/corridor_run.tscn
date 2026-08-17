@@ -3,7 +3,7 @@
 [ext_resource type="Material" path="../materials/corridor_wall.tres" id="1_1v4a0"]
 [ext_resource type="Material" path="../materials/corridor_rib.tres" id="2_ukmmd"]
 [ext_resource type="PackedScene" path="../components/marker_pilot/marker_pilot.tscn" id="3_cd0nl"]
-[ext_resource type="PackedScene" path="../actors/crawler/crawler.tscn" id="5_1yu6i"]
+[ext_resource type="PackedScene" path="../../../prefabs/character/creature/prefab_creature.tscn" id="5_1yu6i"]
 [ext_resource type="PackedScene" path="../components/camera/crawler_camera_director.tscn" id="7_m6c67"]
 
 [sub_resource type="ArrayMesh" id="ArrayMesh_yebyj"]

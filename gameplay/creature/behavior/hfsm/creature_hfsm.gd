@@ -8,13 +8,9 @@ extends RefCounted
 ## ever holds a goal across a mode change.
 ##
 ## `min_dwell_s` IS A PRE-GUARD ON EVERY ROW, NOT A ROW. Nothing transitions out of a state
-## until it has been in it that long. It is easy to omit while implementing "the transition
-## table" and it is the whole of what stops an alien on a threshold boundary flickering.
+## until it has been in it that long.
 ##
-## `force_disengage` IS LATCHED HERE. director.md has the HFSM consume it "at its next
-## transition check", which is not the same as reading it: with min_dwell_s blocking that
-## check, a directive rebuilt each tick would drop the disengage entirely and the encounter
-## would never end. Observed on any tick, consumed on the next check, cleared after.
+## `force_disengage` IS LATCHED HERE.
 
 ## Carries the reason into debug and into anything watching. Every transition has one.
 signal state_changed(from: CreatureState.State, to: CreatureState.State, reason: StringName)
@@ -44,7 +40,7 @@ func active_state() -> BehaviorState:
 	return state_of(current)
 
 
-## Step 1 of the tick contract. Injected delta, never a wall clock.
+## Step 1 of the tick contract. Injected delta.
 func advance_clock(delta: float) -> void:
 	time_in_state += delta
 
@@ -108,7 +104,7 @@ func describe() -> String:
 	return line
 
 
-## Latched on observation, never on the check. See the class docstring.
+## Latched on observation.
 func _observe_directive(ctx) -> void:
 	if ctx.directive != null and ctx.directive.force_disengage:
 		_disengage_latched = true

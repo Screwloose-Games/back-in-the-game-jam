@@ -11,6 +11,15 @@ const CLIENT_PEER_ID := 2
 const PEER_SPAWN_AHEAD_METRES := 2.5
 const PLAYER_SCENE := preload("res://prefabs/character/player/prefab_player.tscn")
 const NETWORK_PLAYER_SCENE := preload("res://prefabs/character/player/prefab_network_player.tscn")
+const CREATURE_SCENE := preload("res://prefabs/character/creature/prefab_creature.tscn")
+## Layer 1, `hull`. Bit 2 is `player`, and a creature that probes it holds itself a body
+## radius off the thing it is trying to bite.
+const WORLD_MASK := 1
+## Slack around the mine's own markers, because bake seeds are snapped to lattice cells and
+## a cell outside the region is refused.
+const BAKE_MARGIN_M := 8.0
+## Matches NavigationConfig.normal_speed, which is what every route is costed against.
+const CREATURE_MAX_SPEED := 6.0
 
 var _connection_screen: LoadingScreen
 var _transport_ready := false
@@ -18,10 +27,13 @@ var _returning_to_menu := false
 var _host_spawn_scheduled := false
 var _local_player_presentation_started := false
 var _local_player_ready := false
+var _creature: CreatureAgent
+var _director: EncounterDirector
 
 @onready var players: Node3D = %Players
 @onready var player_spawn: Marker3D = %PlayerSpawn
 @onready var player_spawner: MultiplayerSpawner = %PlayerSpawner
+@onready var creature_spawn: Marker3D = %CreatureInitialSpawnMarker3D
 
 
 func _ready() -> void:
@@ -81,6 +93,124 @@ func _spawn_solo_player() -> void:
 	input.captures_mouse = true
 	(body.get_node("Head/HeadCamera") as Camera3D).current = true
 	players.add_child(player)
+	_start_creature()
+
+
+## Everything the alien needs that only the level can supply: the baked graph, the Director,
+## the noise wire and the nests. Solo only for now.
+##
+## `navigation.source` is read once, in CreatureNavigation._ready(), so it has to be assigned
+## before the creature enters the tree -- one authored into the scene would plan against a
+## null graph for the whole session without saying so.
+func _start_creature() -> void:
+	var mine := $LevelFullBlockout/MineBlockout as MineLevel
+	var seeds := PackedVector3Array()
+	for space: MineSpace in mine.spaces_in_level():
+		seeds.append(space.global_position)
+	if seeds.is_empty():
+		push_error("Asteroid level has no mine spaces to seed navigation from.")
+		return
+
+	var crawler := CREATURE_SCENE.instantiate() as CrawlerBody
+	crawler.probe_mask = WORLD_MASK
+	(crawler.get_node("Tentacles") as TentacleArray).query_mask = WORLD_MASK
+	# The prefab is tuned for a player-driven marker in a straight corridor. Routing plans
+	# against NavigationConfig.normal_speed, so the body has to be able to keep that promise
+	# and no more -- at the prototype's 30 it crosses a chamber between two route anchors.
+	crawler.max_speed = CREATURE_MAX_SPEED
+	_creature = crawler.get_node("Agent") as CreatureAgent
+	var behavior := crawler.get_node("Behavior") as CreatureBehavior
+	var navigation := crawler.get_node("Navigation") as CreatureNavigation
+
+	_director = EncounterDirector.new()
+	_director.name = "EncounterDirector"
+	_director.config = DirectorConfig.new()
+	add_child(_director)
+
+	var source := NavigationSource.new()
+	source.name = "NavigationSource"
+	source.config = navigation.config
+	source.air_seeds = seeds
+	add_child(source)
+	# Colliders added or entered this frame are not queryable until the physics server has
+	# stepped, and a bake before that fills the asteroid with nodes, rock included.
+	await get_tree().physics_frame
+	await get_tree().physics_frame
+	source.bake(_bake_region(seeds))
+	await source.graph_baked
+
+	navigation.source = source
+	behavior.director = _director
+	# Placed BEFORE it enters the tree: CreatureAgent remembers this pose in _ready() and a
+	# reset puts it back here.
+	crawler.transform = global_transform.affine_inverse() * creature_spawn.global_transform
+	add_child(crawler)
+	var nests := _reachable_nests(navigation, seeds)
+	# A bake that produces an unusable graph does not error, and the creature then stands
+	# there looking like a behaviour bug. One line so it cannot fail quietly.
+	var stats: Dictionary = source.stats()
+	print(
+		(
+			"[creature] %d nodes, %d edges | %d/%d nests reachable"
+			% [stats["nodes"], stats["edges_normal"], nests.size(), seeds.size()]
+		)
+	)
+	behavior.set_nest_positions(nests)
+	behavior.attack_landed.connect(_on_attack_landed)
+	_director.register(behavior, crawler.get_node("Suspicion") as CreatureSuspicion)
+
+	var relay := PlayerNoiseRelay.new()
+	relay.name = "PlayerNoiseRelay"
+	relay.perception = crawler.get_node("Perception") as CreaturePerception
+	add_child(relay)
+
+
+## The mine's own markers, minus the ones the creature cannot get to.
+##
+## They are authored for the level rather than for this body, and several sit mid-tunnel in
+## strips narrower than the creature is. A nest it cannot reach is a nest it walks at forever.
+func _reachable_nests(
+	navigation: CreatureNavigation, seeds: PackedVector3Array
+) -> PackedVector3Array:
+	var from: Vector3 = creature_spawn.global_position
+	var reachable := PackedVector3Array()
+	for at: Vector3 in seeds:
+		var route: NavRoute = navigation.plan_route(from, at)
+		if route != null and route.status == NavRoute.Status.COMPLETE:
+			reachable.append(at)
+	if reachable.is_empty():
+		push_error("No mine space is reachable from the creature spawn; it has nowhere to roam.")
+	return reachable
+
+
+func _bake_region(seeds: PackedVector3Array) -> AABB:
+	var region := AABB(seeds[0], Vector3.ZERO)
+	for at: Vector3 in seeds:
+		region = region.expand(at)
+	return region.grow(BAKE_MARGIN_M)
+
+
+func _on_attack_landed(_target: Node, lethality: EncounterDirective.Lethality) -> void:
+	if lethality == EncounterDirective.Lethality.LETHAL:
+		reset()
+
+
+## One lethal strike is a death: the creature, every player and the encounter pacing all go
+## back to where the level started. Each of the three remembers its own starting state.
+func reset() -> void:
+	if _creature != null:
+		_creature.reset()
+	if _director != null:
+		# Before note_respawn, which arms a stamp that reset() clears.
+		_director.reset()
+	for player: Node in players.get_children():
+		var respawn := player.get_node_or_null("PlayerBody/Respawn") as PlayerRespawn
+		if respawn == null:
+			continue
+		respawn.reset()
+		if _director != null:
+			_director.note_respawn(respawn.body)
+	GlobalSignalBus.level_reset.emit()
 
 
 func _spawn_network_player_if_missing(peer_id: int) -> void:
