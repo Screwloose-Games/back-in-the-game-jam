@@ -21,6 +21,9 @@ movies/
 *.blend1
 *.tmp
 
+# Windows file-lock rename artifacts (e.g. ~libvoxel.windows.editor.x86_64.dll)
+~*
+
 .env
 
 .idea/

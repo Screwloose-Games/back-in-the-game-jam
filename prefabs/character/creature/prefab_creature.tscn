@@ -3,6 +3,7 @@
 [ext_resource type="Script" uid="uid://jnwuf8blhso8" path="res://prefabs/character/creature/crawler_body.gd" id="1_body"]
 [ext_resource type="Script" uid="uid://bplrnxntp535n" path="res://prototypes/tentacle_crawler/components/rig/crawler_rig.gd" id="2_rig"]
 [ext_resource type="PackedScene" uid="uid://c82xv6ka1nfp3" path="res://prototypes/tentacle_crawler/assets/models/cosmic-horror.glb" id="3_model"]
+[ext_resource type="PackedScene" uid="uid://ddunw1ib1dha4" path="res://assets/art/gameplay/fractal_voxel_monster/sk_fractal_voxel_monster.tscn" id="4_qtx0q"]
 [ext_resource type="Script" uid="uid://bktwe4q0eiecg" path="res://prototypes/tentacle_crawler/components/tentacle/tentacle_array.gd" id="4_tentacles"]
 [ext_resource type="PackedScene" path="res://prototypes/tentacle_crawler/components/tentacle/tentacle_bones.tscn" id="5_bones"]
 [ext_resource type="Script" uid="uid://d3fo08f7pllfv" path="res://prototypes/tentacle_crawler/components/tentacle/tentacle_impact_audio.gd" id="6_impact_audio"]
@@ -62,6 +63,9 @@ alertness_unalerted = 0.3
 script = ExtResource("1_body")
 target_marker = NodePath("Marker")
 tentacles = NodePath("Tentacles")
+
+[node name="sk_fractal_voxel_monster" parent="." unique_id=1822333854 instance=ExtResource("4_qtx0q")]
+transform = Transform3D(-0.99905217, -0.042537197, 0.0092389155, -0.043224253, 0.9945254, -0.09513672, -0.0051414915, -0.095445886, -0.99542135, 0, 1.6500242, -1.2210633)
 
 [node name="Rig" type="Node3D" parent="." unique_id=736733455 node_paths=PackedStringArray("model", "hull", "limbs")]
 unique_name_in_owner = true

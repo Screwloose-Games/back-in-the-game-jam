@@ -70,7 +70,11 @@ func _process(_delta: float) -> bool:
 func _check_rig_assembly() -> void:
 	var before: int = _failures
 	var crawler: Node3D = (
-		(load(_res("../actors/crawler/crawler.tscn")) as PackedScene).instantiate() as Node3D
+		(
+			(load(_res("../../../prefabs/character/creature/prefab_creature.tscn")) as PackedScene)
+			. instantiate()
+		)
+		as Node3D
 	)
 	root.add_child(crawler)
 
@@ -302,7 +306,10 @@ func _check_layer_matrix() -> void:
 ## velocity and the stroke envelope cannot be eaten by contact resolution.
 func _check_kinematic() -> void:
 	var before: int = _failures
-	var crawler: Node = (load(_res("../actors/crawler/crawler.tscn")) as PackedScene).instantiate()
+	var crawler: Node = (
+		(load(_res("../../../prefabs/character/creature/prefab_creature.tscn")) as PackedScene)
+		. instantiate()
+	)
 	for node: Node in _descendants(crawler):
 		if node is RigidBody3D or node is CharacterBody3D:
 			_fail("kinematic", "%s is a physics body; the creature must stay kinematic" % node.name)
