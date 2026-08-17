@@ -13,6 +13,13 @@ extends Node
 ## `noise_emitted(strength: float, at: Vector3, source: int)` will drive it, which is what
 ## lets a sandbox stand-in and the real prefab use the same relay.
 ##
+## ONE CHANNEL PER EMITTER, and the reason is that a player is not one noise source.
+## PlayerNoiseEmitter reports the loudest thing happening at the body; PlayerBeamNoiseEmitter
+## reports the mining cut out at the end of the beam, which can be six metres away through a
+## different wall. A single latest-wins slot made those two overwrite each other, so whichever
+## announced last was the only one the creature ever heard -- and two PLAYERS in a session hit
+## the same bug. Each channel carries its own strength, position and interval.
+##
 ## It lives in `world/` for the reason `behavior/world/creature_nest.gd` does: it is the
 ## level-side attachment point of a creature module rather than part of the creature.
 
@@ -43,6 +50,7 @@ const EMITTER_GROUP: StringName = &"noise_emitter"
 ## writes a record into a ring capped at SuspicionConfig.max_evidence_count (64). A relay
 ## firing at the frame rate would evict a minute of real evidence with its own duplicates
 ## inside a second -- the same storm BehaviorConfig.search_cooldown_s exists to prevent.
+## Enforced PER CHANNEL, so adding an emitter adds a trickle rather than removing the limit.
 ##
 ## Downward: PlayerNoiseEmitter only re-announces on a CHANGE_EPSILON (0.05) LEVEL CHANGE, so
 ## a player holding the drill announces once and then goes silent. A drill is a repeating
@@ -53,12 +61,7 @@ const EMITTER_GROUP: StringName = &"noise_emitter"
 ## The relay's own clock, from the delta it is handed. Never a wall clock.
 var clock: float = 0.0
 
-var _strength: float = 0.0
-var _at: Vector3 = Vector3.ZERO
-var _source: int = 0
-var _player: Node = null
-var _next_emit_at: float = 0.0
-var _bound: Dictionary = {}
+var _channels: Dictionary = {}
 
 
 func _ready() -> void:
@@ -72,10 +75,31 @@ func _physics_process(delta: float) -> void:
 ## The tick entry point, public so a test or a headless tool can drive it exactly.
 func advance(delta: float) -> void:
 	clock += delta
-	if _strength <= 0.0 or perception == null or clock < _next_emit_at:
+	if perception == null:
 		return
-	_next_emit_at = clock + emit_interval_s
-	perception.receive_noise(NoiseEvent.make(_at, _loudness(), _category(), _player, _player))
+	var stale: Array[int] = []
+	for key: int in _channels:
+		var channel: NoiseChannel = _channels[key]
+		# An emitter can be freed under a live level -- a player disconnecting, a prefab
+		# reloaded. Its channel would otherwise go on announcing its last known noise from
+		# its last known position for the rest of the session.
+		if not is_instance_valid(channel.emitter):
+			stale.append(key)
+			continue
+		if channel.strength <= 0.0 or clock < channel.next_emit_at:
+			continue
+		channel.next_emit_at = clock + emit_interval_s
+		perception.receive_noise(
+			NoiseEvent.make(
+				channel.at,
+				_loudness(channel.strength),
+				_category(channel.source),
+				channel.player,
+				channel.player
+			)
+		)
+	for key: int in stale:
+		_channels.erase(key)
 
 
 ## Explicit emitters, then the group. Idempotent, so it is safe to call after spawning.
@@ -94,49 +118,74 @@ func bind(emitter: Node) -> void:
 	if emitter == null or not emitter.has_signal(&"noise_emitted"):
 		return
 	var key: int = emitter.get_instance_id()
-	if _bound.has(key):
+	if _channels.has(key):
 		return
-	_bound[key] = true
+	var channel := NoiseChannel.new()
+	channel.emitter = emitter
+	_channels[key] = channel
 	emitter.connect(&"noise_emitted", _on_noise_emitted.bind(emitter))
 
 
 ## Everything the debug panel or a test wants, without growing an accessor per field.
+##
+## The single-value keys describe the LOUDEST live channel, which is what the old one-slot
+## relay reported and what a one-line readout wants; `channels` is how you tell that from a
+## relay that has only ever bound one emitter.
 func debug_state() -> Dictionary:
+	var loudest: NoiseChannel = _loudest_channel()
+	var strength: float = loudest.strength if loudest != null else 0.0
+	var source: int = loudest.source if loudest != null else 0
+	var next_at: float = loudest.next_emit_at if loudest != null else clock
 	return {
 		"clock": clock,
-		"strength": _strength,
-		"loudness": _loudness(),
-		"category": _category(),
-		"bound": _bound.size(),
-		"next_emit_in": maxf(_next_emit_at - clock, 0.0),
+		"strength": strength,
+		"loudness": _loudness(strength),
+		"category": _category(source),
+		"bound": _channels.size(),
+		"channels": _channels.size(),
+		"next_emit_in": maxf(next_at - clock, 0.0),
 	}
 
 
 ## Clamped, because a NoiseEvent's loudness is nominally 0..1 and Hearing attenuates from
 ## there. A player scale that ran past the cap would arrive as a noise louder than any the
 ## perception config was tuned against.
-func _loudness() -> float:
-	return clampf(_strength / maxf(noise_scale, 0.001), 0.0, 1.0)
+func _loudness(strength: float) -> float:
+	return clampf(strength / maxf(noise_scale, 0.001), 0.0, 1.0)
 
 
-func _category() -> StringName:
-	return CATEGORIES[_source] if _source >= 0 and _source < CATEGORIES.size() else &""
+func _category(source: int) -> StringName:
+	return CATEGORIES[source] if source >= 0 and source < CATEGORIES.size() else &""
+
+
+func _loudest_channel() -> NoiseChannel:
+	var best: NoiseChannel = null
+	for key: int in _channels:
+		var channel: NoiseChannel = _channels[key]
+		if best == null or channel.strength > best.strength:
+			best = channel
+	return best
 
 
 ## Held rather than emitted on the spot. The emitter announces on a LEVEL CHANGE and the
 ## relay announces on an INTERVAL, so the two rate limits compose instead of fighting: a
 ## change that arrives mid-interval updates what the next event will say without adding one.
 func _on_noise_emitted(strength: float, at: Vector3, source: int, emitter: Node) -> void:
-	var was_silent: bool = _strength <= 0.0
-	_strength = strength
-	_at = at
-	_source = source
-	_player = _body_of(emitter)
+	var channel: NoiseChannel = _channels.get(emitter.get_instance_id())
+	if channel == null:
+		return
+	var was_silent: bool = channel.strength <= 0.0
+	channel.strength = strength
+	channel.at = at
+	channel.source = source
+	# Resolved per announcement rather than at bind time: a component's `body` is an @onready
+	# and is null for the frame the relay may have bound it on.
+	channel.player = _body_of(emitter)
 	# A noise STARTING is heard now, not up to emit_interval_s later. A drill spun up the
 	# instant after a scheduled emit would otherwise be inaudible for half a second, which is
 	# long enough to walk out of the room that heard nothing.
 	if was_silent and strength > 0.0:
-		_next_emit_at = clock
+		channel.next_emit_at = clock
 
 
 ## Who the noise is attributed to, which is what lets Suspicion build a player candidate
@@ -150,3 +199,16 @@ static func _body_of(emitter: Node) -> Node:
 	if body != null:
 		return body
 	return emitter.get_parent() if emitter.get_parent() != null else emitter
+
+
+## One emitter's held noise. Two emitters on one player -- the body and the beam endpoint --
+## are two of these, and so are two players.
+class NoiseChannel:
+	extends RefCounted
+
+	var emitter: Node = null
+	var strength: float = 0.0
+	var at: Vector3 = Vector3.ZERO
+	var source: int = 0
+	var player: Node = null
+	var next_emit_at: float = 0.0

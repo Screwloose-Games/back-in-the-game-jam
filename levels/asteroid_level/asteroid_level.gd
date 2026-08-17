@@ -20,6 +20,20 @@ const WORLD_MASK := 1
 const BAKE_MARGIN_M := 8.0
 ## Matches NavigationConfig.normal_speed, which is what every route is costed against.
 const CREATURE_MAX_SPEED := 6.0
+## How far the alien can hear at all, pushed onto its PerceptionConfig.
+##
+## RAISED FROM THE MODULE'S 40 M DEFAULT BECAUSE THIS ASTEROID IS BIGGER THAN THE SANDBOX
+## THAT NUMBER WAS TUNED IN. Hearing falls off as (1 - d/range)^2 and `received_strength`
+## returns a hard 0.0 past the range, so at 40 m a drill two chambers away produces no
+## evidence at all -- nothing in the log, which is indistinguishable from a broken chain.
+##
+## 120, AND 90 WAS MEASURED WRONG in the awareness prototype. Range does not only decide
+## what is audible, it decides CONFIDENCE, and confidence is what makes a record survive
+## long enough to accumulate: at 90 m a stimulus 60 m away arrives at confidence 0.06 and is
+## pruned before anything can cluster, so twenty seconds of holding the beam produced no
+## hotspot. At 120 it arrives at 0.21, one pulse forms a faint lead and holding turns that
+## lead into a commitment. See prototypes/creature_awareness/creature_awareness_knobs.gd.
+const CREATURE_HEARING_RANGE_M := 120.0
 
 var _connection_screen: LoadingScreen
 var _transport_ready := false
@@ -29,6 +43,16 @@ var _local_player_presentation_started := false
 var _local_player_ready := false
 var _creature: CreatureAgent
 var _director: EncounterDirector
+var _debug_panels: VBoxContainer
+var _graph_overlay: NavigationDebugDraw
+var _locomotion_overlay: NavigationLocomotionDraw
+var _trail_overlay: CreatureTrailDraw
+var _suspicion_overlay: SuspicionDebugDraw
+var _perception_overlay: PerceptionDebugDraw
+var _director_panel: DirectorDebugPanel
+var _behavior_panel: BehaviorDebugPanel
+var _navigation_panel: NavigationDebugPanel
+var _perception_panel: PerceptionDebugPanel
 
 @onready var players: Node3D = %Players
 @onready var player_spawn: Marker3D = %PlayerSpawn
@@ -121,6 +145,12 @@ func _start_creature() -> void:
 	_creature = crawler.get_node("Agent") as CreatureAgent
 	var behavior := crawler.get_node("Behavior") as CreatureBehavior
 	var navigation := crawler.get_node("Navigation") as CreatureNavigation
+	var perception := crawler.get_node("Perception") as CreaturePerception
+	# Mutated in place rather than reassigned: CreaturePerception._set_config hands the SAME
+	# PerceptionConfig to hearing, vision, touch and geometry, so they are all already holding
+	# this object. The prefab authors it as a SubResource, which every instantiation gets its
+	# own copy of, so this cannot leak into a second creature.
+	perception.config.hearing_max_range = CREATURE_HEARING_RANGE_M
 
 	_director = EncounterDirector.new()
 	_director.name = "EncounterDirector"
@@ -138,6 +168,10 @@ func _start_creature() -> void:
 	await get_tree().physics_frame
 	source.bake(_bake_region(seeds))
 	await source.graph_baked
+	# Two physics frames and a bake have passed since this started; the level can have been
+	# torn down under it in that time, and everything below adds children.
+	if not is_inside_tree() or _returning_to_menu:
+		return
 
 	navigation.source = source
 	behavior.director = _director
@@ -161,8 +195,197 @@ func _start_creature() -> void:
 
 	var relay := PlayerNoiseRelay.new()
 	relay.name = "PlayerNoiseRelay"
-	relay.perception = crawler.get_node("Perception") as CreaturePerception
+	relay.perception = perception
 	add_child(relay)
+
+	_build_creature_debug(crawler, behavior, navigation, perception)
+
+
+## Every debug readout the level can supply, built once and toggled by DebugMode (F3).
+##
+## Built here rather than authored into the scene because all of it needs the creature or the
+## Director, and neither exists until the bake above has finished. It runs last for two
+## reasons: `add_child(crawler)` is what makes `navigation.graph` non-null, so the graph
+## overlay has something to catch up on, and `_director.register` is what files the track the
+## Director panel reads.
+##
+## SOLO ONLY, like the creature itself -- `_start_creature` is called from
+## `_spawn_solo_player` and nowhere else, so in an online session there is no alien and F3
+## does nothing here.
+func _build_creature_debug(
+	crawler: CrawlerBody,
+	behavior: CreatureBehavior,
+	navigation: CreatureNavigation,
+	perception: CreaturePerception
+) -> void:
+	_graph_overlay = NavigationDebugDraw.new()
+	_graph_overlay.name = "NavigationDebugDraw"
+	# Assigned BEFORE add_child: the overlay connects `graph_baked` in its own `_ready()` and
+	# catches up on the bake that already happened only if it has a navigator by then.
+	_graph_overlay.navigation = navigation
+	# One line per edge for a whole asteroid. `_apply_debug_mode` owns this from here, so
+	# nothing is uploaded until the first F3.
+	_graph_overlay.draw_graph = false
+	add_child(_graph_overlay)
+
+	_locomotion_overlay = NavigationLocomotionDraw.new()
+	_locomotion_overlay.name = "NavigationLocomotionDraw"
+	_locomotion_overlay.navigation = navigation
+	add_child(_locomotion_overlay)
+
+	_trail_overlay = CreatureTrailDraw.new()
+	_trail_overlay.name = "CreatureTrailDraw"
+	_trail_overlay.body = crawler
+	_trail_overlay.navigation = navigation
+	_trail_overlay.marker = crawler.get_node("Marker") as Node3D
+	# BehaviorConfig's arrival radius, pushed in because the navigation module does not name
+	# the behaviour module.
+	_trail_overlay.goal_radius = behavior.config.arrive_distance
+	add_child(_trail_overlay)
+
+	# What the alien BELIEVES, as opposed to what it just sensed: hotspot spheres warming from
+	# blue to red, the evidence records under them, and the white spike over the place Behavior
+	# is about to be sent. This is the overlay that shows a held mining beam becoming a lead.
+	_suspicion_overlay = SuspicionDebugDraw.new()
+	_suspicion_overlay.name = "SuspicionDebugDraw"
+	_suspicion_overlay.suspicion = crawler.get_node("Suspicion") as CreatureSuspicion
+	add_child(_suspicion_overlay)
+
+	# The other half of the pair, and the two answer different questions. This one draws the
+	# vision cone and the evidence the creature DID observe; it does not consume
+	# `noise_evaluated` at all, so "the alien never heard me" is only legible on the panel
+	# below. Exports assigned before add_child, because it connects in its own _ready().
+	_perception_overlay = PerceptionDebugDraw.new()
+	_perception_overlay.name = "PerceptionDebugDraw"
+	_perception_overlay.perception = perception
+	add_child(_perception_overlay)
+
+	# The only per-placement wiring in the rig: the readout lives in the prefab and the trail
+	# is level-space, so nothing in the scene could have connected them.
+	var readout := crawler.get_node("DebugReadout") as CreatureDebugReadout
+	readout.trail = _trail_overlay
+
+	var layer := CanvasLayer.new()
+	layer.name = "DebugOverlay"
+	# Above the HUD, which sets no `layer` and is therefore on the default 1. Below the pause
+	# menu's 20 and the loading screen's 25 -- a readout over the pause menu cannot be dismissed.
+	layer.layer = 10
+	add_child(layer)
+	_build_creature_debug_panels(layer, behavior, navigation, perception)
+
+	DebugMode.changed.connect(_apply_debug_mode)
+	# Built long after the autoload settled on a value, so the first sync is explicit.
+	_apply_debug_mode(DebugMode.enabled)
+
+
+## One column bottom-left, which is the only corner the HUD does not already use.
+##
+## A VBoxContainer because the three panels are not the same base type -- NavigationDebugPanel
+## extends Label where the other two extend PanelContainer -- and a box container sizes all
+## three off their own minimums instead of anchoring each one by hand.
+func _build_creature_debug_panels(
+	layer: CanvasLayer,
+	behavior: CreatureBehavior,
+	navigation: CreatureNavigation,
+	perception: CreaturePerception
+) -> void:
+	_debug_panels = VBoxContainer.new()
+	_debug_panels.name = "DebugPanels"
+	# Anchors, growth and position assigned before add_child, the same order every panel in
+	# encounter_sandbox.gd uses.
+	_debug_panels.anchor_top = 1.0
+	_debug_panels.anchor_bottom = 1.0
+	_debug_panels.grow_vertical = Control.GROW_DIRECTION_BEGIN
+	_debug_panels.position = Vector2(12.0, -12.0)
+	_debug_panels.add_theme_constant_override("separation", 6)
+	layer.add_child(_debug_panels)
+
+	# Every @export assigned BEFORE add_child, all three: these panels connect their signals
+	# in their own _ready(), and one wired afterwards renders every line except its log.
+	_director_panel = DirectorDebugPanel.new()
+	_director_panel.director = _director
+	# The key the Director filed the track under. `_start_creature` registers `behavior`, not
+	# the CrawlerBody, and `track_for` looks up by instance id -- pass the body here and the
+	# panel reads "no creature registered" for the whole session.
+	_director_panel.creature = behavior
+	_director_panel.behavior = behavior
+	_debug_panels.add_child(_director_panel)
+
+	_behavior_panel = BehaviorDebugPanel.new()
+	_behavior_panel.behavior = behavior
+	_debug_panels.add_child(_behavior_panel)
+
+	# The one readout that fires for a noise the creature FAILED to hear, printing NOT HEARD
+	# rather than nothing at all. That is the difference between "the mining beam never reached
+	# it" and "it heard the beam and did not care", and no overlay can show it -- Perception is
+	# forbidden to remember, so `noise_evaluated` is the only place the miss exists.
+	_perception_panel = PerceptionDebugPanel.new()
+	_perception_panel.perception = perception
+	_perception_panel.debug_draw = _perception_overlay
+	_debug_panels.add_child(_perception_panel)
+
+	# The odd one out gets a frame: NavigationDebugPanel is a bare Label, and a bare Label
+	# over a lit cave wall is unreadable. One node here, against editing a script three
+	# modules away.
+	var nav_frame := PanelContainer.new()
+	nav_frame.name = "NavigationFrame"
+	_debug_panels.add_child(nav_frame)
+	_navigation_panel = NavigationDebugPanel.new()
+	_navigation_panel.navigation = navigation
+	nav_frame.add_child(_navigation_panel)
+
+	_make_click_through(_debug_panels)
+
+
+## Show AND stop.
+##
+## Hiding a node does not stop its `_process`, and only DirectorDebugPanel checks `visible`
+## before working: NavigationDebugPanel rebuilds its string every frame and BehaviorDebugPanel
+## allocates a fresh EncounterReport every frame, while all three overlays redraw an
+## ImmediateMesh unconditionally. Stopping them here is what lets the rig cost nothing when it
+## is off without editing a single script under gameplay/*/debug/.
+func _apply_debug_mode(enabled: bool) -> void:
+	if _debug_panels == null:
+		return
+	_debug_panels.visible = enabled
+	for node: Node3D in [
+		_graph_overlay,
+		_locomotion_overlay,
+		_trail_overlay,
+		_suspicion_overlay,
+		_perception_overlay,
+	]:
+		node.visible = enabled
+	# The static half of the graph overlay is rebuilt on demand rather than held: it is one
+	# line per edge for the whole asteroid. This pair is what refresh_graph() exists for, and
+	# it costs a visible hitch on the frame F3 is pressed.
+	_graph_overlay.draw_graph = enabled
+	_graph_overlay.refresh_graph()
+	if enabled:
+		_trail_overlay.clear_trail()
+	for node: Node in [
+		_graph_overlay,
+		_locomotion_overlay,
+		_trail_overlay,
+		_suspicion_overlay,
+		_perception_overlay,
+		_director_panel,
+		_behavior_panel,
+		_navigation_panel,
+		_perception_panel,
+	]:
+		node.set_process(enabled)
+
+
+## The overlay must never eat a click. Container defaults to MOUSE_FILTER_PASS and Label to
+## IGNORE, but the RichTextLabel both PanelContainer panels build in their own _ready() stops
+## events -- and the left mouse button is `mine`.
+static func _make_click_through(node: Node) -> void:
+	var control := node as Control
+	if control != null:
+		control.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	for child: Node in node.get_children():
+		_make_click_through(child)
 
 
 ## The mine's own markers, minus the ones the creature cannot get to.

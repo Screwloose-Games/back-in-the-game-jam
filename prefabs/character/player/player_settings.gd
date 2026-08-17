@@ -305,8 +305,17 @@ const CAMERA_FOV_NECK_SEAM_LIMIT := 72.0
 ## How loud full thrust is. There is no silent way to travel.
 @export_range(0.0, 20.0, 0.5) var thrust_noise_strength: float = 6.0
 
-## How loud mining is. The loudest thing the player does on purpose.
+## How loud mining is. The loudest thing the player does on purpose. This is the
+## strength at the point the beam LANDS -- the cut is what makes the noise.
 @export_range(0.0, 20.0, 0.5) var mining_noise_strength: float = 10.0
+
+## How loud the gun itself is, as a fraction of the rock face it is cutting.
+##
+## Mining reaches the creature as two noises from two places, and this is the split.
+## PlayerBeamNoiseEmitter reports the full strength out at the beam endpoint;
+## PlayerNoiseEmitter reports this fraction of it at the player's body. Aim across a
+## chamber and the alien walks to the wall you were cutting, not to where you stood.
+@export_range(0.0, 1.0, 0.05) var mining_muzzle_noise_fraction: float = 0.5
 
 ## How loud the hardest impact is.
 @export_range(0.0, 20.0, 0.5) var impact_noise_strength: float = 4.0

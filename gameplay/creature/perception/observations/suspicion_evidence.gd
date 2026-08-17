@@ -6,18 +6,13 @@ extends RefCounted
 ##
 ## Perception supplies the observation. SUSPICION DECIDES WHAT IT MEANS -- how long
 ## it persists, how much it contributes, whether it is worth investigating. Nothing
-## here is a conclusion, which is why there is no `is_player`, no `threat_level` and
-## no `should_investigate`.
+## here is a conclusion.
 ##
-## `strength` and `confidence` are different axes and mixing them is the easy
-## mistake. A loud noise through a wall is HIGH strength and LOW confidence; a
-## glimpse of a player at the edge of the vision cone is low strength and high
+## `strength` and `confidence` are different axes.
+## A loud noise through a wall is HIGH strength and LOW confidence.
+## A glimpse of a player at the edge of the vision cone is low strength and high
 ## confidence. Suspicion needs both to tell "something big happened somewhere over
 ## there" apart from "I definitely saw a small thing".
-##
-## This name is shared with the Suspicion module by design -- Godot's global class
-## table is flat, so Suspicion's internal decaying record must be a different type
-## (SuspicionEvidenceRecord). See the module README.
 
 enum Sense { HEARING, VISION, TOUCH }
 

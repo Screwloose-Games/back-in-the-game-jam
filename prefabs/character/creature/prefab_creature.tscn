@@ -1,4 +1,4 @@
-[gd_scene load_steps=18 format=3 uid="uid://bxdrx2sw2huv3"]
+[gd_scene format=3 uid="uid://bxdrx2sw2huv3"]
 
 [ext_resource type="Script" uid="uid://jnwuf8blhso8" path="res://prefabs/character/creature/crawler_body.gd" id="1_body"]
 [ext_resource type="Script" uid="uid://bplrnxntp535n" path="res://prototypes/tentacle_crawler/components/rig/crawler_rig.gd" id="2_rig"]
@@ -18,6 +18,7 @@
 [ext_resource type="Script" uid="uid://c1ek3w2c24rwt" path="res://gameplay/creature/behavior/creature_behavior.gd" id="16_behavior"]
 [ext_resource type="Script" uid="uid://ba1k2tg60qcx5" path="res://gameplay/creature/behavior/behavior_config.gd" id="17_behavior_config"]
 [ext_resource type="Script" uid="uid://kbo8x76p7o8g" path="res://prefabs/character/creature/creature_agent.gd" id="18_agent"]
+[ext_resource type="Script" uid="uid://cpsoqaj3ya3uf" path="res://prefabs/character/creature/creature_debug_readout.gd" id="19_debug_readout"]
 
 [sub_resource type="Resource" id="Resource_perception_config"]
 script = ExtResource("8_perception_config")
@@ -131,3 +132,56 @@ navigation = NodePath("../Navigation")
 perception = NodePath("../Perception")
 suspicion = NodePath("../Suspicion")
 behavior = NodePath("../Behavior")
+
+[node name="DebugReadout" type="Node3D" parent="." unique_id=111561494 node_paths=PackedStringArray("body", "behavior", "navigation", "state_label", "action_label", "nav_label")]
+unique_name_in_owner = true
+script = ExtResource("19_debug_readout")
+body = NodePath("..")
+behavior = NodePath("../Behavior")
+navigation = NodePath("../Navigation")
+state_label = NodePath("StateLabel")
+action_label = NodePath("ActionLabel")
+nav_label = NodePath("NavLabel")
+
+[node name="StateLabel" type="Label3D" parent="DebugReadout" unique_id=1408558474]
+pixel_size = 0.0015
+billboard = 1
+no_depth_test = true
+fixed_size = true
+render_priority = 4
+outline_render_priority = 3
+modulate = Color(0.6, 0.66, 0.72, 1)
+outline_modulate = Color(0, 0, 0, 0.85)
+text = "state"
+font_size = 44
+outline_size = 14
+vertical_alignment = 0
+
+[node name="ActionLabel" type="Label3D" parent="DebugReadout" unique_id=985534153]
+pixel_size = 0.0015
+offset = Vector2(0, 130)
+billboard = 1
+no_depth_test = true
+fixed_size = true
+render_priority = 4
+outline_render_priority = 3
+modulate = Color(0.72, 0.94, 1, 1)
+outline_modulate = Color(0, 0, 0, 0.85)
+text = "action"
+font_size = 36
+vertical_alignment = 0
+
+[node name="NavLabel" type="Label3D" parent="DebugReadout" unique_id=1777691593]
+pixel_size = 0.0015
+offset = Vector2(0, 250)
+billboard = 1
+no_depth_test = true
+fixed_size = true
+render_priority = 4
+outline_render_priority = 3
+modulate = Color(0.82, 0.84, 0.88, 1)
+outline_modulate = Color(0, 0, 0, 0.85)
+text = "nav"
+font_size = 28
+outline_size = 10
+vertical_alignment = 0

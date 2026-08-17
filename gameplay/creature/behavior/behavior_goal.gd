@@ -26,6 +26,19 @@ extends RefCounted
 
 var navigation: CreatureNavigation = null
 var config: BehaviorConfig = null
+## How many times the goal was commanded, and how many of those were a change of holder.
+##
+## NOT DERIVABLE FROM OUTSIDE, which is the only reason a debug counter lives in gameplay
+## code. A BtSequence can tick two actions in one frame and a selector can fall through from
+## one goal-setting leaf to another inside a single tick -- `BtChaseTarget` returns FAILURE
+## on arrival WITHOUT releasing (see its docstring), and whatever runs next requests the same
+## point in its own name. Both `request` calls land between any two samples an external
+## poller could take, and `holder()` shows only the last winner. `route_changed` undercounts
+## them too, because `set_goal` coalesces the pair into one replan.
+##
+## Never reset here. Whoever reads them owns the windowing.
+var commands: int = 0
+var owner_flips: int = 0
 
 var _owner: BtNode = null
 var _committed: Vector3 = Vector3.ZERO
@@ -44,6 +57,9 @@ func _init(p_navigation: CreatureNavigation = null, p_config: BehaviorConfig = n
 func request(owner: BtNode, at: Vector3) -> void:
 	if _has_goal and _owner == owner and _committed.distance_to(at) <= _refresh_distance():
 		return
+	if _has_goal and _owner != owner:
+		owner_flips += 1
+	commands += 1
 	_owner = owner
 	_committed = at
 	_has_goal = true

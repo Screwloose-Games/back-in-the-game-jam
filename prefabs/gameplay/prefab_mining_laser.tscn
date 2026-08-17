@@ -22,6 +22,13 @@ script = ExtResource("2_beam")
 
 [node name="sm_mining_laser" parent="." instance=ExtResource("1_51fe6")]
 
+[node name="MuzzleAudio" type="AudioStreamPlayer3D" parent="."]
+
+[node name="StingAudio" type="AudioStreamPlayer3D" parent="."]
+
+[node name="ImpactAudio" type="AudioStreamPlayer3D" parent="."]
+top_level = true
+
 [node name="Beam" type="Node3D" parent="."]
 visible = false
 

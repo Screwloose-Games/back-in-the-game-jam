@@ -113,6 +113,75 @@ func test_binding_the_same_emitter_twice_does_not_double_the_noise() -> void:
 	assert_eq(_heard.size(), 1, "one connection, however many times it was asked for")
 
 
+func test_two_emitters_are_both_heard_rather_than_clobbering_each_other() -> void:
+	# A player is not one noise source: the body reports thrust and the beam reports the cut
+	# at its far endpoint. A single latest-wins slot meant whichever announced last was the
+	# only one the creature ever heard.
+	var beam: _FakeEmitter = autofree(_FakeEmitter.new())
+	_relay.bind(beam)
+	_emitter.emit(5.0, Vector3(0.0, 0.0, 0.0), 1)
+	beam.emit(10.0, Vector3(6.0, 0.0, 0.0), 1)
+	_advance(TICK)
+
+	assert_eq(_heard.size(), 2, "one event per emitter")
+	var positions: Array = _heard.map(func(event: NoiseEvent) -> Vector3: return event.position)
+	assert_has(positions, Vector3.ZERO, "the gun")
+	assert_has(positions, Vector3(6.0, 0.0, 0.0), "and the rock it is cutting")
+
+
+func test_the_gun_arrives_at_half_the_loudness_of_the_cut() -> void:
+	# PlayerSettings ships mining_noise_strength 10.0 and mining_muzzle_noise_fraction 0.5, so
+	# the pair reaches the relay as 5.0 and 10.0 and leaves it as 0.5 and 1.0.
+	var beam: _FakeEmitter = autofree(_FakeEmitter.new())
+	_relay.bind(beam)
+	_emitter.emit(5.0, Vector3.ZERO, 1)
+	beam.emit(10.0, Vector3(6.0, 0.0, 0.0), 1)
+	_advance(TICK)
+
+	var by_position: Dictionary = {}
+	for event: NoiseEvent in _heard:
+		by_position[event.position] = event.loudness
+	assert_almost_eq(float(by_position[Vector3.ZERO]), 0.5, 0.001, "the gun")
+	assert_almost_eq(float(by_position[Vector3(6.0, 0.0, 0.0)]), 1.0, 0.001, "the cut")
+
+
+func test_one_emitter_going_quiet_does_not_silence_the_other() -> void:
+	var beam: _FakeEmitter = autofree(_FakeEmitter.new())
+	_relay.bind(beam)
+	_emitter.emit(5.0, Vector3.ZERO, 0)
+	beam.emit(10.0, Vector3(6.0, 0.0, 0.0), 1)
+	_advance(2.0)
+	beam.emit(0.0, Vector3(6.0, 0.0, 0.0), 1)
+	_heard = []
+	_advance(2.0)
+
+	assert_gt(_heard.size(), 0, "the body is still thrusting")
+	for event: NoiseEvent in _heard:
+		assert_eq(event.position, Vector3.ZERO, "and only the body")
+
+
+func test_each_emitter_keeps_its_own_interval() -> void:
+	# The up-throttle protects a ring capped at SuspicionConfig.max_evidence_count (64).
+	# Two emitters should double the trickle, not remove the limit.
+	var beam: _FakeEmitter = autofree(_FakeEmitter.new())
+	_relay.bind(beam)
+	_emitter.emit(5.0, Vector3.ZERO, 1)
+	beam.emit(10.0, Vector3(6.0, 0.0, 0.0), 1)
+	_advance(1.0)
+	assert_lt(_heard.size(), 10, "twice a second each, not sixty times each")
+
+
+func test_an_emitter_that_starts_late_is_heard_at_once() -> void:
+	_emitter.emit(5.0, Vector3.ZERO, 0)
+	_advance(1.0)
+	var heard: int = _heard.size()
+	var beam: _FakeEmitter = autofree(_FakeEmitter.new())
+	_relay.bind(beam)
+	beam.emit(10.0, Vector3(6.0, 0.0, 0.0), 1)
+	_advance(TICK)
+	assert_eq(_heard.size(), heard + 1, "its own silent-to-loud edge, not the other's interval")
+
+
 func test_the_relay_reads_a_wall_clock_from_nowhere() -> void:
 	# The delta it is handed is the only time, which is what lets this whole suite run without
 	# a tree and what keeps the relay honest under get_tree().paused and Engine.time_scale.

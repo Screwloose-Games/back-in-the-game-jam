@@ -35,7 +35,7 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -90.7799, -32.8231, 35.425)
 
 [node name="CreatureInitialSpawnMarker3D" type="Marker3D" parent="." unique_id=1509833471]
 unique_name_in_owner = true
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -67.3292, -36.5714, 33.2497)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -33.236115, -67.052055, 33.2497)
 
 [node name="Players" type="Node3D" parent="." unique_id=47916019]
 unique_name_in_owner = true

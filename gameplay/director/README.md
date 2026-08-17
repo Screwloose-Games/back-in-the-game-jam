@@ -11,13 +11,13 @@ Spec: [`documentation/design/alien/director.md`](../../documentation/design/alie
 ## The shape of it
 
 ```
-        EncounterDirector          level-scoped, one per level
-              │        ▲
-    directive │        │ report          one struct down, one struct up, once per tick
-              ▼        │
-         CreatureBehavior
-              │
-        HFSM + trees
+		EncounterDirector          level-scoped, one per level
+			  │        ▲
+	directive │        │ report          one struct down, one struct up, once per tick
+			  ▼        │
+		 CreatureBehavior
+			  │
+		HFSM + trees
 ```
 
 | File | What it is |

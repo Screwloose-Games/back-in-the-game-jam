@@ -1,10 +1,15 @@
 class_name PlayerNoiseEmitter
 extends Node
 
-## Publishes everything the player does that the creature can hear. It reports
-## the loudest current source rather than a sum, because the creature is steered
-## by the strongest thing it hears; `AlienPerception` is still a stub, so this
-## also puts itself in a group the perception layer can find it by.
+## Publishes everything the player does that the creature can hear AT THE PLAYER'S
+## BODY. It reports the loudest current source rather than a sum, because the
+## creature is steered by the strongest thing it hears, and it puts itself in a
+## group the perception layer finds it by.
+##
+## Mining is the one source that does not happen here: the cut is out at the end of
+## the beam, so PlayerBeamNoiseEmitter reports it at full strength from there and
+## this node keeps only `mining_muzzle_noise_fraction` of it for the gun in your
+## hands. Both are bound by PlayerNoiseRelay, which holds a channel per emitter.
 
 ## The loudest thing the player is currently doing, in noise units.
 signal noise_emitted(strength: float, at: Vector3, source: PlayerNoise.Source)
@@ -49,7 +54,13 @@ func _physics_process(delta: float) -> void:
 func authority_step(delta: float, thrust_fraction: float, mining_active: bool) -> void:
 	var safe_thrust := clampf(thrust_fraction, 0.0, 1.0) if is_finite(thrust_fraction) else 0.0
 	var thrust_noise := PlayerNoise.thrust_strength(safe_thrust, settings.thrust_noise_strength)
-	var mining_noise := settings.mining_noise_strength if mining_active else 0.0
+	# Only the quieter half. The cut happens at the far end of the beam and
+	# PlayerBeamNoiseEmitter reports that, at full strength, from out there.
+	var mining_noise := (
+		settings.mining_noise_strength * settings.mining_muzzle_noise_fraction
+		if mining_active
+		else 0.0
+	)
 
 	# An impact is an instant, so it decays rather than persisting like the
 	# other two, which are held for as long as the player holds the control.

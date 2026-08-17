@@ -344,7 +344,57 @@ func inspection_completed() -> void:
 	inspector.complete()
 
 
+## Everything a debug readout wants that it cannot compute for itself, in one dictionary
+## rather than a dozen accessors -- the trade `CrawlerBody.debug_state()` names in its own
+## docstring, and what keeps this facade under gdlint's public-method cap.
+##
+## THERE IS NO `goal_drift` KEY, AND THAT IS THE INTERESTING OMISSION.
+## `_planned_goal.distance_to(_goal)` looks like the perfect number for an alien that will
+## not settle, and it is dead: `set_goal` zeroes `_replan_countdown` and nulls the route, so
+## `advance` replans on the very next tick and `_planned_goal` is `_goal` again. It reads ~0
+## during exactly the replan storm it would exist to catch. `route.target_position` is the
+## same value by another name and is equally dead. How fast the BEHAVIOUR goal moves is the
+## live number, and only Behavior can measure that.
+func debug_state() -> Dictionary:
+	var usable: bool = follower != null and follower.has_route()
+	return {
+		"has_goal": _has_goal,
+		"goal": _goal,
+		"replan_in": _replan_countdown,
+		"clock": _clock,
+		"baking": is_baking(),
+		"bake_progress": bake_progress(),
+		"graph_nodes": graph.node_count() if graph != null else 0,
+		"route_status": route.status_name() if route != null else "none",
+		"anchor_index": follower.index if follower != null else 0,
+		"anchor_count": maxi(route.anchors.size() - 1, 0) if route != null else 0,
+		"anchor": follower.current_anchor() if usable else Vector3.ZERO,
+		"has_anchor": usable,
+		# INF rather than 0.0 with no route. RouteFollower returns 0.0, and 0.0 reads as
+		# "arrived" -- the trap CreatureBehavior._route_distance() documents at :283.
+		"distance_remaining": follower.distance_remaining(_body_position) if usable else INF,
+		"shortfall": _route_shortfall(),
+		"mode": NavLocomotion.mode_name(local_planner.mode()),
+		"stalled": command != null and command.is_stalled(),
+		"abort": NavMotionCommand.abort_name(command.abort) if command != null else "none",
+		"trips": progress.trips,
+		"moved": progress.moved,
+	}
+
+
 # ----- internals -----
+
+
+## How far short of its target a PARTIAL route stops. Zero for any other status.
+##
+## THE NUMBER FOR "THE ALIEN DOES NOT FIT". A route that ends 20 m short is not a routing
+## bug, it is a body that cannot enter the passage -- and with
+## `squeezed_radius_equivalent == normal_radius_equivalent` on a creature, squeezing buys
+## nothing and every sweep needs the full bore.
+func _route_shortfall() -> float:
+	if route == null or route.status != NavRoute.Status.PARTIAL or route.anchors.is_empty():
+		return 0.0
+	return route.anchors[route.anchors.size() - 1].distance_to(route.target_position)
 
 
 ## One tick of section 20, and the two section 31 triggers locomotion owns.

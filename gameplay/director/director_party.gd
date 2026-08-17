@@ -4,20 +4,7 @@ extends Node
 ## Where the players actually are. THE ONLY FILE IN THIS MODULE PERMITTED TO KNOW THAT.
 ##
 ## director.md's central asymmetry is that the Director "is the only system permitted to know
-## the truth, precisely because it is the only system forbidden from acting on the truth". An
-## invariant phrased that way is a promise until something can check it, so this module keeps
-## every truth-read in one file and lets the verifiers enforce the boundary from both sides:
-##
-##   verify_behavior_static.gd  names this file in WORLD_EXEMPT. Nothing ELSE under
-##                              gameplay/director may say global_position or
-##                              get_nodes_in_group at all.
-##   verify_director_static.gd  forbids this file from naming EncounterDirective,
-##                              EncounterTrack, menace, permit_hunt or escalation_bias.
-##
-## TRUTH GOES IN; A Vector3 AND AN Array[Node3D] COME OUT. Nothing here decides anything, and
-## nothing downstream can reach a player through it -- `anchor()` is a weighting term on a
-## list of nests the creature already knows, never a navigation destination and never a
-## position the alien is handed. That is the whole of what stops the Director being a cheat.
+## the truth.
 ##
 ## THE CENTROID, NOT THE NEAREST PLAYER. director.md says the bias "drifts the alien toward
 ## the party". Tracking the nearest player would make ambient drift follow one person closely

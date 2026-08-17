@@ -35,6 +35,7 @@
 [ext_resource type="AudioStream" uid="uid://cg8dlcqhycr3e" path="res://assets/sfx/ui/UI_HUD_Helmet_Failure.wav" id="33_helmet_failure"]
 [ext_resource type="AudioStream" uid="uid://b1hj1mhdsmqgd" path="res://assets/sfx/ui/UI_HUD_Helmet_Status_Downgrade.wav" id="34_status_downgrade"]
 [ext_resource type="Script" path="res://prefabs/character/player/components/player_thruster_sfx.gd" id="35_thrusters"]
+[ext_resource type="Script" uid="uid://b0vgniu6t0t7i" path="res://prefabs/character/player/components/player_beam_noise_emitter.gd" id="36_beam_noise"]
 
 [sub_resource type="SphereShape3D" id="SphereShape3D_hull"]
 radius = 0.4
@@ -242,6 +243,11 @@ script = ExtResource("21_riganim")
 [node name="NoiseEmitter" type="Node" parent="PlayerBody" unique_id=1844583049]
 unique_name_in_owner = true
 script = ExtResource("13_noise")
+settings = ExtResource("2_settings")
+
+[node name="BeamNoiseEmitter" type="Node" parent="PlayerBody"]
+unique_name_in_owner = true
+script = ExtResource("36_beam_noise")
 settings = ExtResource("2_settings")
 
 [node name="View" type="Node" parent="PlayerBody" unique_id=1122051187]
