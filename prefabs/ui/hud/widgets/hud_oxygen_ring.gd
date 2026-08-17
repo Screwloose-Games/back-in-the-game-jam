@@ -46,7 +46,7 @@ func _draw() -> void:
 		var alpha := clampf(lit - float(i), 0.0, 1.0) * alarm
 		if alpha <= 0.0:
 			continue
-		var from_angle := float((i + FIRST_DASH) % DASHES) * period
+		var from_angle := PI/9 + float((i + FIRST_DASH) % DASHES) * period
 		_draw_sector(centre, outer, inner, from_angle, from_angle + period, alpha)
 
 
