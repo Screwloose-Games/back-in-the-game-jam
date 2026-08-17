@@ -36,6 +36,28 @@ func scaled_rect(rect: Rect2) -> Rect2:
 	return Rect2(rect.position * factor, rect.size * factor)
 
 
+## Stroke in design space, for art the widget draws rather than blits.
+func draw_design_line(
+	design_from: Vector2, design_to: Vector2, width: float, modulate := Color.WHITE
+) -> void:
+	if width <= 0.0:
+		return
+	draw_line(scaled_vec(design_from), scaled_vec(design_to), modulate, scaled(width), true)
+
+
+## Closed stroke in design space, for outlines drawn rather than blitted.
+func draw_design_outline(
+	design_points: PackedVector2Array, width: float, modulate := Color.WHITE
+) -> void:
+	if width <= 0.0 or design_points.size() < 2:
+		return
+	var scaled_points := PackedVector2Array()
+	for point in design_points:
+		scaled_points.append(scaled_vec(point))
+	scaled_points.append(scaled_points[0])
+	draw_polyline(scaled_points, modulate, scaled(width), true)
+
+
 func draw_design_texture(
 	texture: Texture2D, design_centre: Vector2, modulate := Color.WHITE
 ) -> void:

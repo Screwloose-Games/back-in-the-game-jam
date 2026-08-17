@@ -23,7 +23,7 @@ Every component is named for the layer it came out of, so a conversation about
 | `TETHERED_METER` | `TetheredMeter` | `widgets/tethered_indicator.tscn` | `hud_tethered_meter.gd` |
 | `MINIMAP` | `Minimap` | `widgets/minimap.tscn` | `hud_minimap.gd` |
 | `STATUS` | `Status` | `widgets/status_face.tscn` | `hud_status.gd` |
-| `RETICLE` | `Reticle` | — | `hud_reticle.gd` |
+| `RETICLE` | `Reticle` | — | `hud_reticle.gd` / `hud_reticle_zoom.gd` |
 | `Screw_01` | drawn by `Border` | — | — |
 
 ## One widget, one scene
@@ -94,7 +94,7 @@ assets/art/ui/hud/
 ├── minimap/   ui_hud_minimap_background, _lines01..04, _reflection, ui_hud_enemy_dot
 ├── oxygen/    ui_hud_oxygen_ring, _border, _lines
 ├── power/     ui_hud_power_bg_02/03/04, ui_hud_power_lines, _lines_03
-├── reticle/   ui_hud_reticle_02/03/04
+├── reticle/   ui_hud_reticle_02/03
 └── status/    ui_hud_status_green, _yellow, _red
 ```
 
@@ -108,7 +108,7 @@ to cover strokes and glow, symmetrically, so a node stated at 333.75x270.85 arri
 as a 339x276 PNG. Anchoring by centre absorbs that; anchoring by corner would put
 every asset out by half its bleed.
 
-Two things are still drawn rather than blitted, and both for a reason:
+Three things are still drawn rather than blitted, and each for a reason:
 
 - **`BORDER`**, because Figma states it at 1836x1024 and the repo's art gate blocks
   any PNG over 1024 in either dimension. Which is the right answer anyway: the
@@ -116,6 +116,8 @@ Two things are still drawn rather than blitted, and both for a reason:
   `stretch/aspect="expand"` hands the game a canvas wider than 1280x720 on anything
   that is not 16:9.
 - **`TETHERED_METER`**, because its content changes every metre.
+- **HUD 04's `RETICLE`**, because its five parts move independently — see
+  [The reticle's zoom](#the-reticles-zoom).
 
 ### Re-exporting
 
@@ -170,6 +172,18 @@ Every ring eases on one curve and peaks at exactly 0.8 of its own life, so a sin
 easing function and a single normalised shape drive all four; the rings differ by a
 start delay and nothing else. That curve is not in Godot's `TRANS_*` set, hence the
 Newton solve in `sonar_ease()` — four iterations, which reaches float precision.
+
+## The reticle's zoom
+
+HUD 04's reticle compresses — bars and diagonals slide inward, the centre triangle
+shrinks — so its five parts have to move independently, and a PNG is one part.
+`hud_reticle_zoom.gd` therefore strokes that reticle instead of blitting one, which
+is why the reticle is two scripts for the same reason oxygen is two scenes: it is two
+drawings. `hud_reticle.gd` still blits, and still serves HUD 02's arcs and HUD 03's
+square, neither of which the mockup animates.
+
+`zoom` is a pose, not an animation: 0 compressed, 1 at rest, lerped linearly with no
+`_process` and no easing, so whatever drives it owns the timing.
 
 ## How a widget binds
 
