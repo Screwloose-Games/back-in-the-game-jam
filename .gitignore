@@ -32,5 +32,8 @@ movies/
 __pycache__/
 *.pyc
 
+# Downloaded tooling (butler, coi-serviceworker) fetched by tools/publish-itch.py
+tools/.cache/
+
 # tj-actions/changed-files write_output_files target (CI runtime)
 .github/outputs/
