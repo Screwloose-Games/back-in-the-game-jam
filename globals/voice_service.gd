@@ -190,12 +190,13 @@ func debug_summary() -> String:
 	if _capture != null and _capture.has_method("last_peak"):
 		peak = float(_capture.call("last_peak"))
 	return (
-		"capture=%s live=%s peak=%.4f frames=%d | channel=%s sent=%d errors=%d | recv=%d unclaimed=%d speakers=%s"
+		"capture=%s live=%s peak=%.4f frames=%d rate=%s | channel=%s sent=%d errors=%d | recv=%d unclaimed=%d speakers=%s"
 		% [
 			capture_name,
 			_microphone_live,
 			peak,
 			_frames_captured,
+			_rate_summary(),
 			_channel_open,
 			_packets_sent,
 			_send_errors,
@@ -203,6 +204,16 @@ func debug_summary() -> String:
 			_packets_unclaimed,
 			str(remote_peer_ids()),
 		]
+	)
+
+
+## Reported / measured / applied. The first two disagreeing is a browser lying
+## about its capture rate, which pitch-shifts everything this player says.
+func _rate_summary() -> String:
+	if _capture == null:
+		return "none"
+	return (
+		"%d/%.0f/%d" % [_capture.reported_rate(), _capture.observed_rate(), _capture.source_rate()]
 	)
 
 

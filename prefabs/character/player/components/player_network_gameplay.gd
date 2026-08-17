@@ -38,6 +38,12 @@ const AUTHORITY_COMPONENTS: Array[StringName] = [
 @export var gameplay_oxygen_fraction := 1.0
 @export var gameplay_action_ack := 0
 @export var gameplay_state_sequence := 0
+## Presentation only, for a replica's thruster audio. A remote copy's Input is
+## disabled, so without these nobody but the host hears anyone else fly. The
+## whole vector rather than its length, because the eight thrusters are separate
+## emitters and a scalar cannot say which of them is lit.
+@export var gameplay_thrust := Vector3.ZERO
+@export var gameplay_roll := 0.0
 
 var _controlled_peer_id := HOST_PEER_ID
 var _is_authority_instance := true
@@ -53,6 +59,8 @@ var _last_mining_send_usec := 0
 var _last_received_mining_sequence := 0
 var _last_mining_intent_usec := 0
 var _remote_mining_held := false
+var _last_thrust := Vector3.ZERO
+var _last_roll := 0.0
 
 var _body: CharacterBody3D
 var _input: PlayerInput
@@ -65,6 +73,8 @@ var _lamp: PlayerLamp
 var _mining_tool: PlayerMiningTool
 var _noise: PlayerNoiseEmitter
 var _respawn: PlayerRespawn
+var _life: PlayerLife
+var _thrusters: PlayerThrusterSfx
 var _gameplay_sync: MultiplayerSynchronizer
 
 
@@ -88,6 +98,8 @@ func configure(controlled_peer_id: int, local_peer_id: int) -> void:
 	_mining_tool = _body.get_node("MiningTool") as PlayerMiningTool
 	_noise = _body.get_node("NoiseEmitter") as PlayerNoiseEmitter
 	_respawn = _body.get_node("Respawn") as PlayerRespawn
+	_life = _body.get_node("Life") as PlayerLife
+	_thrusters = _body.get_node("Thrusters") as PlayerThrusterSfx
 
 	_input.gameplay_actions_enabled = _is_local_controller
 	_grab.externally_driven = true
@@ -100,6 +112,13 @@ func configure(controlled_peer_id: int, local_peer_id: int) -> void:
 	_mining_tool.externally_driven = true
 	_noise.externally_driven = true
 	_respawn.externally_driven = true
+	# Dying teleports a body, which online has to go through the prediction reset
+	# PlayerNetworkGameplay already owns. Until that exists, nobody dies online.
+	_life.externally_driven = true
+	# Audio is presentation and runs on every copy; only where it reads its
+	# controls from changes. Deliberately not in AUTHORITY_COMPONENTS for the
+	# same reason.
+	_thrusters.externally_driven = not _is_local_controller
 	for component_name in DISABLED_ONLINE_COMPONENTS:
 		var component := _body.get_node_or_null(NodePath(component_name))
 		if component != null:
@@ -135,11 +154,21 @@ func _ready() -> void:
 
 
 ## Called once per movement-driver tick after accepted thrust has been simulated.
-func physics_step(delta: float, authoritative_thrust_fraction: float) -> void:
+func physics_step(
+	delta: float,
+	authoritative_thrust_fraction: float,
+	authoritative_thrust: Vector3,
+	authoritative_roll: float,
+) -> void:
 	if not _configured:
 		return
 	if _is_authority_instance:
-		_step_authoritative_gameplay(delta, authoritative_thrust_fraction)
+		_step_authoritative_gameplay(
+			delta,
+			authoritative_thrust_fraction,
+			authoritative_thrust,
+			authoritative_roll,
+		)
 	elif _is_local_controller:
 		_step_local_gameplay()
 
@@ -151,7 +180,15 @@ func _step_local_gameplay() -> void:
 	_send_mining_intent()
 
 
-func _step_authoritative_gameplay(delta: float, thrust_fraction: float) -> void:
+func _step_authoritative_gameplay(
+	delta: float, thrust_fraction: float, thrust: Vector3, roll: float
+) -> void:
+	_last_thrust = thrust
+	_last_roll = roll
+	# The host's copy of a remote player has no live Input either, so it needs the
+	# accepted command pushed at it exactly as a client's replica does.
+	if not _is_local_controller:
+		_thrusters.apply_network_controls(thrust, roll)
 	# Match the solo player's physics phase followed by process/node order so a
 	# nearly empty battery gives each system the same priority online and off.
 	_mining_tool.authority_step(delta, _authoritative_mining_held())
@@ -180,6 +217,8 @@ func _publish_gameplay_state() -> void:
 	gameplay_mining_endpoint = _mining_tool.beam_endpoint()
 	gameplay_power_fraction = _power.fraction()
 	gameplay_oxygen_fraction = _oxygen.fraction()
+	gameplay_thrust = _last_thrust
+	gameplay_roll = _last_roll
 	gameplay_state_sequence += 1
 
 
@@ -211,6 +250,9 @@ func _apply_gameplay_presentation() -> void:
 				gameplay_mining_endpoint,
 			)
 		)
+		# Your own thrusters stay on %Input: routing a sound you just caused
+		# through the host would delay it by a round trip.
+		_thrusters.apply_network_controls(gameplay_thrust, gameplay_roll)
 
 
 func _on_gameplay_state_synchronized() -> void:

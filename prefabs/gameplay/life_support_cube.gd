@@ -57,6 +57,7 @@ var _announced_fraction := -1.0
 
 @onready var lamp: OmniLight3D = $ChargeLamp
 @onready var bar: BatteryBar = $BatteryBar
+@onready var grab_sfx: AudioStreamPlayer3D = $GrabSfx
 
 
 func _ready() -> void:
@@ -85,6 +86,12 @@ func has_charge() -> bool:
 
 func is_being_cranked() -> bool:
 	return _cranking
+
+
+## Called by whoever picked the box up. The sound lives here rather than on the
+## hands so it comes from the box, and so everyone nearby hears it.
+func play_grab_sfx() -> void:
+	grab_sfx.play(0.0)
 
 
 ## Takes up to `amount` out and returns what was actually there. PlayerPowerClient

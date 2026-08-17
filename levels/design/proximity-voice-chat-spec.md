@@ -423,7 +423,8 @@ This work moved in-engine when Option C was dropped. It is not optional.
    `AudioServer.set_input_device_active(true)` behind an explicit player action (§9).
 2. **Poll.** `AudioServer.get_input_frames_available()` then
    `AudioServer.get_input_frames(n)`. Frames arrive at `AudioServer.get_input_mix_rate()` —
-   the browser's `AudioContext` rate, typically 48 kHz. Do not hardcode it.
+   the browser's `AudioContext` rate, typically 48 kHz. Do not hardcode it, and do not
+   trust it either: see the note below.
 3. **Fold to mono.** `get_input_frames()` returns `PackedVector2Array`; take `.x` or the
    channel average.
 4. **Clamp to ±1.0.** Web input samples are *not* guaranteed to be in range (§14.4).
@@ -432,6 +433,33 @@ This work moved in-engine when Option C was dropped. It is not optional.
    200 k multiply-accumulates per second, which is not a budget concern even in GDScript.
    Handle non-48 kHz device rates by falling back to a generic resampler or refusing to run.
 6. **Accumulate** into fixed 320-sample frames.
+
+**The reported rate is a guess.** The rate in step 2 is where the stream *starts*, not
+what it is resampled from. Godot on
+web asks its `AudioContext` for a rate and then adopts whatever the browser returns —
+`_godot_audio_init` in the exported `index.js` takes the mix rate as an in/out pointer and
+overwrites it with `ctx.sampleRate`. Safari both ignores the requested rate and can switch
+again when `getUserMedia` opens, so the rate the engine latched at startup and the rate the
+microphone actually delivers at can diverge.
+
+Resampling by a ratio wrong by 48000/44100 pitch-shifts every frame up 8.8%, which the far
+side hears as that player sounding sped up, and starves their jitter buffer by the same
+8.8% (22.97 frames a second produced against 25 consumed).
+
+So `VoiceCapture` counts the samples that really arrive against the wall clock:
+
+- Discard the opening second — the device is settling, the backlog has just been dropped,
+  and the permission prompt may still be open.
+- Average over 4-second windows, discarding any window containing a poll gap over 500 ms,
+  which is a hitch or a backgrounded tab rather than a measurement.
+- Snap the result to the nearest standard rate within 2%, and require two consecutive
+  windows to agree before retuning.
+
+`VoiceResampler.retune()` re-aims mid-stream without resetting: the filter history and read
+position are both in source samples and the window length does not change, so there is no
+click at the seam. `VoiceConfig.adaptive_capture_rate` switches the whole thing off.
+`VoiceService.debug_summary()` prints `rate=reported/measured/applied`, which on web is the
+only place a player can read it from.
 
 Browser-side echo cancellation, noise suppression and AGC come along free: Chrome, Firefox
 and Safari all enable them by default for `getUserMedia({audio: true})`, which is what the
