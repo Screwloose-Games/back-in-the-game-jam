@@ -5,7 +5,7 @@ extends HudWidget
 ## Figma's RETICLE, in whichever of the mockups' shapes the variant uses.
 const DESIGN_WIDTH := 505.0
 
-@export var texture: Texture2D = HudArt.RETICLE_04
+@export var texture: Texture2D = null
 
 
 func design_extent() -> Vector2:

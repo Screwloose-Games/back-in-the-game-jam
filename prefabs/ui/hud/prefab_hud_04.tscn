@@ -7,8 +7,9 @@
 [ext_resource type="PackedScene" uid="uid://dlufiuvd6wy2g" path="res://prefabs/ui/hud/widgets/tethered_indicator.tscn" id="5_tether"]
 [ext_resource type="PackedScene" uid="uid://h72h7bocnvr8" path="res://prefabs/ui/hud/widgets/minimap.tscn" id="6_minimap"]
 [ext_resource type="PackedScene" uid="uid://c1njs3qylfuj3" path="res://prefabs/ui/hud/widgets/status_face.tscn" id="7_status"]
-[ext_resource type="Script" uid="uid://bouftremitjgu" path="res://prefabs/ui/hud/widgets/hud_reticle.gd" id="8_reticle"]
+[ext_resource type="Script" uid="uid://4n020b3ff8b1" path="res://prefabs/ui/hud/widgets/hud_reticle_zoom.gd" id="8_reticle"]
 [ext_resource type="Script" uid="uid://ck0bwvusmhvqk" path="res://prefabs/ui/hud/widgets/hud_voice_indicator.gd" id="9_voice"]
+[ext_resource type="Script" uid="uid://bgddxtoqosxtw" path="res://prefabs/ui/hud/widgets/hud_damage_overlay.gd" id="10_damage"]
 
 [node name="prefab_hud_04" type="CanvasLayer" unique_id=1820037453]
 script = ExtResource("1_root")
@@ -137,3 +138,13 @@ grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
 script = ExtResource("8_reticle")
+
+[node name="DamageOverlay" type="Control" parent="Chrome" unique_id=1103477612]
+texture_filter = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+script = ExtResource("10_damage")

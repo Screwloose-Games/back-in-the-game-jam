@@ -23,7 +23,8 @@ Every component is named for the layer it came out of, so a conversation about
 | `TETHERED_METER` | `TetheredMeter` | `widgets/tethered_indicator.tscn` | `hud_tethered_meter.gd` |
 | `MINIMAP` | `Minimap` | `widgets/minimap.tscn` | `hud_minimap.gd` |
 | `STATUS` | `Status` | `widgets/status_face.tscn` | `hud_status.gd` |
-| `RETICLE` | `Reticle` | — | `hud_reticle.gd` |
+| `RETICLE` | `Reticle` | — | `hud_reticle.gd` / `hud_reticle_zoom.gd` |
+| `Damage_Overlay` | `DamageOverlay` (HUD 04) | — | `hud_damage_overlay.gd` |
 | `Screw_01` | drawn by `Border` | — | — |
 
 ## One widget, one scene
@@ -94,7 +95,7 @@ assets/art/ui/hud/
 ├── minimap/   ui_hud_minimap_background, _lines01..04, _reflection, ui_hud_enemy_dot
 ├── oxygen/    ui_hud_oxygen_ring, _border, _lines
 ├── power/     ui_hud_power_bg_02/03/04, ui_hud_power_lines, _lines_03
-├── reticle/   ui_hud_reticle_02/03/04
+├── reticle/   ui_hud_reticle_02/03
 └── status/    ui_hud_status_green, _yellow, _red
 ```
 
@@ -108,7 +109,7 @@ to cover strokes and glow, symmetrically, so a node stated at 333.75x270.85 arri
 as a 339x276 PNG. Anchoring by centre absorbs that; anchoring by corner would put
 every asset out by half its bleed.
 
-Two things are still drawn rather than blitted, and both for a reason:
+Four things are still drawn rather than blitted, and each for a reason:
 
 - **`BORDER`**, because Figma states it at 1836x1024 and the repo's art gate blocks
   any PNG over 1024 in either dimension. Which is the right answer anyway: the
@@ -116,6 +117,9 @@ Two things are still drawn rather than blitted, and both for a reason:
   `stretch/aspect="expand"` hands the game a canvas wider than 1280x720 on anything
   that is not 16:9.
 - **`TETHERED_METER`**, because its content changes every metre.
+- **HUD 04's `RETICLE`**, because its five parts move independently.
+- **`Damage_Overlay`**, because it is a full-screen gradient, which is the most
+  expensive thing a PNG can be and the cheapest thing a polygon can be.
 
 ### Re-exporting
 
@@ -140,6 +144,36 @@ One thing to keep true in the Figma file: **the `HUDInterface_*` frames must hav
 background fill.** A frame fill is exported *into* every child asset, which is how
 22 assets first came back matted onto white.
 
+## The radar's ping
+
+`Minimap.ping()` runs one sweep and stops: four rings grow from the shared centre,
+each lagging the one inside it. `sonar_duration` is the whole sweep, first ring
+appearing to last one gone. Nothing repeats on its own.
+
+`SONAR_DELAY_FRACTIONS` and `SONAR_SPAN` are fractions of a ring's ramp rather than
+seconds, so `sonar_duration` stretches a sweep without flattening its stagger. Both
+are mockup-derived; rounding them still runs, just not to the mockup.
+
+## The reticle's zoom
+
+HUD 04's reticle is `hud_reticle_zoom.gd`, which strokes it so its five parts can move
+independently. HUD 02 and 03 keep `hud_reticle.gd`, which blits.
+
+`Reticle.zoom` is a pose, not an animation — 0 compressed, 1 at rest, lerped with no
+`_process` and no easing — so whatever sets it owns the timing.
+
+## The damage flash
+
+`DamageOverlay.flash()` bleeds red in from the four corners and fades it out, once.
+`flash_duration` is the whole flash.
+
+It is on HUD 04 only and binds to nothing yet: no `HudState` signal means "took a
+hit", and `status` is an oxygen and power derivation that would fire this on low air.
+Call it directly, or give it a signal first.
+
+Alpha peaks at 0.634, never 1.0 — that ceiling is the mockup's, not a value to round
+up.
+
 ## How a widget binds
 
 Widgets connect themselves; nothing above them knows their method names. This is
@@ -161,11 +195,15 @@ which variant it is.
 
 ## Four things that will bite
 
-**Nothing here runs `_process` except the oxygen ring's alarm and the demo driver.**
-Widgets redraw when the value they report changes, per the rule `power_bar.gd` sets
-out. Note that *defining* `_process` is what registers a node for processing — a
-`_process` that early-returns on its first line is still a per-frame script call, so
-gate it with `set_process()` instead, or do not define it.
+**Nothing here runs `_process` except the oxygen ring's alarm, the radar's ping, the
+damage flash and the demo driver.** Widgets redraw when the value they report changes,
+per the rule `power_bar.gd` sets out. Note that *defining* `_process` is what registers
+a node for processing — a `_process` that early-returns on its first line is still a
+per-frame script call, so gate it with `set_process()` instead, or do not define it.
+
+`ping()` and `flash()` are events rather than values, so each turns processing on and
+its `_process` turns it back off on the frame it ends. Idle costs nothing; keep any new
+one-shot to that pattern.
 
 **`_get_minimum_size()` is wrong for these widgets, however standard it looks.**
 `Control.set_size()` clamps to `get_combined_minimum_size()` whether or not the parent

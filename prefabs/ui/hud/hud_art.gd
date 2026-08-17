@@ -3,7 +3,6 @@ extends RefCounted
 
 const RETICLE_02 := preload("res://assets/art/ui/hud/reticle/ui_hud_reticle_02.png")
 const RETICLE_03 := preload("res://assets/art/ui/hud/reticle/ui_hud_reticle_03.png")
-const RETICLE_04 := preload("res://assets/art/ui/hud/reticle/ui_hud_reticle_04.png")
 
 ## HUD_UI Status Green/Yellow/Red, the three faces the designer drew. Indexed by
 ## HudState.Status, which is why that enum has exactly three values.
