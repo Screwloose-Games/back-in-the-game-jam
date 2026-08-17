@@ -140,6 +140,31 @@ One thing to keep true in the Figma file: **the `HUDInterface_*` frames must hav
 background fill.** A frame fill is exported *into* every child asset, which is how
 22 assets first came back matted onto white.
 
+## The radar's ping
+
+`MINIMAP`'s four ring layers are not static art. They ping: every ring grows from the
+shared centre, brightens, and vanishes at full size, each one lagging the ring inside
+it. `hud_minimap.gd` holds the timing, the way `hud_oxygen_ring.gd` holds its own
+`ALARM_*` — `hud_art.gd` stays what it is, a list of assets and where they sit.
+
+Two of those constants look like mistakes and are not:
+
+- **`SONAR_PERIOD` is 1.3038s.** Not 1.3, and not a fraction of some longer loop.
+  One ping is one period and it repeats continuously, with no stall between.
+- **`SONAR_DELAYS` is unevenly spaced.** The gaps are 0.124, 0.139 and 0.125s. It
+  holds four separate start times, not one spacing that drifted.
+
+Round either of them and the ping still runs, which is what makes them worth a note.
+
+The ping needs no new art and no new layout. The four PNGs already share one centre —
+`MINIMAP_RINGS_EXTENT` is the outermost ring's half-size, which is why blips land on
+the rings rather than near them. Only timing was added.
+
+Every ring eases on one curve and peaks at exactly 0.8 of its own life, so a single
+easing function and a single normalised shape drive all four; the rings differ by a
+start delay and nothing else. That curve is not in Godot's `TRANS_*` set, hence the
+Newton solve in `sonar_ease()` — four iterations, which reaches float precision.
+
 ## How a widget binds
 
 Widgets connect themselves; nothing above them knows their method names. This is
@@ -161,11 +186,16 @@ which variant it is.
 
 ## Four things that will bite
 
-**Nothing here runs `_process` except the oxygen ring's alarm and the demo driver.**
-Widgets redraw when the value they report changes, per the rule `power_bar.gd` sets
-out. Note that *defining* `_process` is what registers a node for processing — a
-`_process` that early-returns on its first line is still a per-frame script call, so
-gate it with `set_process()` instead, or do not define it.
+**Nothing here runs `_process` except the oxygen ring's alarm, the radar's sonar
+ping and the demo driver.** Widgets redraw when the value they report changes, per
+the rule `power_bar.gd` sets out. Note that *defining* `_process` is what registers a
+node for processing — a `_process` that early-returns on its first line is still a
+per-frame script call, so gate it with `set_process()` instead, or do not define it.
+
+The radar is the one widget that animates on nothing but the clock, so it is also the
+one that cannot be gated on a value changing. `sonar_enabled` drives `set_process()`
+from its setter and falls back to the four static rings, which is both the off switch
+and the way to measure what the ping costs.
 
 **`_get_minimum_size()` is wrong for these widgets, however standard it looks.**
 `Control.set_size()` clamps to `get_combined_minimum_size()` whether or not the parent

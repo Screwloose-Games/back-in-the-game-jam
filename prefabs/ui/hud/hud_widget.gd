@@ -46,6 +46,17 @@ func draw_design_texture(
 	draw_texture_rect(texture, Rect2(centre - extent * 0.5, extent), false, modulate)
 
 
+## Blit scaled about the design centre, for art that grows out of a point.
+func draw_design_texture_scaled(
+	texture: Texture2D, design_centre: Vector2, factor: float, modulate := Color.WHITE
+) -> void:
+	if texture == null or factor <= 0.0:
+		return
+	var extent := Vector2(texture.get_size()) * scale_factor() * factor
+	var centre := scaled_vec(design_centre)
+	draw_texture_rect(texture, Rect2(centre - extent * 0.5, extent), false, modulate)
+
+
 func draw_design_texture_reveal(
 	texture: Texture2D, design_centre: Vector2, fraction: float, modulate := Color.WHITE
 ) -> void:

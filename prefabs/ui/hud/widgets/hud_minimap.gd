@@ -2,6 +2,29 @@
 class_name HudMinimap
 extends HudWidget
 
+## The radar dish: Figma's MINIMAP, its four ring layers pinging outward, and the
+## contacts projected onto them - every ring grows from the shared centre,
+## brightens, and vanishes at full size.
+
+## Seconds for one ping, and the period the rings loop on. Measured, not chosen:
+## do not round it to 1.3.
+const SONAR_PERIOD := 1.3038
+
+## Seconds each ring waits, indexed inner to outer. The gaps are 0.124, 0.139 and
+## 0.125 - four separate start times, not one spacing, so do not even them out.
+const SONAR_DELAYS: PackedFloat32Array = [0.0, 0.1236, 0.2625, 0.3873]
+
+## Alpha at the top of the pulse, and where in a ring's own life that peak lands.
+## All four rings peak at the same 0.8, which is why one curve drives every one.
+const SONAR_PEAK_ALPHA := 0.935
+const SONAR_PEAK_AT := 0.8
+
+## Control points of the one curve every ring eases on, which is not a shape
+## Godot's TRANS_* set contains.
+const SONAR_EASE_X1 := 0.336
+const SONAR_EASE_X2 := 0.753
+const SONAR_EASE_STEPS := 4
+
 @export var radar_blips := PackedVector3Array():
 	set(value):
 		radar_blips = value
@@ -22,8 +45,16 @@ extends HudWidget
 		show_height_stalks = value
 		queue_redraw()
 
+## Off restores the four static rings this widget drew before the ping existed.
+@export var sonar_enabled := true:
+	set(value):
+		sonar_enabled = value
+		set_process(value)
+		queue_redraw()
+
 var _objective_shown := false
 var _objective_at := Vector2.ZERO
+var _elapsed := 0.0
 
 
 static func in_range(offset: Vector3, distance_limit: float) -> bool:
@@ -40,16 +71,63 @@ static func project(offset: Vector3, distance_limit: float, lift: float) -> Vect
 	return dish - Vector2(0.0, norm.y * lift)
 
 
+## Where a ring sits in its own 0..1 life at this moment.
+static func ring_phase(elapsed: float, ring: int) -> float:
+	return fposmod((elapsed - SONAR_DELAYS[ring]) / SONAR_PERIOD, 1.0)
+
+
+## Nothing at the centre, full size at the end of the ping.
+static func ring_scale(phase: float) -> float:
+	return sonar_ease(phase)
+
+
+## Up to the peak, then back out - the ring vanishes at full size, not at the rim.
+static func ring_alpha(phase: float) -> float:
+	if phase < SONAR_PEAK_AT:
+		return SONAR_PEAK_ALPHA * sonar_ease(phase / SONAR_PEAK_AT)
+	var fall := (phase - SONAR_PEAK_AT) / (1.0 - SONAR_PEAK_AT)
+	return SONAR_PEAK_ALPHA * (1.0 - sonar_ease(fall))
+
+
+## Newton-solved for t given x; y(t) reduces to smoothstep because the outer
+## control points are 0 and 1, so only the x mapping does anything.
+static func sonar_ease(x: float) -> float:
+	var target := clampf(x, 0.0, 1.0)
+	if target <= 0.0 or target >= 1.0:
+		return target
+	var cx := 3.0 * SONAR_EASE_X1
+	var bx := 3.0 * (SONAR_EASE_X2 - SONAR_EASE_X1) - cx
+	var ax := 1.0 - cx - bx
+	var t := target
+	for _step in SONAR_EASE_STEPS:
+		var slope := (3.0 * ax * t + 2.0 * bx) * t + cx
+		if absf(slope) < 0.00001:
+			break
+		t -= (((ax * t + bx) * t + cx) * t - target) / slope
+	t = clampf(t, 0.0, 1.0)
+	return t * t * (3.0 - 2.0 * t)
+
+
+func _ready() -> void:
+	super()
+	set_process(sonar_enabled)
+
+
+func _process(delta: float) -> void:
+	_elapsed = fposmod(_elapsed + delta, SONAR_PERIOD)
+	queue_redraw()
+
+
 func design_extent() -> Vector2:
 	return HudArt.MINIMAP_SIZE
 
 
 func _draw() -> void:
 	draw_design_texture(HudArt.MINIMAP_BACKGROUND, HudArt.MINIMAP_BACKGROUND_CENTRE)
-	draw_design_texture(HudArt.MINIMAP_LINES04, HudArt.MINIMAP_LINES04_CENTRE)
-	draw_design_texture(HudArt.MINIMAP_LINES03, HudArt.MINIMAP_LINES03_CENTRE)
-	draw_design_texture(HudArt.MINIMAP_LINES02, HudArt.MINIMAP_LINES02_CENTRE)
-	draw_design_texture(HudArt.MINIMAP_LINES01, HudArt.MINIMAP_LINES01_CENTRE)
+	_draw_ring(HudArt.MINIMAP_LINES04, HudArt.MINIMAP_LINES04_CENTRE, 3)
+	_draw_ring(HudArt.MINIMAP_LINES03, HudArt.MINIMAP_LINES03_CENTRE, 2)
+	_draw_ring(HudArt.MINIMAP_LINES02, HudArt.MINIMAP_LINES02_CENTRE, 1)
+	_draw_ring(HudArt.MINIMAP_LINES01, HudArt.MINIMAP_LINES01_CENTRE, 0)
 	draw_design_texture(HudArt.MINIMAP_REFLECTION, HudArt.MINIMAP_REFLECTION_CENTRE)
 
 	for offset in _visible_blips():
@@ -80,6 +158,17 @@ func _visible_blips() -> Array[Vector3]:
 			shown.append(offset)
 	shown.sort_custom(func(a: Vector3, b: Vector3) -> bool: return a.z < b.z)
 	return shown
+
+
+func _draw_ring(texture: Texture2D, centre: Vector2, ring: int) -> void:
+	if not sonar_enabled:
+		draw_design_texture(texture, centre)
+		return
+	var phase := ring_phase(_elapsed, ring)
+	var alpha := ring_alpha(phase)
+	if alpha <= 0.0:
+		return
+	draw_design_texture_scaled(texture, centre, ring_scale(phase), Color(1.0, 1.0, 1.0, alpha))
 
 
 func _draw_blip(offset: Vector3) -> void:
