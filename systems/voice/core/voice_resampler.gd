@@ -24,12 +24,18 @@ var _integer_ratio := false
 
 
 func _init(source_rate: int, target_rate: int) -> void:
-	_source_rate = maxi(source_rate, 1)
 	_target_rate = maxi(target_rate, 1)
-	_ratio = float(_source_rate) / float(_target_rate)
-	_integer_ratio = is_equal_approx(_ratio, roundf(_ratio))
-	_taps = _build_taps(minf(CUTOFF_FRACTION * _target_rate / _source_rate, CUTOFF_FRACTION))
+	_configure_rate(source_rate)
 	reset()
+
+
+## Re-aims at a corrected source rate without dropping the stream. Deliberately
+## does not reset: the filter history and the read position are both measured in
+## source samples and the window length is unchanged, so the seam does not click.
+func retune(source_rate: int) -> void:
+	if maxi(source_rate, 1) == _source_rate:
+		return
+	_configure_rate(source_rate)
 
 
 func source_rate() -> int:
@@ -75,6 +81,13 @@ func process(samples: PackedFloat32Array) -> PackedFloat32Array:
 	else:
 		_pending = buffer
 	return out
+
+
+func _configure_rate(source_rate: int) -> void:
+	_source_rate = maxi(source_rate, 1)
+	_ratio = float(_source_rate) / float(_target_rate)
+	_integer_ratio = is_equal_approx(_ratio, roundf(_ratio))
+	_taps = _build_taps(minf(CUTOFF_FRACTION * _target_rate / _source_rate, CUTOFF_FRACTION))
 
 
 func _filter_at(buffer: PackedFloat32Array, centre: int) -> float:

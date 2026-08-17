@@ -12,6 +12,7 @@ const Fixtures := preload("res://tests/voice_test_fixtures.gd")
 
 const SAMPLES_PER_FRAME := 320
 const TARGET := 3
+const MAX_DEPTH := 6
 
 
 func suite_name() -> String:
@@ -114,6 +115,38 @@ func test_persistent_underrun_grows_the_target_depth_within_its_cap() -> void:
 		buffer.pop()
 	assert_gt(buffer.target_frames(), TARGET, "a bad link should buy itself more cushion")
 	assert_true(buffer.target_frames() <= 6, "but not without limit")
+
+
+## A sender whose clock runs fast used to grow this queue without limit, adding
+## mouth-to-ear latency for as long as the call lasted.
+func test_a_sender_running_fast_is_capped_rather_than_queued_forever() -> void:
+	var buffer := _buffer()
+	for i in 20:
+		buffer.push(100 + i, _frame(0.5))
+	assert_eq(buffer.depth(), MAX_DEPTH, "the queue stops at its configured ceiling")
+	assert_eq(buffer.dropped_overflow(), 20 - MAX_DEPTH, "and the overflow is visible")
+
+
+func test_the_oldest_frame_is_the_one_evicted() -> void:
+	var buffer := _buffer()
+	for i in MAX_DEPTH:
+		buffer.push(100 + i, _frame(float(i) / 10.0))
+	buffer.push(100 + MAX_DEPTH, _frame(0.9))
+	assert_true(absf(buffer.pop()[0] - 0.1) < 1e-6, "sequence 100 went, so 101 plays first")
+	assert_true(absf(buffer.pop()[0] - 0.2) < 1e-6, "and the rest still play in order")
+
+
+func test_evicting_the_awaited_frame_does_not_count_as_an_underrun() -> void:
+	var buffer := _buffer()
+	_prime(buffer, 10)
+	buffer.pop()
+	# Contiguous, as a fast sender really arrives: no frame is lost, they simply
+	# turn up faster than playout consumes them.
+	for i in MAX_DEPTH + 1:
+		buffer.push(13 + i, _frame(0.5))
+	assert_eq(buffer.depth(), MAX_DEPTH, "capped")
+	assert_eq(buffer.pop().size(), SAMPLES_PER_FRAME, "playout skips to what is really there")
+	assert_eq(buffer.underruns(), 0, "a frame this end threw away is not a lost frame")
 
 
 func _buffer() -> VoiceJitterBuffer:

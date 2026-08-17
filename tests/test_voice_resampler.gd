@@ -49,6 +49,41 @@ func test_a_fractional_ratio_does_not_drift_over_a_second() -> void:
 	)
 
 
+## The Safari case: tuned to what the driver reported, corrected to what it really
+## delivers. Before the retune a second of input is 8.8% short of a second of output.
+func test_retuning_to_the_measured_rate_fixes_the_output_length() -> void:
+	var resampler := VoiceResampler.new(MIXER_RATE, CODEC_RATE)
+	var wrong := 0
+	for chunk in 100:
+		wrong += resampler.process(Fixtures.tone(441, 300.0, AWKWARD_RATE)).size()
+	assert_true(
+		absi(wrong - 7350) <= 5, "believing 48000 should make about 7350 samples, got %d" % wrong
+	)
+
+	resampler.retune(AWKWARD_RATE)
+	assert_eq(resampler.source_rate(), AWKWARD_RATE, "the new rate is the one in use")
+	var corrected := 0
+	for chunk in 100:
+		corrected += resampler.process(Fixtures.tone(441, 300.0, AWKWARD_RATE)).size()
+	assert_true(
+		absi(corrected - CODEC_RATE) <= 5,
+		"a second of 44100 should now make about 8000 samples, got %d" % corrected
+	)
+
+
+## Retuning mid-sentence must not drop or repeat the filter history, or it clicks.
+func test_a_retune_does_not_break_the_stream_at_the_seam() -> void:
+	var resampler := VoiceResampler.new(MIXER_RATE, CODEC_RATE)
+	resampler.process(Fixtures.constant(FRAME_INPUT * 2, 0.5))
+	resampler.retune(AWKWARD_RATE)
+	var across := resampler.process(Fixtures.constant(FRAME_INPUT, 0.5))
+	assert_gt(across.size(), 0, "the stream continues rather than restarting")
+	assert_true(
+		absf(Fixtures.peak(across) - 0.5) < 0.01,
+		"a steady 0.5 stays 0.5 across the seam, peak %.4f" % Fixtures.peak(across)
+	)
+
+
 func test_ragged_chunk_sizes_still_total_correctly() -> void:
 	var resampler := VoiceResampler.new(MIXER_RATE, CODEC_RATE)
 	var sizes := [17, 512, 3, 2048, 900, 1440]

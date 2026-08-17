@@ -14,11 +14,8 @@ const AVAILABLE_METHOD := "get_input_frames_available"
 const FRAMES_METHOD := "get_input_frames"
 const INPUT_RATE_METHOD := "get_input_mix_rate"
 
-var _resampler: VoiceResampler
-var _assembler: VoiceFrameAssembler
 var _reason := ""
 var _active := false
-var _source_rate := 0
 var _last_peak := 0.0
 
 
@@ -31,9 +28,7 @@ func start() -> Error:
 	if not AudioServer.has_method(AVAILABLE_METHOD) or not AudioServer.has_method(FRAMES_METHOD):
 		return _fail("This engine build cannot read the microphone input buffer.")
 
-	_source_rate = _resolve_source_rate()
-	_resampler = VoiceResampler.new(_source_rate, _config.sample_rate)
-	_assembler = VoiceFrameAssembler.new(_config.samples_per_frame())
+	_begin_stream(_resolve_source_rate())
 	_last_peak = 0.0
 	_discard_backlog()
 	_active = true
@@ -42,8 +37,7 @@ func start() -> Error:
 
 func stop() -> void:
 	_active = false
-	_resampler = null
-	_assembler = null
+	_end_stream()
 	_last_peak = 0.0
 
 
@@ -55,12 +49,9 @@ func unavailable_reason() -> String:
 	return _reason
 
 
-func source_rate() -> int:
-	return _source_rate
-
-
 ## Frames arrive at the input clock and are resampled from it, so unlike the bus
-## path there is no rate to disagree with.
+## path there is no second rate to disagree with. A driver that misreports that one
+## clock is caught by the measurement in _ingest(), not here.
 func has_rate_mismatch() -> bool:
 	return false
 
@@ -80,7 +71,7 @@ func poll() -> Array[PackedFloat32Array]:
 		return []
 	var mono := VoiceFrameAssembler.fold_to_mono(frames)
 	_last_peak = _peak_of(mono)
-	return _assembler.push(_resampler.process(mono))
+	return _ingest(mono)
 
 
 static func _peak_of(samples: PackedFloat32Array) -> float:

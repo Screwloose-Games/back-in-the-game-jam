@@ -12,6 +12,9 @@ const JITTER_MIN_SAMPLES := 128
 
 @export var sample_rate: int = 8000
 @export var frame_ms: int = 40
+## Resample from the rate capture is measured to deliver at rather than the one the
+## driver reports. Off restores the old behaviour of believing the driver.
+@export var adaptive_capture_rate: bool = true
 @export var vad_open_dbfs: float = -45.0
 @export var vad_hysteresis_db: float = 7.0
 @export var vad_hangover_ms: int = 200

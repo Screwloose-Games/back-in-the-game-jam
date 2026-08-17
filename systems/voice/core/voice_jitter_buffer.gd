@@ -22,6 +22,7 @@ var _concealed := 0
 var _underruns := 0
 var _dropped_late := 0
 var _dropped_duplicate := 0
+var _dropped_overflow := 0
 var _resets := 0
 
 
@@ -57,6 +58,10 @@ func dropped_duplicate() -> int:
 	return _dropped_duplicate
 
 
+func dropped_overflow() -> int:
+	return _dropped_overflow
+
+
 func resets() -> int:
 	return _resets
 
@@ -87,6 +92,7 @@ func push(sequence: int, samples: PackedFloat32Array) -> void:
 		_dropped_duplicate += 1
 		return
 	_frames[sequence] = samples
+	_evict_overflow()
 
 
 func pop() -> PackedFloat32Array:
@@ -114,6 +120,20 @@ func pop() -> PackedFloat32Array:
 		_last_frame = PackedFloat32Array()
 		return PackedFloat32Array()
 	return _conceal(_concealed)
+
+
+## Nothing else bounds this queue, so a sender whose clock runs fast grows it
+## forever and adds mouth-to-ear latency with it. Dropping the oldest is the usual
+## answer to clock skew: one 40 ms skip now and then rather than a permanent lag.
+func _evict_overflow() -> void:
+	while _frames.size() > _max_frames:
+		var oldest := _lowest_buffered_sequence()
+		_frames.erase(oldest)
+		_dropped_overflow += 1
+		# Playout would otherwise wait for a frame that is gone, conceal it, and
+		# grow its target for a loss that never happened.
+		if _started and oldest == _next_sequence:
+			_next_sequence = VoicePacket.next_sequence(_next_sequence)
 
 
 ## Replaying the last frame under a fade sounds markedly less harsh than a hole.

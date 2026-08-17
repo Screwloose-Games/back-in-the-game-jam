@@ -17,11 +17,8 @@ const ENABLE_INPUT_SETTING := "audio/driver/enable_input"
 
 var _bus_name := &"VoiceCapture"
 var _effect: AudioEffectCapture
-var _resampler: VoiceResampler
-var _assembler: VoiceFrameAssembler
 var _reason := ""
 var _active := false
-var _source_rate := 0
 
 
 func _init(config: VoiceConfig, bus_name := &"VoiceCapture") -> void:
@@ -47,9 +44,7 @@ func start() -> Error:
 	# otherwise put the microphone back on the speakers.
 	AudioServer.set_bus_mute(bus_index, true)
 
-	_source_rate = int(AudioServer.get_mix_rate())
-	_resampler = VoiceResampler.new(_source_rate, _config.sample_rate)
-	_assembler = VoiceFrameAssembler.new(_config.samples_per_frame())
+	_begin_stream(int(AudioServer.get_mix_rate()))
 	_effect.clear_buffer()
 	_active = true
 	return OK
@@ -58,8 +53,7 @@ func start() -> Error:
 func stop() -> void:
 	_active = false
 	_effect = null
-	_resampler = null
-	_assembler = null
+	_end_stream()
 
 
 func is_active() -> bool:
@@ -70,17 +64,13 @@ func unavailable_reason() -> String:
 	return _reason
 
 
-func source_rate() -> int:
-	return _source_rate
-
-
 ## True when the driver's input and output clocks disagree, which makes
 ## AudioStreamPlaybackMicrophone pitch-shift everything it captures.
 func has_rate_mismatch() -> bool:
 	if not AudioServer.has_method("get_input_mix_rate"):
 		return false
 	var input_rate := int(AudioServer.call("get_input_mix_rate"))
-	return input_rate > 0 and input_rate != _source_rate
+	return input_rate > 0 and input_rate != reported_rate()
 
 
 func poll() -> Array[PackedFloat32Array]:
@@ -89,8 +79,7 @@ func poll() -> Array[PackedFloat32Array]:
 	var available := _effect.get_frames_available()
 	if available <= 0:
 		return []
-	var mono := VoiceFrameAssembler.fold_to_mono(_effect.get_buffer(available))
-	return _assembler.push(_resampler.process(mono))
+	return _ingest(VoiceFrameAssembler.fold_to_mono(_effect.get_buffer(available)))
 
 
 func _find_capture_effect(bus_index: int) -> AudioEffectCapture:

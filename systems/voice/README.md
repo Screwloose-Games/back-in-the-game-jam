@@ -19,6 +19,7 @@ implement; section numbers in the comments refer to it.
 |---|---|---|
 | `data/voice_config.gd` | `VoiceConfig` | Every tunable in one resource, and the frame sizes derived from them. |
 | `core/voice_resampler.gd` | `VoiceResampler` | How to get from the mixer's rate to the codec's without aliasing the speech. |
+| `core/voice_rate_estimator.gd` | `VoiceRateEstimator` | What rate capture is *really* delivering at, when the driver's answer cannot be trusted. |
 | `core/voice_frame_assembler.gd` | `VoiceFrameAssembler` | Folding stereo capture to clamped mono, and cutting a ragged stream into fixed frames. |
 | `core/voice_activity_detector.gd` | `VoiceActivityDetector` | Whether this frame is speech, and how loud it is for the meter. |
 | `core/voice_adpcm.gd` | `VoiceAdpcm` | IMA ADPCM at four bits a sample, re-seeded so each frame decodes alone. |
@@ -40,6 +41,22 @@ frame's own opening deltas rather than reset to zero, so the step size does not
 have to climb out of silence 25 times a second. `VoiceConfig.code_count()` is
 therefore one less than `samples_per_frame()`.
 
+## The reported capture rate is a guess, never the truth
+
+`AudioServer.get_input_mix_rate()` is where a capture stream *starts*, not what it
+is resampled from. Godot on web asks its `AudioContext` for a rate and then adopts
+whatever the browser hands back — `_godot_audio_init` in the exported `index.js`
+takes the mix rate as an in/out pointer and overwrites it with `ctx.sampleRate` —
+and Safari both ignores the requested rate and can switch again when `getUserMedia`
+opens. Resampling by a ratio that is wrong by 48000/44100 pitch-shifts every frame
+up by 8.8%, which the far side hears as the speaker sounding sped up.
+
+So `VoiceCapture` counts the samples that really arrive against the wall clock,
+snaps the result to the nearest standard rate, and retunes the resampler when two
+windows agree that the driver is wrong. `VoiceConfig.adaptive_capture_rate` turns
+it off. The heartbeat in `globals/voice_service.gd` prints `rate=reported/measured/applied`,
+which on web is the only place a player can read it from.
+
 ## The capture base class is the null implementation
 
 There is no `@abstract` here, matching `systems/navigation/stubs/`. `VoiceCapture`
@@ -50,8 +67,9 @@ nothing downstream has to special-case a missing microphone.
 ## Tests
 
 `tests/test_voice_adpcm.gd`, `test_voice_packet.gd`, `test_voice_resampler.gd`,
-`test_voice_frame_assembler.gd`, `test_voice_activity_detector.gd`,
-`test_voice_jitter_buffer.gd`, `test_voice_buses.gd`.
+`test_voice_rate_estimator.gd`, `test_voice_frame_assembler.gd`,
+`test_voice_activity_detector.gd`, `test_voice_jitter_buffer.gd`,
+`test_voice_buses.gd`.
 
 ```
 D:\Godot_v4.7.1-stable_win64.exe --headless --path . res://tests/run_tests.tscn
