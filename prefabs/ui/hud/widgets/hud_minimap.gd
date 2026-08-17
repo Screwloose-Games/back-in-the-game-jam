@@ -22,7 +22,6 @@ const SONAR_PEAK_AT := 0.8
 ## Godot's TRANS_* set contains.
 const SONAR_EASE_X1 := 0.336
 const SONAR_EASE_X2 := 0.753
-const SONAR_EASE_STEPS := 4
 
 @export var radar_blips := PackedVector3Array():
 	set(value):
@@ -92,23 +91,8 @@ static func ring_alpha(phase: float) -> float:
 	return SONAR_PEAK_ALPHA * (1.0 - sonar_ease(fall))
 
 
-## Newton-solved for t given x; y(t) reduces to smoothstep because the outer
-## control points are 0 and 1, so only the x mapping does anything.
 static func sonar_ease(x: float) -> float:
-	var target := clampf(x, 0.0, 1.0)
-	if target <= 0.0 or target >= 1.0:
-		return target
-	var cx := 3.0 * SONAR_EASE_X1
-	var bx := 3.0 * (SONAR_EASE_X2 - SONAR_EASE_X1) - cx
-	var ax := 1.0 - cx - bx
-	var t := target
-	for _step in SONAR_EASE_STEPS:
-		var slope := (3.0 * ax * t + 2.0 * bx) * t + cx
-		if absf(slope) < 0.00001:
-			break
-		t -= (((ax * t + bx) * t + cx) * t - target) / slope
-	t = clampf(t, 0.0, 1.0)
-	return t * t * (3.0 - 2.0 * t)
+	return HudEase.cubic(x, SONAR_EASE_X1, SONAR_EASE_X2)
 
 
 func _ready() -> void:

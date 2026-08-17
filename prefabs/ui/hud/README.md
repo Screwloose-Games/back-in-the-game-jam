@@ -24,6 +24,7 @@ Every component is named for the layer it came out of, so a conversation about
 | `MINIMAP` | `Minimap` | `widgets/minimap.tscn` | `hud_minimap.gd` |
 | `STATUS` | `Status` | `widgets/status_face.tscn` | `hud_status.gd` |
 | `RETICLE` | `Reticle` | — | `hud_reticle.gd` / `hud_reticle_zoom.gd` |
+| `Damage_Overlay` | `DamageOverlay` (HUD 04) | — | `hud_damage_overlay.gd` |
 | `Screw_01` | drawn by `Border` | — | — |
 
 ## One widget, one scene
@@ -108,7 +109,7 @@ to cover strokes and glow, symmetrically, so a node stated at 333.75x270.85 arri
 as a 339x276 PNG. Anchoring by centre absorbs that; anchoring by corner would put
 every asset out by half its bleed.
 
-Three things are still drawn rather than blitted, and each for a reason:
+Four things are still drawn rather than blitted, and each for a reason:
 
 - **`BORDER`**, because Figma states it at 1836x1024 and the repo's art gate blocks
   any PNG over 1024 in either dimension. Which is the right answer anyway: the
@@ -118,6 +119,9 @@ Three things are still drawn rather than blitted, and each for a reason:
 - **`TETHERED_METER`**, because its content changes every metre.
 - **HUD 04's `RETICLE`**, because its five parts move independently — see
   [The reticle's zoom](#the-reticles-zoom).
+- **`Damage_Overlay`**, because it is a gradient over the whole screen, which is the
+  most expensive thing a PNG can be and the cheapest thing a polygon can be — see
+  [The damage flash](#the-damage-flash).
 
 ### Re-exporting
 
@@ -171,7 +175,9 @@ the rings rather than near them. Only timing was added.
 Every ring eases on one curve and peaks at exactly 0.8 of its own life, so a single
 easing function and a single normalised shape drive all four; the rings differ by a
 start delay and nothing else. That curve is not in Godot's `TRANS_*` set, hence the
-Newton solve in `sonar_ease()` — four iterations, which reaches float precision.
+Newton solve behind `sonar_ease()` — four iterations, which reaches float precision.
+It lives in `HudEase.cubic()`, because the damage flash rises on one of the same
+family.
 
 ## The reticle's zoom
 
@@ -184,6 +190,29 @@ square, neither of which the mockup animates.
 
 `zoom` is a pose, not an animation: 0 compressed, 1 at rest, lerped linearly with no
 `_process` and no easing, so whatever drives it owns the timing.
+
+## The damage flash
+
+`flash()` bleeds red in from all four corners and fades it out, one-shot and
+self-stopping, the same shape of thing as the radar's `ping()`. It is on HUD 04 only
+so far, and binds to nothing — nothing in `HudState` currently means "took a hit",
+and `status` is an oxygen and power derivation that would fire this on low air.
+
+Each corner is three vertices, because the mockup's shape turns out to be mostly
+invisible: it draws a curve reaching the far corner, but the gradient filling it is
+spent long before then and nowhere on that curve exceeds alpha 0.002. What is left is
+a triangle, and interpolating three vertex colours across one is *exact* for a linear
+gradient rather than an approximation of it. Probed against the rasterised mockup the
+worst channel is 3/255, all of it on the two wedges Figma drew 0.3% smaller.
+
+Nothing ever reaches full red. The gradient starts off-canvas, so the corner already
+sits a third of the way along it and opens at alpha 0.634 — that ceiling is the
+mockup's, not a value to round up.
+
+The rise eases on a curve Godot's `TRANS_*` set does not contain and the fall is
+straight, so a flash snaps on and drifts off rather than being symmetric. That curve
+is the second one of its family here, so the Newton solve the radar used to carry
+moved out to `HudEase.cubic()` and both call it.
 
 ## How a widget binds
 
@@ -207,7 +236,8 @@ which variant it is.
 ## Four things that will bite
 
 **Nothing here runs `_process` except the oxygen ring's alarm, the radar's sonar
-ping and the demo driver.** Widgets redraw when the value they report changes, per
+ping, the damage flash and the demo driver.** Widgets redraw when the value they
+report changes, per
 the rule `power_bar.gd` sets out. Note that *defining* `_process` is what registers a
 node for processing — a `_process` that early-returns on its first line is still a
 per-frame script call, so gate it with `set_process()` instead, or do not define it.
