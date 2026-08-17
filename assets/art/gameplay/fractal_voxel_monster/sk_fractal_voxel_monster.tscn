@@ -1,0 +1,55 @@
+[gd_scene format=3 uid="uid://ddunw1ib1dha4"]
+
+[ext_resource type="PackedScene" uid="uid://bbeq6tlj28bd6" path="res://assets/art/gameplay/fractal_voxel_monster/sk_fractal_voxel_monster.gltf" id="1_e210l"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_g4v7s"]
+shading_mode = 0
+albedo_color = Color(0, 0, 0, 1)
+
+[node name="sk_fractal_voxel_monster" unique_id=1822333854 instance=ExtResource("1_e210l")]
+
+[node name="PathCubes_Baked" parent="body" parent_id_path=PackedInt32Array(2046675748) index="0" unique_id=1113474532]
+blend_shapes/travel = 0.8686304
+
+[node name="eye_1" parent="eyes" parent_id_path=PackedInt32Array(1586098711) index="1" unique_id=2050161984]
+transform = Transform3D(0.15069863, 0.002405614, 0.015674805, 8.150038e-05, 0.14965759, -0.023751523, -0.015858123, 0.023629522, 0.14883451, -0.29031515, 0.28964543, -0.15991643)
+
+[node name="fang_0" parent="fangs" parent_id_path=PackedInt32Array(1593205120) index="0" unique_id=709932515]
+transform = Transform3D(-0.05763428, 0.9983373, -1.509958e-07, 0.9983373, 0.05763428, 4.3638725e-08, 5.2268703e-08, -1.4822966e-07, -1, 0.65443087, 0.037780486, 0.5)
+
+[node name="fang_1" parent="fangs" parent_id_path=PackedInt32Array(1593205120) index="1" unique_id=1338755218]
+transform = Transform3D(-0.5267075, 0.84940356, -0.033040255, 0.8499282, 0.5255898, -0.037098743, -0.0141461855, -0.04762204, -0.9987651, 0.5239745, 0.32482845, 0.5)
+
+[node name="fang_2" parent="fangs" parent_id_path=PackedInt32Array(1593205120) index="2" unique_id=11276631]
+transform = Transform3D(-0.894658, 0.4465861, 0.012138263, 0.4417033, 0.8882962, -0.12580895, -0.06696691, -0.10719456, -0.9919797, 0.25311956, 0.51412094, 0.5)
+
+[node name="fang_3" parent="fangs" parent_id_path=PackedInt32Array(1593205120) index="3" unique_id=1954222965]
+transform = Transform3D(-0.98810035, -0.15381074, 0.00014161284, -0.1523766, 0.9787604, -0.13714516, 0.020955803, -0.13553473, -0.9905509, -0.08555853, 0.5549371, 0.5)
+
+[node name="fang_4" parent="fangs" parent_id_path=PackedInt32Array(1593205120) index="4" unique_id=1658154204]
+transform = Transform3D(-0.733891, -0.6785581, -0.031026935, -0.67694527, 0.7343925, -0.049119342, 0.05611628, -0.015044708, -0.9983109, -0.40131128, 0.43634042, 0.5)
+
+[node name="Sphere" parent="." index="3" unique_id=789435630]
+material_override = SubResource("StandardMaterial3D_g4v7s")
+
+[node name="tooth_0_8" parent="teeth/tooth_ring_0" parent_id_path=PackedInt32Array(876549865) index="8" unique_id=110027109]
+transform = Transform3D(0.07466491, 0, -0.013428061, 0, 0.039260983, 0, 0.02717584, 0, 0.036893252, -0.4698463, 0.17101008, 0)
+
+[node name="tooth_0_11" parent="teeth/tooth_ring_0" parent_id_path=PackedInt32Array(876549865) index="11" unique_id=384977823]
+transform = Transform3D(0.07713974, 0, 0.03198321, 0, 0.04975705, 0, -0.064727925, 0, 0.03811611, -0.38302222, -0.32139382, 0)
+
+[node name="tooth_1_7" parent="teeth/tooth_ring_1" parent_id_path=PackedInt32Array(177754012) index="7" unique_id=1261221869]
+transform = Transform3D(0.06733574, 0, -0.01317093, 0, 0.0344173, 0, 0.02789138, 0, 0.03179743, -0.33259663, 0.13776603, 0)
+
+[node name="tooth_1_9" parent="teeth/tooth_ring_1" parent_id_path=PackedInt32Array(177754012) index="9" unique_id=1362196205]
+transform = Transform3D(0.052071027, 0, 0.010185137, 0, 0.026615052, 0, -0.021568522, 0, 0.024589103, -0.33259663, -0.13776603, 0)
+
+[node name="tooth_2_8" parent="teeth/tooth_ring_2" parent_id_path=PackedInt32Array(1569619474) index="8" unique_id=1405760416]
+transform = Transform3D(0.06546058, 0, 0.014711261, 0, 0.03390601, 0, -0.031524137, 0, 0.030548261, -0.21623252, -0.1041321, 0)
+
+[node name="tooth_2_9" parent="teeth/tooth_ring_2" parent_id_path=PackedInt32Array(1569619474) index="9" unique_id=344098917]
+transform = Transform3D(0.041444913, 0, 0.024252797, 0, 0.031020492, 0, -0.051970277, 0, 0.019340958, -0.14963755, -0.18763955, 0)
+
+[node name="AnimationPlayer" parent="." index="5" unique_id=1755065862]
+deterministic = true
+autoplay = &"idle"

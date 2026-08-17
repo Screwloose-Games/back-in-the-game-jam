@@ -1,0 +1,16 @@
+# Full monster export: PathCubes_Baked travel morph, Spline_Semicircle_Rig
+# (Orbit_Ctrl → Orbit_Follow → Bezier_Mid), fangs/eyes/teeth twitch clips.
+# All twitch + travel channels are one idle-loop clip in the glTF.
+# Fang Y/scale still follow Orbit_Ctrl in Godot via fang_mouth_driver.gd.
+# body carries the authored parent transform from the blend file.
+allow_unapplied_transforms: true
+poly_count_budget: 7000
+up_direction: "+Y"
+facing_direction: "-Z"
+root_node_name: "body"
+collision_expected: false
+navigation_expected: false
+min_material_count: 1
+animations_expected:
+  - name: "idle"
+    loops: true
