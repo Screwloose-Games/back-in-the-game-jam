@@ -36,10 +36,95 @@ prefab_player (Node3D)
     ├── View                       lens and fog
     ├── Visibility                 what you see of your own suit
     ├── Respawn                    where Tab returns you to
-    └── HudBinding
-        ├── HudState               the contract the HUD binds to
-        └── prefab_hud_04          instanced from an @export
+    ├── HudBinding
+    │   ├── HudState               the contract the HUD binds to
+    │   └── prefab_hud_04          instanced from an @export
+    ├── Life                       the one way you die, and what happens next
+    ├── Thrusters                  eight positioned emitters; see below
+    │   ├── ForwardLoop  ForwardEdge
+    │   ├── BackLoop     BackEdge
+    │   ├── LeftLoop     LeftEdge
+    │   ├── RightLoop    RightEdge
+    │   ├── UpLoop       UpEdge
+    │   ├── DownLoop     DownEdge
+    │   ├── RollLeftLoop  RollLeftEdge
+    │   └── RollRightLoop RollRightEdge
+    └── Sfx                        one AudioStreamPlayer per channel, all on SFX
+        ├── Impact                 3D, wall impacts and death
+        └── Helmet                 2D, failure and status downgrade
 ```
+
+## The eight thrusters
+
+`Thrusters` (`player_thruster_sfx.gd`) is its own node because a thruster is not
+one sound — it is eight, and **where** each one comes from is the information.
+A thruster sits opposite the push it makes: the one that shoves you up is
+underneath you, the one that shoves you right is on your left. Swap right for
+left and the sound crosses the helmet, which is how changing direction becomes
+audible at all. A single shared emitter could not say any of that.
+
+Each thruster owns a `…Loop` and a `…Edge` player at the same mount point — the
+On transient has to ring over the loop it begins, so they cannot share one.
+Mount points, and a few percent of per-thruster detune, come from the
+`THRUSTERS` table in the script and are written onto the nodes at `_ready()`, so
+the scene never has to be kept in step with them by hand. Scale the whole rig
+with `mount_scale`.
+
+The detune is not decoration. All eight play the same `Thruster_Loop`, and
+identical loops from different points comb-filter into one flat tone the moment
+two fire together.
+
+Loop volume tracks each control's magnitude every frame, so an analogue stick
+reads as a softer burn, and holding three axes at once does not stack three
+full-volume loops — thrust is clamped to a unit sphere, so each axis is already
+well under 1.0.
+
+The two roll thrusters are the pair the physics does not pin down: a couple could
+be mounted several ways, so they sit just above the opposite ear — `roll_right`
+above the left, `roll_left` above the right — where a roll is easiest to place by
+hearing.
+
+## What the rest of the suit sounds like
+
+`Sfx` is one player per **channel**, not per sound: the streams are `@export`s on
+the node and each handler assigns one and calls `play(0.0)`. Sounds that must
+overlap get separate channels; sounds that should cut each other off share one.
+
+| Cue | Channel | Fired by |
+|---|---|---|
+| `Suit_Impact_Wall_01/02` | `Impact` | `CollisionResponse.impacted`, mixed by closing speed |
+| `Impact_Death_01` | `Impact` | `Life.died` |
+| `UI_HUD_Helmet_Failure` | `Helmet` | `PowerClient.power_lost` |
+| `UI_HUD_Helmet_Status_Downgrade` | `Helmet` | `HudState.status_changed`, downgrades only |
+| `Cube_Grab` | on the cube | `Grab.took_hold`, via `play_grab_sfx()` |
+
+Two rules are load-bearing and easy to undo by accident:
+
+- **The helmet channel is local-player only.** `PlayerUi` frees a remote peer's
+  HUD but not their `HudState`, and `PROCESS_MODE_DISABLED` does not stop
+  signals — without the `is_local_player` gate you hear an ally's helmet failing
+  inside your own.
+- **Failure outranks downgrade.** An empty suit fires both in the same frame,
+  because the drop that emptied it is also the drop that pushes status to
+  CRITICAL. They share a channel, so `_helmet_failure_sounding()` keeps the
+  downgrade from cutting off the more important cue.
+
+The two `*_Loop.wav` assets are imported with **Loop Mode: Forward**. That
+importer enum is offset from `AudioStreamWAV.LoopMode` — `2` in the `.import` is
+`LOOP_FORWARD` (`1`) on the resource. Set to `1` you get Disabled and a loop that
+plays once.
+
+`Cube_Grab` is silent online: `Grab` is in `PlayerNetworkGameplay`'s
+`DISABLED_ONLINE_COMPONENTS`, so `took_hold` never fires. So is death — `Life`
+stands down online, because dying teleports a body and that has to go through
+the prediction reset rather than round it.
+
+Controls *are* replicated — `gameplay_thrust` (the whole vector) and
+`gameplay_roll` on `GameplaySync` — so peers hear which of each other's thrusters
+are lit, not merely that they are moving. A scalar could not have said that,
+which is why the earlier `gameplay_thrust_fraction` is gone. Your own thrusters
+stay on `%Input`: routing a sound you caused through the host would delay it by a
+round trip.
 
 ## Drop it in and it works
 

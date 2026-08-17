@@ -20,6 +20,10 @@ var _is_authority_instance := true
 var _is_local_controller := true
 var _configured := false
 var _authoritative_thrust_fraction := 0.0
+## The accepted command's full control set, for the eight positioned thrusters.
+## The fraction above cannot say which of them is firing.
+var _authoritative_thrust := Vector3.ZERO
+var _authoritative_roll := 0.0
 
 var _body: CharacterBody3D
 var _input: PlayerInput
@@ -123,8 +127,18 @@ func _physics_process(delta: float) -> void:
 		# If prediction is inactive or has no accepted command this tick, held
 		# thrust must not leak into resource drain or noise from the previous tick.
 		_authoritative_thrust_fraction = 0.0
+		_authoritative_thrust = Vector3.ZERO
+		_authoritative_roll = 0.0
 	_prediction.physics_step(delta, _input.thrust, _input.look, _input.roll, flags)
-	_gameplay.physics_step(delta, _authoritative_thrust_fraction)
+	(
+		_gameplay
+		. physics_step(
+			delta,
+			_authoritative_thrust_fraction,
+			_authoritative_thrust,
+			_authoritative_roll,
+		)
+	)
 
 
 func _simulate_network_command(
@@ -140,8 +154,13 @@ func _simulate_network_command(
 	var is_authority := context == ClientPredictor3D.SimulationContext.AUTHORITY
 	if is_authority:
 		_authoritative_thrust_fraction = minf(thrust.length(), 1.0)
+		_authoritative_thrust = thrust
+		_authoritative_roll = roll
 	# Dynamic props are not replicated yet, so even authority only resolves the
-	# static hull. Host collision effects remain safe because replay suppresses them.
+	# static hull. Effects fire once per fresh command and are suppressed on
+	# replay, which is what lets a client hear its own impacts without a
+	# reconciliation pass sounding them all again.
+	var emit_effects := context != ClientPredictor3D.SimulationContext.REPLAY
 	(
 		_locomotion
 		. step(
@@ -154,7 +173,7 @@ func _simulate_network_command(
 			false,
 		)
 	)
-	_collision.step(fixed_delta, false, is_authority)
+	_collision.step(fixed_delta, false, emit_effects)
 
 
 func _capture_prediction_state() -> Dictionary:
@@ -194,4 +213,6 @@ func _prediction_states_match(predicted: Dictionary, authoritative: Dictionary) 
 
 func _on_authoritative_reset_received(_body_transform: Transform3D) -> void:
 	_authoritative_thrust_fraction = 0.0
+	_authoritative_thrust = Vector3.ZERO
+	_authoritative_roll = 0.0
 	_input.clear()

@@ -4,6 +4,7 @@
 [ext_resource type="Script" uid="uid://mysuiun4x5rq" path="res://prefabs/gameplay/life_support_cube.gd" id="2_cube"]
 [ext_resource type="Script" uid="uid://c0j6y2kxpmknt" path="res://prefabs/gameplay/battery_bar.gd" id="3_bar"]
 [ext_resource type="Shader" uid="uid://bik76lgi16ygh" path="res://prefabs/gameplay/battery_bar.gdshader" id="4_bar_shader"]
+[ext_resource type="AudioStream" uid="uid://dfxmcp3rxqts2" path="res://assets/sfx/powercube/Cube_Grab.wav" id="5_grab"]
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_cube"]
 size = Vector3(0.6, 0.6, 0.6)
@@ -41,6 +42,14 @@ shape = SubResource("BoxShape3D_cube")
 
 [node name="ChargeLamp" type="OmniLight3D" parent="." unique_id=939504825]
 omni_range = 8.0
+
+[node name="GrabSfx" type="AudioStreamPlayer3D" parent="." unique_id=481945071]
+stream = ExtResource("5_grab")
+volume_db = -6.0
+max_db = 0.0
+unit_size = 6.0
+max_distance = 30.0
+bus = &"SFX"
 
 [node name="BatteryBar" type="Node3D" parent="." unique_id=481945070]
 script = ExtResource("3_bar")

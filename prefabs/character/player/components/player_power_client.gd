@@ -8,6 +8,8 @@ extends Node
 
 signal charge_changed(fraction: float)
 signal supply_changed(connected: bool)
+signal power_lost
+signal power_restored
 
 ## The group the shared power and oxygen box puts itself in.
 const BOX_GROUP := &"life_support_box"
@@ -15,6 +17,11 @@ const BOX_GROUP := &"life_support_box"
 ## How far the fraction must move before charge_changed fires. Finer than the
 ## HUD's whole-percent readout, so nothing visible is skipped.
 const CHANGE_EPSILON := 0.0005
+
+## How far charge has to climb back before power counts as restored. A suit
+## tethered to a live box drains and refills on the same frame at zero, so
+## without the gap the warning would flap at frame rate.
+const RESTORE_FRACTION := 0.02
 
 @export var settings: PlayerSettings
 
@@ -26,6 +33,7 @@ var charge := 0.0
 
 var _box: Node
 var _announced_fraction := -1.0
+var _was_powered := true
 
 @onready var tether: PlayerTether = %Tether
 
@@ -35,6 +43,7 @@ func _ready() -> void:
 		settings = PlayerSettings.new()
 		push_warning("PlayerPowerClient has no settings; running on PlayerSettings defaults.")
 	charge = settings.suit_capacity * clampf(settings.suit_start_fraction, 0.0, 1.0)
+	_was_powered = has_power()
 	_find_box()
 	get_tree().node_added.connect(_on_node_added)
 
@@ -133,7 +142,22 @@ func _on_node_added(node: Node) -> void:
 
 func _announce() -> void:
 	var current := fraction()
+	# Ahead of the epsilon gate: the tick that empties the suit can move the
+	# fraction by less than CHANGE_EPSILON, and losing power is not a change
+	# anyone should be able to miss.
+	_announce_powered_state(current)
 	if absf(current - _announced_fraction) < CHANGE_EPSILON:
 		return
 	_announced_fraction = current
 	charge_changed.emit(current)
+
+
+## Edges only, with a dead band on the way back up so a suit drawing from a box
+## at zero does not chatter.
+func _announce_powered_state(current: float) -> void:
+	if _was_powered and not has_power():
+		_was_powered = false
+		power_lost.emit()
+	elif not _was_powered and current >= RESTORE_FRACTION:
+		_was_powered = true
+		power_restored.emit()

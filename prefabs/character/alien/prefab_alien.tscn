@@ -1,0 +1,76 @@
+[gd_scene load_steps=12 format=3]
+
+[ext_resource type="Script" path="res://systems/navigation/agent/alien_nav_agent.gd" id="1_agent"]
+[ext_resource type="Resource" path="res://prefabs/character/alien/alien_clearance_profile.tres" id="2_profile"]
+[ext_resource type="Material" path="res://prefabs/character/alien/mat_alien_greybox.tres" id="3_material"]
+[ext_resource type="Script" uid="uid://ban5m6fn0rtlv" path="res://prefabs/character/alien/alien_sfx.gd" id="4_sfx"]
+[ext_resource type="AudioStream" uid="uid://bmch3lj3vfaak" path="res://assets/sfx/alien/Alien_Movement_Near_Loop.wav" id="5_movement"]
+[ext_resource type="AudioStream" uid="uid://cjabshksxv214" path="res://assets/sfx/alien/Alien_Voice_Alerted.wav" id="6_alerted"]
+[ext_resource type="AudioStream" uid="uid://b5kelg7iqde34" path="res://assets/sfx/alien/Alien_Voice_Attack.wav" id="7_voice_attack"]
+[ext_resource type="AudioStream" uid="uid://bjie2iyu0dnc2" path="res://assets/sfx/alien/Alien_Tentacle_Attack.wav" id="8_tentacle"]
+
+; resource_local_to_scene on both, because the agent RESIZES them as the alien compresses
+; into a squeeze. A shared sub-resource would be one mesh and one shape between every
+; instance of this prefab, so two aliens in a level would fight over a single radius and
+; each would be the size of whatever the other last needed.
+[sub_resource type="SphereMesh" id="SphereMesh_body"]
+resource_local_to_scene = true
+material = ExtResource("3_material")
+radius = 0.85
+height = 1.7
+radial_segments = 24
+rings = 12
+
+[sub_resource type="SphereShape3D" id="SphereShape3D_body"]
+resource_local_to_scene = true
+radius = 0.85
+
+[node name="prefab_alien" type="Node3D"]
+metadata/placeholder = true
+
+[node name="AlienBody" type="CharacterBody3D" parent="."]
+collision_layer = 16
+collision_mask = 1
+
+[node name="sm_alien_greybox" type="MeshInstance3D" parent="AlienBody"]
+mesh = SubResource("SphereMesh_body")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="AlienBody"]
+shape = SubResource("SphereShape3D_body")
+
+[node name="AlienNavAgent" type="Node3D" parent="AlienBody"]
+unique_name_in_owner = true
+script = ExtResource("1_agent")
+body_path = NodePath("..")
+profile = ExtResource("2_profile")
+body_mesh = NodePath("../sm_alien_greybox")
+body_collision = NodePath("../CollisionShape3D")
+
+[node name="Sfx" type="Node3D" parent="AlienBody"]
+unique_name_in_owner = true
+script = ExtResource("4_sfx")
+movement_near_loop = ExtResource("5_movement")
+voice_alerted = ExtResource("6_alerted")
+voice_attack = ExtResource("7_voice_attack")
+tentacle_attack = ExtResource("8_tentacle")
+
+[node name="MovementLoop" type="AudioStreamPlayer3D" parent="AlienBody/Sfx"]
+volume_db = -12.0
+max_db = 0.0
+unit_size = 5.0
+max_distance = 18.0
+bus = &"SFX"
+
+[node name="Voice" type="AudioStreamPlayer3D" parent="AlienBody/Sfx"]
+volume_db = -6.0
+max_db = 0.0
+unit_size = 8.0
+max_distance = 45.0
+bus = &"SFX"
+
+[node name="Attack" type="AudioStreamPlayer3D" parent="AlienBody/Sfx"]
+volume_db = -8.0
+max_db = 0.0
+unit_size = 6.0
+max_distance = 30.0
+bus = &"SFX"

@@ -51,6 +51,12 @@ properties/5/replication_mode = 1
 properties/6/path = NodePath(".:gameplay_state_sequence")
 properties/6/spawn = true
 properties/6/replication_mode = 1
+properties/7/path = NodePath(".:gameplay_thrust")
+properties/7/spawn = true
+properties/7/replication_mode = 1
+properties/8/path = NodePath(".:gameplay_roll")
+properties/8/spawn = true
+properties/8/replication_mode = 1
 
 [sub_resource type="AudioStreamMicrophone" id="AudioStreamMicrophone_wccwa"]
 
@@ -78,7 +84,7 @@ root_path = NodePath("../NetworkGameplay")
 replication_interval = 0.05
 replication_config = SubResource("ReplicationConfig_gameplay_state")
 
-[node name="ProximityVoiceChat" type="Node3D" parent="PlayerBody" parent_id_path=PackedInt32Array(1318507332) index="28" unique_id=805032584]
+[node name="ProximityVoiceChat" type="Node3D" parent="PlayerBody" parent_id_path=PackedInt32Array(1318507332) index="31" unique_id=805032584]
 unique_name_in_owner = true
 script = ExtResource("5_voice")
 
