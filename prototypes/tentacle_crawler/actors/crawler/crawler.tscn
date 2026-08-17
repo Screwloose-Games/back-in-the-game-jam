@@ -12,6 +12,9 @@
 script = ExtResource("1_body")
 tentacles = NodePath("Tentacles")
 
+[node name="sk_fractal_voxel_monster" parent="." unique_id=1822333854 instance=ExtResource("4_qtx0q")]
+transform = Transform3D(-0.99905217, -0.042537197, 0.0092389155, -0.043224253, 0.9945254, -0.09513672, -0.0051414915, -0.095445886, -0.99542135, 0, 1.6500242, -1.2210633)
+
 [node name="Rig" type="Node3D" parent="." unique_id=1259569189 node_paths=PackedStringArray("model", "hull", "limbs")]
 unique_name_in_owner = true
 script = ExtResource("2_rig")
@@ -26,9 +29,6 @@ unique_name_in_owner = true
 unique_name_in_owner = true
 
 [node name="Model" parent="Rig" unique_id=903124777 instance=ExtResource("3_model")]
-
-[node name="sk_fractal_voxel_monster" parent="Rig/Model" unique_id=1822333854 instance=ExtResource("4_qtx0q")]
-transform = Transform3D(1, 0, 0, 0, 0.95439065, 0.29856077, 0, -0.29856077, 0.95439065, 0, 1.0957458, 1.1780342)
 
 [node name="Tentacles" type="Node3D" parent="." unique_id=1265321720 node_paths=PackedStringArray("body", "shoulders", "rig")]
 script = ExtResource("4_tentacles")

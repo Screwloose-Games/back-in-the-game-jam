@@ -1,22 +1,19 @@
-[gd_scene load_steps=15 format=3]
+[gd_scene format=3 uid="uid://bo3nk7sf48bcr"]
 
-[ext_resource type="Script" path="res://prototypes/tentacle_crawler_chaser/tentacle_crawler_chaser_prototype.gd" id="0_root"]
-[ext_resource type="Script" path="res://prototypes/tentacle_crawler_chaser/chase_corridor_generator.gd" id="1_corridors"]
-[ext_resource type="Script" path="res://prototypes/tentacle_crawler_chaser/wall_navmesh_baker.gd" id="2_navmesh"]
+[ext_resource type="Script" uid="uid://cytvpuyy4ili8" path="res://prototypes/tentacle_crawler_chaser/tentacle_crawler_chaser_prototype.gd" id="0_root"]
+[ext_resource type="Script" uid="uid://cses672olcftf" path="res://prototypes/tentacle_crawler_chaser/chase_corridor_generator.gd" id="1_corridors"]
+[ext_resource type="Script" uid="uid://djsadg8eyw7sy" path="res://prototypes/tentacle_crawler_chaser/wall_navmesh_baker.gd" id="2_navmesh"]
 [ext_resource type="PackedScene" path="res://prototypes/object_carrying/carrier_player.tscn" id="3_player"]
-[ext_resource type="Script" path="res://prototypes/tentacle_crawler_chaser/chase_target.gd" id="4_target"]
-[ext_resource type="Script" path="res://prototypes/tentacle_crawler_chaser/chase_target_follower.gd" id="5_follower"]
-[ext_resource type="PackedScene" path="res://prototypes/tentacle_crawler/actors/crawler/crawler.tscn" id="6_crawler"]
-[ext_resource type="Script" path="res://prototypes/tentacle_crawler_chaser/creature_contact.gd" id="7_contact"]
+[ext_resource type="Script" uid="uid://dpy3wdreneqb4" path="res://prototypes/tentacle_crawler_chaser/chase_target.gd" id="4_target"]
+[ext_resource type="Script" uid="uid://df4bs0jhi8cd4" path="res://prototypes/tentacle_crawler_chaser/chase_target_follower.gd" id="5_follower"]
+[ext_resource type="PackedScene" uid="uid://bxdrx2sw2huv3" path="res://prototypes/tentacle_crawler/actors/crawler/crawler.tscn" id="6_crawler"]
+[ext_resource type="Script" uid="uid://cptrftf7yghti" path="res://prototypes/tentacle_crawler_chaser/creature_contact.gd" id="7_contact"]
 [ext_resource type="PackedScene" path="res://prototypes/tentacle_crawler/components/camera/crawler_camera_director.tscn" id="8_camera"]
-[ext_resource type="Script" path="res://prototypes/tentacle_crawler_chaser/chase_debug_draw.gd" id="9_debug"]
-[ext_resource type="Script" path="res://prototypes/tentacle_crawler_chaser/chase_hud.gd" id="10_hud"]
-[ext_resource type="Script" path="res://prototypes/shared/prototype_tuning_panel.gd" id="11_tuning"]
+[ext_resource type="Script" uid="uid://bn2fogrtsjjc8" path="res://prototypes/tentacle_crawler_chaser/chase_debug_draw.gd" id="9_debug"]
+[ext_resource type="Script" uid="uid://d1fasqfc0vqet" path="res://prototypes/tentacle_crawler_chaser/chase_hud.gd" id="10_hud"]
+[ext_resource type="Script" uid="uid://d3fll4pyijab8" path="res://prototypes/shared/prototype_tuning_panel.gd" id="11_tuning"]
 [ext_resource type="Resource" path="res://prototypes/tentacle_crawler_chaser/chase_settings.tres" id="12_settings"]
 
-; Copied from object_carrying_prototype.tscn, so the corridors are lit and fogged
-; exactly as that prototype's chamber is and hauling reads the same. The fog
-; values here are overwritten at startup from CarryKnobs.
 [sub_resource type="Environment" id="Environment_void"]
 background_mode = 1
 ambient_light_source = 2
@@ -34,59 +31,51 @@ fog_density = 1.0
 fog_depth_begin = 2.0
 fog_depth_end = 10.0
 
-[node name="TentacleCrawlerChaser" type="Node3D"]
+[node name="TentacleCrawlerChaser" type="Node3D" unique_id=830647662]
 script = ExtResource("0_root")
 settings = ExtResource("12_settings")
 
-[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+[node name="WorldEnvironment" type="WorldEnvironment" parent="." unique_id=1984600748]
 environment = SubResource("Environment_void")
 
-; Raises the corridor network as CSG in its own _ready. Nothing may probe the
-; physics world for it until two physics frames later - see _bake_navigation.
-[node name="Corridors" type="Node3D" parent="."]
+[node name="Corridors" type="Node3D" parent="." unique_id=894546069]
 script = ExtResource("1_corridors")
 
-[node name="CorridorNavigation" type="NavigationRegion3D" parent="."]
+[node name="CorridorNavigation" type="NavigationRegion3D" parent="." unique_id=1998480518]
 script = ExtResource("2_navmesh")
 
-[node name="CarrierPlayer" parent="." instance=ExtResource("3_player")]
+[node name="CarrierPlayer" parent="." unique_id=113622577 instance=ExtResource("3_player")]
 
-[node name="ChaseTarget" type="Node3D" parent="." node_paths=PackedStringArray("quarry")]
+[node name="ChaseTarget" type="Node3D" parent="." unique_id=904904332 node_paths=PackedStringArray("quarry")]
 script = ExtResource("4_target")
 quarry = NodePath("../CarrierPlayer")
 
-; The marker the creature leashes to, filling the slot MarkerPilot fills when a
-; human is flying it. Left disabled until the navmesh exists.
-[node name="ChaseTargetFollower" type="Marker3D" parent="." node_paths=PackedStringArray("chase_target")]
+[node name="ChaseTargetFollower" type="Marker3D" parent="." unique_id=2080524945 node_paths=PackedStringArray("chase_target")]
 script = ExtResource("5_follower")
 chase_target = NodePath("../ChaseTarget")
 
-[node name="NavigationAgent3D" type="NavigationAgent3D" parent="ChaseTargetFollower"]
+[node name="NavigationAgent3D" type="NavigationAgent3D" parent="ChaseTargetFollower" unique_id=712494202]
 
-; node_paths= here wires target_marker only. crawler.tscn's own root carries its
-; own list for `tentacles`, and the two are independent - overriding one from out
-; here does not drop the other.
-[node name="Crawler" parent="." node_paths=PackedStringArray("target_marker") instance=ExtResource("6_crawler")]
+[node name="Crawler" parent="." unique_id=1580994617 node_paths=PackedStringArray("target_marker") instance=ExtResource("6_crawler")]
 target_marker = NodePath("../ChaseTargetFollower")
 
-; Both of these are siblings of the Rig, so they ride the body's transform
-; without being touched by the non-uniform squash CrawlerBody writes to %Hull.
-[node name="CreatureLight" type="OmniLight3D" parent="Crawler"]
+[node name="CreatureLight" type="OmniLight3D" parent="Crawler" unique_id=1606225603]
 
-[node name="CreatureContact" type="Area3D" parent="Crawler"]
+[node name="CreatureContact" type="Area3D" parent="Crawler" unique_id=1993436660]
+transform = Transform3D(1, 0, 0, 0, 0.27554095, -0.96128935, 0, 0.96128935, 0.27554095, 0, 0, 0)
 script = ExtResource("7_contact")
 
-[node name="DebugCamera" parent="." node_paths=PackedStringArray("target", "marker") instance=ExtResource("8_camera")]
+[node name="DebugCamera" parent="." unique_id=869046020 node_paths=PackedStringArray("target", "marker") instance=ExtResource("8_camera")]
 target = NodePath("../Crawler")
 marker = NodePath("../ChaseTargetFollower")
 start_in_orbit = false
 
-[node name="DebugDraw" type="Node3D" parent="." node_paths=PackedStringArray("baker", "follower")]
+[node name="DebugDraw" type="Node3D" parent="." unique_id=1557569401 node_paths=PackedStringArray("baker", "follower")]
 script = ExtResource("9_debug")
 baker = NodePath("../CorridorNavigation")
 follower = NodePath("../ChaseTargetFollower")
 
-[node name="HUD" type="CanvasLayer" parent="." node_paths=PackedStringArray("player", "crawler", "follower", "chase_target", "baker", "contact")]
+[node name="HUD" type="CanvasLayer" parent="." unique_id=290876040 node_paths=PackedStringArray("player", "crawler", "follower", "chase_target", "baker", "contact")]
 script = ExtResource("10_hud")
 player = NodePath("../CarrierPlayer")
 crawler = NodePath("../Crawler")
@@ -95,7 +84,7 @@ chase_target = NodePath("../ChaseTarget")
 baker = NodePath("../CorridorNavigation")
 contact = NodePath("../Crawler/CreatureContact")
 
-[node name="CatchFlash" type="ColorRect" parent="HUD"]
+[node name="CatchFlash" type="ColorRect" parent="HUD" unique_id=562885716]
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -104,7 +93,7 @@ grow_vertical = 2
 mouse_filter = 2
 color = Color(0.55, 0.05, 0.08, 0.42)
 
-[node name="Crosshair" type="ColorRect" parent="HUD"]
+[node name="Crosshair" type="ColorRect" parent="HUD" unique_id=654237449]
 anchors_preset = 8
 anchor_left = 0.5
 anchor_top = 0.5
@@ -117,7 +106,7 @@ offset_bottom = 2.0
 mouse_filter = 2
 color = Color(0.78, 0.88, 1, 0.55)
 
-[node name="Readout" type="Label" parent="HUD"]
+[node name="Readout" type="Label" parent="HUD" unique_id=1641740042]
 offset_left = 16.0
 offset_top = 12.0
 offset_right = 470.0
@@ -125,10 +114,7 @@ offset_bottom = 270.0
 theme_override_colors/font_color = Color(0.62, 0.74, 0.86, 0.85)
 theme_override_font_sizes/font_size = 14
 
-; Bottom left, sized to its own content: zero width/height offsets plus the
-; bottom-left grow directions make it expand right and upward from the corner,
-; so adding a slider does not need the box resized by hand.
-[node name="Tuning" type="PanelContainer" parent="HUD"]
+[node name="Tuning" type="PanelContainer" parent="HUD" unique_id=2147055751]
 anchors_preset = 2
 anchor_top = 1.0
 anchor_bottom = 1.0
