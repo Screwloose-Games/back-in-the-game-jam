@@ -147,14 +147,20 @@ shared centre, brightens, and vanishes at full size, each one lagging the ring i
 it. `hud_minimap.gd` holds the timing, the way `hud_oxygen_ring.gd` holds its own
 `ALARM_*` — `hud_art.gd` stays what it is, a list of assets and where they sit.
 
-Two of those constants look like mistakes and are not:
+A ping is one-shot. `ping()` starts it, it runs once and stops, and nothing repeats on
+its own — `sonar_duration` sets how long the whole thing takes, stopwatch style, from
+the first ring appearing to the last one gone.
 
-- **`SONAR_PERIOD` is 1.3038s.** Not 1.3, and not a fraction of some longer loop.
-  One ping is one period and it repeats continuously, with no stall between.
-- **`SONAR_DELAYS` is unevenly spaced.** The gaps are 0.124, 0.139 and 0.125s. It
-  holds four separate start times, not one spacing that drifted.
+Two constants hold the shape it runs through, and both look like mistakes:
 
-Round either of them and the ping still runs, which is what makes them worth a note.
+- **`SONAR_DELAY_FRACTIONS` is unevenly spaced.** Four separate start times, not one
+  spacing that drifted. They are fractions of a ring's ramp rather than seconds, which
+  is what lets `sonar_duration` stretch the ping without flattening its stagger.
+- **`SONAR_SPAN` is 1.297055.** A ping outlasts any single ring's ramp, because the
+  outermost ring only sets off once the ping is nearly a third done. That ratio is what
+  converts the duration you type into the ramp each ring actually gets.
+
+Round either and the ping still runs, which is what makes them worth a note.
 
 The ping needs no new art and no new layout. The four PNGs already share one centre —
 `MINIMAP_RINGS_EXTENT` is the outermost ring's half-size, which is why blips land on
@@ -192,10 +198,10 @@ the rule `power_bar.gd` sets out. Note that *defining* `_process` is what regist
 node for processing — a `_process` that early-returns on its first line is still a
 per-frame script call, so gate it with `set_process()` instead, or do not define it.
 
-The radar is the one widget that animates on nothing but the clock, so it is also the
-one that cannot be gated on a value changing. `sonar_enabled` drives `set_process()`
-from its setter and falls back to the four static rings, which is both the off switch
-and the way to measure what the ping costs.
+The radar is the widget that follows this most literally. Its ping is an event rather
+than a value, so `ping()` turns processing on and `_process` turns it back off on the
+frame the ping ends. An idle radar costs nothing, which is why the dish is empty until
+something asks for a sweep.
 
 **`_get_minimum_size()` is wrong for these widgets, however standard it looks.**
 `Control.set_size()` clamps to `get_combined_minimum_size()` whether or not the parent

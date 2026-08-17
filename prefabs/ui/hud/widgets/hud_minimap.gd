@@ -6,13 +6,12 @@ extends HudWidget
 ## contacts projected onto them - every ring grows from the shared centre,
 ## brightens, and vanishes at full size.
 
-## Seconds for one ping, and the period the rings loop on. Measured, not chosen:
-## do not round it to 1.3.
-const SONAR_PERIOD := 1.3038
+## Where each ring starts, as a fraction of one ring's ramp, inner to outer. The
+## gaps are uneven - four separate start times, not one spacing, so leave them be.
+const SONAR_DELAY_FRACTIONS: PackedFloat32Array = [0.0, 0.0948, 0.201335, 0.297055]
 
-## Seconds each ring waits, indexed inner to outer. The gaps are 0.124, 0.139 and
-## 0.125 - four separate start times, not one spacing, so do not even them out.
-const SONAR_DELAYS: PackedFloat32Array = [0.0, 0.1236, 0.2625, 0.3873]
+## A whole ping outlasts one ring's ramp by however long the last ring waits.
+const SONAR_SPAN := 1.297055
 
 ## Alpha at the top of the pulse, and where in a ring's own life that peak lands.
 ## All four rings peak at the same 0.8, which is why one curve drives every one.
@@ -45,16 +44,18 @@ const SONAR_EASE_STEPS := 4
 		show_height_stalks = value
 		queue_redraw()
 
-## Off restores the four static rings this widget drew before the ping existed.
-@export var sonar_enabled := true:
+## Stopwatch length of one ping: first ring appearing to last ring gone.
+@export_range(0.1, 5.0, 0.01, "or_greater", "suffix:s") var sonar_duration := 1.6911:
 	set(value):
-		sonar_enabled = value
-		set_process(value)
+		sonar_duration = maxf(value, 0.01)
 		queue_redraw()
+
+@export_tool_button("Ping") var ping_action := ping
 
 var _objective_shown := false
 var _objective_at := Vector2.ZERO
 var _elapsed := 0.0
+var _pinging := false
 
 
 static func in_range(offset: Vector3, distance_limit: float) -> bool:
@@ -71,9 +72,11 @@ static func project(offset: Vector3, distance_limit: float, lift: float) -> Vect
 	return dish - Vector2(0.0, norm.y * lift)
 
 
-## Where a ring sits in its own 0..1 life at this moment.
-static func ring_phase(elapsed: float, ring: int) -> float:
-	return fposmod((elapsed - SONAR_DELAYS[ring]) / SONAR_PERIOD, 1.0)
+## Where a ring sits in its own life: below 0 not started yet, above 1 finished.
+static func ring_phase(elapsed: float, ring: int, duration: float) -> float:
+	if duration <= 0.0:
+		return 1.0
+	return elapsed * SONAR_SPAN / duration - SONAR_DELAY_FRACTIONS[ring]
 
 
 ## Nothing at the centre, full size at the end of the ping.
@@ -110,11 +113,22 @@ static func sonar_ease(x: float) -> float:
 
 func _ready() -> void:
 	super()
-	set_process(sonar_enabled)
+	set_process(false)
+
+
+## Runs one ping from the start, whatever the last one was doing.
+func ping() -> void:
+	_elapsed = 0.0
+	_pinging = true
+	set_process(true)
+	queue_redraw()
 
 
 func _process(delta: float) -> void:
-	_elapsed = fposmod(_elapsed + delta, SONAR_PERIOD)
+	_elapsed += delta
+	if _elapsed >= sonar_duration:
+		_pinging = false
+		set_process(false)
 	queue_redraw()
 
 
@@ -124,10 +138,11 @@ func design_extent() -> Vector2:
 
 func _draw() -> void:
 	draw_design_texture(HudArt.MINIMAP_BACKGROUND, HudArt.MINIMAP_BACKGROUND_CENTRE)
-	_draw_ring(HudArt.MINIMAP_LINES04, HudArt.MINIMAP_LINES04_CENTRE, 3)
-	_draw_ring(HudArt.MINIMAP_LINES03, HudArt.MINIMAP_LINES03_CENTRE, 2)
-	_draw_ring(HudArt.MINIMAP_LINES02, HudArt.MINIMAP_LINES02_CENTRE, 1)
-	_draw_ring(HudArt.MINIMAP_LINES01, HudArt.MINIMAP_LINES01_CENTRE, 0)
+	if _pinging:
+		_draw_ring(HudArt.MINIMAP_LINES04, HudArt.MINIMAP_LINES04_CENTRE, 3)
+		_draw_ring(HudArt.MINIMAP_LINES03, HudArt.MINIMAP_LINES03_CENTRE, 2)
+		_draw_ring(HudArt.MINIMAP_LINES02, HudArt.MINIMAP_LINES02_CENTRE, 1)
+		_draw_ring(HudArt.MINIMAP_LINES01, HudArt.MINIMAP_LINES01_CENTRE, 0)
 	draw_design_texture(HudArt.MINIMAP_REFLECTION, HudArt.MINIMAP_REFLECTION_CENTRE)
 
 	for offset in _visible_blips():
@@ -161,10 +176,9 @@ func _visible_blips() -> Array[Vector3]:
 
 
 func _draw_ring(texture: Texture2D, centre: Vector2, ring: int) -> void:
-	if not sonar_enabled:
-		draw_design_texture(texture, centre)
+	var phase := ring_phase(_elapsed, ring, sonar_duration)
+	if phase <= 0.0 or phase >= 1.0:
 		return
-	var phase := ring_phase(_elapsed, ring)
 	var alpha := ring_alpha(phase)
 	if alpha <= 0.0:
 		return
