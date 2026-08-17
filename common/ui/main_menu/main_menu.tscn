@@ -8,6 +8,10 @@
 [ext_resource type="AudioStream" uid="uid://50crscd7p7bx" path="res://common/audio/sfx/ui/aud_ui_close.wav" id="6_close"]
 [ext_resource type="AudioStream" uid="uid://3es011ed4pb4" path="res://common/audio/music/music_title_screen-loop.ogg" id="7_3h3sd"]
 [ext_resource type="PackedScene" uid="uid://bvuixmv4n68a6" path="res://common/ui/options_menu/options_menu.tscn" id="7_options"]
+[ext_resource type="Theme" path="res://common/themes/theme_main_menu.tres" id="8_menu_theme"]
+[ext_resource type="Script" uid="uid://d21n0glimaot8" path="res://common/ui/main_menu/main_menu_frame.gd" id="9_frame"]
+[ext_resource type="Script" uid="uid://d1riq7o8o5ljq" path="res://common/ui/main_menu/main_menu_pointer.gd" id="10_pointer"]
+[ext_resource type="Texture2D" uid="uid://d3b0aweecincm" path="res://assets/art/ui/main_menu/t_main_menu_backdrop.png" id="11_backdrop"]
 
 [node name="MainMenu" type="Control" unique_id=1571659660]
 layout_mode = 3
@@ -39,9 +43,33 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-color = Color(0.101961, 0.117647, 0.156863, 1)
+mouse_filter = 2
+color = Color(0.152941, 0.2, 0.207843, 1)
 
-[node name="MainPanel" type="CenterContainer" parent="." unique_id=162375931]
+[node name="Backdrop" type="TextureRect" parent="." unique_id=1442360881]
+modulate = Color(1, 1, 1, 0.2)
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+texture = ExtResource("11_backdrop")
+expand_mode = 1
+stretch_mode = 6
+
+[node name="Tint" type="ColorRect" parent="." unique_id=1996117795]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+color = Color(0.321569, 0.898039, 0.321569, 0.02)
+
+[node name="Shell" type="Control" parent="." unique_id=162375931]
 unique_name_in_owner = true
 layout_mode = 1
 anchors_preset = 15
@@ -49,78 +77,139 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
+mouse_filter = 2
+theme = ExtResource("8_menu_theme")
 
-[node name="PanelContainer" type="PanelContainer" parent="MainPanel" unique_id=809008942]
-layout_mode = 2
+[node name="Frame" type="Control" parent="Shell" unique_id=1741105083]
+texture_filter = 1
+anchors_preset = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 28.667
+offset_top = 18.0
+offset_right = -27.333
+offset_bottom = -19.333
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+script = ExtResource("9_frame")
 
-[node name="MarginContainer" type="MarginContainer" parent="MainPanel/PanelContainer" unique_id=961840640]
-layout_mode = 2
-theme_override_constants/margin_left = 60
-theme_override_constants/margin_top = 40
-theme_override_constants/margin_right = 60
-theme_override_constants/margin_bottom = 40
+[node name="TitleLabel" type="Label" parent="Shell" unique_id=18383950]
+texture_filter = 1
+anchors_preset = 0
+offset_left = 64.0
+offset_top = 83.0
+offset_right = 800.0
+offset_bottom = 203.0
+theme_override_font_sizes/font_size = 96
+text = "GAME TITLE"
 
-[node name="VBoxContainer" type="VBoxContainer" parent="MainPanel/PanelContainer/MarginContainer" unique_id=907608885]
-custom_minimum_size = Vector2(280, 0)
-layout_mode = 2
+[node name="Menu" type="VBoxContainer" parent="Shell" unique_id=907608885]
+texture_filter = 1
+anchors_preset = 0
+offset_left = 64.0
+offset_top = 255.0
+offset_right = 560.0
+offset_bottom = 700.0
 theme_override_constants/separation = 16
 
-[node name="TitleLabel" type="Label" parent="MainPanel/PanelContainer/MarginContainer/VBoxContainer" unique_id=18383950]
-layout_mode = 2
-theme_override_font_sizes/font_size = 42
-text = "Game Title"
-horizontal_alignment = 1
-vertical_alignment = 1
-
-[node name="Spacer" type="Control" parent="MainPanel/PanelContainer/MarginContainer/VBoxContainer" unique_id=397817647]
-custom_minimum_size = Vector2(0, 16)
-layout_mode = 2
-
-[node name="StartButton" type="Button" parent="MainPanel/PanelContainer/MarginContainer/VBoxContainer" unique_id=1340189053]
+[node name="StartButton" type="Button" parent="Shell/Menu" unique_id=1340189053]
 unique_name_in_owner = true
 layout_mode = 2
+size_flags_horizontal = 0
 text = "Single Player"
+alignment = 0
 
-[node name="HostButton" type="Button" parent="MainPanel/PanelContainer/MarginContainer/VBoxContainer"]
+[node name="HostButton" type="Button" parent="Shell/Menu"]
 unique_name_in_owner = true
 layout_mode = 2
+size_flags_horizontal = 0
 text = "Host Multiplayer"
+alignment = 0
 
-[node name="JoinCodeInput" type="LineEdit" parent="MainPanel/PanelContainer/MarginContainer/VBoxContainer"]
+[node name="JoinButton" type="Button" parent="Shell/Menu"]
 unique_name_in_owner = true
 layout_mode = 2
+size_flags_horizontal = 0
+text = "Join Multiplayer"
+alignment = 0
+
+[node name="OptionsButton" type="Button" parent="Shell/Menu" unique_id=1690060637]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 0
+text = "Options"
+alignment = 0
+
+[node name="CreditsButton" type="Button" parent="Shell/Menu" unique_id=626761271]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 0
+text = "Credits"
+alignment = 0
+
+[node name="QuitButton" type="Button" parent="Shell/Menu" unique_id=823228757]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 0
+text = "Quit"
+alignment = 0
+
+[node name="Pointer" type="Control" parent="Shell" unique_id=1103477613]
+unique_name_in_owner = true
+visible = false
+texture_filter = 1
+anchors_preset = 0
+offset_left = 320.0
+offset_top = 268.0
+offset_right = 403.0
+offset_bottom = 290.0
+mouse_filter = 2
+script = ExtResource("10_pointer")
+
+[node name="JoinCodeInput" type="LineEdit" parent="Shell" unique_id=1234500011]
+unique_name_in_owner = true
+texture_filter = 1
+anchors_preset = 0
+offset_left = 520.0
+offset_top = 396.0
+offset_right = 830.0
+offset_bottom = 446.0
+theme_override_font_sizes/font_size = 32
 placeholder_text = "Session code"
 max_length = 6
 alignment = 1
 
-[node name="JoinButton" type="Button" parent="MainPanel/PanelContainer/MarginContainer/VBoxContainer"]
-unique_name_in_owner = true
-layout_mode = 2
-text = "Join Multiplayer"
-
-[node name="OnlineStatus" type="Label" parent="MainPanel/PanelContainer/MarginContainer/VBoxContainer"]
+[node name="OnlineStatus" type="Label" parent="Shell" unique_id=1234500012]
 unique_name_in_owner = true
 visible = false
-layout_mode = 2
+texture_filter = 1
+anchors_preset = 0
+offset_left = 520.0
+offset_top = 456.0
+offset_right = 1010.0
+offset_bottom = 528.0
 theme_override_colors/font_color = Color(1, 0.45, 0.45, 1)
+theme_override_font_sizes/font_size = 32
 text = "Connection failed"
-horizontal_alignment = 1
 autowrap_mode = 3
 
-[node name="OptionsButton" type="Button" parent="MainPanel/PanelContainer/MarginContainer/VBoxContainer" unique_id=1690060637]
-unique_name_in_owner = true
-layout_mode = 2
-text = "Options"
-
-[node name="CreditsButton" type="Button" parent="MainPanel/PanelContainer/MarginContainer/VBoxContainer" unique_id=626761271]
-unique_name_in_owner = true
-layout_mode = 2
-text = "Credits"
-
-[node name="QuitButton" type="Button" parent="MainPanel/PanelContainer/MarginContainer/VBoxContainer" unique_id=823228757]
-unique_name_in_owner = true
-layout_mode = 2
-text = "Quit"
+[node name="Credit" type="Label" parent="Shell" unique_id=1234500013]
+texture_filter = 1
+anchors_preset = 3
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -420.0
+offset_top = -57.0
+offset_right = -47.0
+offset_bottom = -17.0
+grow_horizontal = 0
+grow_vertical = 0
+theme_override_font_sizes/font_size = 32
+text = "By Screwloose Games"
+horizontal_alignment = 2
 
 [node name="OptionsMenu" parent="." unique_id=885553127 instance=ExtResource("7_options")]
 unique_name_in_owner = true
@@ -132,15 +221,15 @@ anchor_bottom = 0.0
 grow_horizontal = 1
 grow_vertical = 1
 
-[connection signal="mouse_entered" from="MainPanel/PanelContainer/MarginContainer/VBoxContainer/StartButton" to="Audio Control" method="_on_hover"]
-[connection signal="pressed" from="MainPanel/PanelContainer/MarginContainer/VBoxContainer/StartButton" to="Audio Control" method="_on_open"]
-[connection signal="mouse_entered" from="MainPanel/PanelContainer/MarginContainer/VBoxContainer/HostButton" to="Audio Control" method="_on_hover"]
-[connection signal="pressed" from="MainPanel/PanelContainer/MarginContainer/VBoxContainer/HostButton" to="Audio Control" method="_on_open"]
-[connection signal="mouse_entered" from="MainPanel/PanelContainer/MarginContainer/VBoxContainer/JoinButton" to="Audio Control" method="_on_hover"]
-[connection signal="pressed" from="MainPanel/PanelContainer/MarginContainer/VBoxContainer/JoinButton" to="Audio Control" method="_on_open"]
-[connection signal="mouse_entered" from="MainPanel/PanelContainer/MarginContainer/VBoxContainer/OptionsButton" to="Audio Control" method="_on_hover"]
-[connection signal="pressed" from="MainPanel/PanelContainer/MarginContainer/VBoxContainer/OptionsButton" to="Audio Control" method="_on_open"]
-[connection signal="mouse_entered" from="MainPanel/PanelContainer/MarginContainer/VBoxContainer/CreditsButton" to="Audio Control" method="_on_hover"]
-[connection signal="pressed" from="MainPanel/PanelContainer/MarginContainer/VBoxContainer/CreditsButton" to="Audio Control" method="_on_open"]
-[connection signal="mouse_entered" from="MainPanel/PanelContainer/MarginContainer/VBoxContainer/QuitButton" to="Audio Control" method="_on_hover"]
-[connection signal="pressed" from="MainPanel/PanelContainer/MarginContainer/VBoxContainer/QuitButton" to="Audio Control" method="_on_close"]
+[connection signal="mouse_entered" from="Shell/Menu/StartButton" to="Audio Control" method="_on_hover"]
+[connection signal="pressed" from="Shell/Menu/StartButton" to="Audio Control" method="_on_open"]
+[connection signal="mouse_entered" from="Shell/Menu/HostButton" to="Audio Control" method="_on_hover"]
+[connection signal="pressed" from="Shell/Menu/HostButton" to="Audio Control" method="_on_open"]
+[connection signal="mouse_entered" from="Shell/Menu/JoinButton" to="Audio Control" method="_on_hover"]
+[connection signal="pressed" from="Shell/Menu/JoinButton" to="Audio Control" method="_on_open"]
+[connection signal="mouse_entered" from="Shell/Menu/OptionsButton" to="Audio Control" method="_on_hover"]
+[connection signal="pressed" from="Shell/Menu/OptionsButton" to="Audio Control" method="_on_open"]
+[connection signal="mouse_entered" from="Shell/Menu/CreditsButton" to="Audio Control" method="_on_hover"]
+[connection signal="pressed" from="Shell/Menu/CreditsButton" to="Audio Control" method="_on_open"]
+[connection signal="mouse_entered" from="Shell/Menu/QuitButton" to="Audio Control" method="_on_hover"]
+[connection signal="pressed" from="Shell/Menu/QuitButton" to="Audio Control" method="_on_close"]

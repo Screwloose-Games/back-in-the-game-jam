@@ -1,0 +1,39 @@
+[gd_resource type="Theme" load_steps=3 format=3]
+
+[ext_resource type="FontFile" uid="uid://bjfcgc6p7xnkm" path="res://assets/art/ui/font/PixelPurl.ttf" id="1_font"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_flat"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_code"]
+content_margin_left = 10.0
+content_margin_top = 4.0
+content_margin_right = 10.0
+content_margin_bottom = 4.0
+bg_color = Color(0.152941, 0.2, 0.207843, 1)
+border_width_left = 3
+border_width_top = 3
+border_width_right = 3
+border_width_bottom = 3
+border_color = Color(0.321569, 0.898039, 0.321569, 1)
+
+[resource]
+default_font = ExtResource("1_font")
+default_font_size = 32
+Button/colors/font_color = Color(0.321569, 0.898039, 0.321569, 1)
+Button/colors/font_disabled_color = Color(0.321569, 0.898039, 0.321569, 0.35)
+Button/colors/font_focus_color = Color(0.423529, 1, 0.423529, 1)
+Button/colors/font_hover_color = Color(0.423529, 1, 0.423529, 1)
+Button/colors/font_pressed_color = Color(1, 1, 1, 1)
+Button/constants/h_separation = 0
+Button/font_sizes/font_size = 64
+Button/styles/disabled = SubResource("StyleBoxEmpty_flat")
+Button/styles/focus = SubResource("StyleBoxEmpty_flat")
+Button/styles/hover = SubResource("StyleBoxEmpty_flat")
+Button/styles/normal = SubResource("StyleBoxEmpty_flat")
+Button/styles/pressed = SubResource("StyleBoxEmpty_flat")
+Label/colors/font_color = Color(0.321569, 0.898039, 0.321569, 1)
+LineEdit/colors/caret_color = Color(0.423529, 1, 0.423529, 1)
+LineEdit/colors/font_color = Color(0.321569, 0.898039, 0.321569, 1)
+LineEdit/colors/font_placeholder_color = Color(0.321569, 0.898039, 0.321569, 0.45)
+LineEdit/styles/focus = SubResource("StyleBoxFlat_code")
+LineEdit/styles/normal = SubResource("StyleBoxFlat_code")
