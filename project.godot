@@ -164,6 +164,8 @@ voice_push_to_talk={
 3d_physics/layer_3="debris"
 3d_physics/layer_4="carryable"
 3d_physics/layer_5="creature"
+3d_physics/layer_6="ore"
+3d_physics/layer_7="loose_crystal"
 
 [physics]
 

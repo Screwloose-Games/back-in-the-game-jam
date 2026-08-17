@@ -1,0 +1,11 @@
+[gd_resource type="Resource" script_class="DrillSettings" format=3]
+
+[ext_resource type="Script" path="res://prototypes/drill_and_mining/drill_settings.gd" id="1_q0e4e"]
+
+[resource]
+script = ExtResource("1_q0e4e")
+carve_rate = 2.5
+carve_radius = 0.5
+escape_clearance = 0.6
+debris_knock = 3.0
+debris_lifetime = 20.0

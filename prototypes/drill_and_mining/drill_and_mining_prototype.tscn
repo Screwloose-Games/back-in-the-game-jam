@@ -1,0 +1,76 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://prototypes/drill_and_mining/drill_and_mining_prototype.gd" id="0_root"]
+[ext_resource type="Script" path="res://prototypes/drill_and_mining/imported/drill_chamber_generator.gd" id="1_chamber"]
+[ext_resource type="Script" path="res://prototypes/drill_and_mining/drill_hud.gd" id="2_hud"]
+[ext_resource type="Script" path="res://prototypes/shared/prototype_tuning_panel.gd" id="3_tuning"]
+[ext_resource type="Resource" path="res://prototypes/drill_and_mining/drill_settings.tres" id="4_settings"]
+
+; Fog and ambient are pushed on from drill_knobs.gd at startup; what is here is
+; only so the scene looks right when it is opened in the editor.
+;
+; glow is on because the beam depends on it: the beam material's albedo is over
+; 1.0 precisely so it crosses the glow threshold, and without this it is a flat
+; orange stick.
+[sub_resource type="Environment" id="Environment_void"]
+background_mode = 1
+ambient_light_source = 2
+ambient_light_color = Color(0.46, 0.5, 0.58, 1)
+ambient_light_energy = 0.7
+tonemap_mode = 4
+glow_enabled = true
+glow_intensity = 0.45
+glow_bloom = 0.05
+fog_enabled = true
+fog_mode = 1
+fog_light_color = Color(0.09, 0.11, 0.15, 1)
+fog_light_energy = 0.6
+fog_density = 1.0
+fog_depth_begin = 7.0
+fog_depth_end = 22.0
+
+[node name="DrillAndMiningPrototype" type="Node3D"]
+script = ExtResource("0_root")
+settings = ExtResource("4_settings")
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = SubResource("Environment_void")
+
+[node name="Chamber" type="Node3D" parent="."]
+script = ExtResource("1_chamber")
+
+[node name="HUD" type="CanvasLayer" parent="."]
+script = ExtResource("2_hud")
+
+[node name="Crosshair" type="ColorRect" parent="HUD"]
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -2.0
+offset_top = -2.0
+offset_right = 2.0
+offset_bottom = 2.0
+mouse_filter = 2
+color = Color(0.78, 0.88, 1, 0.55)
+
+[node name="Readout" type="Label" parent="HUD"]
+offset_left = 16.0
+offset_top = 12.0
+offset_right = 460.0
+offset_bottom = 240.0
+theme_override_colors/font_color = Color(0.62, 0.74, 0.86, 0.85)
+theme_override_font_sizes/font_size = 14
+
+; Bottom left, sized to its own content: zero width/height offsets plus the
+; bottom-left grow directions make it expand right and upward from the corner,
+; so adding a slider does not need the box resized by hand.
+[node name="Tuning" type="PanelContainer" parent="HUD"]
+anchors_preset = 2
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_left = 16.0
+offset_bottom = -16.0
+grow_vertical = 0
+script = ExtResource("3_tuning")

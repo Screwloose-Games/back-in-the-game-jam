@@ -1,0 +1,22 @@
+[gd_resource type="StandardMaterial3D" format=3]
+
+; The crystal at the centre of an ore node.
+;
+; Emissive, and that is not decoration: the crystal spends most of its life
+; buried, and the moment it becomes visible through a gap in the rock is the
+; moment the prototype is testing. A crystal that only showed up when your lamp
+; happened to be pointed into the hole would make that moment depend on where
+; you were aiming rather than on how much rock you had taken off.
+;
+; The colour is cool against the rock's warm grey so the two never read as the
+; same material at the bottom of a hole.
+
+[resource]
+resource_name = "CrystalMaterial"
+albedo_color = Color(0.22, 0.62, 0.78, 1)
+metallic = 0.2
+metallic_specular = 0.7
+roughness = 0.25
+emission_enabled = true
+emission = Color(0.3, 0.78, 0.95, 1)
+emission_energy_multiplier = 1.6

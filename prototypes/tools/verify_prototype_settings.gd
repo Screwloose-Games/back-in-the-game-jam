@@ -28,6 +28,8 @@ const SETTINGS_SCRIPTS := [
 	"res://prototypes/elevator_cutscene/elevator_cutscene_settings.gd",
 	"res://prototypes/level_design_01/level_design_01_settings.gd",
 	"res://prototypes/alien_ai_pathfinding/alien_pathfinding_settings.gd",
+	"res://prototypes/drill_and_mining/drill_settings.gd",
+	"res://prototypes/core_loop/core_loop_settings.gd",
 ]
 
 ## Somewhere writable that is not the repo. The round trip has to write a real

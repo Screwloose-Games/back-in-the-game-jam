@@ -31,6 +31,8 @@ prototypes/
   tunnel_system/tunnel_settings.gd + .tres
   tentacle_crawler_chaser/chase_settings.gd + .tres
   elevator_cutscene/elevator_cutscene_settings.gd + .tres
+  drill_and_mining/drill_settings.gd + .tres
+  core_loop/core_loop_settings.gd + .tres
 ```
 
 **To give another knob a slider**, add one line to that prototype's

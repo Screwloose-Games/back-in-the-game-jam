@@ -1,0 +1,8 @@
+[gd_scene format=3]
+
+; Run WITHOUT --headless - this one renders.
+
+[ext_resource type="Script" path="res://prototypes/drill_and_mining/tools/capture_drill.gd" id="0_capture"]
+
+[node name="CaptureDrill" type="Node"]
+script = ExtResource("0_capture")
