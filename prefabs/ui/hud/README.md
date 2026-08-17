@@ -117,11 +117,9 @@ Four things are still drawn rather than blitted, and each for a reason:
   `stretch/aspect="expand"` hands the game a canvas wider than 1280x720 on anything
   that is not 16:9.
 - **`TETHERED_METER`**, because its content changes every metre.
-- **HUD 04's `RETICLE`**, because its five parts move independently — see
-  [The reticle's zoom](#the-reticles-zoom).
-- **`Damage_Overlay`**, because it is a gradient over the whole screen, which is the
-  most expensive thing a PNG can be and the cheapest thing a polygon can be — see
-  [The damage flash](#the-damage-flash).
+- **HUD 04's `RETICLE`**, because its five parts move independently.
+- **`Damage_Overlay`**, because it is a full-screen gradient, which is the most
+  expensive thing a PNG can be and the cheapest thing a polygon can be.
 
 ### Re-exporting
 
@@ -148,71 +146,33 @@ background fill.** A frame fill is exported *into* every child asset, which is h
 
 ## The radar's ping
 
-`MINIMAP`'s four ring layers are not static art. They ping: every ring grows from the
-shared centre, brightens, and vanishes at full size, each one lagging the ring inside
-it. `hud_minimap.gd` holds the timing, the way `hud_oxygen_ring.gd` holds its own
-`ALARM_*` — `hud_art.gd` stays what it is, a list of assets and where they sit.
+`Minimap.ping()` runs one sweep and stops: four rings grow from the shared centre,
+each lagging the one inside it. `sonar_duration` is the whole sweep, first ring
+appearing to last one gone. Nothing repeats on its own.
 
-A ping is one-shot. `ping()` starts it, it runs once and stops, and nothing repeats on
-its own — `sonar_duration` sets how long the whole thing takes, stopwatch style, from
-the first ring appearing to the last one gone.
-
-Two constants hold the shape it runs through, and both look like mistakes:
-
-- **`SONAR_DELAY_FRACTIONS` is unevenly spaced.** Four separate start times, not one
-  spacing that drifted. They are fractions of a ring's ramp rather than seconds, which
-  is what lets `sonar_duration` stretch the ping without flattening its stagger.
-- **`SONAR_SPAN` is 1.297055.** A ping outlasts any single ring's ramp, because the
-  outermost ring only sets off once the ping is nearly a third done. That ratio is what
-  converts the duration you type into the ramp each ring actually gets.
-
-Round either and the ping still runs, which is what makes them worth a note.
-
-The ping needs no new art and no new layout. The four PNGs already share one centre —
-`MINIMAP_RINGS_EXTENT` is the outermost ring's half-size, which is why blips land on
-the rings rather than near them. Only timing was added.
-
-Every ring eases on one curve and peaks at exactly 0.8 of its own life, so a single
-easing function and a single normalised shape drive all four; the rings differ by a
-start delay and nothing else. That curve is not in Godot's `TRANS_*` set, hence the
-Newton solve behind `sonar_ease()` — four iterations, which reaches float precision.
-It lives in `HudEase.cubic()`, because the damage flash rises on one of the same
-family.
+`SONAR_DELAY_FRACTIONS` and `SONAR_SPAN` are fractions of a ring's ramp rather than
+seconds, so `sonar_duration` stretches a sweep without flattening its stagger. Both
+are mockup-derived; rounding them still runs, just not to the mockup.
 
 ## The reticle's zoom
 
-HUD 04's reticle compresses — bars and diagonals slide inward, the centre triangle
-shrinks — so its five parts have to move independently, and a PNG is one part.
-`hud_reticle_zoom.gd` therefore strokes that reticle instead of blitting one, which
-is why the reticle is two scripts for the same reason oxygen is two scenes: it is two
-drawings. `hud_reticle.gd` still blits, and still serves HUD 02's arcs and HUD 03's
-square, neither of which the mockup animates.
+HUD 04's reticle is `hud_reticle_zoom.gd`, which strokes it so its five parts can move
+independently. HUD 02 and 03 keep `hud_reticle.gd`, which blits.
 
-`zoom` is a pose, not an animation: 0 compressed, 1 at rest, lerped linearly with no
-`_process` and no easing, so whatever drives it owns the timing.
+`Reticle.zoom` is a pose, not an animation — 0 compressed, 1 at rest, lerped with no
+`_process` and no easing — so whatever sets it owns the timing.
 
 ## The damage flash
 
-`flash()` bleeds red in from all four corners and fades it out, one-shot and
-self-stopping, the same shape of thing as the radar's `ping()`. It is on HUD 04 only
-so far, and binds to nothing — nothing in `HudState` currently means "took a hit",
-and `status` is an oxygen and power derivation that would fire this on low air.
+`DamageOverlay.flash()` bleeds red in from the four corners and fades it out, once.
+`flash_duration` is the whole flash.
 
-Each corner is three vertices, because the mockup's shape turns out to be mostly
-invisible: it draws a curve reaching the far corner, but the gradient filling it is
-spent long before then and nowhere on that curve exceeds alpha 0.002. What is left is
-a triangle, and interpolating three vertex colours across one is *exact* for a linear
-gradient rather than an approximation of it. Probed against the rasterised mockup the
-worst channel is 3/255, all of it on the two wedges Figma drew 0.3% smaller.
+It is on HUD 04 only and binds to nothing yet: no `HudState` signal means "took a
+hit", and `status` is an oxygen and power derivation that would fire this on low air.
+Call it directly, or give it a signal first.
 
-Nothing ever reaches full red. The gradient starts off-canvas, so the corner already
-sits a third of the way along it and opens at alpha 0.634 — that ceiling is the
-mockup's, not a value to round up.
-
-The rise eases on a curve Godot's `TRANS_*` set does not contain and the fall is
-straight, so a flash snaps on and drifts off rather than being symmetric. That curve
-is the second one of its family here, so the Newton solve the radar used to carry
-moved out to `HudEase.cubic()` and both call it.
+Alpha peaks at 0.634, never 1.0 — that ceiling is the mockup's, not a value to round
+up.
 
 ## How a widget binds
 
@@ -235,17 +195,15 @@ which variant it is.
 
 ## Four things that will bite
 
-**Nothing here runs `_process` except the oxygen ring's alarm, the radar's sonar
-ping, the damage flash and the demo driver.** Widgets redraw when the value they
-report changes, per
-the rule `power_bar.gd` sets out. Note that *defining* `_process` is what registers a
-node for processing — a `_process` that early-returns on its first line is still a
+**Nothing here runs `_process` except the oxygen ring's alarm, the radar's ping, the
+damage flash and the demo driver.** Widgets redraw when the value they report changes,
+per the rule `power_bar.gd` sets out. Note that *defining* `_process` is what registers
+a node for processing — a `_process` that early-returns on its first line is still a
 per-frame script call, so gate it with `set_process()` instead, or do not define it.
 
-The radar is the widget that follows this most literally. Its ping is an event rather
-than a value, so `ping()` turns processing on and `_process` turns it back off on the
-frame the ping ends. An idle radar costs nothing, which is why the dish is empty until
-something asks for a sweep.
+`ping()` and `flash()` are events rather than values, so each turns processing on and
+its `_process` turns it back off on the frame it ends. Idle costs nothing; keep any new
+one-shot to that pattern.
 
 **`_get_minimum_size()` is wrong for these widgets, however standard it looks.**
 `Control.set_size()` clamps to `get_combined_minimum_size()` whether or not the parent
