@@ -16,6 +16,10 @@ var _spawn_transform: Transform3D
 
 @onready var body: CharacterBody3D = get_parent()
 @onready var input: PlayerInput = %Input
+@onready var oxygen: PlayerOxygen = %Oxygen
+@onready var power: PlayerPowerClient = %PowerClient
+@onready var lamp: PlayerLamp = %Lamp
+@onready var hands: PlayerHands = %Hands
 
 
 func _ready() -> void:
@@ -52,3 +56,15 @@ func respawn() -> void:
 	input.clear()
 	body.global_transform = _spawn_transform
 	respawned.emit()
+
+
+## The pose plus everything the suit was carrying, for a death rather than a stuck player.
+##
+## `apply_network_fraction` is the setter both stores already have; it re-announces to the
+## HUD and deliberately skips the authority-only `emptied` event, which is what a reset wants.
+func reset() -> void:
+	respawn()
+	oxygen.apply_network_fraction(oxygen.settings.oxygen_start_fraction)
+	power.apply_network_fraction(power.settings.suit_start_fraction)
+	lamp.set_lit(lamp.settings.lamp_starts_on)
+	hands.stow_tool()

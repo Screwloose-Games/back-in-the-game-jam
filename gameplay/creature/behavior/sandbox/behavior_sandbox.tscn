@@ -1,0 +1,11 @@
+[gd_scene load_steps=2 format=3]
+
+; A wrapper, like the suspicion sandbox it instantiates and the perception sandbox under
+; that. The room, the player, the creature and both overlays all come from those scenes;
+; this one adds navigation, the decision layer and a body that moves. See
+; behavior_sandbox.gd for the keybindings and for why nothing is authored here.
+
+[ext_resource type="Script" path="behavior_sandbox.gd" id="1"]
+
+[node name="BehaviorSandbox" type="Node3D"]
+script = ExtResource("1")

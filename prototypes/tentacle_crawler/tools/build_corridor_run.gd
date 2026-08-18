@@ -317,7 +317,9 @@ func _build_lighting(root: Node3D) -> void:
 ## that loads clean and does nothing.
 func _build_actors(root: Node3D) -> void:
 	var marker_scene: PackedScene = load(_res("../components/marker_pilot/marker_pilot.tscn"))
-	var crawler_scene: PackedScene = load(_res("../actors/crawler/crawler.tscn"))
+	var crawler_scene: PackedScene = load(
+		_res("../../../prefabs/character/creature/prefab_creature.tscn")
+	)
 	var camera_scene: PackedScene = load(_res("../components/camera/crawler_camera_director.tscn"))
 
 	var marker: MarkerPilot = marker_scene.instantiate() as MarkerPilot

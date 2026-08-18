@@ -1,0 +1,11 @@
+[gd_scene load_steps=2 format=3]
+
+; A wrapper, like every other sandbox in this project. The cave, the creature, the player, the
+; nests, the Director, the five panels and the motor are all built in code -- see
+; director_sandbox.gd for the keybindings, for the scenario, and for why this one reuses
+; EncounterSandboxGeometry rather than building a third cave.
+
+[ext_resource type="Script" path="director_sandbox.gd" id="1"]
+
+[node name="DirectorSandbox" type="Node3D"]
+script = ExtResource("1")

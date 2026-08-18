@@ -39,7 +39,22 @@ import_script/path=""
 materials/extract=0
 materials/extract_format=0
 materials/extract_path=""
-_subresources={}
+_subresources={
+"nodes": {
+"PATH:voxel_horror/core/torso/body_voxels": {
+"import/skip_import": true
+},
+"PATH:voxel_horror/core/torso/eyes": {
+"import/skip_import": true
+},
+"PATH:voxel_horror/core/torso/fangs": {
+"import/skip_import": true
+},
+"PATH:voxel_horror/core/torso/gullet_voxels": {
+"import/skip_import": true
+}
+}
+}
 gltf/naming_version=2
 gltf/embedded_image_handling=1
 gltf/texture_map_mode=1

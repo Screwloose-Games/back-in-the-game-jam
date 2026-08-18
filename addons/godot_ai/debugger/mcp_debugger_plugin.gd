@@ -62,10 +62,13 @@ const EVAL_COMPILE_GRACE_SEC := 3.0
 ## without flooding the channel; most evals reply before the first probe.
 const EVAL_PROBE_INTERVAL_SEC := 0.35
 
+const VisionRoutingScript := preload("res://addons/godot_ai/vision_routing.gd")
+
 var _log_buffer: McpLogBuffer
 var _game_log_buffer: McpGameLogBuffer
 var _editor_log_buffer: McpEditorLogBuffer
 var _surfaced_error_tracker
+var vision_routing: VisionRoutingScript = null
 
 ## Pending request_id -> {connection, timer, timeout_callable}.
 ## We retain the bound timeout lambda so `_clear_pending` can disconnect
@@ -111,11 +114,12 @@ const BREAK_FRAME_SCRAPE_DELAYS_SEC: Array[float] = [0.5, 2.0]
 
 
 
-func _init(log_buffer: McpLogBuffer = null, game_log_buffer: McpGameLogBuffer = null, editor_log_buffer: McpEditorLogBuffer = null, surfaced_error_tracker = null) -> void:
+func _init(log_buffer: McpLogBuffer = null, game_log_buffer: McpGameLogBuffer = null, editor_log_buffer: McpEditorLogBuffer = null, surfaced_error_tracker = null, vision_routing: VisionRoutingScript = null) -> void:
 	_log_buffer = log_buffer
 	_game_log_buffer = game_log_buffer
 	_editor_log_buffer = editor_log_buffer
 	_surfaced_error_tracker = surfaced_error_tracker
+	self.vision_routing = vision_routing
 
 
 func _has_capture(prefix: String) -> bool:
@@ -838,17 +842,34 @@ func _on_screenshot_response(data: Array) -> void:
 	if connection == null or not is_instance_valid(connection):
 		return
 
-	connection.send_deferred_response(request_id, {
-		"data": {
-			"source": "game",
-			"width": int(data[2]),
-			"height": int(data[3]),
-			"original_width": int(data[4]),
-			"original_height": int(data[5]),
-			"format": "png",
-			"image_base64": data[1],
-		}
-	})
+	var payload := {
+		"source": "game",
+		"width": int(data[2]),
+		"height": int(data[3]),
+		"original_width": int(data[4]),
+		"original_height": int(data[5]),
+		"format": "png",
+		"image_base64": data[1],
+	}
+	## #777: game helpers append frames_drawn + a stale flag so a capture
+	## taken while the game's main loop is frozen (backgrounded window) is
+	## honestly labeled instead of timing out. Older helpers send six fields
+	## — leave the keys absent rather than guessing.
+	if data.size() >= 8:
+		payload["frames_drawn"] = int(data[6])
+		payload["stale_frame"] = bool(data[7])
+		if bool(data[7]):
+			payload["note"] = ("The game window appears backgrounded or its main loop is "
+				+ "stalled; returning the last rendered frame. Focus the game window and "
+				+ "retry for a current frame.")
+	## Vision Routing: when enabled, describe the frame through the configured
+	## vision provider on a
+	## worker thread and reply with the text description instead of the raw
+	## image (see vision_routing.gd). The router replies for us in that case.
+	if vision_routing != null and vision_routing.is_routing_enabled():
+		if vision_routing.route_game_payload(connection, request_id, {"data": payload}):
+			return
+	connection.send_deferred_response(request_id, {"data": payload})
 	if _log_buffer:
 		_log_buffer.log("[debug] <- mcp:screenshot_response (%s)" % request_id)
 
@@ -868,6 +889,14 @@ func _on_screenshot_error(data: Array) -> void:
 	_send_error(connection, request_id, ErrorCodes.INTERNAL_ERROR, message)
 
 
+## #777: the 8s reply timer fired — the screenshot request reached (or should
+## have reached) the game helper and no reply came back. Mirror the eval
+## timeout split (#518): a not-live game gets the attributed
+## _explain_not_live payload; a live game gets GAME_HELPER_TIMEOUT instead of
+## the former opaque INTERNAL_ERROR. With the game side's stalled-loop
+## stale-frame fallback, a live game only lands here when it has nothing
+## rendered to fall back on, its debugger servicing is itself wedged, or the
+## helper died mid-run.
 func _on_timeout(request_id: String) -> void:
 	var pending = _pending.get(request_id)
 	if pending == null:
@@ -877,10 +906,12 @@ func _on_timeout(request_id: String) -> void:
 	if connection == null or not is_instance_valid(connection):
 		return
 	var status := get_game_status(-1, GAME_READY_WAIT_SEC)
-	var err := ErrorCodes.make(ErrorCodes.INTERNAL_ERROR,
-		"Game screenshot timed out after reaching the game helper. The game may be busy or unable to render a frame. Check logs_read(source='game') and retry.")
+	var err: Dictionary
 	if status.get("status", "") != "live":
 		err = _explain_not_live(status, ErrorCodes.INTERNAL_ERROR)
+	else:
+		err = ErrorCodes.make(ErrorCodes.GAME_HELPER_TIMEOUT,
+			"The game process did not return a frame. The game window may be backgrounded or its main loop blocked — focus the game window and retry, or use game_command to confirm liveness.")
 	_send_error_response(connection, request_id, err)
 	if _log_buffer:
 		_log_buffer.log("[debug] !! screenshot timeout (%s)" % request_id)

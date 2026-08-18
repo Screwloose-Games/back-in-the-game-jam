@@ -1,0 +1,11 @@
+[gd_scene load_steps=2 format=3]
+
+; A wrapper, for the same reason verify_perception_runtime.tscn is one: a node added
+; during SceneTree._initialize() never receives _ready().
+;
+; Run this WITHOUT --headless. There is no framebuffer to read back in that mode.
+
+[ext_resource type="Script" path="capture_sandbox.gd" id="1"]
+
+[node name="CaptureSandbox" type="Node"]
+script = ExtResource("1")

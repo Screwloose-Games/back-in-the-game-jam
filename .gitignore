@@ -21,6 +21,9 @@ movies/
 *.blend1
 *.tmp
 
+# Windows file-lock rename artifacts (e.g. ~libvoxel.windows.editor.x86_64.dll)
+~*
+
 .env
 
 .idea/
@@ -28,6 +31,9 @@ movies/
 # Python bytecode (from tooling in .github/scripts, tools/, etc.)
 __pycache__/
 *.pyc
+
+# Downloaded tooling (butler, coi-serviceworker) fetched by tools/publish-itch.py
+tools/.cache/
 
 # tj-actions/changed-files write_output_files target (CI runtime)
 .github/outputs/

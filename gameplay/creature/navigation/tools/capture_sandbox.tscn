@@ -1,0 +1,9 @@
+[gd_scene load_steps=2 format=3]
+
+; Run this WITHOUT --headless. There is no framebuffer to read back in that mode, and
+; the whole point of this scene is the pixels. See capture_sandbox.gd.
+
+[ext_resource type="Script" path="capture_sandbox.gd" id="1"]
+
+[node name="CaptureSandbox" type="Node"]
+script = ExtResource("1")

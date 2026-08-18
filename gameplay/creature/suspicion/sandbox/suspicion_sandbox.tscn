@@ -1,0 +1,10 @@
+[gd_scene load_steps=2 format=3]
+
+; A wrapper, like the perception sandbox it instantiates. The room, the player and the
+; creature all come from that scene; this one adds only the belief layer. See
+; suspicion_sandbox.gd for the keybindings and for why it reuses rather than rebuilds.
+
+[ext_resource type="Script" path="suspicion_sandbox.gd" id="1"]
+
+[node name="SuspicionSandbox" type="Node3D"]
+script = ExtResource("1")

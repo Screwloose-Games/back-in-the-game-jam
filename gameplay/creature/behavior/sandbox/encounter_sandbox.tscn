@@ -1,0 +1,11 @@
+[gd_scene load_steps=2 format=3]
+
+; A wrapper, like every other sandbox in this project. The cave, the creature, the player, the
+; nests, the four overlays and the motor are all built in code -- see encounter_sandbox.gd for
+; the keybindings, for the scenario, and for why this one does NOT instantiate the behavior
+; sandbox the way that one instantiates suspicion's.
+
+[ext_resource type="Script" path="encounter_sandbox.gd" id="1"]
+
+[node name="EncounterSandbox" type="Node3D"]
+script = ExtResource("1")

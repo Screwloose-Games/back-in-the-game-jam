@@ -1,0 +1,191 @@
+[gd_scene format=3 uid="uid://bxdrx2sw2huv3"]
+
+[ext_resource type="Script" uid="uid://jnwuf8blhso8" path="res://prefabs/character/creature/crawler_body.gd" id="1_body"]
+[ext_resource type="Script" uid="uid://bplrnxntp535n" path="res://prototypes/tentacle_crawler/components/rig/crawler_rig.gd" id="2_rig"]
+[ext_resource type="PackedScene" uid="uid://c82xv6ka1nfp3" path="res://prototypes/tentacle_crawler/assets/models/cosmic-horror.glb" id="3_model"]
+[ext_resource type="PackedScene" uid="uid://ddunw1ib1dha4" path="res://assets/art/gameplay/fractal_voxel_monster/sk_fractal_voxel_monster.tscn" id="4_qtx0q"]
+[ext_resource type="Script" uid="uid://bktwe4q0eiecg" path="res://prototypes/tentacle_crawler/components/tentacle/tentacle_array.gd" id="4_tentacles"]
+[ext_resource type="PackedScene" path="res://prototypes/tentacle_crawler/components/tentacle/tentacle_bones.tscn" id="5_bones"]
+[ext_resource type="Script" uid="uid://d3fo08f7pllfv" path="res://prototypes/tentacle_crawler/components/tentacle/tentacle_impact_audio.gd" id="6_impact_audio"]
+[ext_resource type="Script" uid="uid://cjfwieos5qbtf" path="res://gameplay/creature/perception/creature_perception.gd" id="7_perception"]
+[ext_resource type="Script" uid="uid://c4wthaygjxy6t" path="res://gameplay/creature/perception/perception_config.gd" id="8_perception_config"]
+[ext_resource type="Script" uid="uid://dmlsmjj6lba1n" path="res://gameplay/creature/suspicion/creature_suspicion.gd" id="9_suspicion"]
+[ext_resource type="Script" uid="uid://bncf8uqsulxr3" path="res://gameplay/creature/suspicion/suspicion_config.gd" id="10_suspicion_config"]
+[ext_resource type="Script" uid="uid://c2kklfgrr1quj" path="res://gameplay/creature/navigation/creature_navigation.gd" id="11_navigation"]
+[ext_resource type="Script" uid="uid://b0v8fjax0656c" path="res://gameplay/creature/navigation/navigation_config.gd" id="12_navigation_config"]
+[ext_resource type="Script" uid="uid://b4qqu1ydcogls" path="res://gameplay/creature/navigation/clearance_profile.gd" id="13_clearance"]
+[ext_resource type="Script" uid="uid://bde5u1w54uw1o" path="res://gameplay/creature/navigation/locomotion_profile.gd" id="14_locomotion"]
+[ext_resource type="Script" uid="uid://bpxo6c6ebjtxf" path="res://gameplay/creature/navigation/locomotion/avoidance/avoidance_profile.gd" id="15_avoidance"]
+[ext_resource type="Script" uid="uid://c1ek3w2c24rwt" path="res://gameplay/creature/behavior/creature_behavior.gd" id="16_behavior"]
+[ext_resource type="Script" uid="uid://ba1k2tg60qcx5" path="res://gameplay/creature/behavior/behavior_config.gd" id="17_behavior_config"]
+[ext_resource type="Script" uid="uid://kbo8x76p7o8g" path="res://prefabs/character/creature/creature_agent.gd" id="18_agent"]
+[ext_resource type="Script" uid="uid://cpsoqaj3ya3uf" path="res://prefabs/character/creature/creature_debug_readout.gd" id="19_debug_readout"]
+
+[sub_resource type="Resource" id="Resource_perception_config"]
+script = ExtResource("8_perception_config")
+geometry_perception_enabled = false
+
+[sub_resource type="Resource" id="Resource_suspicion_config"]
+script = ExtResource("10_suspicion_config")
+
+[sub_resource type="Resource" id="Resource_clearance"]
+script = ExtResource("13_clearance")
+normal_radius_equivalent = 2.0
+squeezed_radius_equivalent = 2.0
+
+[sub_resource type="Resource" id="Resource_avoidance"]
+script = ExtResource("15_avoidance")
+hold_distance = 2.2
+
+[sub_resource type="Resource" id="Resource_locomotion"]
+script = ExtResource("14_locomotion")
+avoidance = SubResource("Resource_avoidance")
+
+[sub_resource type="Resource" id="Resource_navigation_config"]
+script = ExtResource("12_navigation_config")
+clearance_profile = SubResource("Resource_clearance")
+locomotion_profile = SubResource("Resource_locomotion")
+candidate_spacing = 1.0
+node_separation = 2.0
+comfortable_clearance = 3.5
+waypoint_arrival_distance = 2.5
+knowledge_starts_known = false
+knowledge_decay_per_second = 0.0
+bake_queries_per_frame = 1024
+
+[sub_resource type="Resource" id="Resource_behavior_config"]
+script = ExtResource("17_behavior_config")
+arrive_distance = 4.0
+attack_range_m = 3.5
+alertness_unalerted = 0.3
+
+[node name="Crawler" type="Node3D" unique_id=702738059 node_paths=PackedStringArray("target_marker", "tentacles")]
+script = ExtResource("1_body")
+target_marker = NodePath("Marker")
+tentacles = NodePath("Tentacles")
+
+[node name="sk_fractal_voxel_monster" parent="." unique_id=1822333854 instance=ExtResource("4_qtx0q")]
+transform = Transform3D(-0.99905217, -0.042537197, 0.0092389155, -0.043224253, 0.9945254, -0.09513672, -0.0051414915, -0.095445886, -0.99542135, 0, 1.6500242, -1.2210633)
+
+[node name="Rig" type="Node3D" parent="." unique_id=736733455 node_paths=PackedStringArray("model", "hull", "limbs")]
+unique_name_in_owner = true
+script = ExtResource("2_rig")
+model = NodePath("Model")
+hull = NodePath("Hull")
+limbs = NodePath("Limbs")
+
+[node name="Hull" type="Node3D" parent="Rig" unique_id=587295086]
+unique_name_in_owner = true
+
+[node name="Limbs" type="Node3D" parent="Rig" unique_id=1783361499]
+unique_name_in_owner = true
+
+[node name="Model" parent="Rig" unique_id=1063227395 instance=ExtResource("3_model")]
+
+[node name="Tentacles" type="Node3D" parent="." unique_id=416388767 node_paths=PackedStringArray("body", "shoulders", "rig")]
+script = ExtResource("4_tentacles")
+body = NodePath("..")
+shoulders = NodePath("../Rig/Limbs")
+rig = NodePath("../Rig")
+
+[node name="Bones" parent="." unique_id=328912137 node_paths=PackedStringArray("tentacles", "rig") instance=ExtResource("5_bones")]
+tentacles = NodePath("../Tentacles")
+rig = NodePath("../Rig")
+
+[node name="ImpactAudio" type="Node3D" parent="." unique_id=1369423638 node_paths=PackedStringArray("tentacles")]
+script = ExtResource("6_impact_audio")
+tentacles = NodePath("../Tentacles")
+
+[node name="Marker" type="Marker3D" parent="." unique_id=1120044501]
+unique_name_in_owner = true
+top_level = true
+
+[node name="Perception" type="Node3D" parent="." unique_id=1885330277]
+unique_name_in_owner = true
+script = ExtResource("7_perception")
+config = SubResource("Resource_perception_config")
+candidate_group = &"player"
+hearing_seed = 20250816
+
+[node name="Suspicion" type="Node" parent="." unique_id=1447290618]
+unique_name_in_owner = true
+script = ExtResource("9_suspicion")
+config = SubResource("Resource_suspicion_config")
+
+[node name="Navigation" type="Node3D" parent="." unique_id=1074658323]
+unique_name_in_owner = true
+script = ExtResource("11_navigation")
+config = SubResource("Resource_navigation_config")
+
+[node name="Behavior" type="Node" parent="." unique_id=1963251844 node_paths=PackedStringArray("suspicion", "perception", "navigation", "body")]
+unique_name_in_owner = true
+script = ExtResource("16_behavior")
+suspicion = NodePath("../Suspicion")
+perception = NodePath("../Perception")
+navigation = NodePath("../Navigation")
+config = SubResource("Resource_behavior_config")
+body = NodePath("..")
+behavior_seed = 20250816
+
+[node name="Agent" type="Node" parent="." unique_id=1240951338 node_paths=PackedStringArray("body", "marker", "navigation", "perception", "suspicion", "behavior")]
+unique_name_in_owner = true
+script = ExtResource("18_agent")
+body = NodePath("..")
+marker = NodePath("../Marker")
+navigation = NodePath("../Navigation")
+perception = NodePath("../Perception")
+suspicion = NodePath("../Suspicion")
+behavior = NodePath("../Behavior")
+
+[node name="DebugReadout" type="Node3D" parent="." unique_id=111561494 node_paths=PackedStringArray("body", "behavior", "navigation", "state_label", "action_label", "nav_label")]
+unique_name_in_owner = true
+script = ExtResource("19_debug_readout")
+body = NodePath("..")
+behavior = NodePath("../Behavior")
+navigation = NodePath("../Navigation")
+state_label = NodePath("StateLabel")
+action_label = NodePath("ActionLabel")
+nav_label = NodePath("NavLabel")
+
+[node name="StateLabel" type="Label3D" parent="DebugReadout" unique_id=1408558474]
+pixel_size = 0.0015
+billboard = 1
+no_depth_test = true
+fixed_size = true
+render_priority = 4
+outline_render_priority = 3
+modulate = Color(0.6, 0.66, 0.72, 1)
+outline_modulate = Color(0, 0, 0, 0.85)
+text = "state"
+font_size = 44
+outline_size = 14
+vertical_alignment = 0
+
+[node name="ActionLabel" type="Label3D" parent="DebugReadout" unique_id=985534153]
+pixel_size = 0.0015
+offset = Vector2(0, 130)
+billboard = 1
+no_depth_test = true
+fixed_size = true
+render_priority = 4
+outline_render_priority = 3
+modulate = Color(0.72, 0.94, 1, 1)
+outline_modulate = Color(0, 0, 0, 0.85)
+text = "action"
+font_size = 36
+vertical_alignment = 0
+
+[node name="NavLabel" type="Label3D" parent="DebugReadout" unique_id=1777691593]
+pixel_size = 0.0015
+offset = Vector2(0, 250)
+billboard = 1
+no_depth_test = true
+fixed_size = true
+render_priority = 4
+outline_render_priority = 3
+modulate = Color(0.82, 0.84, 0.88, 1)
+outline_modulate = Color(0, 0, 0, 0.85)
+text = "nav"
+font_size = 28
+outline_size = 10
+vertical_alignment = 0
