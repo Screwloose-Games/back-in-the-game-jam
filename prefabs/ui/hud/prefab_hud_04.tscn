@@ -10,6 +10,7 @@
 [ext_resource type="Script" uid="uid://4n020b3ff8b1" path="res://prefabs/ui/hud/widgets/hud_reticle_zoom.gd" id="8_reticle"]
 [ext_resource type="Script" uid="uid://ck0bwvusmhvqk" path="res://prefabs/ui/hud/widgets/hud_voice_indicator.gd" id="9_voice"]
 [ext_resource type="Script" uid="uid://bgddxtoqosxtw" path="res://prefabs/ui/hud/widgets/hud_damage_overlay.gd" id="10_damage"]
+[ext_resource type="PackedScene" path="res://prefabs/ui/hud/widgets/mineral_score.tscn" id="11_m5ha1"]
 
 [node name="prefab_hud_04" type="CanvasLayer" unique_id=1820037453]
 script = ExtResource("1_root")
@@ -112,7 +113,7 @@ mouse_filter = 2
 
 [node name="VoiceIndicator" type="Control" parent="Chrome" unique_id=1904337210]
 texture_filter = 1
-anchors_preset = 2
+anchors_preset = 0
 anchor_top = 1.0
 anchor_bottom = 1.0
 offset_left = 59.0
@@ -141,10 +142,19 @@ script = ExtResource("8_reticle")
 
 [node name="DamageOverlay" type="Control" parent="Chrome" unique_id=1103477612]
 texture_filter = 1
-anchors_preset = 15
+anchors_preset = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
 script = ExtResource("10_damage")
+
+[node name="MineralScore" parent="Chrome" unique_id=2022573382 instance=ExtResource("11_m5ha1")]
+texture_filter = 1
+layout_mode = 1
+offset_left = 500.0
+offset_top = 90.0
+offset_right = -500.0
+offset_bottom = -600.0
+mouse_filter = 2

@@ -1,0 +1,125 @@
+{
+  "asset": {
+    "version": "2.0",
+    "generator": "tools/voxel-minerals/build_mineral_chunk.py",
+    "extras": {
+      "bufferSha1": "21bf6859b791f846c3d92f318c07985310fc12e1"
+    }
+  },
+  "scene": 0,
+  "scenes": [
+    {
+      "nodes": [
+        0
+      ]
+    }
+  ],
+  "nodes": [
+    {
+      "name": "crystal_chunk",
+      "mesh": 0
+    }
+  ],
+  "meshes": [
+    {
+      "name": "sm_mineral_chunk",
+      "primitives": [
+        {
+          "attributes": {
+            "POSITION": 0,
+            "NORMAL": 1,
+            "COLOR_0": 2
+          },
+          "indices": 3,
+          "material": 0,
+          "mode": 4
+        }
+      ]
+    }
+  ],
+  "materials": [
+    {
+      "name": "mat_mineral_chunk_placeholder",
+      "pbrMetallicRoughness": {
+        "baseColorFactor": [
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "metallicFactor": 0.0,
+        "roughnessFactor": 0.92
+      },
+      "doubleSided": false
+    }
+  ],
+  "buffers": [
+    {
+      "uri": "sm_mineral_chunk.bin",
+      "byteLength": 20460
+    }
+  ],
+  "bufferViews": [
+    {
+      "buffer": 0,
+      "byteOffset": 0,
+      "byteLength": 7920,
+      "target": 34962
+    },
+    {
+      "buffer": 0,
+      "byteOffset": 7920,
+      "byteLength": 7920,
+      "target": 34962
+    },
+    {
+      "buffer": 0,
+      "byteOffset": 15840,
+      "byteLength": 2640,
+      "target": 34962
+    },
+    {
+      "buffer": 0,
+      "byteOffset": 18480,
+      "byteLength": 1980,
+      "target": 34963
+    }
+  ],
+  "accessors": [
+    {
+      "bufferView": 0,
+      "componentType": 5126,
+      "count": 660,
+      "type": "VEC3",
+      "min": [
+        -0.30000000000000004,
+        -0.65,
+        -0.30000000000000004
+      ],
+      "max": [
+        0.30000000000000004,
+        0.65,
+        0.30000000000000004
+      ]
+    },
+    {
+      "bufferView": 1,
+      "componentType": 5126,
+      "count": 660,
+      "type": "VEC3"
+    },
+    {
+      "bufferView": 2,
+      "componentType": 5121,
+      "count": 660,
+      "type": "VEC4",
+      "normalized": true
+    },
+    {
+      "bufferView": 3,
+      "componentType": 5123,
+      "count": 990,
+      "type": "SCALAR"
+    }
+  ]
+}

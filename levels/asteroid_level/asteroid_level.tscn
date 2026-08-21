@@ -5,6 +5,10 @@
 [ext_resource type="Script" uid="uid://dqak1y4u3bt1o" path="res://levels/design/level_geometry_builder.gd" id="3_builder"]
 [ext_resource type="PackedScene" path="res://assets/art/environment/level_blockout/sm_level_full_blockout.tscn" id="4_baked"]
 [ext_resource type="PackedScene" uid="uid://b3kx7mqp2wvda" path="res://prefabs/gameplay/prefab_life_support_cube.tscn" id="5_life_support"]
+[ext_resource type="PackedScene" uid="uid://b1h45dfpk846w" path="res://prefabs/environment/minerals/prefab_mineral_deposit.tscn" id="6_deposit"]
+[ext_resource type="Resource" path="res://systems/minerals/types/mineral_type_common.tres" id="7_common"]
+[ext_resource type="Resource" path="res://systems/minerals/types/mineral_type_uncommon.tres" id="8_uncommon"]
+[ext_resource type="Resource" path="res://systems/minerals/types/mineral_type_rare.tres" id="9_rare"]
 
 [sub_resource type="Environment" id="Environment_void"]
 background_mode = 1
@@ -44,3 +48,17 @@ unique_name_in_owner = true
 unique_name_in_owner = true
 spawn_path = NodePath("../Players")
 spawn_limit = 2
+
+[node name="Minerals" type="Node3D" parent="." unique_id=300544401]
+
+[node name="MineralCommon" parent="Minerals" unique_id=300544402 instance=ExtResource("6_deposit")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -89.591156, -37.375397, 35.425)
+mineral_type = ExtResource("7_common")
+
+[node name="MineralUncommon" parent="Minerals" unique_id=300544403 instance=ExtResource("6_deposit")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -90.7799, -32.8231, 38)
+mineral_type = ExtResource("8_uncommon")
+
+[node name="MineralRare" parent="Minerals" unique_id=300544404 instance=ExtResource("6_deposit")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -93.2, -32.8231, 34)
+mineral_type = ExtResource("9_rare")

@@ -1,6 +1,7 @@
 [gd_scene format=3 uid="uid://d2rsjfnwejjoa"]
 
 [ext_resource type="PackedScene" uid="uid://oju4tyl0vcdi" path="res://assets/art/character/sk_player_character.tscn" id="1_model"]
+[ext_resource type="Script" uid="uid://ba8oki7a3kkdh" path="res://prefabs/character/player/prefab_player.gd" id="1_ule5x"]
 [ext_resource type="Resource" uid="uid://bqn30uml0yxuc" path="res://prefabs/character/player/player_settings.tres" id="2_settings"]
 [ext_resource type="Script" uid="uid://b5dewqk5xvrpq" path="res://prefabs/character/player/components/player_input.gd" id="3_input"]
 [ext_resource type="Script" uid="uid://bsrx8pc8eq3xe" path="res://prefabs/character/player/components/player_locomotion.gd" id="4_locomotion"]
@@ -34,18 +35,12 @@
 [ext_resource type="AudioStream" uid="uid://b746nijrx2rm1" path="res://assets/sfx/player/Impact_Death_01.wav" id="32_death"]
 [ext_resource type="AudioStream" uid="uid://cg8dlcqhycr3e" path="res://assets/sfx/ui/UI_HUD_Helmet_Failure.wav" id="33_helmet_failure"]
 [ext_resource type="AudioStream" uid="uid://b1hj1mhdsmqgd" path="res://assets/sfx/ui/UI_HUD_Helmet_Status_Downgrade.wav" id="34_status_downgrade"]
-[ext_resource type="Script" path="res://prefabs/character/player/components/player_thruster_sfx.gd" id="35_thrusters"]
+[ext_resource type="Script" uid="uid://dvleqwmc3ay0q" path="res://prefabs/character/player/components/player_thruster_sfx.gd" id="35_thrusters"]
 [ext_resource type="Script" uid="uid://b0vgniu6t0t7i" path="res://prefabs/character/player/components/player_beam_noise_emitter.gd" id="36_beam_noise"]
+[ext_resource type="Script" uid="uid://bjin202gpxvqp" path="res://prefabs/character/player/components/player_mineral_collector.gd" id="37_1etdb"]
 
 [sub_resource type="SphereShape3D" id="SphereShape3D_hull"]
 radius = 0.4
-
-[sub_resource type="AudioStreamRandomizer" id="AudioStreamRandomizer_suit_impact"]
-random_pitch = 1.15
-random_volume_offset_db = 2.0
-streams_count = 2
-stream_0/stream = ExtResource("30_impact_01")
-stream_1/stream = ExtResource("31_impact_02")
 
 [sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_base"]
 animation = &"idle_float"
@@ -107,7 +102,15 @@ nodes/upper/node = SubResource("AnimationNodeStateMachine_upper")
 nodes/upper/position = Vector2(60, 240)
 node_connections = [&"output", 0, &"blend", &"blend", 0, &"base", &"blend", 1, &"upper"]
 
+[sub_resource type="AudioStreamRandomizer" id="AudioStreamRandomizer_suit_impact"]
+random_pitch = 1.15
+random_volume_offset_db = 2.0
+streams_count = 2
+stream_0/stream = ExtResource("30_impact_01")
+stream_1/stream = ExtResource("31_impact_02")
+
 [node name="prefab_player" type="Node3D" unique_id=512546844]
+script = ExtResource("1_ule5x")
 
 [node name="PlayerBody" type="CharacterBody3D" parent="." unique_id=1318507332 groups=["player"]]
 collision_layer = 2
@@ -245,7 +248,7 @@ unique_name_in_owner = true
 script = ExtResource("13_noise")
 settings = ExtResource("2_settings")
 
-[node name="BeamNoiseEmitter" type="Node" parent="PlayerBody"]
+[node name="BeamNoiseEmitter" type="Node" parent="PlayerBody" unique_id=1944674702]
 unique_name_in_owner = true
 script = ExtResource("36_beam_noise")
 settings = ExtResource("2_settings")
@@ -290,6 +293,17 @@ death_impact = ExtResource("32_death")
 helmet_failure = ExtResource("33_helmet_failure")
 status_downgrade = ExtResource("34_status_downgrade")
 
+[node name="Impact" type="AudioStreamPlayer3D" parent="PlayerBody/Sfx" unique_id=1990110005]
+volume_db = -6.0
+unit_size = 6.0
+max_db = 0.0
+max_distance = 40.0
+bus = &"SFX"
+
+[node name="Helmet" type="AudioStreamPlayer" parent="PlayerBody/Sfx" unique_id=1990110006]
+volume_db = -8.0
+bus = &"SFX"
+
 [node name="Thrusters" type="Node3D" parent="PlayerBody" unique_id=1990110020]
 unique_name_in_owner = true
 script = ExtResource("35_thrusters")
@@ -299,123 +313,116 @@ thruster_off = ExtResource("29_thruster_off")
 
 [node name="ForwardLoop" type="AudioStreamPlayer3D" parent="PlayerBody/Thrusters" unique_id=1990110021]
 volume_db = -16.0
-max_db = 0.0
 unit_size = 3.0
+max_db = 0.0
 max_distance = 30.0
 bus = &"SFX"
 
 [node name="ForwardEdge" type="AudioStreamPlayer3D" parent="PlayerBody/Thrusters" unique_id=1990110022]
 volume_db = -12.0
-max_db = 0.0
 unit_size = 3.0
+max_db = 0.0
 max_distance = 30.0
 bus = &"SFX"
 
 [node name="BackLoop" type="AudioStreamPlayer3D" parent="PlayerBody/Thrusters" unique_id=1990110023]
 volume_db = -16.0
-max_db = 0.0
 unit_size = 3.0
+max_db = 0.0
 max_distance = 30.0
 bus = &"SFX"
 
 [node name="BackEdge" type="AudioStreamPlayer3D" parent="PlayerBody/Thrusters" unique_id=1990110024]
 volume_db = -12.0
-max_db = 0.0
 unit_size = 3.0
+max_db = 0.0
 max_distance = 30.0
 bus = &"SFX"
 
 [node name="LeftLoop" type="AudioStreamPlayer3D" parent="PlayerBody/Thrusters" unique_id=1990110025]
 volume_db = -16.0
-max_db = 0.0
 unit_size = 3.0
+max_db = 0.0
 max_distance = 30.0
 bus = &"SFX"
 
 [node name="LeftEdge" type="AudioStreamPlayer3D" parent="PlayerBody/Thrusters" unique_id=1990110026]
 volume_db = -12.0
-max_db = 0.0
 unit_size = 3.0
+max_db = 0.0
 max_distance = 30.0
 bus = &"SFX"
 
 [node name="RightLoop" type="AudioStreamPlayer3D" parent="PlayerBody/Thrusters" unique_id=1990110027]
 volume_db = -16.0
-max_db = 0.0
 unit_size = 3.0
+max_db = 0.0
 max_distance = 30.0
 bus = &"SFX"
 
 [node name="RightEdge" type="AudioStreamPlayer3D" parent="PlayerBody/Thrusters" unique_id=1990110028]
 volume_db = -12.0
-max_db = 0.0
 unit_size = 3.0
+max_db = 0.0
 max_distance = 30.0
 bus = &"SFX"
 
 [node name="UpLoop" type="AudioStreamPlayer3D" parent="PlayerBody/Thrusters" unique_id=1990110029]
 volume_db = -16.0
-max_db = 0.0
 unit_size = 3.0
+max_db = 0.0
 max_distance = 30.0
 bus = &"SFX"
 
 [node name="UpEdge" type="AudioStreamPlayer3D" parent="PlayerBody/Thrusters" unique_id=1990110030]
 volume_db = -12.0
-max_db = 0.0
 unit_size = 3.0
+max_db = 0.0
 max_distance = 30.0
 bus = &"SFX"
 
 [node name="DownLoop" type="AudioStreamPlayer3D" parent="PlayerBody/Thrusters" unique_id=1990110031]
 volume_db = -16.0
-max_db = 0.0
 unit_size = 3.0
+max_db = 0.0
 max_distance = 30.0
 bus = &"SFX"
 
 [node name="DownEdge" type="AudioStreamPlayer3D" parent="PlayerBody/Thrusters" unique_id=1990110032]
 volume_db = -12.0
-max_db = 0.0
 unit_size = 3.0
+max_db = 0.0
 max_distance = 30.0
 bus = &"SFX"
 
 [node name="RollLeftLoop" type="AudioStreamPlayer3D" parent="PlayerBody/Thrusters" unique_id=1990110033]
 volume_db = -16.0
-max_db = 0.0
 unit_size = 3.0
+max_db = 0.0
 max_distance = 30.0
 bus = &"SFX"
 
 [node name="RollLeftEdge" type="AudioStreamPlayer3D" parent="PlayerBody/Thrusters" unique_id=1990110034]
 volume_db = -12.0
-max_db = 0.0
 unit_size = 3.0
+max_db = 0.0
 max_distance = 30.0
 bus = &"SFX"
 
 [node name="RollRightLoop" type="AudioStreamPlayer3D" parent="PlayerBody/Thrusters" unique_id=1990110035]
 volume_db = -16.0
-max_db = 0.0
 unit_size = 3.0
+max_db = 0.0
 max_distance = 30.0
 bus = &"SFX"
 
 [node name="RollRightEdge" type="AudioStreamPlayer3D" parent="PlayerBody/Thrusters" unique_id=1990110036]
 volume_db = -12.0
-max_db = 0.0
 unit_size = 3.0
+max_db = 0.0
 max_distance = 30.0
 bus = &"SFX"
 
-[node name="Impact" type="AudioStreamPlayer3D" parent="PlayerBody/Sfx" unique_id=1990110005]
-volume_db = -6.0
-max_db = 0.0
-unit_size = 6.0
-max_distance = 40.0
-bus = &"SFX"
-
-[node name="Helmet" type="AudioStreamPlayer" parent="PlayerBody/Sfx" unique_id=1990110006]
-volume_db = -8.0
-bus = &"SFX"
+[node name="MineralCollector" type="Node" parent="PlayerBody" unique_id=300544350]
+unique_name_in_owner = true
+script = ExtResource("37_1etdb")

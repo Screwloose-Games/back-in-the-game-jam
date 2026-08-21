@@ -8,6 +8,7 @@ signal contacts_changed(contacts: PackedVector3Array)
 signal objective_changed(shown: bool, at: Vector2)
 signal status_changed(status: int)
 signal voice_changed(live: bool, transmitting: bool, loudness: float)
+signal mineral_score_changed(score: int)
 
 enum Status { NOMINAL, STRAINED, CRITICAL }
 
@@ -57,6 +58,13 @@ var status: Status = Status.NOMINAL:
 		status = value
 		status_changed.emit(status)
 
+var mineral_score: int = 0:
+	set(value):
+		if value == mineral_score:
+			return
+		mineral_score = value
+		mineral_score_changed.emit(mineral_score)
+
 ## Whether the microphone is open at all. A voice-activated gate means an enabled
 ## microphone is a hot one, so this has to be visible whenever it is true.
 var voice_live := false:
@@ -91,6 +99,7 @@ func announce_all() -> void:
 	objective_changed.emit(objective_shown, objective_at)
 	status_changed.emit(status)
 	voice_changed.emit(voice_live, voice_transmitting, voice_loudness)
+	mineral_score_changed.emit(mineral_score)
 
 
 static func status_for(fraction: float) -> Status:
