@@ -1,0 +1,32 @@
+[gd_resource type="Resource" script_class="CutsceneData" format=3 uid="uid://domieeb547b02"]
+
+[ext_resource type="Script" uid="uid://4dc8571pdbd6" path="res://prototypes/elevator_cutscene/cutscene_data.gd" id="1_data"]
+[ext_resource type="Script" uid="uid://bejsjcumi6eyp" path="res://prototypes/elevator_cutscene/cutscene_timed_effect.gd" id="2_effect"]
+
+[sub_resource type="Resource" id="Effect_car_descending"]
+script = ExtResource("2_effect")
+effect_name = &"car_descending"
+
+[sub_resource type="Resource" id="Effect_hud_online"]
+script = ExtResource("2_effect")
+time = 17.5
+effect_name = &"hud_online"
+
+[sub_resource type="Resource" id="Effect_car_stopped"]
+script = ExtResource("2_effect")
+time = 20.5
+effect_name = &"car_stopped"
+
+[sub_resource type="Resource" id="Effect_doors_unlocked"]
+script = ExtResource("2_effect")
+time = 21.1
+effect_name = &"doors_unlocked"
+
+[sub_resource type="Resource" id="Effect_workday_begun"]
+script = ExtResource("2_effect")
+time = 24.5
+effect_name = &"workday_begun"
+
+[resource]
+script = ExtResource("1_data")
+effects = Array[ExtResource("2_effect")]([SubResource("Effect_car_descending"), SubResource("Effect_hud_online"), SubResource("Effect_car_stopped"), SubResource("Effect_doors_unlocked"), SubResource("Effect_workday_begun")])

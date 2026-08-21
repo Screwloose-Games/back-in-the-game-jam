@@ -1,0 +1,231 @@
+{
+  "asset": {
+    "version": "2.0",
+    "generator": "tools/voxel-props/build_props.py",
+    "extras": {
+      "bufferSha1": "3d14ca2122a6881c5c083c7423df93c98657d55e"
+    }
+  },
+  "scene": 0,
+  "scenes": [
+    {
+      "nodes": [
+        0,
+        1
+      ]
+    }
+  ],
+  "nodes": [
+    {
+      "name": "switch_housing",
+      "mesh": 0
+    },
+    {
+      "name": "switch_paddle",
+      "mesh": 1,
+      "translation": [
+        0.0,
+        0.84,
+        -0.3
+      ]
+    }
+  ],
+  "meshes": [
+    {
+      "name": "sm_wall_switch_switch_housing",
+      "primitives": [
+        {
+          "attributes": {
+            "POSITION": 0,
+            "NORMAL": 1,
+            "TEXCOORD_0": 2
+          },
+          "indices": 3,
+          "material": 0,
+          "mode": 4
+        }
+      ]
+    },
+    {
+      "name": "sm_wall_switch_switch_paddle",
+      "primitives": [
+        {
+          "attributes": {
+            "POSITION": 4,
+            "NORMAL": 5,
+            "TEXCOORD_0": 6
+          },
+          "indices": 7,
+          "material": 0,
+          "mode": 4
+        }
+      ]
+    }
+  ],
+  "materials": [
+    {
+      "name": "mat_wall_switch",
+      "pbrMetallicRoughness": {
+        "baseColorTexture": {
+          "index": 0
+        },
+        "baseColorFactor": [
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "metallicFactor": 0.0,
+        "roughnessFactor": 0.78
+      },
+      "doubleSided": false
+    }
+  ],
+  "textures": [
+    {
+      "sampler": 0,
+      "source": 0
+    }
+  ],
+  "images": [
+    {
+      "mimeType": "image/png",
+      "name": "t_wall_switch_basecolor",
+      "uri": "t_wall_switch_basecolor.png"
+    }
+  ],
+  "samplers": [
+    {
+      "magFilter": 9728,
+      "minFilter": 9728,
+      "wrapS": 33071,
+      "wrapT": 33071
+    }
+  ],
+  "buffers": [
+    {
+      "uri": "sm_wall_switch.bin",
+      "byteLength": 9940
+    }
+  ],
+  "bufferViews": [
+    {
+      "buffer": 0,
+      "byteOffset": 0,
+      "byteLength": 2640,
+      "target": 34962
+    },
+    {
+      "buffer": 0,
+      "byteOffset": 2640,
+      "byteLength": 2640,
+      "target": 34962
+    },
+    {
+      "buffer": 0,
+      "byteOffset": 5280,
+      "byteLength": 1760,
+      "target": 34962
+    },
+    {
+      "buffer": 0,
+      "byteOffset": 7040,
+      "byteLength": 660,
+      "target": 34963
+    },
+    {
+      "buffer": 0,
+      "byteOffset": 7700,
+      "byteLength": 768,
+      "target": 34962
+    },
+    {
+      "buffer": 0,
+      "byteOffset": 8468,
+      "byteLength": 768,
+      "target": 34962
+    },
+    {
+      "buffer": 0,
+      "byteOffset": 9236,
+      "byteLength": 512,
+      "target": 34962
+    },
+    {
+      "buffer": 0,
+      "byteOffset": 9748,
+      "byteLength": 192,
+      "target": 34963
+    }
+  ],
+  "accessors": [
+    {
+      "bufferView": 0,
+      "componentType": 5126,
+      "count": 220,
+      "type": "VEC3",
+      "min": [
+        -0.3,
+        0.0,
+        -0.3
+      ],
+      "max": [
+        0.3,
+        0.96,
+        0.0
+      ]
+    },
+    {
+      "bufferView": 1,
+      "componentType": 5126,
+      "count": 220,
+      "type": "VEC3"
+    },
+    {
+      "bufferView": 2,
+      "componentType": 5126,
+      "count": 220,
+      "type": "VEC2"
+    },
+    {
+      "bufferView": 3,
+      "componentType": 5123,
+      "count": 330,
+      "type": "SCALAR"
+    },
+    {
+      "bufferView": 4,
+      "componentType": 5126,
+      "count": 64,
+      "type": "VEC3",
+      "min": [
+        -0.12,
+        -0.6599999999999999,
+        -0.18
+      ],
+      "max": [
+        0.12,
+        0.0,
+        0.06
+      ]
+    },
+    {
+      "bufferView": 5,
+      "componentType": 5126,
+      "count": 64,
+      "type": "VEC3"
+    },
+    {
+      "bufferView": 6,
+      "componentType": 5126,
+      "count": 64,
+      "type": "VEC2"
+    },
+    {
+      "bufferView": 7,
+      "componentType": 5123,
+      "count": 96,
+      "type": "SCALAR"
+    }
+  ]
+}

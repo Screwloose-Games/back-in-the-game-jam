@@ -123,6 +123,14 @@ func capture_mouse() -> void:
 	_set_mouse_captured(true)
 
 
+## The other half of capture_mouse, for a cutscene that wants the pointer back.
+##
+## Writing Input.mouse_mode directly instead leaves _is_mouse_captured stale, and
+## the next toggle_mouse_capture() then goes the wrong way.
+func release_mouse() -> void:
+	_set_mouse_captured(false)
+
+
 func toggle_mouse_capture() -> void:
 	_set_mouse_captured(not _is_mouse_captured)
 

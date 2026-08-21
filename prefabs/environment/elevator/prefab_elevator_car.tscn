@@ -1,0 +1,7 @@
+[gd_scene load_steps=2 format=3 uid="uid://fsfetmlq0amg"]
+
+[ext_resource type="PackedScene" uid="uid://b2emeuolv1oox" path="res://assets/art/environment/elevator_car/sm_elevator_car.tscn" id="1_4be9f"]
+
+[node name="prefab_elevator_car" type="Node3D"]
+
+[node name="sm_elevator_car" parent="." instance=ExtResource("1_4be9f")]

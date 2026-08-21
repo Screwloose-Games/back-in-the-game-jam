@@ -1,0 +1,116 @@
+[gd_resource type="Animation" format=3]
+
+[resource]
+length = 24.5
+tracks/0/type = "position_3d"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Cutscenes/ElevatorIntro/CameraAnchor")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = PackedFloat32Array(0, 1, -0.0025, 0.9844, -1.3284, 3, 1, -0.0025, 0.9844, -1.3284, 3.25, 1, 0.0059700008, 0.96859676, -1.2469648, 3.5, 1, 0.028960003, 0.9257024, -1.0259264, 3.75, 1, 0.06284001, 0.8624896, -0.7001856, 4, 1, 0.103980005, 0.7857312, -0.30464315, 4.25, 1, 0.14875, 0.7022, 0.12580001, 4.5, 1, 0.19352001, 0.6186688, 0.5562432, 4.75, 1, 0.23466, 0.5419104, 0.9517857, 5, 1, 0.26854002, 0.4786976, 1.2775265, 5.25, 1, 0.29153, 0.43580323, 1.4985648, 5.5, 1, 0.3, 0.42, 1.58, 11.466666, 1, 0.3, 0.42, 1.58, 11.5, 1, 1.45, 0.2, -1.5, 12, 1, 1.4416001, 0.19832, -1.4958, 12.5, 1, 1.4188, 0.19376001, -1.4844, 13, 1, 1.3852, 0.18704, -1.4676, 13.5, 1, 1.3444, 0.17888, -1.4472001, 14, 1, 1.3, 0.17, -1.425, 14.5, 1, 1.2556, 0.16112, -1.4028, 15, 1, 1.2148, 0.15296, -1.3824, 15.5, 1, 1.1812, 0.14624, -1.3656, 16, 1, 1.1583999, 0.14168, -1.3542, 16.5, 1, 1.15, 0.14, -1.35, 17.466667, 1, 1.15, 0.14, -1.35, 17.5, 1, 0.55, 0.02, 1.2, 24.5, 1, 0.55, 0.02, 1.2)
+tracks/1/type = "rotation_3d"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("Cutscenes/ElevatorIntro/CameraAnchor")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = PackedFloat32Array(0, 1, 0, 0, 0, 1, 3, 1, 0, 0, 0, 1, 3.25, 1, -0.015432559, 0.009853883, 0.00015209614, 0.99983233, 3.5, 1, -0.0371539, 0.02376152, 0.0008836932, 0.99902666, 3.75, 1, -0.050755635, 0.032515664, 0.001653362, 0.99818027, 4, 1, -0.058405623, 0.03746116, 0.002193234, 0.9975874, 4.25, 1, -0.06285099, 0.040343575, 0.0025427432, 0.99720395, 4.5, 1, -0.06555835, 0.042102445, 0.0027685936, 0.9969563, 4.75, 1, -0.06725489, 0.04320599, 0.0029151551, 0.99679565, 5, 1, -0.0683072, 0.043891042, 0.0030080187, 0.99669385, 5.25, 1, -0.06889703, 0.044275213, 0.0030607267, 0.99663615, 5.5, 1, -0.06909395, 0.044403493, 0.0030784283, 0.9966167, 11.466666, 1, -0.06909395, 0.044403493, 0.0030784283, 0.9966167, 11.5, 1, -0.020322885, 0.90743774, 0.044186436, 0.41736227, 12, 1, -0.020206483, 0.907706, 0.044005282, 0.4168033, 12.5, 1, -0.01988565, 0.9084459, 0.043503307, 0.41525662, 13, 1, -0.01939942, 0.9095682, 0.04273496, 0.41289607, 13.5, 1, -0.018786568, 0.9109845, 0.04175318, 0.40989137, 14, 1, -0.01809019, 0.9125966, 0.040619034, 0.40643615, 14.5, 1, -0.017361324, 0.91428715, 0.039410077, 0.40277103, 15, 1, -0.016661244, 0.9159145, 0.038227007, 0.39920145, 15.5, 1, -0.016061774, 0.91731095, 0.037196305, 0.39610493, 16, 1, -0.015642699, 0.9182889, 0.036465794, 0.39391756, 16.5, 1, -0.015485725, 0.91865563, 0.036190003, 0.39309332, 17.466667, 1, -0.015485725, 0.91865563, 0.036190003, 0.39309332, 17.5, 1, -0.049810205, 0.005312323, 0.00026494046, 0.99874455, 24.5, 1, -0.049810205, 0.005312323, 0.00026494046, 0.99874455)
+tracks/2/type = "value"
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/path = NodePath("HUD/MonitorShot:shot_alpha")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/keys = {
+"times": PackedFloat32Array(0, 2.9666667, 3, 24.5),
+"transitions": PackedFloat32Array(1, 1, 1, 1),
+"update": 0,
+"values": [1.0, 1.0, 0.0, 0.0]
+}
+tracks/3/type = "position_3d"
+tracks/3/imported = false
+tracks/3/enabled = true
+tracks/3/path = NodePath("ElevatorCar/Doors/DoorLeft")
+tracks/3/interp = 1
+tracks/3/loop_wrap = true
+tracks/3/keys = PackedFloat32Array(0, 1, 0, 0, 0, 21.1, 1, 0, 0, 0, 21.36, 1, -0.03024, 0, 0, 21.62, 1, -0.11232, 0, 0, 21.88, 1, -0.23328, 0, 0, 22.14, 1, -0.38016, 0, 0, 22.4, 1, -0.54, 0, 0, 22.66, 1, -0.69984, 0, 0, 22.92, 1, -0.84672, 0, 0, 23.18, 1, -0.96768, 0, 0, 23.44, 1, -1.04976, 0, 0, 23.7, 1, -1.08, 0, 0)
+tracks/4/type = "position_3d"
+tracks/4/imported = false
+tracks/4/enabled = true
+tracks/4/path = NodePath("ElevatorCar/Doors/DoorRight")
+tracks/4/interp = 1
+tracks/4/loop_wrap = true
+tracks/4/keys = PackedFloat32Array(0, 1, 0, 0, 0, 21.1, 1, 0, 0, 0, 21.36, 1, 0.03024, 0, 0, 21.62, 1, 0.11232, 0, 0, 21.88, 1, 0.23328, 0, 0, 22.14, 1, 0.38016, 0, 0, 22.4, 1, 0.54, 0, 0, 22.66, 1, 0.69984, 0, 0, 22.92, 1, 0.84672, 0, 0, 23.18, 1, 0.96768, 0, 0, 23.44, 1, 1.04976, 0, 0, 23.7, 1, 1.08, 0, 0)
+tracks/5/type = "value"
+tracks/5/imported = false
+tracks/5/enabled = true
+tracks/5/path = NodePath("Miners/MinerB/Rig/AnimationTree:parameters/blend/blend_amount")
+tracks/5/interp = 1
+tracks/5/loop_wrap = true
+tracks/5/keys = {
+"times": PackedFloat32Array(0, 13.7, 13.772, 13.844, 13.916, 13.988, 14.06, 14.132, 14.204, 14.276, 14.348, 14.42, 15.188, 15.2792, 15.3704, 15.4616, 15.5528, 15.644, 15.7352, 15.8264, 15.9176, 16.0088, 16.1, 24.5),
+"transitions": PackedFloat32Array(1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1),
+"update": 0,
+"values": [0.0, 0.0, 0.028000000000000004, 0.10400000000000002, 0.216, 0.3520000000000001, 0.5, 0.648, 0.7839999999999999, 0.8960000000000001, 0.972, 1.0, 1.0, 0.972, 0.896, 0.784, 0.6479999999999999, 0.5, 0.352, 0.21600000000000008, 0.10399999999999987, 0.028000000000000025, 0.0, 0.0]
+}
+tracks/6/type = "value"
+tracks/6/imported = false
+tracks/6/enabled = true
+tracks/6/path = NodePath("Miners/MinerB:visor_energy")
+tracks/6/interp = 1
+tracks/6/loop_wrap = true
+tracks/6/keys = {
+"times": PackedFloat32Array(0, 14.42, 14.67, 24.5),
+"transitions": PackedFloat32Array(1, 1, 1, 1),
+"update": 0,
+"values": [0.0, 0.0, 0.7, 0.7]
+}
+tracks/7/type = "value"
+tracks/7/imported = false
+tracks/7/enabled = true
+tracks/7/path = NodePath("HUD/HelmetHud:modulate")
+tracks/7/interp = 1
+tracks/7/loop_wrap = true
+tracks/7/keys = {
+"times": PackedFloat32Array(0, 17.466667, 18.4, 24.5),
+"transitions": PackedFloat32Array(1, 1, 1, 1),
+"update": 0,
+"values": [Color(1, 1, 1, 0), Color(1, 1, 1, 0), Color(1, 1, 1, 1), Color(1, 1, 1, 1)]
+}
+tracks/8/type = "value"
+tracks/8/imported = false
+tracks/8/enabled = true
+tracks/8/path = NodePath("HUD/HelmetHud/BeginWorkday:modulate")
+tracks/8/interp = 1
+tracks/8/loop_wrap = true
+tracks/8/keys = {
+"times": PackedFloat32Array(0, 18.9, 19.7, 21.3, 22.1, 24.5),
+"transitions": PackedFloat32Array(1, 1, 1, 1, 1, 1),
+"update": 0,
+"values": [Color(1, 1, 1, 0), Color(1, 1, 1, 0), Color(1, 1, 1, 1), Color(1, 1, 1, 1), Color(1, 1, 1, 0), Color(1, 1, 1, 0)]
+}
+tracks/9/type = "value"
+tracks/9/imported = false
+tracks/9/enabled = true
+tracks/9/path = NodePath("ElevatorCar/WarningStrobe:light_energy")
+tracks/9/interp = 1
+tracks/9/loop_wrap = true
+tracks/9/keys = {
+"times": PackedFloat32Array(0, 20.45, 20.5, 20.85, 21.05, 21.4, 24.5),
+"transitions": PackedFloat32Array(1, 1, 1, 1, 1, 1, 1),
+"update": 0,
+"values": [0.0, 0.0, 2.2, 0.0, 1.1, 0.0, 0.0]
+}
+tracks/10/type = "value"
+tracks/10/imported = false
+tracks/10/enabled = true
+tracks/10/path = NodePath("ElevatorCar/QuotaScreen:power_on")
+tracks/10/interp = 1
+tracks/10/loop_wrap = true
+tracks/10/keys = {
+"times": PackedFloat32Array(0, 7.9, 8.05, 13.4, 13.55, 18.7, 18.85, 24.5),
+"transitions": PackedFloat32Array(1, 1, 1, 1, 1, 1, 1, 1),
+"update": 0,
+"values": [1.0, 0.45, 1.0, 0.45, 1.0, 0.45, 1.0, 1.0]
+}

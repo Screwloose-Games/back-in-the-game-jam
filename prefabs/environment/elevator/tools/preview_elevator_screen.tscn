@@ -1,0 +1,24 @@
+[gd_scene load_steps=3 format=3 uid="uid://bq7v3nx2mheld"]
+
+[ext_resource type="Script" path="res://prefabs/environment/elevator/tools/preview_elevator_screen.gd" id="1_preview"]
+
+[sub_resource type="Environment" id="Environment_preview"]
+background_mode = 1
+ambient_light_source = 2
+ambient_light_color = Color(0.16011992, 0.16797403, 0.19935939, 1)
+
+[node name="PreviewElevatorScreen" type="Node3D" unique_id=741122001]
+script = ExtResource("1_preview")
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="." unique_id=741122002]
+environment = SubResource("Environment_preview")
+
+[node name="Camera3D" type="Camera3D" parent="." unique_id=741122003]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 1.5)
+fov = 45.0
+
+[node name="CeilingLamp" type="OmniLight3D" parent="." unique_id=741122004]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.6, 0.9, 1.1)
+light_energy = 1.6
+shadow_enabled = false
+omni_range = 6.0

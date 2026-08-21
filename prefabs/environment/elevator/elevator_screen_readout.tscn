@@ -1,0 +1,101 @@
+[gd_scene format=3 uid="uid://b1qxk7yvn2rhd"]
+
+[ext_resource type="Script" path="res://prefabs/environment/elevator/elevator_screen_readout.gd" id="1_readout"]
+[ext_resource type="Script" uid="uid://bjn42ftlla6xo" path="res://prefabs/environment/elevator/elevator_screen_rails.gd" id="2_rails"]
+[ext_resource type="FontFile" uid="uid://bjfcgc6p7xnkm" path="res://assets/art/ui/font/PixelPurl.ttf" id="3_font"]
+
+[sub_resource type="FontVariation" id="FontVariation_readout"]
+base_font = ExtResource("3_font")
+variation_embolden = 0.12
+spacing_glyph = 3
+
+[node name="ElevatorScreenReadout" type="Control" unique_id=418330001]
+layout_mode = 3
+anchors_preset = 0
+offset_right = 512.0
+offset_bottom = 320.0
+mouse_filter = 2
+script = ExtResource("1_readout")
+
+[node name="Rails" type="Control" parent="." unique_id=418330002]
+layout_mode = 1
+anchors_preset = 0
+offset_right = 512.0
+offset_bottom = 320.0
+mouse_filter = 2
+script = ExtResource("2_rails")
+
+[node name="CrewLine" type="Label" parent="." unique_id=418330003]
+layout_mode = 1
+anchors_preset = 10
+anchor_right = 1.0
+offset_top = 20.0
+offset_bottom = 64.0
+grow_horizontal = 2
+mouse_filter = 2
+theme_override_colors/font_color = Color(0.62, 0.95, 0.85, 1)
+theme_override_fonts/font = SubResource("FontVariation_readout")
+theme_override_font_sizes/font_size = 34
+text = "EXTRACTION CREW 067"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="QuotaLabel" type="Label" parent="." unique_id=418330004]
+layout_mode = 1
+anchors_preset = 10
+anchor_right = 1.0
+offset_top = 80.0
+offset_bottom = 114.0
+grow_horizontal = 2
+mouse_filter = 2
+theme_override_colors/font_color = Color(0.62, 0.95, 0.85, 1)
+theme_override_fonts/font = SubResource("FontVariation_readout")
+theme_override_font_sizes/font_size = 24
+text = "OUTSTANDING QUOTA:"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="QuotaValue" type="Label" parent="." unique_id=418330005]
+layout_mode = 1
+anchors_preset = 10
+anchor_right = 1.0
+offset_top = 118.0
+offset_bottom = 192.0
+grow_horizontal = 2
+mouse_filter = 2
+theme_override_colors/font_color = Color(0.95, 0.85, 0.35, 1)
+theme_override_fonts/font = SubResource("FontVariation_readout")
+theme_override_font_sizes/font_size = 66
+text = "-47560 CR"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="AuthLabel" type="Label" parent="." unique_id=418330006]
+layout_mode = 1
+anchors_preset = 10
+anchor_right = 1.0
+offset_top = 198.0
+offset_bottom = 230.0
+grow_horizontal = 2
+mouse_filter = 2
+theme_override_colors/font_color = Color(0.62, 0.95, 0.85, 1)
+theme_override_fonts/font = SubResource("FontVariation_readout")
+theme_override_font_sizes/font_size = 22
+text = "DEPARTURE AUTHORIZATION:"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="AuthValue" type="Label" parent="." unique_id=418330007]
+layout_mode = 1
+anchors_preset = 10
+anchor_right = 1.0
+offset_top = 234.0
+offset_bottom = 292.0
+grow_horizontal = 2
+mouse_filter = 2
+theme_override_colors/font_color = Color(1, 0.22, 0.18, 1)
+theme_override_fonts/font = SubResource("FontVariation_readout")
+theme_override_font_sizes/font_size = 58
+text = "DENIED"
+horizontal_alignment = 1
+vertical_alignment = 1

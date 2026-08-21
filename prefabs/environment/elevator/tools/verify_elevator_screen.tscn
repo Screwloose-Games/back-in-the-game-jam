@@ -1,0 +1,10 @@
+[gd_scene load_steps=2 format=3 uid="uid://dh4y2wq8n1kbv"]
+
+[ext_resource type="Script" path="res://prefabs/environment/elevator/tools/verify_elevator_screen.gd" id="1_verify"]
+
+[node name="VerifyElevatorScreen" type="Node" unique_id=881200311]
+script = ExtResource("1_verify")
+
+[node name="Camera3D" type="Camera3D" parent="." unique_id=881200312]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 1.5)
+fov = 45.0
