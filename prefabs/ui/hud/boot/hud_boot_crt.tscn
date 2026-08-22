@@ -1,0 +1,52 @@
+[gd_scene load_steps=4 format=3 uid="uid://c0nb0otcrt001"]
+
+[ext_resource type="Script" path="res://prefabs/ui/hud/boot/hud_boot_crt.gd" id="0_boot"]
+[ext_resource type="Shader" path="res://prefabs/ui/hud/boot/hud_boot_crt.gdshader" id="1_shader"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_boot"]
+resource_local_to_scene = true
+shader = ExtResource("1_shader")
+shader_parameter/frame_aspect = 1.7777778
+shader_parameter/content_aspect = 1.7777778
+shader_parameter/frame_height = 1.0
+shader_parameter/power_on = 0.0
+shader_parameter/scanline_count = 130.0
+shader_parameter/scanline_depth = 0.35
+shader_parameter/aperture_depth = 0.12
+shader_parameter/screen_aspect = 1.7777778
+shader_parameter/roll_speed = 0.11
+shader_parameter/roll_width = 0.22
+shader_parameter/roll_gain = 0.22
+shader_parameter/flicker_hz = 12.7
+shader_parameter/flicker_depth = 0.055
+shader_parameter/fringe = 0.0008
+shader_parameter/curvature = 0.16
+shader_parameter/vignette_strength = 0.35
+shader_parameter/halo_radius = 0.006
+shader_parameter/halo_gain = 0.55
+shader_parameter/bloom_gain = 0.28
+shader_parameter/emission_energy = 1.05
+shader_parameter/strike_gain = 1.6
+shader_parameter/strike_at = 0.34
+shader_parameter/strike_width = 0.12
+
+[node name="HudBoot" type="CanvasLayer"]
+layer = 2
+visible = false
+script = ExtResource("0_boot")
+
+[node name="Content" type="SubViewport" parent="."]
+disable_3d = true
+transparent_bg = true
+handle_input_locally = false
+size = Vector2i(1152, 648)
+render_target_update_mode = 4
+
+[node name="Crt" type="ColorRect" parent="."]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+material = SubResource("ShaderMaterial_boot")

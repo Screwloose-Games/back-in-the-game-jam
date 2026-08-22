@@ -1,0 +1,223 @@
+; The elevator intro, whole. Local metres; the car's doorway faces -Z, so the
+; placement in a level is a position and a yaw and nothing else.
+;
+; POSES ARE IN THIS SCENE'S SPACE, NOT THE LEVEL'S. Every camera pose in
+; elevator_intro_knobs.gd and every track path in the generated clip is relative
+; to this root, which is why AnimationPlayer.root_node points three levels up at
+; it rather than at the level. asteroid_level instances this at the mine mouth
+; and the prototype instances it in a greybox shaft; the shot is identical in
+; both because neither placement is in any of the numbers.
+;
+; NO WorldEnvironment. PlayerView writes fog into the level's shared one at
+; _ready, and a second one arriving with the cutscene would repaint the level
+; every time the intro loaded.
+
+[gd_scene load_steps=18 format=3 uid="uid://b1el3v4tor1nt"]
+
+[ext_resource type="Script" path="res://levels/asteroid_level/intro/elevator_intro.gd" id="0_intro"]
+[ext_resource type="PackedScene" uid="uid://fsfetmlq0amg" path="res://prefabs/environment/elevator/prefab_elevator_car.tscn" id="1_car"]
+[ext_resource type="PackedScene" uid="uid://c8h4ftvsx1ela" path="res://prefabs/environment/elevator/prefab_elevator_shaft.tscn" id="15_shaft"]
+[ext_resource type="PackedScene" path="res://prefabs/character/miner/prefab_miner.tscn" id="2_miner"]
+[ext_resource type="Script" uid="uid://blqxoh7cwh6mv" path="res://common/cutscene/cutscene_camera_driver.gd" id="3_camera"]
+[ext_resource type="Script" uid="uid://b3t5h07mn6ivw" path="res://common/cutscene/cutscene_player.gd" id="4_cutscene"]
+[ext_resource type="AnimationLibrary" path="res://levels/asteroid_level/intro/animations/elevator_intro_library.tres" id="5_animlib"]
+[ext_resource type="Resource" uid="uid://domieeb547b02" path="res://levels/asteroid_level/intro/cutscenes/elevator_intro.cutscene.tres" id="6_cutscenedata"]
+[ext_resource type="Script" uid="uid://bq0t0yjef6r10" path="res://levels/asteroid_level/intro/elevator_intro_effects.gd" id="7_effects"]
+[ext_resource type="Script" path="res://levels/asteroid_level/intro/player_gesture_proxy.gd" id="8_gesture"]
+[ext_resource type="Script" uid="uid://bjc0n00lphe18" path="res://levels/asteroid_level/intro/elevator_intro_hud.gd" id="9_hud"]
+[ext_resource type="Script" uid="uid://cw03m2l2g3xqs" path="res://levels/asteroid_level/intro/elevator_monitor_shot.gd" id="10_monitor"]
+[ext_resource type="Shader" path="res://prefabs/environment/elevator/elevator_screen_fullscreen.gdshader" id="11_crt"]
+[ext_resource type="Texture2D" uid="uid://dq6sa0wb401mr" path="res://assets/art/environment/elevator_car/screen/t_elevator_screen_plate.png" id="12_plate"]
+[ext_resource type="PackedScene" uid="uid://c0nb0otcrt001" path="res://prefabs/ui/hud/boot/hud_boot_crt.tscn" id="13_hudboot"]
+[ext_resource type="AudioStream" path="res://assets/vo/vo_elevator_access_denied.wav" id="14_vo"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_crt"]
+resource_local_to_scene = true
+shader = ExtResource("11_crt")
+shader_parameter/plate_tex = ExtResource("12_plate")
+shader_parameter/screen_rect = Vector4(0.112797, 0.140655, 0.769129, 0.705202)
+shader_parameter/screen_aspect = 1.5929
+shader_parameter/glass_color = Color(0.02, 0.055, 0.052, 1)
+shader_parameter/grime_ceiling = 0.045
+shader_parameter/grime_strength = 0.7
+shader_parameter/scanline_count = 130.0
+shader_parameter/scanline_depth = 0.35
+shader_parameter/aperture_depth = 0.12
+shader_parameter/roll_speed = 0.11
+shader_parameter/roll_width = 0.22
+shader_parameter/roll_gain = 0.22
+shader_parameter/flicker_hz = 12.7
+shader_parameter/flicker_depth = 0.055
+shader_parameter/glitch_rate = 1.4
+shader_parameter/glitch_amount = 0.035
+shader_parameter/fringe = 0.0008
+shader_parameter/curvature = 0.16
+shader_parameter/vignette_strength = 0.55
+shader_parameter/halo_radius = 0.01
+shader_parameter/halo_gain = 0.85
+shader_parameter/bloom_gain = 0.28
+shader_parameter/emission_energy = 1.05
+shader_parameter/power_on = 1.0
+shader_parameter/alarm = 1.0
+shader_parameter/alarm_period = 1.6
+shader_parameter/alarm_min = 0.18
+shader_parameter/alarm_max = 0.66
+shader_parameter/alarm_radius = 0.022
+shader_parameter/content_gamma = 1.0
+shader_parameter/content_aspect = 1.5929
+shader_parameter/frame_aspect = 1.7777778
+shader_parameter/frame_height = 0.896
+shader_parameter/shot_alpha = 0.0
+shader_parameter/tone_gain = 1.0
+shader_parameter/ground_gain = 1.7
+
+[node name="ElevatorIntro" type="Node3D" node_paths=PackedStringArray("player_start", "player_exit")]
+script = ExtResource("0_intro")
+player_start = NodePath("PlayerStart")
+player_exit = NodePath("PlayerExit")
+
+[node name="ElevatorCar" parent="." instance=ExtResource("1_car")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -1.42, 0)
+
+; THE SAME TRANSFORM AS THE CAR, which is the reason the frame lives in this
+; scene rather than beside it in the level. Both prefabs put their origin on the
+; plane the car stands on, so the two line up with no offset to remember and
+; cannot be moved apart by editing one file.
+;
+; The heights are fitted to the bay level_mine_blockout.tscn carves: 7.68 m of
+; frame fills the winze bore, and the collar is seated so its bottom step hangs
+; below the lowest point of the seam where the chamber ceiling meets that bore.
+[node name="ElevatorShaft" parent="." unique_id=60046057 instance=ExtResource("15_shaft")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -1.42, 0)
+shaft_height = 7.68
+beam_spacing = 1.8
+first_beam_height = 3.36
+hood_height = 5.52
+
+[node name="Miners" type="Node3D" parent="."]
+
+[node name="MinerA" parent="Miners" instance=ExtResource("2_miner")]
+transform = Transform3D(0.9703, 0, 0.24192, 0, 1, 0, -0.24192, 0, 0.9703, -1.1, -1.3, -0.55)
+idle_phase = 0.0
+tool_bone = &"LeftHand"
+
+[node name="MinerB" parent="Miners" instance=ExtResource("2_miner")]
+transform = Transform3D(0.99027, 0, -0.13917, 0, 1, 0, 0.13917, 0, 0.99027, 0.05, -1.3, -0.3)
+idle_phase = 1.3
+tool_bone = &"LeftHand"
+
+[node name="MinerC" parent="Miners" instance=ExtResource("2_miner")]
+transform = Transform3D(0.93969, 0, -0.34202, 0, 1, 0, 0.34202, 0, 0.93969, 1.32, -1.3, 0.35)
+idle_phase = 2.7
+
+[node name="PlayerStart" type="Marker3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.55, 0.02, 1.2)
+
+[node name="PlayerExit" type="Marker3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.47, 0.02, -2.55)
+
+[node name="CutsceneCamera" type="Camera3D" parent="."]
+process_priority = 10
+current = false
+fov = 62.0
+script = ExtResource("3_camera")
+
+; Node3D, NOT Node. A plain Node in the chain detaches everything below it from
+; the 3D hierarchy: Cutscenes/ElevatorIntro would become its own transform root,
+; its global transform would equal its local one, and the whole cutscene would
+; play at the world origin however the level placed this scene. Nothing errors.
+[node name="Cutscenes" type="Node3D" parent="."]
+
+[node name="ElevatorIntro" type="Node3D" parent="Cutscenes"]
+script = ExtResource("4_cutscene")
+data = ExtResource("6_cutscenedata")
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="Cutscenes/ElevatorIntro"]
+root_node = NodePath("../../..")
+libraries = {
+&"": ExtResource("5_animlib")
+}
+
+[node name="CameraAnchor" type="Node3D" parent="Cutscenes/ElevatorIntro"]
+transform = Transform3D(0.99619, 0, -0.087156, -0.011799, 0.99075, -0.13486, 0.086349, 0.13538, 0.98697, 0.3, 0.42, 1.58)
+
+[node name="PreviewCamera" type="Camera3D" parent="Cutscenes/ElevatorIntro/CameraAnchor"]
+current = false
+fov = 62.0
+
+[node name="Gesture" type="Node" parent="Cutscenes/ElevatorIntro"]
+script = ExtResource("8_gesture")
+
+[node name="Effects" type="Node" parent="Cutscenes/ElevatorIntro"]
+script = ExtResource("7_effects")
+
+[node name="Vo" type="AudioStreamPlayer" parent="."]
+stream = ExtResource("14_vo")
+bus = &"Dialogue"
+
+[node name="Hud" type="CanvasLayer" parent="."]
+layer = 30
+script = ExtResource("9_hud")
+
+[node name="MonitorShot" type="Control" parent="Hud" node_paths=PackedStringArray("quota_screen")]
+visible = false
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+script = ExtResource("10_monitor")
+shot_alpha = 0.0
+quota_screen = NodePath("../../ElevatorCar/QuotaScreen")
+
+[node name="Crt" type="ColorRect" parent="Hud/MonitorShot"]
+material = SubResource("ShaderMaterial_crt")
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="Title" type="Label" parent="Hud"]
+modulate = Color(1, 1, 1, 0)
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+theme_override_font_sizes/font_size = 56
+text = "BEGIN WORKDAY"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="SkipPrompt" type="Label" parent="Hud"]
+visible = false
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -220.0
+offset_top = -48.0
+offset_right = 220.0
+offset_bottom = -20.0
+grow_horizontal = 2
+grow_vertical = 0
+mouse_filter = 2
+modulate = Color(1, 1, 1, 0.55)
+text = "[ENTER] SKIP"
+horizontal_alignment = 1
+
+[node name="Readout" type="Label" parent="Hud"]
+anchors_preset = 0
+offset_left = 16.0
+offset_top = 12.0
+offset_right = 620.0
+offset_bottom = 34.0
+mouse_filter = 2
+modulate = Color(1, 1, 1, 0.4)
+
+[node name="HudBoot" parent="." instance=ExtResource("13_hudboot")]

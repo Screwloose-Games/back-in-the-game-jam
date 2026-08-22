@@ -17,11 +17,24 @@ signal reset_requested
 @export var device_id: int = 0
 
 ## Cleared and stops polling while false. This is the cutscene and pause seam.
+##
+## GUARDED BY `locked`. Three components write this - PlayerUi on unpause,
+## PlayerLife on revive, and whatever cutscene is running - and the first two do
+## it unconditionally. Without the guard, pausing mid-cutscene hands control back
+## to a player whose collision is off and whose camera has been taken.
 @export var enabled: bool = true:
 	set(value):
-		enabled = value
+		enabled = value and not locked
 		if not enabled:
 			clear()
+
+## While true, `enabled` cannot be set true. Owned by whatever took control away;
+## clearing it is that owner's job and nobody else's.
+@export var locked: bool = false:
+	set(value):
+		locked = value
+		if locked:
+			enabled = false
 
 ## Whether this player grabs the mouse on spawn. Off on the instances that
 ## represent other peers; the spawner sets it alongside is_local_player.

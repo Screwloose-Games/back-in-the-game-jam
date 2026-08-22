@@ -24,7 +24,14 @@ const MATERIAL: StandardMaterial3D = preload(
 const HULL_LAYER := 1
 
 ## Interior width and height of the tunnel, and how thick the rock around it is.
-const BORE := 2.6
+##
+## WIDER THAN THE DOORWAY, because the player now leaves the car. The exit pose
+## sits in front of the call panel on the pier, well outside the doorway's 2.04 m
+## clear width, and a bore sized to the doorway puts the rig's hull inside this
+## rock - which the cutscene's own exit check catches and warns about on every
+## run. The real level opens onto a 10.5 m chamber; this greybox has to be at
+## least as forgiving, so it is sized off ElevatorIntroKnobs.EXIT_POSITION.
+const BORE := 4.4
 const WALL := 1.2
 
 ## The centreline. Starts flush against the car's outer front face, runs out, then

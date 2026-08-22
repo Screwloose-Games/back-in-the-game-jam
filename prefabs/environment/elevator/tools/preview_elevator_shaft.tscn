@@ -1,0 +1,6 @@
+[gd_scene format=3 uid="uid://ba7wqk0m2xn3v"]
+
+[ext_resource type="Script" path="res://prefabs/environment/elevator/tools/preview_elevator_shaft.gd" id="1_preview"]
+
+[node name="PreviewElevatorShaft" type="Node3D" unique_id=774100201]
+script = ExtResource("1_preview")

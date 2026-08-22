@@ -35,12 +35,17 @@ const CREATURE_MAX_SPEED := 6.0
 ## lead into a commitment. See prototypes/creature_awareness/creature_awareness_knobs.gd.
 const CREATURE_HEARING_RANGE_M := 120.0
 
+## Whether the opening cutscene runs. Off is how you work on anything else in
+## this level without watching a descent first.
+@export var play_intro: bool = true
+
 var _connection_screen: LoadingScreen
 var _transport_ready := false
 var _returning_to_menu := false
 var _host_spawn_scheduled := false
 var _local_player_presentation_started := false
 var _local_player_ready := false
+var _intro_played := false
 var _creature: CreatureAgent
 var _director: EncounterDirector
 var _debug_panels: VBoxContainer
@@ -54,6 +59,7 @@ var _behavior_panel: BehaviorDebugPanel
 var _navigation_panel: NavigationDebugPanel
 var _perception_panel: PerceptionDebugPanel
 
+@onready var intro: ElevatorIntro = $ElevatorIntro
 @onready var players: Node3D = %Players
 @onready var player_spawn: Marker3D = %PlayerSpawn
 @onready var player_spawner: MultiplayerSpawner = %PlayerSpawner
@@ -480,6 +486,14 @@ func _on_player_spawned(player: Node) -> void:
 	_prepare_local_player_presentation()
 
 
+func _unhandled_input(event: InputEvent) -> void:
+	if not InputMap.has_action(&"cutscene_skip"):
+		return
+	if intro != null and intro.is_playing() and event.is_action_pressed(&"cutscene_skip"):
+		intro.skip()
+		get_viewport().set_input_as_handled()
+
+
 func _on_entry_ready() -> void:
 	_transport_ready = true
 	if OnlineSession.mode() == OnlineSession.EntryMode.SOLO:
@@ -518,8 +532,41 @@ func _prepare_local_player_presentation() -> void:
 	await _warm_local_player()
 	if not is_inside_tree() or _returning_to_menu:
 		return
+	# BEFORE the loading screen comes down, not after. Frame 0 of the intro is a
+	# full-screen opaque shot of the quota tube, so the screen is replaced by the
+	# film rather than by a black gap.
+	_start_intro()
 	_local_player_ready = true
 	_finish_connection_screen_if_ready()
+
+
+## Parks the local player in the car and rolls the opening.
+##
+## THE LOCAL PLAYER'S ONLY. The cutscene is client-local: it takes this client's
+## camera and input and nobody else's, and the door colliders it touches are
+## idempotent. A second player joining mid-intro is untested - see the README.
+func _start_intro() -> void:
+	if _intro_played or not play_intro or intro == null:
+		return
+	var player := _local_player()
+	if player == null:
+		return
+	_intro_played = true
+	var rig := CutscenePlayerRig.for_player(player)
+	if rig == null:
+		return
+	add_child(rig)
+	intro.bind_player(rig, player.get_node_or_null("PlayerBody/UI/HudBinding"))
+	intro.play()
+
+
+func _local_player() -> Node:
+	for player: Node in players.get_children():
+		var driver := player.get_node_or_null("PlayerBody/NetworkDriver") as PlayerNetworkDriver
+		if driver != null and not driver.is_locally_controlled():
+			continue
+		return player
+	return null
 
 
 ## Draws the laser and the rope once behind the screen, so their first real use

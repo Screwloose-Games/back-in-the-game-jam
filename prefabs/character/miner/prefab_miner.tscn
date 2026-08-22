@@ -1,0 +1,68 @@
+; One miner. Local metres, root at the feet, facing -Z (Vector3.FORWARD).
+;
+; The art is authored facing +Z, which is this project's convention backwards.
+; The 180 degree yaw that corrects it lives on Rig, not on the three placements
+; in the level and not in the model - reversing the art would silently turn the
+; character around in every other scene that already places it.
+;
+; The blend tree is two layers: idle_float everywhere, and a single held
+; helmet-gesture pose filtered onto the right arm alone. The cutscene keys
+; blend_amount rather than the bones, so only one mixer ever writes this
+; skeleton - and because the layer is a held pose rather than a clip, that one
+; weight is the whole gesture and it scrubs with the timeline like every other
+; track. See miner_rig.gd and build_elevator_intro_animation.gd.
+
+[gd_scene load_steps=10 format=3]
+
+[ext_resource type="Script" path="res://prefabs/character/miner/miner_rig.gd" id="0_miner"]
+[ext_resource type="PackedScene" uid="uid://oju4tyl0vcdi" path="res://assets/art/character/sk_player_character.tscn" id="1_model"]
+[ext_resource type="PackedScene" uid="uid://c8womwsy4cki" path="res://assets/art/gameplay/mining_laser/sm_mining_laser.tscn" id="2_laser"]
+
+[sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_base"]
+animation = &"idle_float"
+
+[sub_resource type="AnimationNodeTimeSeek" id="AnimationNodeTimeSeek_base"]
+
+[sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_gesture"]
+animation = &"cutscene/helmet_gesture"
+
+[sub_resource type="AnimationNodeBlend2" id="AnimationNodeBlend2_gesture"]
+filter_enabled = true
+filters = ["player_character_armature/Skeleton3D:RightLowerArm", "player_character_armature/Skeleton3D:RightUpperArm"]
+
+[sub_resource type="AnimationNodeBlendTree" id="AnimationNodeBlendTree_miner"]
+nodes/output/position = Vector2(760, 140)
+nodes/base/node = SubResource("AnimationNodeAnimation_base")
+nodes/base/position = Vector2(60, 40)
+nodes/base_seek/node = SubResource("AnimationNodeTimeSeek_base")
+nodes/base_seek/position = Vector2(300, 40)
+nodes/blend/node = SubResource("AnimationNodeBlend2_gesture")
+nodes/blend/position = Vector2(540, 140)
+nodes/gesture/node = SubResource("AnimationNodeAnimation_gesture")
+nodes/gesture/position = Vector2(60, 260)
+node_connections = [&"output", 0, &"blend", &"base_seek", 0, &"base", &"blend", 0, &"base_seek", &"blend", 1, &"gesture"]
+
+[node name="MinerRig" type="Node3D" unique_id=418994311]
+script = ExtResource("0_miner")
+
+[node name="Rig" type="Node3D" parent="." unique_id=418994312]
+transform = Transform3D(-1, 0, -8.74228e-08, 0, 1, 0, 8.74228e-08, 0, -1, 0, 0, 0)
+
+[node name="sk_player_character" parent="Rig" unique_id=418994313 instance=ExtResource("1_model")]
+
+[node name="AnimationTree" type="AnimationTree" parent="Rig" unique_id=418994314]
+root_node = NodePath("../sk_player_character")
+tree_root = SubResource("AnimationNodeBlendTree_miner")
+anim_player = NodePath("../sk_player_character/AnimationPlayer")
+active = false
+parameters/blend/blend_amount = 0.0
+parameters/base_seek/seek_request = -1.0
+
+[node name="ToolAttachment" type="BoneAttachment3D" parent="Rig" unique_id=418994315]
+bone_name = "RightHand"
+bone_idx = 14
+use_external_skeleton = true
+external_skeleton = NodePath("../sk_player_character/player_character_armature/Skeleton3D")
+
+[node name="sm_mining_laser" parent="Rig/ToolAttachment" unique_id=418994316 instance=ExtResource("2_laser")]
+transform = Transform3D(1, 0, 0, 0, -1, 0, 0, 0, -1, 0, 0.24, 0.36)

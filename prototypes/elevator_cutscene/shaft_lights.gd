@@ -20,8 +20,8 @@ const MATERIAL: StandardMaterial3D = preload(
 )
 
 var _bars: Array[MeshInstance3D] = []
-var _spacing := ElevatorCutsceneKnobs.SHAFT_LIGHT_SPACING
-var _speed := ElevatorCutsceneKnobs.SHAFT_LIGHT_SPEED
+var _spacing := ElevatorIntroKnobs.SHAFT_LIGHT_SPACING
+var _speed := ElevatorIntroKnobs.SHAFT_LIGHT_SPEED
 var _bottom := 0.0
 var _offset := 0.0
 var _running := false
@@ -29,8 +29,8 @@ var _running := false
 
 func _ready() -> void:
 	var mesh := BoxMesh.new()
-	mesh.size = ElevatorCutsceneKnobs.SHAFT_LIGHT_SIZE
-	for index in ElevatorCutsceneKnobs.SHAFT_LIGHT_COUNT:
+	mesh.size = ElevatorIntroKnobs.SHAFT_LIGHT_SIZE
+	for index in ElevatorIntroKnobs.SHAFT_LIGHT_COUNT:
 		var bar := MeshInstance3D.new()
 		bar.name = "Bar%02d" % index
 		bar.mesh = mesh

@@ -1,0 +1,5 @@
+[gd_scene format=3 uid="uid://bhfic8qgfthgo"]
+
+[ext_resource type="PackedScene" uid="uid://jg8hnhr71uf8" path="res://assets/art/environment/elevator_shaft/sm_elevator_shaft.gltf" id="1_b0cbb"]
+
+[node name="sm_elevator_shaft" instance=ExtResource("1_b0cbb")]

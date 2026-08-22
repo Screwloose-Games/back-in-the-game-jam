@@ -1,8 +1,0 @@
-[gd_resource type="AnimationLibrary" format=3]
-
-[ext_resource type="Animation" path="res://prototypes/elevator_cutscene/animations/miner_helmet_gesture.anim.tres" id="1_ii85w"]
-
-[resource]
-_data = {
-&"helmet_gesture": ExtResource("1_ii85w")
-}

@@ -49,7 +49,19 @@ const SAMPLES := [
 	[18.1, "t18.1_match_cut_hud"],
 	[20.5, "t20.5_clunk_title"],
 	[22.5, "t22.5_doors_opening"],
-	[24.4, "t24.4_end"],
+	[24.4, "t24.4_doors_open"],
+	[25.0, "t25.0_dwell_on_the_mine"],
+	[27.5, "t27.5_drifting_out"],
+	[30.0, "t30.0_outside_before_turn"],
+	[31.0, "t31.0_mid_turn"],
+	[32.0, "t32.0_facing_the_car"],
+	[33.5, "t33.5_doors_closing"],
+	[34.9, "t34.9_doors_shut"],
+	[35.6, "t35.6_hand_rising"],
+	[36.0, "t36.0_contact_denied"],
+	[37.0, "t37.0_hand_down"],
+	[41.0, "t41.0_panning_back"],
+	[41.9, "t41.9_control"],
 ]
 
 
@@ -61,26 +73,40 @@ func _ready() -> void:
 	prototype.settings = settings
 	add_child(prototype)
 
-	var animation_player: AnimationPlayer = prototype.get_node(
+	var intro: ElevatorIntro = prototype.get_node("Intro")
+	var animation_player: AnimationPlayer = intro.get_node(
 		"Cutscenes/ElevatorIntro/AnimationPlayer"
 	)
-	var anchor: Node3D = prototype.get_node("Cutscenes/ElevatorIntro/CameraAnchor")
-	var driver: CutsceneCameraDriver = prototype.get_node("CutsceneCamera")
-	var car: ElevatorCar = prototype.get_node("ElevatorCar")
+	var anchor: Node3D = intro.get_node("Cutscenes/ElevatorIntro/CameraAnchor")
+	var driver: CutsceneCameraDriver = intro.get_node("CutsceneCamera")
+	var car: ElevatorCar = intro.get_node("ElevatorCar")
 
 	car.set_shaft_running(true)
 	# The overlay is a third of the frame and none of it is the shot. Reviewing
 	# composition through the tuning panel is how you talk yourself into a framing
-	# that is actually blocked. The helmet HUD stays - it IS part of shot 3.
-	prototype.get_node("HUD/Tuning").visible = false
-	prototype.get_node("HUD/Readout").visible = false
-	prototype.get_node("HUD/SkipPrompt").visible = false
-	prototype.get_node("HUD/Crosshair").visible = false
-	# MonitorShot is deliberately NOT in that list. It is the opening shot, not
-	# overlay, and hiding it would capture the thing it is covering.
+	# that is actually blocked. The HUD stays - it IS part of shot 3 onward.
+	prototype.get_node("Tuning").visible = false
+	intro.get_node("Hud/Readout").visible = false
+	intro.get_node("Hud/SkipPrompt").visible = false
+	# MonitorShot and HudBoot are deliberately NOT in that list. They are the
+	# opening shot and the HUD striking, not overlay, and hiding either would
+	# capture the thing it is covering.
 
 	for _index in WARMUP_FRAMES:
 		await get_tree().process_frame
+
+	# The exit sequence renders from the PLAYER'S OWN RIG, not from the camera:
+	# the suit has to be drawn and standing where the anchor is, or every frame
+	# after the match cut is a shot of an empty tunnel. This is what
+	# ElevatorIntroEffects does at hud_online; the capture is not running the
+	# effects list, so it does it here.
+	var rig: CutscenePlayerRig = prototype.get_node("CutsceneRig")
+	rig.set_avatar_hidden(false)
+	rig.set_tool_visible(false)
+	# And hud_settled, which hands the HUD back out from behind the boot glass.
+	# Without it every frame past HUD_SETTLED_TIME has no HUD at all: power_on is
+	# keyed to zero there, and the HUD is still inside the SubViewport.
+	intro.get_effects().apply(&"hud_settled", 0.0)
 
 	driver.request_control(anchor, CutsceneCameraDriver.Authority.FULL, 0.0)
 	# Zero, so a still frame is not blurred by a shake that only reads in motion.
@@ -94,6 +120,10 @@ func _ready() -> void:
 		# The driver reads the anchor in its own tick, which the seek has just
 		# moved. One call rather than waiting for the engine to schedule it.
 		driver.advance(0.0)
+		# And the body follows the anchor from the match cut on, the same way the
+		# effects list carries it at run time.
+		if sample[0] >= ElevatorIntroKnobs.MATCH_CUT_TIME:
+			rig.global_transform = anchor.global_transform
 		await _capture(sample[1])
 
 	# Where the limbs actually end up at the gesture peak.
@@ -104,11 +134,11 @@ func _ready() -> void:
 	# it was the foreshortening reading badly. Four printed positions answered in
 	# one run what three re-renders had not.
 	animation_player.play(&"elevator_intro")
-	animation_player.seek(ElevatorCutsceneKnobs.GESTURE_START + 1.0, true, true)
+	animation_player.seek(ElevatorIntroKnobs.GESTURE_START + 1.0, true, true)
 	animation_player.pause()
 	await get_tree().process_frame
 	await get_tree().process_frame
-	var miner: MinerRig = prototype.get_node("Miners/MinerB")
+	var miner: MinerRig = intro.get_node("Miners/MinerB")
 	var skeleton := miner.get_skeleton()
 	print("gesture pose, local to MinerB (blend %.2f):" % miner.get_gesture_blend())
 	var helmet_y := 0.0

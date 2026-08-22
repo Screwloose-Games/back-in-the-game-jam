@@ -92,6 +92,13 @@ states/laser_stow/node = SubResource("AnimationNodeAnimation_stow")
 states/laser_stow/position = Vector2(600, 240)
 transitions = ["Start", "idle_float", SubResource("AnimationNodeStateMachineTransition_boot"), "idle_float", "laser_equip", SubResource("AnimationNodeStateMachineTransition_on"), "laser_equip", "laser_hold", SubResource("AnimationNodeStateMachineTransition_atend"), "laser_hold", "laser_fire", SubResource("AnimationNodeStateMachineTransition_sync"), "laser_fire", "laser_hold", SubResource("AnimationNodeStateMachineTransition_sync"), "laser_hold", "laser_stow", SubResource("AnimationNodeStateMachineTransition_on"), "laser_stow", "idle_float", SubResource("AnimationNodeStateMachineTransition_atend")]
 
+[sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_gesture"]
+animation = &"cutscene/door_press"
+
+[sub_resource type="AnimationNodeBlend2" id="AnimationNodeBlend2_gesture"]
+filter_enabled = true
+filters = ["player_character_armature/Skeleton3D:LeftHand", "player_character_armature/Skeleton3D:LeftLowerArm", "player_character_armature/Skeleton3D:LeftUpperArm"]
+
 [sub_resource type="AnimationNodeBlendTree" id="AnimationNodeBlendTree_rig"]
 nodes/output/position = Vector2(680, 140)
 nodes/base/node = SubResource("AnimationNodeAnimation_base")
@@ -100,7 +107,11 @@ nodes/blend/node = SubResource("AnimationNodeBlend2_upper")
 nodes/blend/position = Vector2(420, 120)
 nodes/upper/node = SubResource("AnimationNodeStateMachine_upper")
 nodes/upper/position = Vector2(60, 240)
-node_connections = [&"output", 0, &"blend", &"blend", 0, &"base", &"blend", 1, &"upper"]
+nodes/gesture/node = SubResource("AnimationNodeBlend2_gesture")
+nodes/gesture/position = Vector2(900, 140)
+nodes/press/node = SubResource("AnimationNodeAnimation_gesture")
+nodes/press/position = Vector2(660, 360)
+node_connections = [&"output", 0, &"gesture", &"blend", 0, &"base", &"blend", 1, &"upper", &"gesture", 0, &"blend", &"gesture", 1, &"press"]
 
 [sub_resource type="AudioStreamRandomizer" id="AudioStreamRandomizer_suit_impact"]
 random_pitch = 1.15
@@ -133,7 +144,9 @@ unique_name_in_owner = true
 root_node = NodePath("%AnimationTree/../sk_player_character")
 tree_root = SubResource("AnimationNodeBlendTree_rig")
 anim_player = NodePath("../sk_player_character/AnimationPlayer")
+active = false
 parameters/blend/blend_amount = 1.0
+parameters/gesture/blend_amount = 0.0
 
 [node name="LaserAttachment" type="BoneAttachment3D" parent="PlayerBody/Rig" unique_id=598779186]
 transform = Transform3D(0, -0.99999994, 0, 4.371139e-08, 0, 1, -1, 0, 4.371139e-08, -0.72, 0.84, -0.03)

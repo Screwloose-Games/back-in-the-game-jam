@@ -9,6 +9,7 @@
 [ext_resource type="Resource" path="res://systems/minerals/types/mineral_type_common.tres" id="7_common"]
 [ext_resource type="Resource" path="res://systems/minerals/types/mineral_type_uncommon.tres" id="8_uncommon"]
 [ext_resource type="Resource" path="res://systems/minerals/types/mineral_type_rare.tres" id="9_rare"]
+[ext_resource type="PackedScene" uid="uid://b1el3v4tor1nt" path="res://levels/asteroid_level/intro/elevator_intro.tscn" id="10_intro"]
 
 [sub_resource type="Environment" id="Environment_void"]
 background_mode = 1
@@ -35,7 +36,10 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -90.7799, -32.95, 33.8)
 
 [node name="PlayerSpawn" type="Marker3D" parent="." unique_id=2094374759]
 unique_name_in_owner = true
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -90.7799, -32.8231, 35.425)
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, -90.7799, -32.8231, 35.425)
+
+[node name="ElevatorIntro" parent="." unique_id=60046056 instance=ExtResource("10_intro")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, -93.3299, -32.8431, 33.955)
 
 [node name="CreatureInitialSpawnMarker3D" type="Marker3D" parent="." unique_id=1509833471]
 unique_name_in_owner = true
@@ -51,14 +55,20 @@ spawn_limit = 2
 
 [node name="Minerals" type="Node3D" parent="." unique_id=300544401]
 
+; BOTH OF THESE WERE DRESSED ONTO A CHAMBER THAT NO LONGER EXISTS. mine_mouth was
+; a true sphere whose floor sat around y -37.2; it is a raised oblate ellipsoid
+; now, so that its floor meets the elevator's deck. These two sat on the old bowl
+; wall and would have ended up 3.2 m and 0.4 m inside solid rock. Re-seated on the
+; new wall, and moved off the drift mouth while the common one had to move anyway -
+; the mines' notes want the first deposit somewhere the player meets it at once.
 [node name="MineralCommon" parent="Minerals" unique_id=300544402 instance=ExtResource("6_deposit")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -89.591156, -37.375397, 35.425)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -90.7799, -32.4193, 30.6976)
 mineral_type = ExtResource("7_common")
 
 [node name="MineralUncommon" parent="Minerals" unique_id=300544403 instance=ExtResource("6_deposit")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -90.7799, -32.8231, 38)
+transform = Transform3D(1, 0, 0, 0, 0.024887333, 0.99969023, 0, -0.99969023, 0.024887333, -88.137634, -31.8992, 39.723736)
 mineral_type = ExtResource("8_uncommon")
 
 [node name="MineralRare" parent="Minerals" unique_id=300544404 instance=ExtResource("6_deposit")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -93.2, -32.8231, 34)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -55.906307, -43.25862, 34)
 mineral_type = ExtResource("9_rare")

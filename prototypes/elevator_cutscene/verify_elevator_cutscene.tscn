@@ -1,8 +1,0 @@
-; A scene rather than a bare --script harness, because nodes added during
-; SceneTree._initialize() never receive _ready(). See the script's docstring.
-[gd_scene format=3]
-
-[ext_resource type="Script" path="res://prototypes/elevator_cutscene/verify_elevator_cutscene.gd" id="0_verify"]
-
-[node name="VerifyElevatorCutscene" type="Node"]
-script = ExtResource("0_verify")

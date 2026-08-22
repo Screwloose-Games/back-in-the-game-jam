@@ -7,6 +7,13 @@ extends Node
 
 const UPPER_PLAYBACK := "parameters/upper/playback"
 
+## The cutscene gesture layer's clip, added to the model's own AnimationPlayer by
+## method call because a library cannot be authored onto an instanced glTF in a
+## .tscn and would not survive a re-import if it could.
+const CUTSCENE_LIBRARY := preload(
+	"res://levels/asteroid_level/intro/animations/player_gesture_library.tres"
+)
+
 var _tool_was_out := false
 
 @onready var tree: AnimationTree = %AnimationTree
@@ -15,6 +22,7 @@ var _tool_was_out := false
 
 
 func _ready() -> void:
+	_add_cutscene_library()
 	hands.slot_changed.connect(_on_slot_changed)
 	mining_tool.started_firing.connect(_on_started_firing)
 	mining_tool.stopped_firing.connect(_on_stopped_firing)
@@ -27,6 +35,18 @@ func _ready() -> void:
 ## not blink out of the hand the instant the hands are released.
 func _process(_delta: float) -> void:
 	_apply_tool_visibility()
+
+
+## The tree is authored inactive so this runs before it resolves its layers; an
+## AnimationNodeAnimation naming a clip that is not there yet resolves to nothing.
+func _add_cutscene_library() -> void:
+	var player := tree.get_node_or_null(tree.anim_player) as AnimationPlayer
+	if player == null:
+		push_error("PlayerRigAnimation: the AnimationTree has no anim_player.")
+		return
+	if not player.has_animation_library(&"cutscene"):
+		player.add_animation_library(&"cutscene", CUTSCENE_LIBRARY)
+	tree.active = true
 
 
 ## Travels the upper layer. Named states only -- the state machine owns the

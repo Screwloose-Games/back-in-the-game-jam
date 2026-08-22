@@ -27,11 +27,30 @@ sound_origin = NodePath("Spaces/pocket")
 [node name="Spaces" type="Node3D" parent="." unique_id=179536954]
 
 [node name="mine_mouth" type="Node3D" parent="Spaces" unique_id=506200350]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -94.7803, -39.75173, 2.175349)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -94.7803, -37.928627, 2.175349)
 script = ExtResource("2_6b4y6")
 radius = 5.25
+vertical_scale = 0.6215
 tags = Array[StringName]([&"entrance"])
-notes = "Where the player starts. The first stretch east is one straight tunnel with no choices at all, so the map is taught before it is used."
+notes = "Where the player starts. The first stretch east is one straight tunnel with no choices at all, so the map is taught before it is used.
+
+RAISED AND FLATTENED TO MEET THE ELEVATOR. This was a true sphere centred on %PlayerSpawn, and its floor came out around y -37.2 while the car's deck sits at -34.14 - so the opening shot ended with the player dropping three metres out of the doorway. The carver unions every hull and only then subtracts every bore, so nothing can add rock back under the car; the chamber itself is the only thing that can move. Centre y -31.0 world with a 0.6215 vertical scale puts the floor on the car's base plane, and neither %PlayerSpawn nor the elevator had to move for it, which is what keeps verify_elevator_intro's PlayerExit assertion true."
+
+[node name="elevator_winze_base" type="Node3D" parent="Spaces" unique_id=506200351]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -97.33034, -38.581726, 0.70532)
+script = ExtResource("2_6b4y6")
+kind = 1
+radius = 0.0
+tags = Array[StringName]([&"winze"])
+notes = "Foot of the elevator bay. RADIUS ZERO ON PURPOSE: _chamber_brush returns null below zero radius, so this marker contributes no sphere and exists only to give the winze span an end. A chamber here would round off the flat walls the span is carved to produce."
+
+[node name="elevator_winze_head" type="Node3D" parent="Spaces" unique_id=506200352]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -97.33034, -36.361725, 0.70532)
+script = ExtResource("2_6b4y6")
+kind = 1
+radius = 0.0
+tags = Array[StringName]([&"winze"])
+notes = "Head of the elevator bay, two metres above its foot. The span is short because _overrun_at adds half the bore's width at each end of a terminus - 2.85 m here - so these two markers carve 7.9 m of shaft between them. Move them apart and the bay grows by twice what you moved."
 
 [node name="a_c2_m" type="Node3D" parent="Spaces" unique_id=1915479047]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -71.32965, -43.5, 0)
@@ -125,6 +144,30 @@ radius = 2.625
 tags = Array[StringName]([&"mines_a"])
 
 [node name="Tunnels" type="Node3D" parent="." unique_id=855103381]
+
+[node name="elevator_bay_link" type="Node3D" parent="Tunnels" unique_id=765276768]
+script = ExtResource("3_smlkf")
+from_space = NodePath("../../Spaces/mine_mouth")
+to_space = NodePath("../../Spaces/elevator_winze_base")
+width = 2.4
+height = 2.4
+tags = Array[StringName]([&"winze"])
+notes = "A GRAPH EDGE, NOT A PASSAGE. Reachability is over tunnels, so without this the two winze markers are an island and MineLevel.validate reports both as unreachable - which is false, since the bay opens straight into the chamber.
+
+Deliberately narrow. Its centreline runs from the chamber's centre out to the bay's foot and never leaves the chamber, so at 2.4 m its bore is swallowed whole and carves nothing new; _overrun_at then reaches at most 1.2 m past the foot, which stops 0.6 m short of the bay's west wall. Widen it and it punches through the flat wall the hoist frame stands against, which is the one thing the bay exists to provide."
+
+[node name="elevator_winze" type="Node3D" parent="Tunnels" unique_id=765276767]
+script = ExtResource("3_smlkf")
+from_space = NodePath("../../Spaces/elevator_winze_base")
+to_space = NodePath("../../Spaces/elevator_winze_head")
+width = 5.7
+height = 5.7
+tags = Array[StringName]([&"winze"])
+notes = "The elevator bay: a rectangular prism cut up through the west wall of mine_mouth, which is a sphere and therefore had no flat wall to stand a hoist frame against.
+
+SQUARE AND NOT ROUND, and that is the tag's doing. \"winze\" is not in LevelGeometryBuilder.round_profile_tags, so _span_brush emits a CSGBox3D rather than a cylinder - flat walls, a flat floor and flat corners, which is the whole point. Add the tag to that list and this becomes a borehole.
+
+5.7 m clears the 4.92 m frame with room for the collar's flange to bury itself 0.27 m into rock on every side, which is what leaves no seam at the ceiling. The bore runs from the pad's underside up past the chamber's roof; everything above the collar is a dark pocket nobody can reach, and is meant to be."
 
 [node name="drift_a_m_1" type="Node3D" parent="Tunnels" unique_id=765276766]
 script = ExtResource("3_smlkf")
