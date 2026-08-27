@@ -20,6 +20,7 @@ var _spawn_transform: Transform3D
 @onready var power: PlayerPowerClient = %PowerClient
 @onready var lamp: PlayerLamp = %Lamp
 @onready var hands: PlayerHands = %Hands
+@onready var health: PlayerHealth = %Health
 
 
 func _ready() -> void:
@@ -66,5 +67,6 @@ func reset() -> void:
 	respawn()
 	oxygen.apply_network_fraction(oxygen.settings.oxygen_start_fraction)
 	power.apply_network_fraction(power.settings.suit_start_fraction)
+	health.apply_network_fraction(health.settings.health_start_fraction)
 	lamp.set_lit(lamp.settings.lamp_starts_on)
 	hands.stow_tool()

@@ -191,6 +191,12 @@ Four of these exist today:
   `prefab_wall_switch.tscn`. A subdomain rather than two loose entries under
   `environment/`, per rule 3: the switch has no meaning apart from the car it
   drives.
+- `environment/hazards/` — `prefab_gas_pod.tscn`, `prefab_arc_hazard.tscn` and
+  `prefab_blockage.tscn`. A subdomain rather than three loose entries under
+  `environment/`, per rule 3: they share a contract (a `world_noise` signal and the
+  `world_noise_emitter` group) that nothing else has. Their geometry is Godot
+  primitives rather than glTF, so they carry `metadata/placeholder = true` with no
+  model container to pair with — see `environment/hazards/README.md`.
 - `gameplay/` — `prefab_mining_laser.tscn`, the digging laser the placement
   decision below already routed here.
 - `ui/hud/` — the three HUD layouts being compared, plus `hud_preview.tscn`, which
@@ -259,6 +265,9 @@ Stalking creature
 
 Digging laser the player carries
 → gameplay/
+
+Gas pod, arcing cable, collapsed rock
+→ environment/hazards/
 
 Tether cable
 → gameplay/

@@ -12,6 +12,11 @@ const PEER_SPAWN_AHEAD_METRES := 2.5
 const PLAYER_SCENE := preload("res://prefabs/character/player/prefab_player.tscn")
 const NETWORK_PLAYER_SCENE := preload("res://prefabs/character/player/prefab_network_player.tscn")
 const CREATURE_SCENE := preload("res://prefabs/character/creature/prefab_creature.tscn")
+
+## Loaded at runtime rather than preloaded or instanced in the scene: most runs never reach
+## the ending, and the ones that do have forty-two seconds of intro to warm it behind. The
+## same trick main_menu.gd plays on the level itself.
+const OUTRO_PATH := "res://levels/asteroid_level/outro/elevator_outro.tscn"
 ## Layer 1, `hull`. Bit 2 is `player`, and a creature that probes it holds itself a body
 ## radius off the thing it is trying to bite.
 const WORLD_MASK := 1
@@ -46,6 +51,8 @@ var _host_spawn_scheduled := false
 var _local_player_presentation_started := false
 var _local_player_ready := false
 var _intro_played := false
+var _extraction_started := false
+var _outro: ElevatorOutro
 var _creature: CreatureAgent
 var _director: EncounterDirector
 var _debug_panels: VBoxContainer
@@ -75,6 +82,7 @@ func _ready() -> void:
 	OnlineSession.peer_left.connect(_on_peer_left)
 	multiplayer.peer_connected.connect(_on_scene_peer_connected)
 	player_spawner.spawned.connect(_on_player_spawned)
+	GlobalSignalBus.level_exit_requested.connect(_on_level_exit_requested)
 
 	# Shown in every mode, not just online: the screen is what the shader warm-up
 	# hides behind, and solo needs that as much as a joining peer does.
@@ -203,8 +211,33 @@ func _start_creature() -> void:
 	relay.name = "PlayerNoiseRelay"
 	relay.perception = perception
 	add_child(relay)
+	_wire_hazard_noise(perception)
 
 	_build_creature_debug(crawler, behavior, navigation, perception)
+
+
+## World noises the creature should hear: a gas pod going off, a blockage coming down.
+##
+## STRAIGHT INTO PERCEPTION RATHER THAN THROUGH PlayerNoiseRelay, and both reasons are
+## load-bearing. The relay clamps loudness to 1.0 and mining_noise_strength already sits
+## at that ceiling, so a detonation routed through it could not out-shout the beam that
+## set it off -- CreatureHearing clamps only the RECEIVED strength, so a raw 2.5 handed
+## in here genuinely carries farther. And the relay attributes every channel to a player,
+## while NoiseEvent documents source_player as null for world noises; a pod billed to the
+## player who lit it could become a hunt target through the Director's arbitration.
+##
+## The relay also HOLDS a channel and re-announces it every emit_interval_s, which would
+## make one explosion audible every half second for the rest of the run.
+func _wire_hazard_noise(perception: CreaturePerception) -> void:
+	for node: Node in get_tree().get_nodes_in_group(HazardDamage.NOISE_GROUP):
+		if node.has_signal(&"world_noise"):
+			node.connect(&"world_noise", _on_hazard_noise.bind(node, perception))
+
+
+func _on_hazard_noise(
+	at: Vector3, loudness: float, source: Node, perception: CreaturePerception
+) -> void:
+	perception.receive_noise(NoiseEvent.make(at, loudness, &"impact", source, null))
 
 
 ## Every debug readout the level can supply, built once and toggled by DebugMode (F3).
@@ -408,8 +441,41 @@ func _reachable_nests(
 		if route != null and route.status == NavRoute.Status.COMPLETE:
 			reachable.append(at)
 	if reachable.is_empty():
-		push_error("No mine space is reachable from the creature spawn; it has nowhere to roam.")
+		push_error(
+			(
+				"No mine space is reachable from the creature spawn; it has nowhere to roam. %s"
+				% _spawn_attachment_hint(navigation)
+			)
+		)
 	return reachable
+
+
+## Why nothing was reachable, in the one sentence that separates the two causes.
+##
+## NONE REACHABLE IS NEVER A NEST PROBLEM. A nest behind a strip the creature does not fit
+## comes back as a partial count; zero across the board means the START endpoint never
+## attached, and section 16 gives up at `endpoint_search_radius`. So the number worth printing
+## is how far the nearest node actually is -- past that radius the creature is standing in a
+## passage the bake left empty, which is a graph bug rather than a level-layout one, and the
+## two want completely different people looking at them.
+##
+## It exists because that distinction cost a day. The creature spawns mid-shaft in `winze_deep`
+## and the shaft baked empty, so every route failed at the first step; the error above said
+## only that nothing was reachable, which reads as "the nests are badly placed".
+func _spawn_attachment_hint(navigation: CreatureNavigation) -> String:
+	var graph: NavGraph = navigation.graph
+	if graph == null or graph.node_count() == 0:
+		return "Nothing was baked at all: the graph is empty."
+	var from: Vector3 = creature_spawn.global_position
+	var nearest: float = INF
+	for id: Variant in graph.node_ids():
+		nearest = minf(nearest, from.distance_to(graph.node_at(id).position))
+	var reach: float = navigation.config.endpoint_search_radius
+	if nearest > reach:
+		var stranded: Array = [nearest, reach]
+		var gap: String = "Nearest node %.1f m away, attachment stops at %.1f m." % stranded
+		return "%s The spawn is in a passage the bake left empty." % gap
+	return "The spawn attaches %.1f m from a node, so the graph is severed." % nearest
 
 
 func _bake_region(seeds: PackedVector3Array) -> AABB:
@@ -536,6 +602,8 @@ func _prepare_local_player_presentation() -> void:
 	# full-screen opaque shot of the quota tube, so the screen is replaced by the
 	# film rather than by a black gap.
 	_start_intro()
+	# Warmed here, while the intro is still running and nothing else wants the disk.
+	AsyncLoader.request(OUTRO_PATH)
 	_local_player_ready = true
 	_finish_connection_screen_if_ready()
 
@@ -558,6 +626,62 @@ func _start_intro() -> void:
 	add_child(rig)
 	intro.bind_player(rig, player.get_node_or_null("PlayerBody/UI/HudBinding"))
 	intro.play()
+
+
+## The elevator agreed to leave. Once only, however many ways the player asks.
+func _on_level_exit_requested() -> void:
+	if _extraction_started:
+		return
+	var player := _local_player()
+	if player == null:
+		return
+	_extraction_started = true
+	_start_outro(player)
+
+
+## Drops the departure on top of the intro's copy of the car, at the same transform.
+##
+## Both are the same prefab, so the swap is invisible; the intro's is hidden rather than
+## freed because this level still holds a typed reference to it and the nav bake names it.
+func _start_outro(player: Node) -> void:
+	var scene := AsyncLoader.take(OUTRO_PATH) as PackedScene
+	if scene == null:
+		# The warm never finished. A blocking load costs a hitch, which beats standing in
+		# front of an elevator that agreed to leave and then did not.
+		scene = load(OUTRO_PATH) as PackedScene
+	if scene == null:
+		push_error("The outro could not be loaded; the run has no way to end.")
+		return
+	_outro = scene.instantiate() as ElevatorOutro
+	add_child(_outro)
+	if intro != null:
+		_outro.global_transform = intro.global_transform
+		intro.hide()
+	var rig := CutscenePlayerRig.for_player(player)
+	if rig == null:
+		return
+	add_child(rig)
+	_outro.finished.connect(_on_outro_finished)
+	_outro.bind_player(rig, player.get_node_or_null("PlayerBody/UI/HudBinding"))
+	_outro.play()
+
+
+## The report reads off the local player's own ledger, so it is filled BEFORE the scene
+## change, which is the moment there is no longer a player to read it from.
+func _on_outro_finished() -> void:
+	var quota := 0
+	if _outro != null and _outro.get_car() != null:
+		quota = _outro.get_car().quota_target
+	var player := _local_player()
+	if player != null:
+		var path := "PlayerBody/MineralCollector"
+		var collector := player.get_node_or_null(path) as PlayerMineralCollector
+		if collector != null:
+			ExtractionReport.prepare(collector.ledger, quota)
+	GlobalSignalBus.changed_level.emit()
+	SceneTransitionManager.change_scene_with_transition(
+		SceneManager.extraction_report, SceneManager.fade_transition
+	)
 
 
 func _local_player() -> Node:

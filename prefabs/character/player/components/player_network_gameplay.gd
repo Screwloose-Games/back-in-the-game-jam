@@ -19,6 +19,7 @@ const MINING_INTENT_SEND_USEC := 100_000
 const DISABLED_ONLINE_COMPONENTS: Array[StringName] = [
 	&"Grab",
 	&"Tether",
+	&"Interactor",
 ]
 const AUTHORITY_COMPONENTS: Array[StringName] = [
 	&"PowerClient",
@@ -66,6 +67,7 @@ var _body: CharacterBody3D
 var _input: PlayerInput
 var _prediction: ClientPredictor3D
 var _grab: PlayerGrab
+var _interactor: PlayerInteractor
 var _tether: PlayerTether
 var _power: PlayerPowerClient
 var _oxygen: PlayerOxygen
@@ -74,6 +76,7 @@ var _mining_tool: PlayerMiningTool
 var _noise: PlayerNoiseEmitter
 var _respawn: PlayerRespawn
 var _life: PlayerLife
+var _health: PlayerHealth
 var _thrusters: PlayerThrusterSfx
 var _gameplay_sync: MultiplayerSynchronizer
 
@@ -91,6 +94,7 @@ func configure(controlled_peer_id: int, local_peer_id: int) -> void:
 	_input = _body.get_node("Input") as PlayerInput
 	_prediction = _body.get_node("Prediction") as ClientPredictor3D
 	_grab = _body.get_node("Grab") as PlayerGrab
+	_interactor = _body.get_node("Interactor") as PlayerInteractor
 	_tether = _body.get_node("Tether") as PlayerTether
 	_power = _body.get_node("PowerClient") as PlayerPowerClient
 	_oxygen = _body.get_node("Oxygen") as PlayerOxygen
@@ -99,10 +103,12 @@ func configure(controlled_peer_id: int, local_peer_id: int) -> void:
 	_noise = _body.get_node("NoiseEmitter") as PlayerNoiseEmitter
 	_respawn = _body.get_node("Respawn") as PlayerRespawn
 	_life = _body.get_node("Life") as PlayerLife
+	_health = _body.get_node("Health") as PlayerHealth
 	_thrusters = _body.get_node("Thrusters") as PlayerThrusterSfx
 
 	_input.gameplay_actions_enabled = _is_local_controller
 	_grab.externally_driven = true
+	_interactor.externally_driven = true
 	_tether.externally_driven = true
 	# Grab and tether stay inert online until shared objects have stable network
 	# identities. Do not route their input signals or imply wire-level support.
@@ -113,8 +119,11 @@ func configure(controlled_peer_id: int, local_peer_id: int) -> void:
 	_noise.externally_driven = true
 	_respawn.externally_driven = true
 	# Dying teleports a body, which online has to go through the prediction reset
-	# PlayerNetworkGameplay already owns. Until that exists, nobody dies online.
+	# PlayerNetworkGameplay already owns. Until that exists, nobody dies online --
+	# and so nobody bleeds online either, or a remote replica would suffocate a
+	# player who has no way to die.
 	_life.externally_driven = true
+	_health.externally_driven = true
 	# Audio is presentation and runs on every copy; only where it reads its
 	# controls from changes. Deliberately not in AUTHORITY_COMPONENTS for the
 	# same reason.

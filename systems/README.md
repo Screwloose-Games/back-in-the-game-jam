@@ -9,8 +9,10 @@ question and is allowed to be scruffy; a system is the answer, kept.
 
 | | |
 |---|---|
+| [`interaction/`](interaction/README.md) | One key, one focused thing, two verbs: what a player can address, and whether the press was a tap or a hold |
 | [`hud/`](hud/README.md) | The in-world readouts — power, oxygen, tether, radar, suit status — and the widgets that draw them |
 | [`navigation/`](navigation/README.md) | Voxel-derived pathfinding for the alien: bake navigable data out of meshes, and route a body through it |
+| [`radar/`](radar/README.md) | The suit's proximity radar: an expanding pulse, and the things it can find |
 
 ## What a system owes you
 

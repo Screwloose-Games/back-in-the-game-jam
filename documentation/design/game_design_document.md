@@ -107,17 +107,17 @@ the kickoff notes and the repo. 0.0.3 corrects it.)
 
 - **Core team members**
 
-  - Jonathan Lewis - Technical direction, pipeline, **owns enemy AI** (committed pillar)
-  - Dylan (Antic) - 3D art, art direction, project documentation
-  - Sean - 3D art, art direction, technical/AI consulting (will not own AI)
+  - Dylan (Antic) - 3D art
+  - Sean - 3D art
   - Steven - Game design lead, early prototyping
-  - Michael - Programming (wants network code; first game jam)
+  - Michael - Network Programming
   - AJ - Art implementation
-  - Nestor Tomaselli - Concept art, art direction, animation (motion design, low-poly 3D, Rive/Lottie)
-  - Damien - Game design, Level Design
-  - Chris (Waterytart) - Sound Designer
+  - Nestor Tomaselli - Concept art, animation
+  - Jonathan Lewis - Technical direction, pipeline, creature AI
+  - Damien - Level Design
+  - Ryan Burkhart - Sound Designer
   - Ryan Lemon - Composer
-  - Lindsay - observer, not a contributor
+ 
 
 - **Availability constraints**
 

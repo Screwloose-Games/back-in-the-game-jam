@@ -4,7 +4,8 @@ extends Node
 ## Whether this suit is still alive, and the one way it stops being. Death is a
 ## moment rather than a state: control is taken away, the death cue is heard, and
 ## PlayerRespawn puts you back where you started. Anything that can kill calls
-## die() — suffocation is wired here, the creature calls it when it lands.
+## die() — PlayerHealth is wired here, and everything that merely hurts bills that
+## instead, which is why suffocation is now a slope rather than a cliff.
 
 signal died
 signal revived
@@ -23,11 +24,12 @@ var _alive := true
 @onready var input: PlayerInput = %Input
 @onready var oxygen: PlayerOxygen = %Oxygen
 @onready var respawn: PlayerRespawn = %Respawn
+@onready var health: PlayerHealth = %Health
 
 
 func _ready() -> void:
 	if not externally_driven:
-		oxygen.emptied.connect(die)
+		health.depleted.connect(die)
 
 
 func is_alive() -> bool:
@@ -46,12 +48,14 @@ func die() -> void:
 		_revive()
 
 
-## Air comes back with you. Respawning into the empty tank that just killed you
-## would leave you alive at zero and unable to suffocate again, because `emptied`
-## is edge-gated.
+## Air and health both come back with you. Respawning into the empty tank that just
+## killed you would leave you alive at zero and unable to suffocate again, because
+## `emptied` is edge-gated -- and `depleted` is gated the same way, for the same
+## reason, so the pool has to be refilled here too.
 func _revive() -> void:
 	respawn.respawn()
 	oxygen.refill(oxygen.settings.oxygen_capacity)
+	health.refill()
 	input.enabled = true
 	_alive = true
 	revived.emit()

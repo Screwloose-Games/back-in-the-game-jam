@@ -69,6 +69,26 @@ const MINIMUM_GOAL_REFRESH_M: float = 2.0
 ## Give up on an investigation that has taken this long, so a hotspot the alien cannot
 ## physically reach does not strand it forever.
 @export_range(1.0, 300.0, 0.5, "suffix:s") var investigate_timeout_s: float = 45.0
+## How long an approach must be getting nowhere before the creature gives up on it.
+##
+## THE GAP fsm.md LEFT, and `retreat_max_s` above is the same gap answered for RETREATING.
+## `investigate_location` fails only on UNREACHABLE, but against a baked graph a target the
+## creature cannot fit to comes back PARTIAL -- deliberately not a failure -- so the alien
+## walks at rock, arrives at the far end of what it could reach, searches the wrong place, and
+## re-commands the goal several times a second for as long as the lead stays warm.
+## `investigate_timeout_s` does eventually fire, and drops to UNALERTED, which re-enters on the
+## same lead the next tick because lead selection has no memory of having failed.
+##
+## Five seconds is long enough to outlast a legitimate detour -- a route round a chamber can
+## briefly stop closing -- and short enough that the creature does not spend a whole
+## `investigate_timeout_s` grinding.
+@export_range(0.5, 60.0, 0.1, "suffix:s") var give_up_s: float = 5.0
+## How long the creature holds still in RECONSIDERING before going back to wandering.
+##
+## Matched to `nest_dwell_s`. It must exceed `min_dwell_s`, which is a global pre-guard on
+## every transition: a dwell shorter than the floor can never be reached, so the state would
+## be entered and never left.
+@export_range(0.0, 60.0, 0.1, "suffix:s") var reconsider_dwell_s: float = 4.0
 ## Candidate suspicion below which a hunt is no longer being fed.
 @export_range(0.0, 1.0, 0.01) var hunt_sustain_threshold: float = 0.35
 ## How long that must hold continuously before the hunt is at risk. This is what makes
@@ -187,6 +207,10 @@ const MINIMUM_GOAL_REFRESH_M: float = 2.0
 ## Below the vision gate on purpose: an alien walking away genuinely stops looking for you,
 ## which is behavior.md section 30's visible consequence rather than an oversight.
 @export_range(0.0, 1.0, 0.01) var alertness_retreating: float = 0.2
+## Standing still and thinking, not switched off. Above the vision gate on purpose: the
+## creature has stopped WALKING at a lead it cannot reach, and a player who wanders into view
+## while it stands there is exactly the thing it should still notice.
+@export_range(0.0, 1.0, 0.01) var alertness_reconsidering: float = 0.5
 ## How long after a sighting the encounter report still claims visual contact.
 ##
 ## Must outlast PerceptionConfig.vision_scan_interval_calm (0.6 s) or contact flickers off
@@ -206,6 +230,8 @@ func alertness_for(state: CreatureState.State) -> float:
 			return alertness_hunting
 		CreatureState.State.RETREATING:
 			return alertness_retreating
+		CreatureState.State.RECONSIDERING:
+			return alertness_reconsidering
 	return 0.0
 
 
@@ -271,6 +297,18 @@ func invariant_failures(perception: PerceptionConfig = null) -> PackedStringArra
 				)
 			)
 		)
+	if give_up_s <= 0.0:
+		failures.append("give_up_s must be positive; a zero window gives up on the first tick")
+	if reconsider_dwell_s <= min_dwell_s:
+		# min_dwell_s pre-guards every row out of every state, so a shorter dwell than the floor
+		# is a state the creature enters and never leaves.
+		var dwell: Array = [reconsider_dwell_s, min_dwell_s]
+		failures.append("reconsider_dwell_s %.2f does not outlast min_dwell_s %.2f" % dwell)
+	if investigate_timeout_s <= give_up_s:
+		# The give-up row sits above the timeout row, so a timeout that fires first makes the
+		# whole of RECONSIDERING unreachable while looking perfectly configured.
+		var caps: Array = [investigate_timeout_s, give_up_s]
+		failures.append("investigate_timeout_s %.2f does not exceed give_up_s %.2f" % caps)
 	if retreat_max_s <= retreat_min_s:
 		(
 			failures

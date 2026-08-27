@@ -36,15 +36,47 @@ reads, not a transition the tree performs.
 | | |
 |---|---|
 | **The tree framework** | `BtNode` and the six node types from fsm.md's table. Domain-free and enforced as such. |
-| **The HFSM** | All four states, every transition guard, `min_dwell_s`, the `force_disengage` latch, hunt sustain. |
+| **The HFSM** | All five states, every transition guard, `min_dwell_s`, the `force_disengage` latch, hunt sustain. |
 | **`UNALERTED`** | Real tree: nest choice, travel, dwell. |
 | **`INVESTIGATING`** | Real tree: travel to the best unresolved location, search, re-aim. |
 | **`HUNTING`** | Real tree: bite, chase, wait out a gap it cannot fit through, sweep the last credible region. |
 | **`RETREATING`** | Real tree: a far nest, loudly or quietly depending on how the encounter ended. |
+| **`RECONSIDERING`** | No tree worth the name, on purpose: hold still, write off a lead that cannot be reached, go back to wandering. |
 
-`BtDoNothing` survives with no caller, and should. A state with nothing to do is a fact rather
-than a success, and the next mode that needs a placeholder should get one that reports
-`RUNNING` rather than one that pretends.
+`BtDoNothing` is `RECONSIDERING`'s whole tree, and it was written for this and waited for it.
+A state with nothing to do is a fact rather than a success, which is why it reports `RUNNING`
+and the state ends by transition instead.
+
+### The loop `RECONSIDERING` exists to break
+
+An alien that hammers a wall for the rest of the session, and every layer reports itself
+healthy while it does. A hotspot on the far side of rock the creature does not fit through
+produces a **`PARTIAL`** route, and a partial route is deliberately not a failure — it
+*finishes*, at the near face, so `is_arrived` answers yes. The tree searches there, the search
+disconfirms there, the lead stays exactly as hot as it was, and `investigate_location`
+re-commands the goal on every tick the search cooldown is closed. On screen it reads as the
+action flipping between `search_area` and `investigate_location` several times a second.
+
+`investigate_timeout_s` does not save it. That row drops to `UNALERTED` without writing the
+lead off, and `UNALERTED` walks straight back in on the next tick, because `_take_lead` takes
+the strongest board entry and has no memory of having just failed on it. It turns a
+one-second loop into a forty-five-second one.
+
+So the give-up row had to do two things at once: notice, and *remember*. Noticing is
+`InvestigatingState._note_progress`; remembering is `CreatureSuspicion.mark_unreachable`,
+called on entry to `RECONSIDERING`. Three details in the noticing were each arrived at by
+watching it fail:
+
+- **The route's verdict is latched, not read.** `investigate_location` releases the goal the
+  moment `search_area` takes the tick, and releasing a goal clears the route — so for most of
+  the ticks the creature spends at a wall there is no route to ask. A check that read it
+  directly found nothing and reset itself forever.
+- **The reachability clause comes before the arrival clause.** A hotspot fed by repeated noise
+  grows to `hotspot_max_radius` (14 m), and "inside the hotspot" then calls a creature standing
+  ten metres short of it arrived.
+- **The lead is tracked by position, not by id.** Hotspot identity is carried by shared
+  contributing evidence, so a lead *being searched* is renumbered every few seconds while
+  sitting still — measured, twice inside eight seconds, and the deadline was never reached.
 
 **There is no crevice type, no tunnel marker and no passability flag**, and there must not be.
 A passage the alien cannot follow you through is a passage narrower than twice
@@ -278,7 +310,7 @@ otherwise pass all 130 unit tests while destroying the property the tests exist 
 | Rule | Why |
 |---|---|
 | **`tree/` never names a creature subsystem** | The highest-value check here. A tree that knows what an alien is cannot be lifted into anything else, and "reusable" that is never checked against a second user is a claim rather than a property |
-| No file names `submit_evidence` / `submit_disconfirmation` / `reduce_suspicion` / `clear_hotspot` | Belief has three doors and Behavior is not one. An action that lowered a number would resolve hotspots crisply and work visibly better, which is exactly why no behavioural test would flag it |
+| No file names `submit_evidence` / `submit_disconfirmation` / `reduce_suspicion` / `clear_hotspot` | Belief has three doors and Behavior is not one. An action that lowered a number would resolve hotspots crisply and work visibly better, which is exactly why no behavioural test would flag it. `mark_unreachable` is not an exception to this: it lowers nothing |
 | Nothing but the facade reads a group or a `global_position` | The Director may know the truth precisely because it may not act on it. The facade is exempt for nests and the body, both level geometry rather than player state |
 | No physics query anywhere | Navigation and Perception each own a probe; Behavior reaches the world only through them |
 | Nothing reads a wall clock | `Time.get_ticks_msec()` ignores `get_tree().paused` and `Engine.time_scale`, so an alien would keep deciding in a paused game, and no test could drive it |

@@ -1,0 +1,91 @@
+[gd_scene load_steps=12 format=3]
+
+[ext_resource type="Script" path="res://prefabs/environment/hazards/gas_pod.gd" id="1_gas_pod"]
+[ext_resource type="PackedScene" uid="uid://i3hpsl5mx2me" path="res://prefabs/gameplay/mining_impact/mining_impact.tscn" id="2_impact"]
+[ext_resource type="AudioStream" uid="uid://dy560lseimrba" path="res://assets/sfx/environment/Ore_Impacts_NodeBreak_01.wav" id="3_detonation"]
+[ext_resource type="AudioStream" uid="uid://l3f44hk243uh" path="res://assets/sfx/powercube/Cube_Charging.wav" id="4_warning"]
+[ext_resource type="PackedScene" path="res://prefabs/environment/hazards/hazard_label.tscn" id="9_label"]
+[ext_resource type="Resource" uid="uid://bqn30uml0yxuc" path="res://prefabs/character/player/player_settings.tres" id="10_settings"]
+
+[sub_resource type="SphereShape3D" id="SphereShape3D_pod"]
+resource_local_to_scene = true
+radius = 0.45
+
+[sub_resource type="SphereShape3D" id="SphereShape3D_contact"]
+resource_local_to_scene = true
+radius = 0.45
+
+[sub_resource type="SphereShape3D" id="SphereShape3D_proximity"]
+resource_local_to_scene = true
+radius = 1.0
+
+[sub_resource type="SphereMesh" id="SphereMesh_pod"]
+radial_segments = 14
+rings = 7
+radius = 0.5
+height = 0.5
+is_hemisphere = true
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_pod"]
+albedo_color = Color(0.44, 0.32, 0.11, 1)
+roughness = 0.35
+emission_enabled = true
+emission = Color(1, 0.62, 0.18, 1)
+emission_energy_multiplier = 0.85
+
+[node name="prefab_gas_pod" type="StaticBody3D" unique_id=1441038255]
+collision_layer = 512
+collision_mask = 0
+script = ExtResource("1_gas_pod")
+settings = ExtResource("10_settings")
+metadata/placeholder = true
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="." unique_id=1441038256]
+shape = SubResource("SphereShape3D_pod")
+
+[node name="Shell" type="MeshInstance3D" parent="." unique_id=1441038257]
+cast_shadow = 0
+mesh = SubResource("SphereMesh_pod")
+surface_material_override/0 = SubResource("StandardMaterial3D_pod")
+
+[node name="ContactTrigger" type="Area3D" parent="." unique_id=1441038258]
+collision_layer = 0
+collision_mask = 2
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="ContactTrigger" unique_id=1441038259]
+shape = SubResource("SphereShape3D_contact")
+
+[node name="ProximityTrigger" type="Area3D" parent="." unique_id=1441038263]
+collision_layer = 0
+collision_mask = 2
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="ProximityTrigger" unique_id=1441038264]
+shape = SubResource("SphereShape3D_proximity")
+
+[node name="MiningImpact" parent="." unique_id=1441038260 instance=ExtResource("2_impact")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.3, 0)
+
+[node name="BlastLight" type="OmniLight3D" parent="." unique_id=1441038261]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.35, 0)
+light_color = Color(1, 0.66, 0.24, 1)
+light_energy = 0.0
+shadow_enabled = false
+omni_range = 8.0
+
+[node name="Sfx" type="AudioStreamPlayer3D" parent="." unique_id=1441038262]
+stream = ExtResource("3_detonation")
+unit_size = 12.0
+max_distance = 45.0
+bus = &"SFX"
+
+[node name="WarnSfx" type="AudioStreamPlayer3D" parent="." unique_id=1441038265]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.3, 0)
+stream = ExtResource("4_warning")
+volume_db = -4.0
+unit_size = 6.0
+max_distance = 22.0
+bus = &"SFX"
+
+[node name="HazardLabel" parent="." unique_id=1441038290 instance=ExtResource("9_label")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
+text = "GAS POD"

@@ -12,6 +12,10 @@ extends "res://gameplay/creature/suspicion/tests/suspicion_test_case.gd"
 ## suspicion.md: "Behavior should not call methods such as reduce_suspicion(),
 ## clear_hotspot(), mark_investigation_complete()." Naming them here is the only way to
 ## assert their absence, which is why the static verifier excludes tests/.
+## `mark_unreachable` is the exception that proves it, and it is not one of these: it lowers
+## nothing, and the assertions in tests/test_unreachable.gd are that every reading of the place
+## survives it untouched. What it changes is which places Behavior is OFFERED as somewhere to
+## walk -- a fact about the creature's legs, not about the world.
 func test_belief_cannot_be_written_except_through_evidence() -> void:
 	for banned: String in [
 		"reduce_suspicion",
@@ -92,15 +96,23 @@ func test_the_write_api_is_the_only_way_in() -> void:
 	# Node ever declared, so the sweep would trip on add_child and set_name and say
 	# nothing at all about this class.
 	#
-	# reset() exists for the sandbox and for tests and is the one exception, so it is
-	# named here deliberately rather than being allowed to blend in with the reads.
+	# Two named exceptions, and they are named here rather than being allowed to blend in
+	# with the reads. `reset` exists for the sandbox and for tests. `mark_unreachable` writes
+	# no belief at all -- it says the creature could not GET somewhere, which hides the place
+	# from the two lead queries and leaves every number describing it exactly as it was.
+	#
+	# `mark_` is swept for the same reason `set_` is: it is the prefix the next attempt at
+	# mark_investigation_complete() would arrive under, and that one is a fourth door.
+	var allowed: Array[String] = ["reset", "mark_unreachable"]
 	var suspicious_writers: Array[String] = []
 	for entry: Dictionary in _suspicion.get_script().get_script_method_list():
 		var method: String = entry["name"]
-		if method.begins_with("_") or writes.has(method) or method == "reset":
+		if method.begins_with("_") or writes.has(method) or allowed.has(method):
 			continue
-		if method.begins_with("set_") or method.begins_with("add_") or method.begins_with("apply_"):
-			suspicious_writers.append(method)
+		for prefix: String in ["set_", "add_", "apply_", "mark_"]:
+			if method.begins_with(prefix):
+				suspicious_writers.append(method)
+				break
 	assert_eq(suspicious_writers, [] as Array[String], "belief has exactly three doors")
 
 

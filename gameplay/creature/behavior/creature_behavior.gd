@@ -102,6 +102,7 @@ func _init() -> void:
 	hfsm.add_state(InvestigatingState.new())
 	hfsm.add_state(HuntingState.new())
 	hfsm.add_state(RetreatingState.new())
+	hfsm.add_state(ReconsideringState.new())
 	hfsm.state_changed.connect(_on_state_changed)
 
 
@@ -317,12 +318,9 @@ func _connect_signals() -> void:
 		investigating != null
 		and not investigating.tree.running_leaf_changed.is_connected(_on_action)
 	):
-		for id: int in [
-			CreatureState.State.UNALERTED,
-			CreatureState.State.INVESTIGATING,
-			CreatureState.State.HUNTING,
-			CreatureState.State.RETREATING,
-		]:
+		# Every state, and the loop dereferences `.tree` unguarded -- a member of this list with
+		# no matching `add_state` above is a crash rather than a missing signal.
+		for id: int in CreatureState.State.values():
 			hfsm.state_of(id).tree.running_leaf_changed.connect(_on_action)
 	var hunting: HuntingState = _hunting()
 	if hunting != null and not hunting.memory.attack_landed.is_connected(_on_attack):

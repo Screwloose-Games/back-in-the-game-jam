@@ -6,7 +6,12 @@ extends Node
 ## is what lets a second player exist without rewriting any of them.
 
 ## Edge events. Continuous controls are properties, read once per physics frame.
-signal grab_toggled
+##
+## interact publishes BOTH edges, and is the only action here that does. Telling a tap
+## from a hold is a question about how long the key was down, which one toggle signal
+## cannot answer; PlayerInteractor times the gap between these two.
+signal interact_pressed
+signal interact_released
 signal tether_toggled
 signal lamp_toggled
 signal reset_requested
@@ -55,7 +60,7 @@ var roll := 0.0
 var stabilize_held := false
 var sprint_held := false
 var mine_held := false
-var crank_held := false
+var interact_held := false
 
 var _accumulated_mouse_motion := Vector2.ZERO
 var _is_mouse_captured := false
@@ -88,8 +93,10 @@ func _input(event: InputEvent) -> void:
 		return
 	if event.is_action_pressed("reset_player"):
 		reset_requested.emit()
-	elif event.is_action_pressed("grab"):
-		grab_toggled.emit()
+	elif event.is_action_pressed("interact"):
+		interact_pressed.emit()
+	elif event.is_action_released("interact"):
+		interact_released.emit()
 	elif event.is_action_pressed("toggle_tether"):
 		tether_toggled.emit()
 	elif event.is_action_pressed("toggle_lamp"):
@@ -108,7 +115,7 @@ func _physics_process(_delta: float) -> void:
 	stabilize_held = _action_pressed("stabilize")
 	sprint_held = _action_pressed("sprint")
 	mine_held = _action_pressed("mine")
-	crank_held = _action_pressed("crank")
+	interact_held = _action_pressed("interact")
 	look = _accumulated_mouse_motion
 	_accumulated_mouse_motion = Vector2.ZERO
 
@@ -128,7 +135,7 @@ func clear() -> void:
 	stabilize_held = false
 	sprint_held = false
 	mine_held = false
-	crank_held = false
+	interact_held = false
 	_accumulated_mouse_motion = Vector2.ZERO
 
 

@@ -15,6 +15,7 @@ const AUTHORITY_COMPONENTS: Array[StringName] = [
 ]
 const NETWORK_DRIVEN_COMPONENTS: Array[StringName] = [
 	&"Grab",
+	&"Interactor",
 	&"Tether",
 	&"PowerClient",
 	&"Oxygen",
@@ -23,7 +24,7 @@ const NETWORK_DRIVEN_COMPONENTS: Array[StringName] = [
 	&"NoiseEmitter",
 	&"Respawn",
 ]
-const RESERVED_SHARED_COMPONENTS: Array[StringName] = [&"Grab", &"Tether"]
+const RESERVED_SHARED_COMPONENTS: Array[StringName] = [&"Grab", &"Interactor", &"Tether"]
 const GAMEPLAY_STATE_PATHS: Array[NodePath] = [
 	NodePath(".:gameplay_lamp_requested"),
 	NodePath(".:gameplay_mining_active"),

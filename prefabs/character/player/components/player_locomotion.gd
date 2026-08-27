@@ -130,6 +130,16 @@ func add_spin_from_impulse(
 	angular_velocity = angular_velocity.limit_length(settings.max_angular_speed)
 
 
+## A kick from something outside the suit: a blast, a shove, a lunge.
+##
+## Both halves in one call, so a hazard never touches `body.velocity` itself and the
+## tumble stays a consequence of WHERE the push landed rather than a random spin.
+func apply_external_impulse(impulse: Vector3, at: Vector3) -> void:
+	var velocity_change := impulse / maxf(settings.player_mass, 0.001)
+	body.velocity += velocity_change
+	add_spin_from_impulse(velocity_change, at, 1.0)
+
+
 ## Adds a world-space angular impulse to the suit's own tumble.
 func add_spin_from_angular_impulse(world_angular_impulse: Vector3, transfer: float) -> void:
 	angular_velocity += PlayerContact.spin_from_angular_impulse(

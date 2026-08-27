@@ -5,9 +5,16 @@
 [ext_resource type="Script" uid="uid://c0j6y2kxpmknt" path="res://prefabs/gameplay/battery_bar.gd" id="3_bar"]
 [ext_resource type="Shader" uid="uid://bik76lgi16ygh" path="res://prefabs/gameplay/battery_bar.gdshader" id="4_bar_shader"]
 [ext_resource type="AudioStream" uid="uid://dfxmcp3rxqts2" path="res://assets/sfx/powercube/Cube_Grab.wav" id="5_grab"]
+[ext_resource type="Script" uid="uid://bpav8a80vrdap" path="res://systems/interaction/interactable.gd" id="6_handle"]
+[ext_resource type="Script" uid="uid://p50g1q2y8qut" path="res://systems/interaction/interaction_prompt.gd" id="7_prompt"]
+[ext_resource type="AudioStream" uid="uid://l3f44hk243uh" path="res://assets/sfx/powercube/Cube_Charging.wav" id="8_charging"]
+[ext_resource type="AudioStream" uid="uid://cu0hh2bdes2un" path="res://assets/sfx/powercube/Cube_Operating_Loop.wav" id="9_operating"]
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_cube"]
 size = Vector3(0.6, 0.6, 0.6)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_handle"]
+size = Vector3(0.9, 0.9, 0.9)
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_bar"]
 resource_local_to_scene = true
@@ -41,15 +48,54 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.3, 0)
 shape = SubResource("BoxShape3D_cube")
 
 [node name="ChargeLamp" type="OmniLight3D" parent="." unique_id=939504825]
-omni_range = 8.0
+light_energy = 0.5
+light_indirect_energy = 0.5
+omni_range = 4.0
+omni_attenuation = 0.5
 
 [node name="GrabSfx" type="AudioStreamPlayer3D" parent="." unique_id=481945071]
 stream = ExtResource("5_grab")
 volume_db = -6.0
-max_db = 0.0
 unit_size = 6.0
+max_db = 0.0
 max_distance = 30.0
 bus = &"SFX"
+
+[node name="ChargeSfx" type="AudioStreamPlayer3D" parent="." unique_id=481945072]
+stream = ExtResource("8_charging")
+volume_db = -8.0
+unit_size = 6.0
+max_db = 0.0
+max_distance = 30.0
+bus = &"SFX"
+
+[node name="OperatingSfx" type="AudioStreamPlayer3D" parent="." unique_id=481945073]
+stream = ExtResource("9_operating")
+volume_db = -18.0
+unit_size = 4.0
+max_db = 0.0
+max_distance = 24.0
+bus = &"Ambient"
+
+[node name="Handle" type="Area3D" parent="." unique_id=481945074]
+script = ExtResource("6_handle")
+prompt = "Grab"
+hold_prompt = "Charge"
+extra_prompt_actions = PackedStringArray("toggle_tether")
+extra_prompts = PackedStringArray("Tether")
+hold_mode = 2
+hold_seconds = 1.2
+tap_enabled = true
+
+[node name="HandleShape" type="CollisionShape3D" parent="Handle" unique_id=481945075]
+shape = SubResource("BoxShape3D_handle")
+
+[node name="Prompt" type="Label3D" parent="Handle" unique_id=481945076]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.62, 0)
+pixel_size = 0.0022
+modulate = Color(0.86, 0.92, 0.9, 1)
+font_size = 24
+script = ExtResource("7_prompt")
 
 [node name="BatteryBar" type="Node3D" parent="." unique_id=481945070]
 script = ExtResource("3_bar")

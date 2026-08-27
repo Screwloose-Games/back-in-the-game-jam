@@ -23,6 +23,14 @@ func _ready() -> void:
 	_apply_material()
 
 
+## Re-applies the owning deposit's settings, for a chunk that was baked into a
+## level with older ones.
+func configure(new_type: MineralType, new_tuning: MiningTuning) -> void:
+	mineral_type = new_type
+	tuning = new_tuning
+	_apply_material()
+
+
 func take_mining_damage(_damage: float, at: Vector3, tool: PlayerMiningTool) -> void:
 	_hit_this_frame = true
 	_tool = tool

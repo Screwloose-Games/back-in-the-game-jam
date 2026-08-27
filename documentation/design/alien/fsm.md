@@ -30,7 +30,9 @@ Companion document: `director.md`, authoritative for what each `EncounterDirecti
 
 ---
 
-## The four states
+## The states
+
+Four modes, plus one beat between them.
 
 **`UNALERTED`** — territorial ambient behaviour. The alien moves between nests, not along a
 patrol route. Vision is dulled (low alertness context). It is not looking for you.
@@ -47,6 +49,23 @@ survives brief perception loss, and `director.md` rather than evidence decides w
 **`RETREATING`** — end the encounter legibly. The alien increases separation, heads for a
 nest, and makes itself heard leaving. The player has to *know* it is over.
 
+**`RECONSIDERING`** — stop, because what it was trying to do is not working. The alien
+holds still, writes the lead off, and goes back to wandering. It is the only mode with
+nothing to do, and that is the point: it is a **beat**, not a behaviour.
+
+It exists because `INVESTIGATING` had no way to fail. `investigate_location` fails only on
+`UNREACHABLE`, but against a baked graph a hotspot the creature does not fit through comes
+back **`PARTIAL`** — deliberately not a failure — and a partial route *finishes*, at the
+near face. So `arrived_at_goal` says yes, the alien searches the wrong place, the search
+disconfirms the wrong place, the lead stays hot, and `investigate_location` re-commands the
+goal on every tick the search cooldown is closed. `investigate_timeout_s` eventually drops it
+to `UNALERTED` without writing the lead off, and `UNALERTED` walks straight back in on the
+next tick.
+
+The give-up therefore had to do two things at once: notice, and remember. Noticing is the
+`futile` guard below; remembering is `mark_unreachable`, `suspicion.md`'s one sanctioned
+exception.
+
 ---
 
 ## Transitions
@@ -60,9 +79,12 @@ carries a named reason into `state_changed`. `bias` below is
 | `UNALERTED → INVESTIGATING` | strongest hotspot `.suspicion >= investigate_threshold − bias` |
 | `UNALERTED → HUNTING` | candidate `.suspicion >= direct_hunt_threshold` **and** `.source_confidence >= hunt_confidence` **and** `directive.permit_hunt` |
 | `INVESTIGATING → HUNTING` | candidate `.suspicion >= hunt_threshold − bias` **and** `.source_confidence >= hunt_confidence` **and** `directive.permit_hunt` |
+| `INVESTIGATING → RECONSIDERING` | the approach has been getting nowhere for `give_up_s` — see below |
 | `INVESTIGATING → UNALERTED` | `get_hotspots_above(attention_floor)` is empty, **or** `time_in_state > investigate_timeout_s` |
 | `HUNTING → RETREATING` | `directive.force_disengage`, **or** hunt sustain lost |
 | `RETREATING → UNALERTED` | `time_in_state >= retreat_min_s` **and** separation `>= retreat_separation_m` |
+| `RECONSIDERING → HUNTING` | the `INVESTIGATING → HUNTING` guard, unchanged. A person beats standing around |
+| `RECONSIDERING → UNALERTED` | `time_in_state >= reconsider_dwell_s` |
 
 Every state also honours `min_dwell_s` before any transition out, which is what stops an
 alien on a threshold boundary flickering between modes.
@@ -79,6 +101,25 @@ this door.
 candidate above `hunt_sustain_threshold` for a continuous `hunt_sustain_grace_s`, **and** no
 unresolved suspicion within `hunt_sustain_radius` of the last credible target position.
 Losing sight of the player does not end a hunt — the alien searches (`behavior.md` §28).
+
+**Getting nowhere is three questions, and their order matters.** The `futile` guard holds
+while *none* of these is true: the route reached the lead, the creature is inside the
+hotspot, or it is closer to the hotspot than it has ever been. Each clause was earned:
+
+- The route's verdict is **latched**, not read live. `investigate_location` releases the goal
+  the moment `search_area` takes the tick, and releasing a goal clears the route — so for
+  most of the ticks the creature spends at a wall there is no route to ask.
+- Reachability is tested **before** arrival. A hotspot fed by repeated noise grows to
+  `hotspot_max_radius`, and "inside the hotspot" would otherwise call a creature standing ten
+  metres short of it arrived.
+- The lead is tracked by **position**, not by hotspot id. Identity is carried by shared
+  contributing evidence, so a lead being searched is renumbered every few seconds while
+  sitting still, and a clock restarted on the id never reaches its deadline.
+
+**`RECONSIDERING` gives up on entry, not on exit.** Entry is the moment the decision was
+made, and the id it needs is on the outgoing state object. Waiting until exit would leave the
+lead live for the whole dwell, so an alien knocked out of it early — by a player walking
+into view — would have written nothing off and would resume walking at the same wall.
 
 **`RETREATING` has exactly one exit.** There is no path back to `HUNTING` from a retreat, at
 any suspicion level, for any evidence type. `behavior.md` §30 requires this or the Director
@@ -230,6 +271,9 @@ Selector
 │   ├── Condition  disengage_was_sated
 │   └── Action     retreat_to_nest(loud)
 └── Action         retreat_to_nest(quiet)
+
+RECONSIDERING
+Action              reconsider              (do nothing, RUNNING forever)
 ```
 
 `HUNTING`'s ordering is the priority claim: bite beats pursue beats wait beats search. The
@@ -253,6 +297,7 @@ Every action: what it reads, what it commands, how it terminates, what `abort` m
 | `lurk_at_tunnel_mouth` | `set_goal(estimate)`; a PARTIAL route stops at the mouth | `SUCCESS` at a randomised deadline |
 | `attack` | damage, per `directive.lethality` | `SUCCESS` either way |
 | `retreat_to_nest` | `set_goal(far nest)` | `RUNNING` until arrival |
+| `reconsider` | nothing at all | `RUNNING` forever; the state ends by transition |
 
 Every action that calls `set_goal` calls `clear_goal` in `abort`.
 
@@ -308,7 +353,8 @@ acceleration, turning and collision response.
 ```gdscript
 # Thresholds     investigate_threshold, hunt_threshold, direct_hunt_threshold,
 #                hunt_confidence, attention_floor, bias_span
-# Commitment     min_dwell_s, investigate_timeout_s, hunt_sustain_threshold,
+# Commitment     min_dwell_s, investigate_timeout_s, give_up_s,
+#                reconsider_dwell_s, hunt_sustain_threshold,
 #                hunt_sustain_grace_s, hunt_sustain_radius,
 #                retreat_min_s, retreat_separation_m
 # Actions        nest_dwell_s, nest_recent_penalty_s, arrive_distance,

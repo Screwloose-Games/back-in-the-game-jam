@@ -30,6 +30,8 @@ const RADIAL_INCREMENT: float = 0.6180339887498949
 ## Below this the kernel-weighted suppression average is meaningless, and the record's
 ## own position is the honest answer.
 const MIN_KERNEL_MASS: float = 0.000001
+## Floor on a give-up sphere, so a hotspot with no extent still suppresses itself.
+const MIN_SUPPRESSION_RADIUS: float = 1.0
 
 var config: SuspicionConfig = null
 ## Optional Vector3 -> int. See CreatureSuspicion.region_resolver.
@@ -38,6 +40,22 @@ var region_resolver: Callable = Callable()
 var hotspots: Array[SuspicionHotspot] = []
 
 var _next_id: int = 1
+## Places the creature has given up trying to REACH, as {position, radius, until}.
+##
+## NOT A DISCONFIRMATION, and the two must never be merged. A disconfirmation says "I looked
+## and there was nothing", lowers the belief itself and therefore lowers what every consumer
+## sees. This says "I could not get there", changes no belief at all, and only hides the place
+## from `strongest` and `above` -- the two queries Behavior picks a lead from. `find`,
+## `best_unresolved_point` and everything reading suspicion NEAR a point are deliberately
+## untouched, so hunt sustain and the Director price the creature's fear the same either way.
+##
+## KEYED BY POSITION RATHER THAN BY ID because an id does not survive what this has to outlast.
+## Hotspot identity is carried by shared contributing evidence, so a lead that decays out and
+## re-forms from the next noise is a NEW id at the same spot -- and an id-keyed suppression
+## would lift itself the moment the player made another sound, which is exactly the loop this
+## exists to break. A sphere also lifts itself for the right reason: a hotspot whose centre
+## drifts out of it genuinely is somewhere else.
+var _unreachable: Array[Dictionary] = []
 
 
 ## Recompute the whole field. Returns `{created, updated, resolved}`, each an
@@ -49,6 +67,7 @@ func rebuild(memory: SuspicionEvidenceMemory, now: float) -> Dictionary:
 	var resolved: Array[int] = []
 	if config == null:
 		return {"created": created, "updated": updated, "resolved": resolved}
+	_expire_unreachable(now)
 
 	var clusters: Array = _cluster(memory.live_records(now))
 	var claimed: Dictionary = {}
@@ -87,6 +106,33 @@ func rebuild(memory: SuspicionEvidenceMemory, now: float) -> Dictionary:
 	return {"created": created, "updated": updated, "resolved": resolved}
 
 
+## Stop offering `hotspot` as a lead for `seconds`. See `_unreachable`.
+func suppress(hotspot: SuspicionHotspot, seconds: float, now: float) -> void:
+	if hotspot == null or seconds <= 0.0:
+		return
+	(
+		_unreachable
+		. append(
+			{
+				"position": hotspot.position,
+				# The hotspot's own extent, floored so a point-sized lead still covers itself.
+				"radius": maxf(hotspot.radius, MIN_SUPPRESSION_RADIUS),
+				"until": now + seconds,
+			}
+		)
+	)
+
+
+## True while `at` sits inside a live give-up sphere.
+func is_suppressed(at: Vector3, now: float) -> bool:
+	for entry: Dictionary in _unreachable:
+		if now >= float(entry["until"]):
+			continue
+		if at.distance_to(Vector3(entry["position"])) <= float(entry["radius"]):
+			return true
+	return false
+
+
 func find(id: int) -> SuspicionHotspot:
 	for hotspot: SuspicionHotspot in hotspots:
 		if hotspot.id == id:
@@ -110,6 +156,28 @@ func above(minimum_suspicion: float) -> Array[SuspicionHotspot]:
 	found.sort_custom(
 		func(a: SuspicionHotspot, b: SuspicionHotspot) -> bool: return a.suspicion > b.suspicion
 	)
+	return found
+
+
+## THE LEAD QUERIES, AND THE ONLY TWO THAT FILTER. Separate methods rather than a `now`
+## argument defaulting to zero on `above`/`strongest`, because that default suppresses
+## EVERYTHING -- an unexpired sphere is in the future of a zero clock -- and it would have
+## done so silently on every caller that did not know to pass one.
+func strongest_lead(now: float) -> SuspicionHotspot:
+	var best: SuspicionHotspot = null
+	for hotspot: SuspicionHotspot in hotspots:
+		if is_suppressed(hotspot.position, now):
+			continue
+		if best == null or hotspot.suspicion > best.suspicion:
+			best = hotspot
+	return best
+
+
+func leads_above(minimum_suspicion: float, now: float) -> Array[SuspicionHotspot]:
+	var found: Array[SuspicionHotspot] = []
+	for hotspot: SuspicionHotspot in above(minimum_suspicion):
+		if not is_suppressed(hotspot.position, now):
+			found.append(hotspot)
 	return found
 
 
@@ -153,6 +221,17 @@ func sample_points(hotspot: SuspicionHotspot) -> PackedVector3Array:
 
 func clear() -> void:
 	hotspots.clear()
+	_unreachable.clear()
+
+
+## Drops give-up spheres that have run out. Called from `rebuild`, which is the only thing
+## here that already runs on a cadence.
+func _expire_unreachable(now: float) -> void:
+	var live: Array[Dictionary] = []
+	for entry: Dictionary in _unreachable:
+		if now < float(entry["until"]):
+			live.append(entry)
+	_unreachable = live
 
 
 # ----- clustering -----

@@ -56,6 +56,12 @@ func _ready() -> void:
 	set_process(false)
 
 
+## The seam this widget was built for and waited on: HudState.damaged is a moment,
+## not a level, so it drives the flash directly rather than through `status`.
+func bind(state: HudState) -> void:
+	state.damaged.connect(flash.unbind(1))
+
+
 ## Runs one flash from the start, whatever the last one was doing.
 func flash() -> void:
 	_elapsed = 0.0

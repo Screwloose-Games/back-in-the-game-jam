@@ -5,7 +5,7 @@
 [ext_resource type="PackedScene" uid="uid://i3hpsl5mx2me" path="res://prefabs/gameplay/mining_impact/mining_impact.tscn" id="3_03aqn"]
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_d403r"]
-size = Vector3(0.6, 1.3, 0.6)
+size = Vector3(1.2, 2.6, 1.2)
 
 [node name="prefab_mineral_chunk" type="RigidBody3D" unique_id=1852599349]
 script = ExtResource("1_pwiwr")

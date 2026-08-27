@@ -12,6 +12,18 @@ extends Resource
 ## worst frame of idle_float, so a half-angle past that sees through it.
 const CAMERA_FOV_NECK_SEAM_LIMIT := 72.0
 
+## The shortest an empty tank may take to kill from full health. Under this the
+## suffocation clock is a cliff again, which is the thing the pool exists to replace.
+const SUFFOCATION_MIN_SECONDS := 4.0
+
+## The shortest a live arc may take to empty a full suit. Under this, crossing one is
+## a sentence rather than a price.
+const ARC_MIN_DRAIN_SECONDS := 3.0
+
+## How many multiples of a reference-speed impact the worst crash can cost. The
+## stalker owns instant death; a wall must not be able to take it.
+const IMPACT_HARDNESS_CAP := 3.0
+
 ## Thruster strength in metres per second squared, per axis.
 @export_group("Thrusters")
 @export_range(1.0, 40.0, 0.5) var thrust_acceleration: float = 10.0
@@ -300,6 +312,112 @@ const CAMERA_FOV_NECK_SEAM_LIMIT := 72.0
 ## Radius the beam is drawn at.
 @export_range(0.005, 0.2, 0.005, "suffix:m") var mining_beam_radius: float = 0.03
 
+## multiplies the minerals collected by this value
+@export_range(1, 50, 1) var mining_multiplier: int = 1
+
+@export_group("Radar")
+
+## How far one pulse reaches before it dies. Tuned so the creature shows up only as it
+## is about to enter your general proximity, not while it is still a room away.
+@export_range(10.0, 200.0, 1.0, "suffix:m") var radar_range: float = 80.0
+
+## How fast the wavefront travels outward. Range over this is the sweep, and the HUD's
+## four rings are stretched to match, so the outermost ring touches the rim of the dish
+## on the frame the pulse touches its range.
+@export_range(5.0, 400.0, 1.0, "suffix:m/s") var radar_pulse_speed: float = 80.0
+
+## Seconds from one pulse leaving to the next. Must not be shorter than a sweep --
+## checked in invariant_failures().
+@export_range(0.25, 20.0, 0.05, "suffix:s") var radar_interval: float = 2.0
+
+## Charge spent the instant a pulse fires. Priced per pulse rather than per second
+## because the radar is an event, not a beam.
+@export_range(0.0, 20.0, 0.05) var radar_power_per_pulse: float = 0.25
+
+## What a pulse can see. Layer 8, and deliberately nothing else -- an 80 m sphere that
+## also masked the hull would test against every wall in the asteroid.
+@export_flags_3d_physics var radar_detectable_layers: int = RadarDetectable.LAYER
+
+@export_group("Interaction")
+
+## How far the suit's reach extends. The same order as grab_range on purpose: what you
+## can address should be what you could touch, or one press means different things at
+## different distances.
+@export_range(0.5, 8.0, 0.1, "suffix:m") var interact_range: float = 2.5
+
+## How far off your forward axis something may sit and still be addressed, as a dot
+## product. -0.2 is about 101 degrees, so nothing behind you is ever prompted.
+@export_range(-1.0, 1.0, 0.05) var interact_min_facing: float = -0.2
+
+## What being off-axis costs, as a multiple of true distance at 90 degrees. 0.0 makes
+## selection purely nearest, which is what a plain trigger volume wants.
+@export_range(0.0, 8.0, 0.1) var interact_facing_weight: float = 2.0
+
+## The discount the thing already focused gets. Without it, two consoles that score alike
+## swap the prompt every frame.
+@export_range(0.0, 0.5, 0.01) var interact_focus_stickiness: float = 0.15
+
+## How long the key is held before the press stops being a tap.
+@export_range(0.05, 1.0, 0.01, "suffix:s")
+var interact_hold_threshold: float = InteractionHold.DEFAULT_THRESHOLD
+
+## What the reach can see. Layer 9, and deliberately nothing else -- a sphere that also
+## masked the hull would test against every wall in the asteroid.
+@export_flags_3d_physics var interactable_layers: int = Interactable.LAYER
+
+@export_group("Health")
+
+## The damage pool. Only ratios reach the HUD; the debug readout shows points.
+@export_range(10.0, 500.0, 5.0) var max_health: float = 100.0
+
+## How intact the suit starts.
+@export_range(0.0, 1.0, 0.05) var health_start_fraction: float = 1.0
+
+## Points recovered per second once nothing has hit you for health_regen_delay.
+## Deliberately slow: attrition you cannot outheal is what makes depth cost something.
+@export_range(0.0, 20.0, 0.1, "suffix:/s") var health_regen_per_second: float = 2.0
+
+## Quiet seconds before the suit starts sealing itself. Suffocation restarts this every
+## frame, so recovery does not begin the instant air comes back.
+@export_range(0.0, 30.0, 0.5, "suffix:s") var health_regen_delay: float = 6.0
+
+@export_group("Hazards")
+
+## What an empty tank costs per second. This is the suffocation clock's new shape: a
+## bad decision becomes survivable-but-expensive instead of fatal on the frame.
+@export_range(0.0, 40.0, 0.5, "suffix:/s") var suffocation_damage_per_second: float = 6.0
+
+## Below this a contact is a scrape and costs nothing. Well above PlayerSfx's own
+## 0.8 m/s floor on purpose: you hear every knock and are billed only for the hard ones.
+@export_range(0.0, 20.0, 0.5, "suffix:m/s") var impact_damage_min_speed: float = 4.0
+
+## What an impact at impact_reference_speed costs. Damage climbs linearly from the
+## deadband and is capped at IMPACT_HARDNESS_CAP multiples of this.
+@export_range(0.0, 100.0, 1.0) var impact_damage_at_reference_speed: float = 18.0
+
+## What a gas pod costs at the epicentre, falling off to nothing at its blast radius.
+@export_range(0.0, 200.0, 1.0) var hazard_gas_pod_damage: float = 35.0
+
+## How wide a gas pod's bubble is across its base. The prefab authors its dome at one
+## metre, so this scales it and its two triggers directly.
+@export_range(0.1, 4.0, 0.05, "suffix:m") var hazard_gas_pod_diameter: float = 0.9
+
+## How close you may get to a gas pod before it starts counting down, measured from the
+## pod's centre.
+##
+## The band you can occupy WITHOUT already touching it is this minus half the bubble and
+## the suit's own hull. Go under that and the contact trigger fires first, the countdown
+## never gets a turn, and the entire warning is lost without an error -- which is what
+## invariant_failures() checks.
+@export_range(0.2, 10.0, 0.1, "suffix:m") var hazard_gas_pod_trigger_range: float = 1.0
+
+## What standing inside a live arc costs per second. Small: the charge is the real bill.
+@export_range(0.0, 60.0, 0.5, "suffix:/s") var hazard_arc_damage_per_second: float = 4.0
+
+## What a live arc pulls out of the suit per second. The meter you have been carefully
+## managing drops for reasons that are not your fault.
+@export_range(0.0, 100.0, 0.5, "suffix:/s") var hazard_arc_power_drain_per_second: float = 20.0
+
 @export_group("Noise")
 
 ## How loud full thrust is. There is no silent way to travel.
@@ -352,11 +470,78 @@ func invariant_failures() -> PackedStringArray:
 				% [helmet_lamp_range, camera_far]
 			)
 		)
+	if radar_pulse_speed > 0.0 and radar_interval < radar_range / radar_pulse_speed:
+		failures.append(
+			(
+				"radar_interval %.2fs is shorter than one sweep (%.2fs); pulses overlap"
+				% [radar_interval, radar_range / radar_pulse_speed]
+			)
+		)
 	if tether_rope_draw_radius > tether_rope_radius:
 		failures.append(
 			(
 				"tether_rope_draw_radius %.2f exceeds tether_rope_radius %.2f; the rope will pinch"
 				% [tether_rope_draw_radius, tether_rope_radius]
+			)
+		)
+	if suffocation_damage_per_second <= health_regen_per_second:
+		(
+			failures
+			. append(
+				(
+					"suffocation_damage_per_second %.2f does not beat health_regen_per_second %.2f; running out of air would never kill"
+					% [suffocation_damage_per_second, health_regen_per_second]
+				)
+			)
+		)
+	if seconds_of_suffocation() < SUFFOCATION_MIN_SECONDS:
+		(
+			failures
+			. append(
+				(
+					"an empty tank kills in %.1fs, under the %.1fs that keeps suffocation a slope rather than a cliff"
+					% [seconds_of_suffocation(), SUFFOCATION_MIN_SECONDS]
+				)
+			)
+		)
+	if hazard_gas_pod_damage >= max_health:
+		(
+			failures
+			. append(
+				(
+					"hazard_gas_pod_damage %.1f is not under max_health %.1f; a pod would kill outright, which only the stalker may do"
+					% [hazard_gas_pod_damage, max_health]
+				)
+			)
+		)
+	if hazard_gas_pod_trigger_range <= gas_pod_contact_distance():
+		(
+			failures
+			. append(
+				(
+					"hazard_gas_pod_trigger_range %.2f is not past the %.2f m at which a suit is already touching the bubble; the proximity countdown would never get a turn"
+					% [hazard_gas_pod_trigger_range, gas_pod_contact_distance()]
+				)
+			)
+		)
+	if seconds_of_arc_drain() < ARC_MIN_DRAIN_SECONDS:
+		(
+			failures
+			. append(
+				(
+					"an arc empties the suit in %.1fs, under the %.1fs that keeps crossing one a price rather than a sentence"
+					% [seconds_of_arc_drain(), ARC_MIN_DRAIN_SECONDS]
+				)
+			)
+		)
+	if impact_damage_min_speed >= impact_reference_speed:
+		(
+			failures
+			. append(
+				(
+					"impact_damage_min_speed %.1f is not below impact_reference_speed %.1f; a reference impact would cost nothing"
+					% [impact_damage_min_speed, impact_reference_speed]
+				)
 			)
 		)
 	return failures
@@ -372,3 +557,34 @@ func thrust_acceleration_for(sprint_engaged: bool) -> float:
 ## The gain look input feeds into angular velocity in INERTIAL mode.
 func aim_gain() -> float:
 	return mouse_sensitivity * angular_acceleration
+
+
+## Health one impact costs, priced against the same reference speed the noise uses.
+func impact_damage_for(closing_speed: float) -> float:
+	return PlayerHealthModel.impact_damage(
+		closing_speed,
+		impact_damage_min_speed,
+		impact_reference_speed,
+		impact_damage_at_reference_speed,
+		IMPACT_HARDNESS_CAP
+	)
+
+
+## How long an empty tank takes to kill from full health, or INF when it never does.
+func seconds_of_suffocation() -> float:
+	if suffocation_damage_per_second <= 0.0:
+		return INF
+	return max_health / suffocation_damage_per_second
+
+
+## How far from a gas pod's centre a suit is already touching its bubble, which is the
+## floor hazard_gas_pod_trigger_range has to clear to leave any countdown band at all.
+func gas_pod_contact_distance() -> float:
+	return hazard_gas_pod_diameter * 0.5 + hull_radius
+
+
+## How long a live arc takes to empty a full suit, or INF when it never does.
+func seconds_of_arc_drain() -> float:
+	if hazard_arc_power_drain_per_second <= 0.0:
+		return INF
+	return suit_capacity / hazard_arc_power_drain_per_second

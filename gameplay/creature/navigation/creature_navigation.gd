@@ -373,7 +373,7 @@ func debug_state() -> Dictionary:
 		# INF rather than 0.0 with no route. RouteFollower returns 0.0, and 0.0 reads as
 		# "arrived" -- the trap CreatureBehavior._route_distance() documents at :283.
 		"distance_remaining": follower.distance_remaining(_body_position) if usable else INF,
-		"shortfall": _route_shortfall(),
+		"shortfall": route_shortfall(),
 		"mode": NavLocomotion.mode_name(local_planner.mode()),
 		"stalled": command != null and command.is_stalled(),
 		"abort": NavMotionCommand.abort_name(command.abort) if command != null else "none",
@@ -391,7 +391,14 @@ func debug_state() -> Dictionary:
 ## bug, it is a body that cannot enter the passage -- and with
 ## `squeezed_radius_equivalent == normal_radius_equivalent` on a creature, squeezing buys
 ## nothing and every sweep needs the full bore.
-func _route_shortfall() -> float:
+## How far short of the goal a PARTIAL route gives up, in metres. Zero for every other status.
+##
+## PUBLIC BECAUSE PARTIAL IS THE FAILURE NOTHING ELSE REPORTS. A route that stops short is
+## deliberately not an error -- section 17 has the alien reach the far end of what it can reach
+## and act from there -- so `route.status` reads PARTIAL, `is_usable()` reads true, and a caller
+## watching for UNREACHABLE waits forever. This is the number that says how far short, and
+## therefore the only way for behaviour to tell "nearly there" from "cannot get there at all".
+func route_shortfall() -> float:
 	if route == null or route.status != NavRoute.Status.PARTIAL or route.anchors.is_empty():
 		return 0.0
 	return route.anchors[route.anchors.size() - 1].distance_to(route.target_position)

@@ -1,35 +1,21 @@
-; The elevator intro, whole. Local metres; the car's doorway faces -Z, so the
-; placement in a level is a position and a yaw and nothing else.
-;
-; POSES ARE IN THIS SCENE'S SPACE, NOT THE LEVEL'S. Every camera pose in
-; elevator_intro_knobs.gd and every track path in the generated clip is relative
-; to this root, which is why AnimationPlayer.root_node points three levels up at
-; it rather than at the level. asteroid_level instances this at the mine mouth
-; and the prototype instances it in a greybox shaft; the shot is identical in
-; both because neither placement is in any of the numbers.
-;
-; NO WorldEnvironment. PlayerView writes fog into the level's shared one at
-; _ready, and a second one arriving with the cutscene would repaint the level
-; every time the intro loaded.
+[gd_scene format=3 uid="uid://b1el3v4tor1nt"]
 
-[gd_scene load_steps=18 format=3 uid="uid://b1el3v4tor1nt"]
-
-[ext_resource type="Script" path="res://levels/asteroid_level/intro/elevator_intro.gd" id="0_intro"]
+[ext_resource type="Script" uid="uid://c77qurwrkvlg6" path="res://levels/asteroid_level/intro/elevator_intro.gd" id="0_intro"]
 [ext_resource type="PackedScene" uid="uid://fsfetmlq0amg" path="res://prefabs/environment/elevator/prefab_elevator_car.tscn" id="1_car"]
-[ext_resource type="PackedScene" uid="uid://c8h4ftvsx1ela" path="res://prefabs/environment/elevator/prefab_elevator_shaft.tscn" id="15_shaft"]
 [ext_resource type="PackedScene" path="res://prefabs/character/miner/prefab_miner.tscn" id="2_miner"]
 [ext_resource type="Script" uid="uid://blqxoh7cwh6mv" path="res://common/cutscene/cutscene_camera_driver.gd" id="3_camera"]
 [ext_resource type="Script" uid="uid://b3t5h07mn6ivw" path="res://common/cutscene/cutscene_player.gd" id="4_cutscene"]
-[ext_resource type="AnimationLibrary" path="res://levels/asteroid_level/intro/animations/elevator_intro_library.tres" id="5_animlib"]
+[ext_resource type="AnimationLibrary" uid="uid://cmc7k3iwttv4o" path="res://levels/asteroid_level/intro/animations/elevator_intro_library.tres" id="5_animlib"]
 [ext_resource type="Resource" uid="uid://domieeb547b02" path="res://levels/asteroid_level/intro/cutscenes/elevator_intro.cutscene.tres" id="6_cutscenedata"]
 [ext_resource type="Script" uid="uid://bq0t0yjef6r10" path="res://levels/asteroid_level/intro/elevator_intro_effects.gd" id="7_effects"]
-[ext_resource type="Script" path="res://levels/asteroid_level/intro/player_gesture_proxy.gd" id="8_gesture"]
+[ext_resource type="Script" uid="uid://bxp0l8md248vy" path="res://levels/asteroid_level/intro/player_gesture_proxy.gd" id="8_gesture"]
 [ext_resource type="Script" uid="uid://bjc0n00lphe18" path="res://levels/asteroid_level/intro/elevator_intro_hud.gd" id="9_hud"]
 [ext_resource type="Script" uid="uid://cw03m2l2g3xqs" path="res://levels/asteroid_level/intro/elevator_monitor_shot.gd" id="10_monitor"]
-[ext_resource type="Shader" path="res://prefabs/environment/elevator/elevator_screen_fullscreen.gdshader" id="11_crt"]
+[ext_resource type="Shader" uid="uid://bvkagmnl3rbv6" path="res://prefabs/environment/elevator/elevator_screen_fullscreen.gdshader" id="11_crt"]
 [ext_resource type="Texture2D" uid="uid://dq6sa0wb401mr" path="res://assets/art/environment/elevator_car/screen/t_elevator_screen_plate.png" id="12_plate"]
 [ext_resource type="PackedScene" uid="uid://c0nb0otcrt001" path="res://prefabs/ui/hud/boot/hud_boot_crt.tscn" id="13_hudboot"]
-[ext_resource type="AudioStream" path="res://assets/vo/vo_elevator_access_denied.wav" id="14_vo"]
+[ext_resource type="AudioStream" uid="uid://ckkqt6m7atcnm" path="res://assets/vo/vo_elevator_access_denied.wav" id="14_vo"]
+[ext_resource type="PackedScene" uid="uid://c8h4ftvsx1ela" path="res://prefabs/environment/elevator/prefab_elevator_shaft.tscn" id="15_shaft"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_crt"]
 resource_local_to_scene = true
@@ -71,96 +57,78 @@ shader_parameter/shot_alpha = 0.0
 shader_parameter/tone_gain = 1.0
 shader_parameter/ground_gain = 1.7
 
-[node name="ElevatorIntro" type="Node3D" node_paths=PackedStringArray("player_start", "player_exit")]
+[node name="ElevatorIntro" type="Node3D" unique_id=1393449088 node_paths=PackedStringArray("player_start", "player_exit")]
 script = ExtResource("0_intro")
 player_start = NodePath("PlayerStart")
 player_exit = NodePath("PlayerExit")
 
-[node name="ElevatorCar" parent="." instance=ExtResource("1_car")]
+[node name="ElevatorCar" parent="." unique_id=323511703 instance=ExtResource("1_car")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -1.42, 0)
 
-; THE SAME TRANSFORM AS THE CAR, which is the reason the frame lives in this
-; scene rather than beside it in the level. Both prefabs put their origin on the
-; plane the car stands on, so the two line up with no offset to remember and
-; cannot be moved apart by editing one file.
-;
-; The heights are fitted to the bay level_mine_blockout.tscn carves: 7.68 m of
-; frame fills the winze bore, and the collar is seated so its bottom step hangs
-; below the lowest point of the seam where the chamber ceiling meets that bore.
 [node name="ElevatorShaft" parent="." unique_id=60046057 instance=ExtResource("15_shaft")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -1.42, 0)
-shaft_height = 7.68
 beam_spacing = 1.8
-first_beam_height = 3.36
 hood_height = 5.52
 
-[node name="Miners" type="Node3D" parent="."]
+[node name="Miners" type="Node3D" parent="." unique_id=1786922030]
 
-[node name="MinerA" parent="Miners" instance=ExtResource("2_miner")]
+[node name="MinerA" parent="Miners" unique_id=996256698 instance=ExtResource("2_miner")]
 transform = Transform3D(0.9703, 0, 0.24192, 0, 1, 0, -0.24192, 0, 0.9703, -1.1, -1.3, -0.55)
-idle_phase = 0.0
 tool_bone = &"LeftHand"
 
-[node name="MinerB" parent="Miners" instance=ExtResource("2_miner")]
+[node name="MinerB" parent="Miners" unique_id=722911056 instance=ExtResource("2_miner")]
 transform = Transform3D(0.99027, 0, -0.13917, 0, 1, 0, 0.13917, 0, 0.99027, 0.05, -1.3, -0.3)
 idle_phase = 1.3
 tool_bone = &"LeftHand"
 
-[node name="MinerC" parent="Miners" instance=ExtResource("2_miner")]
+[node name="MinerC" parent="Miners" unique_id=226390079 instance=ExtResource("2_miner")]
 transform = Transform3D(0.93969, 0, -0.34202, 0, 1, 0, 0.34202, 0, 0.93969, 1.32, -1.3, 0.35)
 idle_phase = 2.7
 
-[node name="PlayerStart" type="Marker3D" parent="."]
+[node name="PlayerStart" type="Marker3D" parent="." unique_id=151501124]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.55, 0.02, 1.2)
 
-[node name="PlayerExit" type="Marker3D" parent="."]
+[node name="PlayerExit" type="Marker3D" parent="." unique_id=799008644]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.47, 0.02, -2.55)
 
-[node name="CutsceneCamera" type="Camera3D" parent="."]
+[node name="CutsceneCamera" type="Camera3D" parent="." unique_id=968087719]
 process_priority = 10
-current = false
 fov = 62.0
 script = ExtResource("3_camera")
 
-; Node3D, NOT Node. A plain Node in the chain detaches everything below it from
-; the 3D hierarchy: Cutscenes/ElevatorIntro would become its own transform root,
-; its global transform would equal its local one, and the whole cutscene would
-; play at the world origin however the level placed this scene. Nothing errors.
-[node name="Cutscenes" type="Node3D" parent="."]
+[node name="Cutscenes" type="Node3D" parent="." unique_id=1151466918]
 
-[node name="ElevatorIntro" type="Node3D" parent="Cutscenes"]
+[node name="ElevatorIntro" type="Node3D" parent="Cutscenes" unique_id=499857364]
 script = ExtResource("4_cutscene")
 data = ExtResource("6_cutscenedata")
 
-[node name="AnimationPlayer" type="AnimationPlayer" parent="Cutscenes/ElevatorIntro"]
+[node name="AnimationPlayer" type="AnimationPlayer" parent="Cutscenes/ElevatorIntro" unique_id=807809591]
 root_node = NodePath("../../..")
-libraries = {
-&"": ExtResource("5_animlib")
-}
+libraries/ = ExtResource("5_animlib")
 
-[node name="CameraAnchor" type="Node3D" parent="Cutscenes/ElevatorIntro"]
-transform = Transform3D(0.99619, 0, -0.087156, -0.011799, 0.99075, -0.13486, 0.086349, 0.13538, 0.98697, 0.3, 0.42, 1.58)
+[node name="CameraAnchor" type="Node3D" parent="Cutscenes/ElevatorIntro" unique_id=1086416596]
+transform = Transform3D(0.9960326, -0.012271522, 0.08807642, 9.313178e-10, 0.9903902, 0.13798639, -0.08893148, -0.13744104, 0.986456, 0.3, 0.42, 1.58)
 
-[node name="PreviewCamera" type="Camera3D" parent="Cutscenes/ElevatorIntro/CameraAnchor"]
-current = false
+[node name="PreviewCamera" type="Camera3D" parent="Cutscenes/ElevatorIntro/CameraAnchor" unique_id=404011733]
 fov = 62.0
 
-[node name="Gesture" type="Node" parent="Cutscenes/ElevatorIntro"]
+[node name="Gesture" type="Node" parent="Cutscenes/ElevatorIntro" unique_id=1620575548]
 script = ExtResource("8_gesture")
 
-[node name="Effects" type="Node" parent="Cutscenes/ElevatorIntro"]
+[node name="Effects" type="Node" parent="Cutscenes/ElevatorIntro" unique_id=544618497]
 script = ExtResource("7_effects")
 
-[node name="Vo" type="AudioStreamPlayer" parent="."]
+[node name="Vo" type="AudioStreamPlayer" parent="." unique_id=865036756]
 stream = ExtResource("14_vo")
 bus = &"Dialogue"
 
-[node name="Hud" type="CanvasLayer" parent="."]
+[node name="Hud" type="CanvasLayer" parent="." unique_id=1421657321]
 layer = 30
 script = ExtResource("9_hud")
 
-[node name="MonitorShot" type="Control" parent="Hud" node_paths=PackedStringArray("quota_screen")]
+[node name="MonitorShot" type="Control" parent="Hud" unique_id=902092092 node_paths=PackedStringArray("quota_screen")]
 visible = false
+layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -168,33 +136,32 @@ grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
 script = ExtResource("10_monitor")
-shot_alpha = 0.0
 quota_screen = NodePath("../../ElevatorCar/QuotaScreen")
 
-[node name="Crt" type="ColorRect" parent="Hud/MonitorShot"]
+[node name="Crt" type="ColorRect" parent="Hud/MonitorShot" unique_id=1604361608]
 material = SubResource("ShaderMaterial_crt")
-anchors_preset = 15
+layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
 
-[node name="Title" type="Label" parent="Hud"]
+[node name="Title" type="Label" parent="Hud" unique_id=693726114]
 modulate = Color(1, 1, 1, 0)
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-mouse_filter = 2
 theme_override_font_sizes/font_size = 56
 text = "BEGIN WORKDAY"
 horizontal_alignment = 1
 vertical_alignment = 1
 
-[node name="SkipPrompt" type="Label" parent="Hud"]
+[node name="SkipPrompt" type="Label" parent="Hud" unique_id=459417221]
 visible = false
+modulate = Color(1, 1, 1, 0.55)
 anchors_preset = 7
 anchor_left = 0.5
 anchor_top = 1.0
@@ -206,18 +173,14 @@ offset_right = 220.0
 offset_bottom = -20.0
 grow_horizontal = 2
 grow_vertical = 0
-mouse_filter = 2
-modulate = Color(1, 1, 1, 0.55)
 text = "[ENTER] SKIP"
 horizontal_alignment = 1
 
-[node name="Readout" type="Label" parent="Hud"]
-anchors_preset = 0
+[node name="Readout" type="Label" parent="Hud" unique_id=544498663]
+modulate = Color(1, 1, 1, 0.4)
 offset_left = 16.0
 offset_top = 12.0
 offset_right = 620.0
 offset_bottom = 34.0
-mouse_filter = 2
-modulate = Color(1, 1, 1, 0.4)
 
-[node name="HudBoot" parent="." instance=ExtResource("13_hudboot")]
+[node name="HudBoot" parent="." unique_id=498482022 instance=ExtResource("13_hudboot")]

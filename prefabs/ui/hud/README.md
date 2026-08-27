@@ -154,6 +154,23 @@ appearing to last one gone. Nothing repeats on its own.
 seconds, so `sonar_duration` stretches a sweep without flattening its stagger. Both
 are mockup-derived; rounding them still runs, just not to the mockup.
 
+In game nothing calls `ping()` directly. `PlayerRadarDetector`
+(`systems/radar/README.md`) fires a real pulse, `HudState.radar_swept` carries its
+geometry here, and `sweep()` sets `max_distance`, `sonar_duration` and
+`pulse_interval` from it before pinging. That is what ties the drawing to the
+physics: `sonar_duration` is the pulse's actual travel time, and
+`ring_phase(d, 3, d)` is exactly `1.0`, so the outermost ring touches the rim of the
+dish on the frame the wavefront touches its range. `tests/test_hud_minimap.gd` pins
+that identity — it is the thing that breaks silently if anyone edits `SONAR_SPAN`.
+
+Contacts arrive one at a time on `HudState.radar_contact`, already in the player's
+frame, and `add_blip()` timestamps each against the widget's own clock.
+`blip_alpha()` fades them so every blip dies at the instant the next sweep leaves,
+whenever it arrived — a late contact simply gets less time to fade. `radar_blips`
+is the separate static set the demo driver and the editor drive; its
+`_validate_property()` clears `PROPERTY_USAGE_STORAGE` so a preview cannot leak
+into a layout again.
+
 ## The reticle's zoom
 
 HUD 04's reticle is `hud_reticle_zoom.gd`, which strokes it so its five parts can move
@@ -167,12 +184,50 @@ independently. HUD 02 and 03 keep `hud_reticle.gd`, which blits.
 `DamageOverlay.flash()` bleeds red in from the four corners and fades it out, once.
 `flash_duration` is the whole flash.
 
-It is on HUD 04 only and binds to nothing yet: no `HudState` signal means "took a
-hit", and `status` is an oxygen and power derivation that would fire this on low air.
-Call it directly, or give it a signal first.
+It is on HUD 04 only. It binds to `HudState.damaged`, which is an **event** rather
+than state — deliberately absent from `announce_all()`, like the two radar signals,
+because a HUD that binds a frame after a hit has nothing to catch up on.
+`PlayerHudBinding` only reports a hit past `flash_min_severity`, so the continuous
+sources (suffocation, a live arc) bill a sliver per frame without strobing the screen.
+
+`status` is still an oxygen-and-power derivation and health is deliberately not in it:
+`PlayerSfx` plays its helmet downgrade cue on every downgrade, so folding health in
+would turn a rare "you are in trouble" sound into a hit confirm on every bump.
 
 Alpha peaks at 0.634, never 1.0 — that ceiling is the mockup's, not a value to round
 up.
+
+## The visor, and the number it does not give you
+
+`VisorDamage` (`hud_visor_damage.gd`) is the sustained half: frost and cracking
+creeping in from the same four corners `DamageOverlay` flashes, held rather than
+flashed, so an injury and the blow that caused it read as one system. Nothing shows
+above `SHOWS_BELOW`; the tint lerps from cold toward `HudPalette.ALERT` as it gets
+worse, and only a critical suit runs the breathing pulse — `set_process` is off above
+that, so being merely hurt costs no frame. It draws polygons for the same reason
+`DamageOverlay` does. **There is no health bar, on purpose.**
+
+`HealthDebug` (`hud_health_debug.gd`) is the number, for tuning. It gates itself on
+the `DebugMode` autoload, so **F3** shows it beside the creature panels and an export
+never does.
+
+## Being electrified
+
+`Electrified` (`hud_electrified.gd`) is the third overlay in that family, and it exists
+because an arc's *damage* is deliberately tiny — the charge is the bill — so without
+it the player has no way to tell an arc has them. It binds to `HudState.electrified`,
+which is **state** rather than an event and is therefore in `announce_all()`: a HUD
+bound mid-shock comes up crackling.
+
+The clear zone is measured as a fraction of the distance to the screen edge **along
+each bolt's own direction**, so it is an ellipse matching the screen rather than a
+circle. On 16:9 a true circle lets the horizontal bolts reach twice as far in as the
+vertical ones and the middle stops reading as clear. As shipped, the nearest ink ever
+gets to centre is 209 px of 360 — wider than the reticle, which is never overdrawn.
+
+It redraws on a `CRACKLE_HZ` clock rather than per frame: at 144 Hz the per-frame
+version reads as static, and holding still reads as a cracked screen. `set_process` is
+off whenever the arc does not have you, so it costs nothing the rest of the run.
 
 ## How a widget binds
 
@@ -193,9 +248,14 @@ exactly like a HUD that works.
 A variant with no status face simply has no `Status` node. Nothing branches on
 which variant it is.
 
+The two radar signals are the exception: `radar_swept` and `radar_contact` are
+events rather than state, so they are deliberately absent from `announce_all()` —
+there is nothing to re-announce. A HUD that binds mid-sweep draws an empty dish
+until the next pulse, at most `radar_interval` later.
+
 ## Four things that will bite
 
-**Nothing here runs `_process` except the oxygen ring's alarm, the radar's ping, the
+**Nothing here runs `_process` except the oxygen ring's alarm, the radar's sweep, the
 damage flash and the demo driver.** Widgets redraw when the value they report changes,
 per the rule `power_bar.gd` sets out. Note that *defining* `_process` is what registers
 a node for processing — a `_process` that early-returns on its first line is still a

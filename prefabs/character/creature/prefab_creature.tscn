@@ -20,6 +20,7 @@
 [ext_resource type="Script" uid="uid://ba1k2tg60qcx5" path="res://gameplay/creature/behavior/behavior_config.gd" id="17_behavior_config"]
 [ext_resource type="Script" uid="uid://kbo8x76p7o8g" path="res://prefabs/character/creature/creature_agent.gd" id="18_agent"]
 [ext_resource type="Script" uid="uid://cpsoqaj3ya3uf" path="res://prefabs/character/creature/creature_debug_readout.gd" id="19_debug_readout"]
+[ext_resource type="Script" uid="uid://cwcd3bdepretv" path="res://systems/radar/radar_detectable.gd" id="20_radar"]
 
 [sub_resource type="Resource" id="Resource_perception_config"]
 script = ExtResource("8_perception_config")
@@ -106,6 +107,9 @@ script = ExtResource("7_perception")
 config = SubResource("Resource_perception_config")
 candidate_group = &"player"
 hearing_seed = 20250816
+
+[node name="RadarDetectable" type="Area3D" parent="." unique_id=1885330278]
+script = ExtResource("20_radar")
 
 [node name="Suspicion" type="Node" parent="." unique_id=1447290618]
 unique_name_in_owner = true

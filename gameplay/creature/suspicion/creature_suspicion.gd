@@ -152,6 +152,28 @@ func submit_disconfirmation(observation: DisconfirmationObservation) -> void:
 		_next_hotspot_update = minf(_next_hotspot_update, clock)
 
 
+## "I cannot get there." NOT "there is nothing there" -- the creature never arrived and never
+## looked, so this changes no belief at all.
+##
+## THE THIRD DOOR, AND IT IS A CLAIM ABOUT THE CREATURE RATHER THAN ABOUT THE WORLD. That is
+## the whole of why it is allowed to exist beside the two that suspicion.md sanctions, and why
+## it is not the `mark_investigation_complete()` that document bans: it subtracts nothing,
+## suppresses no evidence, and leaves `get_overall_suspicion`, `get_suspicion_near`,
+## `get_hotspot` and `get_hotspots` reading exactly what they read before. All it does is stop
+## `get_strongest_hotspot` and `get_hotspots_above` OFFERING this place as somewhere to walk,
+## for `unreachable_suppression_s`.
+##
+## Without it a lead the creature physically cannot reach is re-selected on the tick after it
+## gives up, forever, because lead selection has no memory of having just failed.
+func mark_unreachable(hotspot_id: int) -> void:
+	if config == null:
+		return
+	var hotspot: SuspicionHotspot = hotspot_field.find(hotspot_id)
+	if hotspot == null:
+		return
+	hotspot_field.suppress(hotspot, config.unreachable_suppression_s, clock)
+
+
 # ----- Behavior -> Suspicion (reads) -----
 
 
@@ -169,12 +191,16 @@ func get_hotspots() -> Array[SuspicionHotspot]:
 	return hotspot_field.above(0.0)
 
 
+## THE LEAD QUERIES. These two, and only these two, hide a place `mark_unreachable` has been
+## called on -- they are what Behavior picks somewhere to walk from. `get_hotspots`,
+## `get_hotspot` and `get_suspicion_near` above and below are deliberately unfiltered, so the
+## creature goes on believing in a place it has stopped trying to reach.
 func get_hotspots_above(minimum_suspicion: float) -> Array[SuspicionHotspot]:
-	return hotspot_field.above(minimum_suspicion)
+	return hotspot_field.leads_above(minimum_suspicion, clock)
 
 
 func get_strongest_hotspot() -> SuspicionHotspot:
-	return hotspot_field.strongest()
+	return hotspot_field.strongest_lead(clock)
 
 
 func get_hotspot(hotspot_id: int) -> SuspicionHotspot:

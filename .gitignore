@@ -37,3 +37,6 @@ tools/.cache/
 
 # tj-actions/changed-files write_output_files target (CI runtime)
 .github/outputs/
+
+# Generated demo-sheet renders/PDF -- one-off deliverable, not tracked art
+tools/demo-sheet/output/

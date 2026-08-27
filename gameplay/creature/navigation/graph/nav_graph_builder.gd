@@ -26,11 +26,20 @@ extends RefCounted
 ## and local candidate ranking (section 21), are Phase 3-4 and want it locally around
 ## the body rather than baked over the cave.
 ##
+## SECTION 9 STILL GETS ITS CENTRING, ONE CELL AT A TIME. Sampling only at lattice points
+## makes navigability depend on where a passage sits modulo the pitch, which for an
+## axis-aligned bore is constant down its whole length and therefore total rather than
+## patchy: see NavigationConfig.candidate_recentre for the 25 mm phase error that cost a
+## shipped level its only shaft, and `_offer_candidate` for the retry that answers it.
+##
 ## ORDER IS THE POINT OF SECTION 12.2, not an implementation detail. Sorting candidates
 ## by clearance DESCENDING before the greedy accept is what makes the survivors cluster
 ## at tunnel centres, chamber centres and large openings -- a rough medial skeleton.
 ## Accept them in lattice order instead and every number here is identical while the
 ## graph becomes an arbitrary grid sample that hugs whichever wall the scan hit first.
+## `_recentred` is the other half of the same intent, applied per candidate rather than
+## across the set: the sort clusters the survivors at the open places, and the retry puts
+## each one in the middle of the place it survived in.
 ##
 ## TWO WAYS TO REACH THE CANDIDATE SET, AND THE SECOND IS THE ONE FOR REAL LEVELS.
 ## `begin()` walks the whole lattice, which is section 12.1 as written and is correct only
@@ -132,6 +141,7 @@ var _cell_state: Dictionary = {}
 ## permanent -- a wall-shaped hole in the graph that nothing reports.
 var _reached: Dictionary = {}
 var _passage_body: SphereShape3D = null
+var _candidate_body: SphereShape3D = null
 
 
 ## Prepares a bake over `region`. Nothing is sampled until step() is called.
@@ -367,14 +377,14 @@ func _sample_one() -> void:
 		return
 	var point: Vector3 = _lattice_point(_sample_index)
 	_sample_index += 1
-	var profile: ClearanceProfile = _config.clearance_profile
-	var clearance: float = _measure_cell(
-		point, profile.squeezed_body(), profile.min_traversal_clearance()
-	)
+	# Measured down to the floor re-centring could still rescue rather than to the body's own
+	# gate, because `_measure_cell` discarding a near miss is precisely what would stop
+	# `_offer_candidate` ever seeing one. The body gate is applied there, unchanged. With
+	# re-centring off `_candidate_floor` IS that gate, so this is the old call spelled twice.
+	var clearance: float = _measure_cell(point, _candidate_shape(), _candidate_floor())
 	if clearance < 0.0:
 		return
-	_candidates.append([clearance, point])
-	candidates_kept += 1
+	_offer_candidate(point, clearance)
 
 
 ## Clearance at `point`, or -1.0 if `body` does not fit there or `floor_clearance` is not met.
@@ -398,6 +408,98 @@ func _measure_cell(point: Vector3, body: Shape3D, floor_clearance: float) -> flo
 	if clearance < floor_clearance:
 		return -1.0
 	return clearance
+
+
+## Section 12.1's candidate gate, plus section 9's centring step when the gate just misses.
+##
+## THE GATE IS UNCHANGED; THE POSITION IS THE THING THAT MOVES. A cell still becomes a node
+## only where the squeezed body genuinely fits with `min_traversal_clearance` to spare. What
+## re-centring buys is WHERE that is tested, because a lattice point is an arbitrary sample of
+## a passage rather than its middle -- see `NavigationConfig.candidate_recentre` for the 25 mm
+## phase error that cost a level its only shaft.
+##
+## SHARED BY THE SWEEP AND THE FLOOD, literally, for the same reason `_measure_cell` is:
+## `tests/test_graph_flood.gd` asserts the two enumerations produce identical graphs, and a
+## centring step applied to one of them would make that assertion fail for a reason that has
+## nothing to do with enumeration.
+func _offer_candidate(at: Vector3, clearance: float) -> void:
+	var gate: float = _config.clearance_profile.min_traversal_clearance()
+	if clearance >= gate:
+		_candidates.append([clearance, at])
+		candidates_kept += 1
+		return
+	if not _config.candidate_recentre:
+		return
+	# Clearance cannot rise by more than the distance moved, so a cell further off than one
+	# full step is unrescuable and must not spend six rays discovering that.
+	if clearance + _max_recentre_offset() < gate:
+		return
+	var centred: Array = _recentred(at, gate)
+	if centred.is_empty():
+		return
+	_candidates.append(centred)
+	candidates_kept += 1
+
+
+## Section 9's medial centring, as one retry rather than as a baked field.
+##
+## SIX RAYS CHOOSE A DIRECTION AND DECIDE NOTHING. The moved point goes through the same
+## `_measure_cell` every other candidate does, so a ray that threaded the hairline seam
+## between two brushes costs one wasted retry and can never manufacture a node inside rock.
+## That is the entire reason a ray is allowed here where `_passage_open` refuses one: this one
+## is a hint downstream of a swept test, and that one was the test.
+##
+## The rays look `clearance_ceiling` far rather than one step far. A step-long ray in a 5 m
+## bore finds no wall in either direction, reports the reach twice, and centres the point on
+## itself -- which is the one answer that cannot help. Returns [clearance, point], or empty.
+func _recentred(at: Vector3, gate: float) -> Array:
+	var limit: float = _config.candidate_spacing * _config.candidate_recentre_fraction
+	var reach: float = _config.clearance_ceiling
+	var mask: int = _config.world_mask
+	var offset := Vector3.ZERO
+	for axis: int in 3:
+		var heading := Vector3.ZERO
+		heading[axis] = 1.0
+		var ahead: float = _probe.surface_along(at, heading, reach, mask).distance
+		var behind: float = _probe.surface_along(at, -heading, reach, mask).distance
+		# Half the difference is the midpoint between the two walls on this axis, which for a
+		# rectangular bore is exactly its centreline and for a round one is very near it.
+		offset[axis] = clampf((ahead - behind) * 0.5, -limit, limit)
+	if offset.is_zero_approx():
+		return []
+	var moved: Vector3 = at + offset
+	var clearance: float = _measure_cell(moved, _passage_shape(), gate)
+	if clearance < 0.0:
+		return []
+	return [clearance, moved]
+
+
+## The largest distance `_recentred` may move a candidate, as `_offer_candidate` bounds it.
+func _max_recentre_offset() -> float:
+	return _config.candidate_spacing * _config.candidate_recentre_fraction * sqrt(3.0)
+
+
+## The clearance the SWEEP refuses below -- one re-centring step under the body's own gate.
+##
+## Not the gate itself, and not zero either. Rock is most of a cave by volume and
+## `_measure_cell`'s single `shape_fits` is what rejects it before the bisection runs, so the
+## coarse body has to stay as large as it can while still admitting every cell a retry could
+## rescue. With re-centring off this collapses to `min_traversal_clearance` and the sweep
+## behaves exactly as it always did.
+func _candidate_floor() -> float:
+	var gate: float = _config.clearance_profile.min_traversal_clearance()
+	if not _config.candidate_recentre:
+		return gate
+	return maxf(gate - _max_recentre_offset(), _config.flood_passage_radius)
+
+
+## Reused across calls, for the reason `_passage_shape` gives: one resource, not one per
+## lattice point.
+func _candidate_shape() -> SphereShape3D:
+	if _candidate_body == null:
+		_candidate_body = SphereShape3D.new()
+	_candidate_body.radius = _candidate_floor()
+	return _candidate_body
 
 
 ## One seed per unit of budget. Resolving them eagerly in `begin_flood` would be a frame
@@ -472,6 +574,11 @@ func _begin_flooding() -> void:
 ## single indivisible lump -- a 16% overshoot on the shipped 384-query frame budget, and
 ## unbounded the moment anyone raises `clearance_steps`. Carrying `_neighbour_index` keeps
 ## the worst case at 10, the same order as one `_sample_one`.
+##
+## A RE-CENTRING RETRY ADDS UP TO 14 MORE, and that is worth stating rather than hiding: six
+## rays plus a second `_measure_cell`. It fires only for a cell that missed the candidate gate
+## by less than one step -- the shell just inside a wall, never rock and never open space --
+## so the overshoot it can cause is bounded by that 14, against a budget in the hundreds.
 func _flood_one() -> void:
 	if _frontier_head >= _frontier.size():
 		_begin_decimation()
@@ -549,12 +656,16 @@ func _passage_open(from_cell: Vector3i, to_cell: Vector3i) -> bool:
 ## across the slot. Gate the flood on candidacy instead and chamber C is never reached at
 ## all -- which passes the slot check for entirely the wrong reason, and
 ## `verify_navigation_runtime._check_chamber_c_isolated` exists to say so.
+##
+## RE-CENTRING DOES NOT MOVE THAT LINE, and the reason is arithmetic rather than care.
+## `_offer_candidate` owns the candidacy half now, and the most a retry can raise a cell's
+## clearance to is the true half-width of the passage it is in -- 0.5 m in the slot, against
+## the 0.75 m the sandbox body needs. The slot stays nodeless because it is too narrow, which
+## is what Invariant 5 has always said, rather than because the lattice happened to miss it.
 func _accept(cell: Vector3i, at: Vector3, clearance: float) -> void:
 	_reached[cell] = true
 	_frontier.append(cell)
-	if clearance >= _config.clearance_profile.min_traversal_clearance():
-		_candidates.append([clearance, at])
-		candidates_kept += 1
+	_offer_candidate(at, clearance)
 	if _reached.size() >= MAX_LATTICE_SAMPLES:
 		# Reported rather than silently truncated, exactly as `_plan_lattice` does it. Draining
 		# the frontier sends the next `_flood_one` straight to decimation with what it has.

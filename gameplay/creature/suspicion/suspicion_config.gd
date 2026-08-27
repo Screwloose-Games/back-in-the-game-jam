@@ -105,6 +105,14 @@ const DEFAULT_SENSES_FOR_FULL_CREDIT: int = 2
 ## Senses that earn full disconfirmation credit. See DEFAULT_SENSES_FOR_FULL_CREDIT.
 @export_range(1, 3, 1)
 var disconfirmation_senses_for_full_credit: int = DEFAULT_SENSES_FOR_FULL_CREDIT
+## How long a place stays off the lead list after CreatureSuspicion.mark_unreachable.
+##
+## LONG ENOUGH TO DO SOMETHING ELSE, SHORT ENOUGH TO TRY AGAIN. Matched to
+## BehaviorConfig.investigate_timeout_s (45 s), which is the other number describing how long
+## one lead may hold the creature's attention. At 0.0 a give-up is forgotten immediately and
+## the creature re-selects the place it just failed to reach on the very next tick, which is
+## the loop this exists to break.
+@export_range(0.0, 600.0, 0.5, "suffix:s") var unreachable_suppression_s: float = 45.0
 ## Cap on remembered searches, for the same reason as max_evidence_count.
 @export_range(4, 256, 1) var max_disconfirmation_count: int = 48
 

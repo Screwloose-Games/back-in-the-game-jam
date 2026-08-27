@@ -13,6 +13,7 @@ var circle_transition = load("res://common/ui/scene_transitions/circle_transitio
 var fade_transition = load("res://common/ui/scene_transitions/fade_transition.tscn")
 var loading_screen = load("res://common/ui/loading_screen/loading_screen.tscn")
 var credits = load("res://common/ui/screens/credits.tscn")
+var extraction_report = load("res://common/ui/screens/extraction_report.tscn")
 
 ## The level if something warmed it, and null if nothing has. Never blocks.
 ##

@@ -128,6 +128,11 @@ collision shape casts". The two consumers that want a continuous field, medial t
 centering (§9) and local candidate ranking (§21), are phase 3–4 and want it *locally
 around the body* rather than baked over the cave.
 
+§9 does get its centring, though — one candidate at a time rather than as a field, in
+`NavGraphBuilder._recentred`. See **A passage the lattice missed** below for the bug that
+made it necessary. It is still not a distance transform: it fires only for a cell that
+missed the candidate gate, and costs six rays and one re-measure when it does.
+
 **2. `Creature*` / `Nav*` rather than the spec's `Alien*`.** Godot's `class_name` table
 is flat and project-wide, so a collision is a parse failure across the whole project.
 This matches the two shipped sibling modules, and §37 calls its own list "recommended"
@@ -245,6 +250,40 @@ a dig AABB's corners, which for a sphere brush lie outside anything it carved.
 
 `NavigationProbe.is_solid` therefore has no caller on the shipping path. It and the CSG
 verifier are kept as the record of *why* the flood exists.
+
+**A passage the lattice missed.** §12.1 samples at absolute world multiples of
+`candidate_spacing`, and a cell becomes a candidate only where the squeezed body fits *at
+that point*. A bore of width `W` therefore leaves a usable band
+`W - 2 * min_traversal_clearance` across, and if no lattice plane lands inside that
+band the passage gets no nodes at all — however comfortably the alien would fit down
+the middle of it.
+
+For a bore running along an axis the phase error is **constant down its whole length**, so
+the failure is total rather than patchy, and nothing reports it: the bake succeeds, the node
+count looks plausible, and one corridor is simply absent. The asteroid level's `winze_deep`
+is the worked example — a 5.25 m square shaft whose axis sits 0.4996 m from the nearest
+lattice column while the band allows 0.475 m. A **25 mm** miss, over all 39 m of it. It is
+the only creature-passable link between the two halves of that mine and it is where the
+creature spawns, so the graph came out severed, the spawn attached to nothing, every route
+failed, and the alien stood still for the whole session behind no error at all — only a
+line reading `0/16 nests reachable`.
+
+`NavigationConfig.candidate_recentre` is the answer, and it is §9's medial step scoped to one
+retry: six rays pick the direction, the point moves to the midpoint between the walls on each
+axis, and the same `_measure_cell` decides. Three things keep it honest. **The rays decide
+nothing** — they are a hint, and the moved point is re-validated by the gate every other
+candidate goes through, so a ray that threaded a hairline seam costs a wasted retry and can
+never manufacture a node in rock. **It cannot breach Invariant 5**, because a retry can raise
+a cell's clearance to the true half-width of its passage and no further — the sandbox's
+1 m slot tops out at 0.5 m against a 0.75 m body and stays sealed. And **it is
+region-independent**, because a bore's axis is a property of the cave where the nearest
+lattice plane is a property of whatever AABB was passed in — which is what lets §24.2's
+patch reproduce a bake's node rather than fight it.
+
+Every fixture in `tests/` and in `NavigationSandboxGeometry` is centred so the lattice threads
+it — deliberately, and their comments say so — which is why 62 unit tests and both runtime
+suites never met this. The sandbox graph is unchanged to the node by the retry, and
+`tests/test_candidate_recentre.gd` is the case that was missing.
 
 **A body displaced along its route does not skip ahead.** `RouteFollower` advances on
 *arrival*, never by re-picking the nearest anchor, because §18 and §40.1 forbid the

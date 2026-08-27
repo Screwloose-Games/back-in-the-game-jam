@@ -1,4 +1,4 @@
-class_name LifeSupportCube
+class_name CoreLoopLifeSupportCube
 extends RigidBody3D
 
 ## The thing you have to bring with you.

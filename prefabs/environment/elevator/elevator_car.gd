@@ -124,7 +124,6 @@ func _apply_text() -> void:
 	# Nothing has been mined yet during the intro, so the whole quota is
 	# outstanding. PlayerHudBinding._bind_quota_screens takes it over from here
 	# the moment a player with a HUD exists.
-	_quota_screen.show_collected(0)
 	_placard_text.text = placard_text
 
 

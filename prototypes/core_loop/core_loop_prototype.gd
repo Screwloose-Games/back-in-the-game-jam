@@ -22,7 +22,7 @@ const SUIT_SCENE := preload("res://prototypes/core_loop/imported/core_loop_suit.
 @export var settings: CoreLoopSettings
 
 var _suit: CoreLoopSuit
-var _cube: LifeSupportCube
+var _cube: CoreLoopLifeSupportCube
 var _suit_store: PowerStore
 var _power: CoreLoopPowerSystem
 var _suit_lamp_response: LampPowerResponse
@@ -95,7 +95,7 @@ func get_suit() -> CoreLoopSuit:
 
 
 ## The life support cube.
-func get_cube() -> LifeSupportCube:
+func get_cube() -> CoreLoopLifeSupportCube:
 	return _cube
 
 
@@ -242,7 +242,7 @@ func _spawn_suit() -> void:
 
 
 func _spawn_cube() -> void:
-	_cube = LifeSupportCube.new()
+	_cube = CoreLoopLifeSupportCube.new()
 	_cube.name = "LifeSupportCube"
 	_cube.transform = Transform3D(Basis.IDENTITY, CoreLoopKnobs.CUBE_SPAWN)
 	add_child(_cube)

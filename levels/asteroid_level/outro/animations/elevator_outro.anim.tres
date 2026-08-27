@@ -1,0 +1,68 @@
+[gd_resource type="Animation" format=3]
+
+[resource]
+length = 10.0
+tracks/0/type = "position_3d"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Cutscenes/ElevatorOutro/CameraAnchor")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = PackedFloat32Array(0, 1, 0.35, 0.45, 1.45, 4.2, 1, 0.35, 0.45, 1.45, 4.6, 1, 0.343, 0.45139998, 1.4248, 5, 1, 0.324, 0.4552, 1.3564, 5.4, 1, 0.296, 0.4608, 1.2556, 5.8, 1, 0.262, 0.4676, 1.1332, 6.2, 1, 0.225, 0.475, 1, 6.6, 1, 0.188, 0.4824, 0.8668, 7, 1, 0.154, 0.4892, 0.7444, 7.4, 1, 0.12599999, 0.4948, 0.6436, 7.8, 1, 0.10699999, 0.4986, 0.5752, 8.2, 1, 0.099999994, 0.5, 0.55, 10, 1, 0.1, 0.5, 0.55)
+tracks/1/type = "rotation_3d"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("Cutscenes/ElevatorOutro/CameraAnchor")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = PackedFloat32Array(0, 1, 0.015503727, 0.05443748, -0.00084533944, 0.99839646, 4.2, 1, 0.015503727, 0.05443748, -0.00084533944, 0.99839646, 4.6, 1, 0.015629502, 0.05377788, -0.0008418429, 0.99843025, 5, 1, 0.015981218, 0.051932484, -0.00083117257, 0.9985224, 5.4, 1, 0.016528795, 0.049056716, -0.0008119373, 0.9986589, 5.8, 1, 0.017245246, 0.045288924, -0.0007819376, 0.9988248, 6.2, 1, 0.01809727, 0.040800143, -0.000739108, 0.9990032, 6.6, 1, 0.019035574, 0.03584593, -0.0006829106, 0.9991758, 7, 1, 0.019985307, 0.030818967, -0.00061634264, 0.999325, 7.4, 1, 0.020839348, 0.026287172, -0.00054811605, 0.99943703, 7.8, 1, 0.021460276, 0.02298523, -0.0004935134, 0.99950534, 8.2, 1, 0.021698147, 0.021718623, -0.00047147612, 0.9995285, 10, 1, 0.021698147, 0.021718625, -0.00047147617, 0.9995285)
+tracks/2/type = "position_3d"
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/path = NodePath("ElevatorCar/Doors/DoorLeft")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/keys = PackedFloat32Array(0, 1, -1.08, 0, 0, 0.8, 1, -1.08, 0, 0, 1.06, 1, -1.04976, 0, 0, 1.32, 1, -0.96768, 0, 0, 1.58, 1, -0.84672, 0, 0, 1.84, 1, -0.69984, 0, 0, 2.1, 1, -0.54, 0, 0, 2.36, 1, -0.38016, 0, 0, 2.62, 1, -0.23328, 0, 0, 2.88, 1, -0.11232, 0, 0, 3.14, 1, -0.03024, 0, 0, 3.4, 1, 0, 0, 0, 10, 1, 0, 0, 0)
+tracks/3/type = "position_3d"
+tracks/3/imported = false
+tracks/3/enabled = true
+tracks/3/path = NodePath("ElevatorCar/Doors/DoorRight")
+tracks/3/interp = 1
+tracks/3/loop_wrap = true
+tracks/3/keys = PackedFloat32Array(0, 1, 1.08, 0, 0, 0.8, 1, 1.08, 0, 0, 1.06, 1, 1.04976, 0, 0, 1.32, 1, 0.96768, 0, 0, 1.58, 1, 0.84672, 0, 0, 1.84, 1, 0.69984, 0, 0, 2.1, 1, 0.54, 0, 0, 2.36, 1, 0.38016, 0, 0, 2.62, 1, 0.23328, 0, 0, 2.88, 1, 0.11232, 0, 0, 3.14, 1, 0.03024, 0, 0, 3.4, 1, 0, 0, 0, 10, 1, 0, 0, 0)
+tracks/4/type = "value"
+tracks/4/imported = false
+tracks/4/enabled = true
+tracks/4/path = NodePath("ElevatorCar/WarningStrobe:light_energy")
+tracks/4/interp = 1
+tracks/4/loop_wrap = true
+tracks/4/keys = {
+"times": PackedFloat32Array(0, 0.76666665, 0.8, 3.4, 3.4333334, 10),
+"transitions": PackedFloat32Array(1, 1, 1, 1, 1, 1),
+"update": 0,
+"values": [0.0, 0.0, 2.2, 2.2, 0.0, 0.0]
+}
+tracks/5/type = "value"
+tracks/5/imported = false
+tracks/5/enabled = true
+tracks/5/path = NodePath("Hud/Fade:color")
+tracks/5/interp = 1
+tracks/5/loop_wrap = true
+tracks/5/keys = {
+"times": PackedFloat32Array(0, 8.4, 10),
+"transitions": PackedFloat32Array(1, 1, 1),
+"update": 0,
+"values": [Color(0, 0, 0, 0), Color(0, 0, 0, 0), Color(0, 0, 0, 1)]
+}
+tracks/6/type = "value"
+tracks/6/imported = false
+tracks/6/enabled = true
+tracks/6/path = NodePath("Hud/Title:modulate")
+tracks/6/interp = 1
+tracks/6/loop_wrap = true
+tracks/6/keys = {
+"times": PackedFloat32Array(0, 8.4, 10),
+"transitions": PackedFloat32Array(1, 1, 1),
+"update": 0,
+"values": [Color(1, 1, 1, 0), Color(1, 1, 1, 0), Color(1, 1, 1, 1)]
+}

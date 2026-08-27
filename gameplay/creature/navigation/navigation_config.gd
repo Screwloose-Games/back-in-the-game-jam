@@ -43,6 +43,36 @@ const DEFAULT_WORLD_MASK: int = 1
 ## Section 12.2 decimation radius. A candidate within this of an accepted node is
 ## dropped, which is what turns the lattice into a rough medial skeleton.
 @export_range(0.25, 20.0, 0.05, "or_greater", "suffix:m") var node_separation: float = 3.0
+## Whether a candidate that misses the clearance gate gets one re-centring retry.
+##
+## THE LATTICE IS ANCHORED TO THE WORLD, SO WITHOUT THIS A PASSAGE IS NAVIGABLE OR NOT
+## DEPENDING ON WHERE IT SITS MODULO `candidate_spacing`. Section 12.1 samples at absolute
+## multiples of the pitch, and a candidate survives only where the squeezed body fits AT THAT
+## POINT -- so a bore of width W leaves a usable band only W - 2 * min_traversal_clearance
+## across, and if no lattice column lands inside that band the passage gets no nodes at all.
+## For a bore running along an axis the phase error is CONSTANT down its whole length, so the
+## failure is total rather than patchy, and nothing reports it: the bake succeeds, the counts
+## look plausible, and one corridor is simply missing.
+##
+## That is not hypothetical. The asteroid level's `winze_deep` is a 5.25 m square bore whose
+## axis sits 0.4996 m from the nearest lattice column while the band allows 0.475 m -- a miss
+## by 25 mm, over all 39 m of it. It is the only creature-passable link between the two halves
+## of the mine and it is where the creature spawns, so the graph came out severed, the spawn
+## attached to nothing, and the alien stood still for the whole session.
+##
+## With this on, section 9's medial centring is recovered as a single retry: six rays pick the
+## direction, the moved point is re-measured by the same gate, and the node lands near the
+## middle of its passage instead of wherever the lattice happened to cut it. Off, the builder
+## behaves exactly as it did before -- the coarse reject narrows to the body again and no ray
+## is ever cast.
+@export var candidate_recentre: bool = true
+## How far re-centring may move a candidate, per axis, as a fraction of `candidate_spacing`.
+##
+## CAPPED AT 0.5 AND THE CAP IS STRUCTURAL. Half a pitch is exactly the cell's half-extent, so
+## a re-centred node stays inside the cell that produced it. Above that two neighbouring cells
+## can move PAST each other, decimation's `node_separation` stops describing the lattice it is
+## thinning, and a "one node per neighbourhood" guarantee quietly becomes a hope.
+@export_range(0.05, 0.5, 0.01) var candidate_recentre_fraction: float = 0.5
 ## Section 13.1 neighbour search radius.
 @export_range(1.0, 40.0, 0.1, "or_greater", "suffix:m") var edge_search_radius: float = 8.0
 ## How many neighbours a node may link to (section 13.1).
@@ -405,6 +435,11 @@ func invariant_failures() -> PackedStringArray:
 		# Decimation would then reject nothing and accept the entire lattice.
 		var pitches: Array = [node_separation, candidate_spacing]
 		failures.append("node_separation %.2f is below candidate_spacing %.2f" % pitches)
+	if candidate_recentre_fraction <= 0.0 or candidate_recentre_fraction > 0.5:
+		# See the export's own docstring: past half a pitch a re-centred node leaves the cell
+		# that produced it and decimation stops thinning the lattice it thinks it is thinning.
+		var fraction: Array = [candidate_recentre_fraction]
+		failures.append("candidate_recentre_fraction %.2f is outside (0, 0.5]" % fraction)
 	if edge_search_radius <= node_separation:
 		# No accepted node can be within the search radius of another, so no edges.
 		var radii: Array = [edge_search_radius, node_separation]

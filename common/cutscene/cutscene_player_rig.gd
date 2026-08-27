@@ -123,6 +123,16 @@ func set_avatar_hidden(hidden: bool) -> void:
 	)
 
 
+## Draws the whole suit, as a remote player sees it.
+##
+## The opposite of set_avatar_hidden, and it exists for the opposite kind of shot. An
+## intro composed AROUND the crew has to get the player out of frame; an outro whose
+## subject IS the crew has to put them in it. SHOW_EVERYTHING puts their meshes on the
+## world layer, so a cutscene camera on the ordinary cull mask draws them.
+func set_avatar_fully_visible() -> void:
+	visibility.self_view = PlayerVisibility.SelfView.SHOW_EVERYTHING
+
+
 ## THE WEIGHT, NEVER THE LAYER: an AnimationTree layer runs on its own real-time
 ## clock and does not scrub, so the layer holds one solved pose and this is the
 ## whole gesture.
