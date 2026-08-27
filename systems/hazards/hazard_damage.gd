@@ -39,6 +39,18 @@ static func power_of(body: Node) -> PlayerPowerClient:
 	return body.get_node_or_null("PowerClient") as PlayerPowerClient
 
 
+static func oxygen_of(body: Node) -> PlayerOxygen:
+	return body.get_node_or_null("Oxygen") as PlayerOxygen
+
+
+static func input_of(body: Node) -> PlayerInput:
+	return body.get_node_or_null("Input") as PlayerInput
+
+
+static func head_of(body: Node) -> Node3D:
+	return body.get_node_or_null("Head") as Node3D
+
+
 ## Pushes a suit away from `from`, applied AT `from` so the off-centre lever tumbles it
 ## away from whatever hit it rather than spinning it about nothing.
 static func shove(body: Node3D, from: Vector3, impulse: float) -> void:

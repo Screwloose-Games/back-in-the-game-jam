@@ -60,6 +60,14 @@ COLOURS = {
     "red": (0xC4, 0x3D, 0x30),  # the switch paddle, emergency trim
     "cyan": (0x4F, 0xC7, 0xD4),  # coolant lines, the one cool colour
     "rubber": (0x33, 0x33, 0x36),  # grips, gaskets, the meeting edge of a door
+    # Fauna. The clinger, and the only organic thing in the palette. Cold and
+    # low-saturation like everything above it -- a warm creature in a mine lit by
+    # helmet lamps reads as a prop someone tinted, not as something alive. The
+    # belly is the pale one on purpose: it is what a player sees on the glass.
+    "chitin": (0x67, 0x6B, 0x60),
+    "chitin_dark": (0x3D, 0x40, 0x39),
+    "chitin_light": (0x8C, 0x90, 0x83),
+    "belly": (0xC0, 0xB6, 0xA4),
     # Emissive. These land on a second material so a container override can
     # drive the glow without touching the hull -- see EMISSIVE below.
     "lamp": (0xF6, 0xF2, 0xD8),  # the car's ceiling panel

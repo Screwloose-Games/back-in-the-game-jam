@@ -20,6 +20,11 @@ const SUFFOCATION_MIN_SECONDS := 4.0
 ## a sentence rather than a price.
 const ARC_MIN_DRAIN_SECONDS := 3.0
 
+## The least time an attached clinger may take to empty a full health pool. Under this
+## it starts competing with the stalker for the same job, and it must not: Pillar 1
+## reserves killing outright for the thing you cannot shed by pressing a button.
+const CLINGER_MIN_SURVIVAL_SECONDS := 25.0
+
 ## How many multiples of a reference-speed impact the worst crash can cost. The
 ## stalker owns instant death; a wall must not be able to take it.
 const IMPACT_HARDNESS_CAP := 3.0
@@ -418,6 +423,72 @@ var interact_hold_threshold: float = InteractionHold.DEFAULT_THRESHOLD
 ## managing drops for reasons that are not your fault.
 @export_range(0.0, 100.0, 0.5, "suffix:/s") var hazard_arc_power_drain_per_second: float = 20.0
 
+@export_group("Clinger")
+
+## How close it has to get before it will leap, measured to the head it is aiming at.
+##
+## Deliberately inside mining_range: a thing that leaps from further than you can answer
+## it is a hazard with no counterplay. Checked in invariant_failures().
+@export_range(0.5, 12.0, 0.1, "suffix:m") var clinger_jump_range: float = 4.0
+
+## How fast it crawls. "Slowly, visibly, on the rock -- you can outrun it" is the whole
+## counter, so this has to stay well under max_speed. Checked in invariant_failures().
+@export_range(0.2, 6.0, 0.1, "suffix:m/s") var clinger_crawl_speed: float = 1.1
+
+## How fast it travels mid-leap. Zero-g, so this is a straight line rather than an arc.
+@export_range(1.0, 30.0, 0.5, "suffix:m/s") var clinger_leap_speed: float = 8.0
+
+## The shortest gap between two leaps, counted from the frame one STARTS rather than from
+## the landing. Also how long a shed one circles you, so this one number is the rhythm of
+## the whole encounter.
+@export_range(0.5, 60.0, 0.5, "suffix:s") var clinger_attack_cooldown: float = 6.0
+
+## How far off you a shed one circles, as a fraction of clinger_jump_range. Under 1 so it
+## is always already inside leap distance when the cooldown clears.
+@export_range(0.2, 1.0, 0.05) var clinger_orbit_fraction: float = 0.85
+
+## How far it can hear. The stalker's is 120 m in the asteroid; this is short on purpose,
+## because a creature that answers every noise in the level is never escaped, only outrun.
+@export_range(1.0, 120.0, 1.0, "suffix:m") var clinger_hearing_range: float = 30.0
+
+## The noise strength that wakes a dormant one. Above thrust_noise_strength at a trickle
+## and below it at speed, so drifting past one is quiet and flying past one is not.
+@export_range(0.0, 20.0, 0.5) var clinger_wake_strength: float = 2.0
+
+## How long it keeps crawling toward a noise nothing has repeated. Go quiet and it loses
+## you; this is how long that takes.
+@export_range(0.5, 60.0, 0.5, "suffix:s") var clinger_forget_seconds: float = 8.0
+
+## What one riding your visor pulls out of the suit battery per second. Double
+## suit_drain_per_second, so the meter you have been managing halves while you deal with it.
+@export_range(0.0, 40.0, 0.5, "suffix:/s") var clinger_power_drain_per_second: float = 6.0
+
+## What it costs you in air per second. It is sitting on the intake -- this on top of
+## oxygen_idle_drain_per_second is four times the resting rate.
+@export_range(0.0, 20.0, 0.1, "suffix:/s") var clinger_oxygen_drain_per_second: float = 3.0
+
+## What it costs you in health per second. Must beat health_regen_per_second or wearing one
+## is free, and must still leave the suit alive long past a shed -- both are checked in
+## invariant_failures().
+@export_range(0.0, 20.0, 0.1, "suffix:/s") var clinger_health_drain_per_second: float = 2.5
+
+## How much mining beam it takes to kill one. A gas pod is 2, a mineral chunk 5, a blockage
+## 25, so three seconds of held beam puts this between "free" and "a decision" -- and those
+## three seconds are the loudest sustained noise in the game, which is the real price.
+@export_range(0.5, 60.0, 0.5) var clinger_hp: float = 3.0
+
+## Presses of any bound action needed to peel one off. Each takes it a further 1/n off the
+## glass, so this is also how much visor one press buys back.
+@export_range(1, 20, 1) var clinger_interaction_count: int = 4
+
+## How long a dead one stays before it despawns. Long enough to watch it let go and drift,
+## short enough that a chamber does not silt up with corpses on a web build.
+@export_range(0.0, 60.0, 0.5, "suffix:s") var clinger_death_despawn_time: float = 6.0
+
+## How loud one struggle press is. Thrashing paints you for the stalker, which is what
+## makes staying calm and losing the air the harder, better play.
+@export_range(0.0, 20.0, 0.5) var clinger_struggle_noise_strength: float = 7.0
+
 @export_group("Noise")
 
 ## How loud full thrust is. There is no silent way to travel.
@@ -544,6 +615,46 @@ func invariant_failures() -> PackedStringArray:
 				)
 			)
 		)
+	if clinger_health_drain_per_second <= health_regen_per_second:
+		(
+			failures
+			. append(
+				(
+					"clinger_health_drain_per_second %.2f does not beat health_regen_per_second %.2f; wearing one would cost nothing"
+					% [clinger_health_drain_per_second, health_regen_per_second]
+				)
+			)
+		)
+	if seconds_of_clinger_grip() < CLINGER_MIN_SURVIVAL_SECONDS:
+		(
+			failures
+			. append(
+				(
+					"a clinger empties the pool in %.1fs, under the %.1fs that keeps shedding one an escape rather than a fight"
+					% [seconds_of_clinger_grip(), CLINGER_MIN_SURVIVAL_SECONDS]
+				)
+			)
+		)
+	if clinger_jump_range > mining_range:
+		(
+			failures
+			. append(
+				(
+					"clinger_jump_range %.1f is past mining_range %.1f; it could leap from outside the range you can answer it at"
+					% [clinger_jump_range, mining_range]
+				)
+			)
+		)
+	if clinger_crawl_speed >= max_speed:
+		(
+			failures
+			. append(
+				(
+					"clinger_crawl_speed %.2f is not under max_speed %.2f; you could not outrun one, and outrunning it is the counter"
+					% [clinger_crawl_speed, max_speed]
+				)
+			)
+		)
 	return failures
 
 
@@ -584,6 +695,20 @@ func gas_pod_contact_distance() -> float:
 
 
 ## How long a live arc takes to empty a full suit, or INF when it never does.
+## How long an attached clinger takes to empty a full health pool, or INF when it never
+## does. Health only: an empty battery and an empty tank are prices, and suffocation is
+## already a slope, but health reaching zero is the one outcome the stalker owns.
+func seconds_of_clinger_grip() -> float:
+	if clinger_health_drain_per_second <= 0.0:
+		return INF
+	return max_health / clinger_health_drain_per_second
+
+
+## How far off you a shed clinger circles, in metres.
+func clinger_orbit_radius() -> float:
+	return clinger_jump_range * clinger_orbit_fraction
+
+
 func seconds_of_arc_drain() -> float:
 	if hazard_arc_power_drain_per_second <= 0.0:
 		return INF

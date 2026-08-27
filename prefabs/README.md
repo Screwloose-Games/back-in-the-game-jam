@@ -197,6 +197,13 @@ Four of these exist today:
   `world_noise_emitter` group) that nothing else has. Their geometry is Godot
   primitives rather than glTF, so they carry `metadata/placeholder = true` with no
   model container to pair with — see `environment/hazards/README.md`.
+- `character/clinger/` — `prefab_clinger.tscn`, plus the scripts that exist only to
+  serve it. A subdomain rather than a loose entry under `character/`, per rule 3:
+  the phase machine, the ears, the grip and the leg poser are one object's parts and
+  have no meaning apart from it. Its art mirrors it exactly at
+  `assets/art/character/clinger/`, which is what rule 2 asks for. The arithmetic
+  underneath is a system rather than a prefab script, and lives in
+  `systems/clinger/`.
 - `gameplay/` — `prefab_mining_laser.tscn`, the digging laser the placement
   decision below already routed here.
 - `ui/hud/` — the three HUD layouts being compared, plus `hud_preview.tscn`, which
@@ -262,6 +269,9 @@ Distant asteroid field backdrop
 
 Stalking creature
 → character/creatures/
+
+Small creature that crawls, leaps and latches
+→ character/clinger/
 
 Digging laser the player carries
 → gameplay/

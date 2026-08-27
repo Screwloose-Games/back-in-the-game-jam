@@ -1,0 +1,6 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://tests/verify_clinger.gd" id="1_clinger"]
+
+[node name="VerifyClinger" type="Node" unique_id=1509311488]
+script = ExtResource("1_clinger")

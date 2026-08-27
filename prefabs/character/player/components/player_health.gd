@@ -27,7 +27,9 @@ signal depleted
 signal electrified_changed(active: bool)
 
 ## What billed the last hit, for a cue or a readout that wants to say why.
-enum Source { UNKNOWN, IMPACT, SUFFOCATION, GAS_POD, ARC }
+## APPEND, NEVER INSERT. This travels as a bare int on `damaged`, so renumbering a
+## member makes every listener report the wrong cause with nothing to say so.
+enum Source { UNKNOWN, IMPACT, SUFFOCATION, GAS_POD, ARC, CLINGER }
 
 ## Matches HudState's gate, the same way Oxygen's does.
 const CHANGE_EPSILON := 0.001

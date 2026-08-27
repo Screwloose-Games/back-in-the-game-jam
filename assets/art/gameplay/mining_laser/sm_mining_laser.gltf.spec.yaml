@@ -5,14 +5,14 @@
 # it, which is the one inconsistency this style cannot absorb: the
 # character is 26 voxels tall, so its hand is about the size of this
 # tool's trigger.
-# #
-# # THE BEAM IS NOT IN THIS FILE. The aperture carries an emissive
-# # material; the beam is spawned at muzzle_point by the prefab.
-# #
-# # Pivot at the bottom centre of the bounding box, emitter down -Z, so
-# # the tool sits correctly when dropped on a floor or a bench. The grips
-# # are anchors, not the origin -- that gives three attach points where an
-# # origin would have given one.
+#
+# THE BEAM IS NOT IN THIS FILE. The aperture carries an emissive
+# material; the beam is spawned at muzzle_point by the prefab.
+#
+# Pivot at the bottom centre of the bounding box, emitter down -Z, so
+# the tool sits correctly when dropped on a floor or a bench. The grips
+# are anchors, not the origin -- that gives three attach points where an
+# origin would have given one.
 #
 # 438 voxels on a 0.06 m lattice; built bounds 0.30 x 0.66 x 1.14 m.
 # The declared width/height/depth are the design intent, not the lattice snap --

@@ -7,14 +7,14 @@
 # prefabs/environment/elevator/elevator_shaft.gd reads the four meshes by
 # name and places them; the node offsets below only lay out the reference
 # assembly the validator measures.
-# #
-# # Clear bore 3.96 m square between the post inner faces, which is the
-# # 3.72 m car with 0.12 m a side. Posts on a 4.44 m centre-to-centre
-# # square, 4.92 m across the frame, pad 5.52 m square, collar 6.24 m.
-# # The post tile is uniform along Y because the prefab scales it, and
-# # the prefab sets the beam ring radius itself - it recesses the members
-# # a voxel inside the columns rather than laying them flush, because two
-# # coplanar faces z-fought at every junction.
+#
+# Clear bore 3.96 m square between the post inner faces, which is the
+# 3.72 m car with 0.12 m a side. Posts on a 4.44 m centre-to-centre
+# square, 4.92 m across the frame, pad 5.52 m square, collar 6.24 m.
+# The post tile is uniform along Y because the prefab scales it, and
+# the prefab sets the beam ring radius itself - it recesses the members
+# a voxel inside the columns rather than laying them flush, because two
+# coplanar faces z-fought at every junction.
 #
 # 96488 voxels on a 0.06 m lattice; built bounds 6.24 x 2.64 x 6.24 m.
 # The declared width/height/depth are the design intent, not the lattice snap --

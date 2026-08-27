@@ -19,6 +19,7 @@
 [ext_resource type="PackedScene" path="res://prefabs/environment/hazards/prefab_gas_pod.tscn" id="18_gas_pod"]
 [ext_resource type="PackedScene" path="res://prefabs/environment/hazards/prefab_arc_hazard.tscn" id="19_arc"]
 [ext_resource type="PackedScene" path="res://prefabs/environment/hazards/prefab_blockage.tscn" id="20_blockage"]
+[ext_resource type="PackedScene" path="res://prefabs/character/clinger/prefab_clinger.tscn" id="21_clinger"]
 
 [sub_resource type="Environment" id="Environment_void"]
 background_mode = 1
@@ -1296,3 +1297,11 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -33, -41.3, 17.5)
 
 [node name="Blockage_02" parent="Hazards/MineBlockout" unique_id=1441039014 instance=ExtResource("20_blockage")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -65.5, -54, -3)
+
+[node name="Creatures" type="Node3D" parent="." unique_id=1509311700]
+
+[node name="Clinger_01" parent="Creatures" unique_id=1509311701 instance=ExtResource("21_clinger")]
+transform = Transform3D(0.9957252, 0.09236533, 1.919347e-07, 0, 2.077995e-06, -1, -0.09236533, 0.9957252, 2.069112e-06, -79.47424, -33.680904, 31.097267)
+
+[node name="Clinger_02" parent="Creatures" unique_id=1509311702 instance=ExtResource("21_clinger")]
+transform = Transform3D(-0.9807892, 0.1914621, 0.03734923, 3.7252903e-09, 0.19146481, -0.9814995, -0.19507103, -0.96264404, -0.18778661, -67.47324, -37.373413, 36.697254)

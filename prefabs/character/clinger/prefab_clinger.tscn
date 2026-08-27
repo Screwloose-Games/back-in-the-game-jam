@@ -1,0 +1,37 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://prefabs/character/clinger/clinger.gd" id="1_clinger"]
+[ext_resource type="PackedScene" uid="uid://dlajdvfmgx027" path="res://assets/art/character/clinger/sm_clinger.tscn" id="2_model"]
+[ext_resource type="Script" path="res://prefabs/character/clinger/components/clinger_ears.gd" id="3_ears"]
+[ext_resource type="Script" path="res://prefabs/character/clinger/components/clinger_grip.gd" id="4_grip"]
+[ext_resource type="Script" path="res://prefabs/character/clinger/clinger_legs.gd" id="5_legs"]
+[ext_resource type="Resource" uid="uid://bqn30uml0yxuc" path="res://prefabs/character/player/player_settings.tres" id="6_settings"]
+[ext_resource type="PackedScene" uid="uid://i3hpsl5mx2me" path="res://prefabs/gameplay/mining_impact/mining_impact.tscn" id="7_impact"]
+
+[sub_resource type="SphereShape3D" id="SphereShape3D_clinger"]
+radius = 0.09
+
+[node name="prefab_clinger" type="CharacterBody3D" unique_id=1509217344]
+collision_layer = 16
+collision_mask = 3
+script = ExtResource("1_clinger")
+settings = ExtResource("6_settings")
+metadata/placeholder = true
+
+[node name="sm_clinger" parent="." unique_id=1509217345 instance=ExtResource("2_model")]
+
+[node name="Collider" type="CollisionShape3D" parent="." unique_id=1509217346]
+shape = SubResource("SphereShape3D_clinger")
+
+[node name="Ears" type="Node" parent="." unique_id=1509217347]
+script = ExtResource("3_ears")
+settings = ExtResource("6_settings")
+
+[node name="Grip" type="Node" parent="." unique_id=1509217348]
+script = ExtResource("4_grip")
+settings = ExtResource("6_settings")
+
+[node name="Legs" type="Node" parent="." unique_id=1509217349]
+script = ExtResource("5_legs")
+
+[node name="MiningImpact" parent="." unique_id=1509217350 instance=ExtResource("7_impact")]

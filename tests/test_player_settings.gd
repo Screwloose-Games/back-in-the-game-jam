@@ -92,3 +92,51 @@ func test_a_wider_bubble_pushes_the_trigger_range_floor_out() -> void:
 	settings.hazard_gas_pod_diameter *= 2.0
 	assert_gt(settings.gas_pod_contact_distance(), narrow)
 	assert_gt(settings.invariant_failures().size(), 0, "and the shipped range no longer clears it")
+
+
+## Wearing one would then cost nothing: regeneration would quietly pay the whole bill and
+## the encounter would be a noise with no price attached.
+func test_a_clinger_that_cannot_outpace_recovery_is_reported() -> void:
+	var settings := PlayerSettings.new()
+	settings.clinger_health_drain_per_second = settings.health_regen_per_second
+	assert_gt(settings.invariant_failures().size(), 0)
+	assert_contains(settings.invariant_failures()[0], "clinger_health_drain_per_second")
+
+
+## Pillar 1 again, from the other side. Shedding one is escape; a clinger that empties the
+## pool before you can finish mashing is an ending, and endings belong to the stalker.
+func test_a_clinger_that_kills_too_fast_is_reported() -> void:
+	var settings := PlayerSettings.new()
+	settings.clinger_health_drain_per_second = 19.0
+	assert_gt(settings.invariant_failures().size(), 0)
+
+
+## It would leap from further than the beam reaches, so the laser could never be an answer
+## to one and requirement seven would be unreachable in play.
+func test_a_leap_from_outside_beam_range_is_reported() -> void:
+	var settings := PlayerSettings.new()
+	settings.clinger_jump_range = settings.mining_range + 1.0
+	assert_gt(settings.invariant_failures().size(), 0)
+	assert_contains(settings.invariant_failures()[0], "clinger_jump_range")
+
+
+## "Slowly, visibly, on the rock -- you can outrun it" is the whole counter, and it is one
+## slider away from not being true.
+func test_a_clinger_that_cannot_be_outrun_is_reported() -> void:
+	var settings := PlayerSettings.new()
+	settings.clinger_crawl_speed = settings.max_speed
+	assert_gt(settings.invariant_failures().size(), 0)
+	assert_contains(settings.invariant_failures()[0], "clinger_crawl_speed")
+
+
+func test_a_zero_clinger_drain_reports_forever_rather_than_dividing_by_zero() -> void:
+	var settings := PlayerSettings.new()
+	settings.clinger_health_drain_per_second = 0.0
+	assert_eq(settings.seconds_of_clinger_grip(), INF)
+
+
+## A shed one that circles wider than it can leap never attacks again, and the encounter
+## quietly ends with the creature still on screen.
+func test_the_orbit_stays_inside_leap_range() -> void:
+	var settings := PlayerSettings.new()
+	assert_true(settings.clinger_orbit_radius() < settings.clinger_jump_range)

@@ -16,6 +16,24 @@ signal tether_toggled
 signal lamp_toggled
 signal reset_requested
 
+## One press of anything at all, while something has hold of the suit.
+##
+## Emitted from _input() ABOVE the `enabled` guard, and that placement is the whole
+## point: whatever took the suit away also made every branch below unreachable, and
+## mashing has to stay readable precisely when nothing else is.
+signal struggled
+
+## Actions that keep their own meaning while the suit is held, so mashing cannot
+## trigger them and they cannot be spent as a struggle. Pause above all: a creature
+## that can trap a player in a session they cannot leave is a bug, not a threat.
+const STRUGGLE_EXCLUDED: Array[StringName] = [
+	&"pause",
+	&"toggle_mouse_capture",
+	&"cutscene_skip",
+	&"toggle_debug",
+	&"voice_push_to_talk",
+]
+
 ## Which device drives this player. Only `_action_strength` and `_action_pressed`
 ## know about it, so per-device routing for local co-op replaces those two and
 ## nothing else.
@@ -44,6 +62,11 @@ signal reset_requested
 ## Whether this player grabs the mouse on spawn. Off on the instances that
 ## represent other peers; the spawner sets it alongside is_local_player.
 @export var captures_mouse: bool = true
+
+## While true, a press of any bound action outside STRUGGLE_EXCLUDED emits
+## `struggled`. Owned by whatever has hold of the suit; clearing it is that owner's
+## job and nobody else's, the same contract `locked` has.
+@export var struggle_listening: bool = false
 
 ## Whether this input source may publish edge-triggered gameplay requests.
 ## A network driver can leave this on only for the locally controlled copy and
@@ -77,6 +100,10 @@ func _ready() -> void:
 # Read here rather than in _unhandled_input: while the mouse is captured the
 # cursor sits at screen centre, so a Control there would eat the motion first.
 func _input(event: InputEvent) -> void:
+	# Above the `enabled` guard on purpose -- see the signal's docstring.
+	if struggle_listening and _is_struggle_press(event):
+		struggled.emit()
+		return
 	# Disabled remote copies must not react to this machine's mouse or hotkeys.
 	if not enabled:
 		return
@@ -172,3 +199,19 @@ func _action_axis(negative: StringName, positive: StringName) -> float:
 
 func _action_pressed(action: StringName) -> bool:
 	return Input.is_action_pressed(action)
+
+
+## Whether this event is a fresh press of anything a player could be mashing.
+##
+## The whole map rather than a list, so a binding added later counts without anyone
+## remembering to come back here. One press per EVENT and never one per matching
+## action: two actions can share a key, and a chord would otherwise count twice.
+func _is_struggle_press(event: InputEvent) -> bool:
+	if event.is_echo() or event is InputEventMouseMotion:
+		return false
+	for action: StringName in InputMap.get_actions():
+		if STRUGGLE_EXCLUDED.has(action):
+			continue
+		if event.is_action_pressed(action):
+			return true
+	return false

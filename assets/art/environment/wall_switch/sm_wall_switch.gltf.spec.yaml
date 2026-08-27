@@ -6,12 +6,12 @@
 # file. .claude/rules/3d-assets.md allows exactly this -- an axis-aligned
 # pivot is expressible as a translation; a raked one would have to be a
 # Marker3D in the .tscn.
-# #
-# # Origin at the horizontal centre and vertical bottom of the mounting
-# # plate, ON the wall plane (Z = 0), with the fixture extending toward
-# # -Z. rests_on_ground is false because this is a wall fixture, which is
-# # the case the schema names -- so nothing machine-checks the origin and
-# # the preview render is the only confirmation.
+#
+# Origin at the horizontal centre and vertical bottom of the mounting
+# plate, ON the wall plane (Z = 0), with the fixture extending toward
+# -Z. rests_on_ground is false because this is a wall fixture, which is
+# the case the schema names -- so nothing machine-checks the origin and
+# the preview render is the only confirmation.
 #
 # 612 voxels on a 0.06 m lattice; built bounds 0.60 x 0.96 x 0.48 m.
 # The declared width/height/depth are the design intent, not the lattice snap --

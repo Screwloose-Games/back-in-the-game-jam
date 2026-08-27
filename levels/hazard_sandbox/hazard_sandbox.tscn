@@ -1,13 +1,25 @@
-[gd_scene load_steps=16 format=3]
+[gd_scene format=3 uid="uid://bvqiodellhpw5"]
 
-[ext_resource type="Script" path="res://levels/hazard_sandbox/hazard_sandbox.gd" id="1_sandbox"]
+[ext_resource type="Script" uid="uid://cgh6eyraq8yrw" path="res://levels/hazard_sandbox/hazard_sandbox.gd" id="1_sandbox"]
 [ext_resource type="PackedScene" uid="uid://b3kx7mqp2wvda" path="res://prefabs/gameplay/prefab_life_support_cube.tscn" id="2_cube"]
 [ext_resource type="PackedScene" path="res://prefabs/environment/hazards/prefab_gas_pod.tscn" id="3_gas_pod"]
 [ext_resource type="PackedScene" path="res://prefabs/environment/hazards/prefab_arc_hazard.tscn" id="4_arc"]
 [ext_resource type="PackedScene" path="res://prefabs/environment/hazards/prefab_blockage.tscn" id="5_blockage"]
+[ext_resource type="PackedScene" path="res://prefabs/character/clinger/prefab_clinger.tscn" id="6_clinger"]
+
+[sub_resource type="Environment" id="Environment_sandbox"]
+background_mode = 1
+ambient_light_source = 2
+ambient_light_color = Color(0.22, 0.23, 0.26, 1)
+ambient_light_energy = 1.2
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_floor"]
 size = Vector3(32, 1, 32)
+
+[sub_resource type="BoxMesh" id="BoxMesh_unit"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_rock"]
+albedo_color = Color(0.21, 0.2, 0.19, 1)
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_ceiling"]
 size = Vector3(32, 1, 32)
@@ -27,29 +39,13 @@ size = Vector3(32, 14, 1)
 [sub_resource type="BoxShape3D" id="BoxShape3D_slab"]
 size = Vector3(1, 9, 11)
 
-[sub_resource type="BoxMesh" id="BoxMesh_unit"]
-
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_rock"]
-albedo_color = Color(0.21, 0.2, 0.19, 1)
-roughness = 1.0
-
-[sub_resource type="Environment" id="Environment_sandbox"]
-background_mode = 1
-ambient_light_source = 2
-ambient_light_color = Color(0.22, 0.23, 0.26, 1)
-ambient_light_energy = 1.2
-
 [node name="HazardSandbox" type="Node3D" unique_id=1441038501]
-
 script = ExtResource("1_sandbox")
 
 [node name="WorldEnvironment" type="WorldEnvironment" parent="." unique_id=1441038502]
-
 environment = SubResource("Environment_sandbox")
 
 [node name="Room" type="StaticBody3D" parent="." unique_id=1441038503]
-
-collision_layer = 1
 collision_mask = 0
 
 [node name="FloorShape" type="CollisionShape3D" parent="Room" unique_id=1441038504]
@@ -125,49 +121,50 @@ surface_material_override/0 = SubResource("StandardMaterial3D_rock")
 [node name="Lamp1" type="OmniLight3D" parent="." unique_id=1441038518]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -9, 4, 6)
 light_energy = 1.6
-shadow_enabled = false
 omni_range = 26.0
 
 [node name="Lamp2" type="OmniLight3D" parent="." unique_id=1441038519]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 9, 4, -10)
 light_energy = 1.6
-shadow_enabled = false
 omni_range = 26.0
 
 [node name="Lamp3" type="OmniLight3D" parent="." unique_id=1441038520]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 5, -12)
 light_energy = 1.6
-shadow_enabled = false
 omni_range = 26.0
 
 [node name="PlayerSpawn" type="Marker3D" parent="." unique_id=1441038521]
-
 unique_name_in_owner = true
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 11)
 
 [node name="Players" type="Node3D" parent="." unique_id=1441038522]
-
 unique_name_in_owner = true
 
 [node name="LifeSupportCube" parent="." unique_id=1441038523 instance=ExtResource("2_cube")]
-
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.6, 0, 11)
 
 [node name="Hazards" type="Node3D" parent="." unique_id=1441038524]
 
 [node name="GasPod_01" parent="Hazards" unique_id=1441038525 instance=ExtResource("3_gas_pod")]
 transform = Transform3D(0, 1, 0, 1, 0, 0, 0, 0, -1, -15.08, -0.19463, -3.91729)
+trigger_range_scale = null
 
 [node name="GasPod_02" parent="Hazards" unique_id=1441038526 instance=ExtResource("3_gas_pod")]
 transform = Transform3D(0, 1, 0, 1, 0, 0, 0, 0, -1, -15.08, 3.30537, -8.91729)
+trigger_range_scale = null
 
 [node name="GasPod_03" parent="Hazards" unique_id=1441038527 instance=ExtResource("3_gas_pod")]
 transform = Transform3D(0, 1, 0, 1, 0, 0, 0, 0, -1, -15.08, -3.69463, 1.08271)
+trigger_range_scale = null
 
 [node name="Arc_01" parent="Hazards" unique_id=1441038528 instance=ExtResource("4_arc")]
-
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.5, 0, -7)
 
 [node name="Blockage_01" parent="Hazards" unique_id=1441038529 instance=ExtResource("5_blockage")]
-
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 11, 0, 9)
+blockage_health = 8.0
+
+[node name="Creatures" type="Node3D" parent="." unique_id=1509311600]
+
+[node name="Clinger_01" parent="Creatures" unique_id=1509311601 instance=ExtResource("6_clinger")]
+transform = Transform3D(0, 0, -1, 0, -1, 0, -1, 0, 0, 0, 6.89, -5)
