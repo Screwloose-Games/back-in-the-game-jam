@@ -31,7 +31,6 @@ var _hud: HudVariant
 
 func _ready() -> void:
 	_instance_hud()
-	_bind_quota_screens()
 	oxygen.oxygen_changed.connect(_on_oxygen_changed)
 	power.charge_changed.connect(_on_power_changed)
 	health.health_changed.connect(_on_health_changed)
@@ -71,17 +70,6 @@ func _instance_hud() -> void:
 
 ## Feeds the level's quota terminals the same state the HUD reads.
 ##
-## Gated on hud_visible so only the local player's binding fans out; a remote
-## peer's copy would otherwise drive every screen in the level a second time. The
-## screens join the group in their own _ready, which runs first because the level
-## is in the tree before a player spawns into it.
-func _bind_quota_screens() -> void:
-	if not hud_visible:
-		return
-	for screen: ElevatorScreen in get_tree().get_nodes_in_group(ElevatorScreen.GROUP):
-		screen.bind(state)
-
-
 func _push_all() -> void:
 	state.oxygen = oxygen.fraction()
 	state.power = power.fraction()

@@ -52,7 +52,7 @@ func bind_player(rig: CutscenePlayerRig, hud_binding: Node) -> void:
 	_effects.bind_player(rig)
 	if hud_binding != null and hud_binding.has_method("hud"):
 		_hud.bind_gameplay_hud(hud_binding.hud())
-	_bind_quota_screen(hud_binding)
+	_refresh_quota_screen()
 	park_at_start()
 	_cutscene.bind(self, rig, rig.get_hull_shape(), player_exit, _camera_driver, _hud, _effects)
 
@@ -90,15 +90,10 @@ func get_car() -> ElevatorCar:
 	return _car
 
 
-## This car's screen joined the quota_screen group long after PlayerHudBinding fanned out
-## to every screen that existed at spawn, so without this it reads zero collected -- and
-## shows DENIED on the one run where it is certainly APPROVED.
-func _bind_quota_screen(hud_binding: Node) -> void:
+## This car is instanced at the end of the run, long after the ledger last moved, so
+## its screen has never heard a ledger_changed -- and would come up showing the whole
+## quota outstanding, DENIED on the one run where it is certainly APPROVED.
+func _refresh_quota_screen() -> void:
 	var screen := _car.get_quota_screen()
-	if screen == null or hud_binding == null:
-		return
-	var state := hud_binding.get_node_or_null("HudState") as HudState
-	if state == null:
-		return
-	screen.bind(state)
-	screen.show_collected(state.mineral_score)
+	if screen != null:
+		screen.refresh()

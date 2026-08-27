@@ -120,10 +120,10 @@ func _apply_text() -> void:
 	_quota_screen.quota_caption = quota_caption
 	_quota_screen.auth_caption = auth_caption
 	_quota_screen.denied_text = auth_denied_text
-	_quota_screen.quota_target = quota_target
-	# Nothing has been mined yet during the intro, so the whole quota is
-	# outstanding. PlayerHudBinding._bind_quota_screens takes it over from here
-	# the moment a player with a HUD exists.
+	# Into the ledger rather than into this screen: the exit door and the extraction
+	# report read the same figure, and a quota that lives on one screen is a quota
+	# the door beside it can disagree with.
+	Score.quota_target = quota_target
 	_placard_text.text = placard_text
 
 

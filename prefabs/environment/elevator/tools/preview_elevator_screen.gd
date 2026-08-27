@@ -37,12 +37,14 @@ func _ready() -> void:
 
 	for sample in SAMPLES:
 		screen.set_power_on(sample[0])
-		screen.show_collected(sample[1])
+		Score.score = sample[1]
+		screen.refresh()
 		await _capture("%s" % sample[2])
 
 	# Three frames apart in time, so the roll band and a tear show up as motion.
 	screen.set_power_on(1.0)
-	screen.show_collected(0)
+	Score.score = 0
+	screen.refresh()
 	for i in 3:
 		await get_tree().create_timer(0.4).timeout
 		await _capture("motion_%d" % i)

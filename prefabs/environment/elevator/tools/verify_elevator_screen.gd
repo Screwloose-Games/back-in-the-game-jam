@@ -47,12 +47,15 @@ func _verify_content_texture() -> void:
 	await get_tree().process_frame
 
 
-## Two screens must not share a material, a texture, or a number.
+## Two screens must not share a material or a texture. They MUST share a number:
+## the ledger is global, and a screen with its own copy is the bug this removed.
 func _verify_locality() -> void:
 	var a: ElevatorScreen = await _spawn()
 	var b: ElevatorScreen = await _spawn()
-	a.show_collected(0)
-	b.show_collected(999999)
+	Score.quota_target = 1000
+	Score.score = 0
+	a.refresh()
+	b.refresh()
 	var mat_a := a.plate.material_override as ShaderMaterial
 	var mat_b := b.plate.material_override as ShaderMaterial
 	_check(
@@ -66,11 +69,9 @@ func _verify_locality() -> void:
 		"both instances resolved to the same ViewportTexture"
 	)
 	_check(
-		"[locality] the alarm is per-screen",
-		not is_equal_approx(
-			mat_a.get_shader_parameter("alarm"), mat_b.get_shader_parameter("alarm")
-		),
-		"one screen is APPROVED and the other DENIED, but they agree about the alarm"
+		"[locality] but the two of them agree about the quota",
+		is_equal_approx(mat_a.get_shader_parameter("alarm"), mat_b.get_shader_parameter("alarm")),
+		"two screens reading one ledger disagreed about whether the quota is met"
 	)
 	a.queue_free()
 	b.queue_free()
@@ -80,30 +81,34 @@ func _verify_locality() -> void:
 func _verify_quota_rules() -> void:
 	var target := 47560
 	var wrong := PackedStringArray()
+	Score.quota_target = target
 	for collected: int in [0, target - 1, target, target + 1]:
-		var owed := ElevatorScreen.credits_outstanding(target, collected, 1.0)
+		Score.score = collected
+		var owed := Score.credits_outstanding()
 		var expected := maxi(target - collected, 0)
 		if owed != expected:
 			wrong.append("collected %d owed %d, expected %d" % [collected, owed, expected])
-	if not ElevatorScreen.is_met(target, target, 1.0):
+	Score.score = target
+	if not Score.is_quota_met():
 		wrong.append("exactly the target did not read as met")
-	if ElevatorScreen.is_met(target, target - 1, 1.0):
+	Score.score = target - 1
+	if Score.is_quota_met():
 		wrong.append("one short read as met")
-	# A richer mineral is worth more than one credit per point.
-	if not ElevatorScreen.is_met(target, target / 2 + 1, 2.0):
-		wrong.append("credits_per_point 2.0 did not double the score")
 	_check("[quota] the outstanding-credits rule", wrong.is_empty(), "; ".join(wrong))
 
 
 func _verify_signal() -> void:
 	var screen: ElevatorScreen = await _spawn()
+	Score.quota_target = 1000
+	# Below the target BEFORE connecting, so the latch starts where the test assumes.
+	Score.score = 0
+	screen.refresh()
 	var fired := [0]
 	screen.quota_met.connect(func() -> void: fired[0] += 1)
-	screen.show_collected(0)
-	screen.show_collected(screen.quota_target - 1)
+	Score.score = Score.quota_target - 1
 	_check("[signal] quota_met stays quiet below the target", fired[0] == 0, "fired early")
-	screen.show_collected(screen.quota_target)
-	screen.show_collected(screen.quota_target + 5000)
+	Score.score = Score.quota_target
+	Score.score = Score.quota_target + 5000
 	_check(
 		"[signal] quota_met fires once on the crossing",
 		fired[0] == 1,
@@ -111,8 +116,8 @@ func _verify_signal() -> void:
 	)
 	# A ledger that can lose minerals must be able to take the screen back off
 	# APPROVED, and then report the next crossing.
-	screen.show_collected(0)
-	screen.show_collected(screen.quota_target)
+	Score.score = 0
+	Score.score = Score.quota_target
 	_check(
 		"[signal] quota_met re-arms after dropping back under",
 		fired[0] == 2,
@@ -131,7 +136,12 @@ func _verify_signal() -> void:
 ## words behind the prefab's back and watching the pixels not move is the claim.
 func _verify_idle() -> void:
 	var screen: ElevatorScreen = await _spawn()
-	screen.show_collected(1234)
+	# Its own quota, and high enough that the two scores below owe different numbers:
+	# the ledger is global now, so a check that inherits the last one's target can end
+	# up comparing one rendering of "0 CR" against another.
+	Score.quota_target = 100000
+	Score.score = 1234
+	screen.refresh()
 	_check(
 		"[idle] a text change arms one render",
 		screen.content.render_target_update_mode == SubViewport.UPDATE_ONCE,
@@ -152,7 +162,8 @@ func _verify_idle() -> void:
 		"the readout moved without being armed, so the SubViewport is drawing every frame"
 	)
 
-	screen.show_collected(4321)
+	Score.score = 4321
+	screen.refresh()
 	await get_tree().process_frame
 	await RenderingServer.frame_post_draw
 	_check(

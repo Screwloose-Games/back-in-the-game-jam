@@ -6,14 +6,9 @@ extends Node3D
 ## real Controls for the readout, and elevator_screen.gdshader to erase the plate's
 ## baked text and composite the live one into the hole.
 ##
-## The quota rules live here as static functions rather than as maths in the shader,
-## so the thing that encodes "quota met" is the thing a test can call.
+## Quota state is owned by the global Score object. This screen only presents it.
 
 signal quota_met
-
-## Instanced screens join this so PlayerHudBinding can hand them the local player's
-## HudState without the level knowing about the screen or the screen about the level.
-const GROUP := &"quota_screen"
 
 const CONTENT_PARAM := "content_tex"
 
@@ -25,14 +20,6 @@ const CONTENT_PARAM := "content_tex"
 @export var denied_text := "DENIED"
 @export var approved_text := "APPROVED"
 @export var value_format := "%d CR"
-
-@export_group("Quota")
-
-## Credits owed at zero minerals. Positive; the readout shows it negated.
-@export var quota_target := 47560
-
-## Credits earned per point of mineral score.
-@export var credits_per_point := 1.0
 
 @export_group("Colors")
 @export var label_color := Color(0.62, 0.95, 0.85)
@@ -46,7 +33,6 @@ const CONTENT_PARAM := "content_tex"
 @export var spill_energy := 1.2
 
 var _material: ShaderMaterial
-var _collected := 0
 var _met := false
 
 @onready var content: SubViewport = $Content
@@ -57,19 +43,23 @@ var _met := false
 
 func _ready() -> void:
 	_readout.fit_to(content.size)
+
 	_material = plate.material_override as ShaderMaterial
 	if _material == null:
 		push_warning("ElevatorScreen has no ShaderMaterial on Plate; the tube will not light.")
-		return
-	# Pushed, never authored. A ViewportTexture written into the .tscn resolves its
-	# viewport_path against the scene it was saved in, so an instance either goes
-	# black or borrows the first instance's readout. get_texture() cannot do either.
-	_material.set_shader_parameter(CONTENT_PARAM, content.get_texture())
-	if not Engine.is_editor_hint():
-		add_to_group(GROUP)
+	else:
+		# Pushed, never authored. A ViewportTexture written into the .tscn resolves its
+		# viewport_path against the scene it was saved in, so an instance either goes
+		# black or borrows the first instance's readout. get_texture() cannot do either.
+		_material.set_shader_parameter(CONTENT_PARAM, content.get_texture())
+
 	_apply_copy()
 	set_power_on(power_on)
-	show_collected(_collected)
+
+	if not Engine.is_editor_hint():
+		Score.ledger_changed.connect(refresh)
+		refresh()
+
 	# A frame late as well, because theme overrides and font metrics are not settled
 	# during _ready and the first render would bake the wrong glyph widths.
 	await get_tree().process_frame
@@ -83,15 +73,6 @@ func _notification(what: int) -> void:
 		_redraw()
 
 
-## Credits still owed, floored at zero.
-static func credits_outstanding(target: int, collected: int, per_point: float) -> int:
-	return maxi(target - int(round(float(collected) * per_point)), 0)
-
-
-static func is_met(target: int, collected: int, per_point: float) -> bool:
-	return credits_outstanding(target, collected, per_point) <= 0
-
-
 func get_readout() -> ElevatorScreenReadout:
 	return _readout
 
@@ -102,47 +83,64 @@ func get_content_texture() -> ViewportTexture:
 	return content.get_texture()
 
 
-## Mirrors the HUD widget convention, so whatever owns a HudState feeds this the same
-## way it feeds HudMineralScore. HudState.announce_all() then pushes the opening
-## value without a second call.
-func bind(state: HudState) -> void:
-	state.mineral_score_changed.connect(show_collected)
+## Whether the global quota is currently met.
+##
+## quota_met fires on the crossing rather than latching, so anything asking after the
+## fact -- a door being pressed -- should query the authoritative Score state.
+func is_quota_met() -> bool:
+	return Score.is_quota_met()
 
 
-func show_collected(score: int) -> void:
-	_collected = score
-	var owed := credits_outstanding(quota_target, _collected, credits_per_point)
-	var met := owed <= 0
+## How many credits are still owed, which is the number on the glass.
+func credits_short() -> int:
+	return Score.credits_outstanding()
+
+
+## Re-reads the ledger and repaints. Public so a tool or a scene that changed Score
+## while this screen was not listening can bring the glass back in step.
+func refresh() -> void:
+	var owed := credits_short()
+	var met := Score.is_quota_met()
+
 	_readout.set_quota_value(value_format % -owed)
 	_readout.set_auth_value(
 		approved_text if met else denied_text, approved_color if met else denied_color
 	)
 	_readout.set_alarming(not met)
+
 	# The words are written above the guard, not below it: a screen with no
 	# material is a screen with no tube, not a screen with stale copy.
 	if _material != null:
 		_material.set_shader_parameter("alarm", 0.0 if met else 1.0)
+
 	_redraw()
+
 	if met == _met:
 		return
-	# The transition, not a latch: a ledger that can lose minerals must be able to
-	# take the screen back off APPROVED.
+
+	# The transition, not a latch: if the global ledger can lose score, the screen
+	# must be able to return from APPROVED to DENIED.
 	_met = met
+
 	if met:
 		quota_met.emit()
 
 
 func set_power_on(value: float) -> void:
 	power_on = clampf(value, 0.0, 1.0)
+
 	if _material != null:
 		_material.set_shader_parameter("power_on", power_on)
+
 	if spill != null:
 		spill.light_energy = spill_energy * power_on
+
 	_redraw()
 
 
 func set_crew_id(value: String) -> void:
 	crew_id = value
+
 	if _readout != null:
 		_readout.set_crew_text(crew_id)
 		_redraw()
@@ -161,9 +159,9 @@ func _apply_copy() -> void:
 ##
 ## The property goes on reading UPDATE_ONCE afterwards - Godot 4.7 bookkeeps the
 ## once-then-stop inside the RenderingServer and never writes it back here - so do
-## not read it back as "is a render pending". verify_elevator_screen.tscn proves
-## the idling by pixels instead.
+## not read it back as "is a render pending".
 func _redraw() -> void:
 	if content == null:
 		return
+
 	content.render_target_update_mode = SubViewport.UPDATE_ONCE
