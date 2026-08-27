@@ -13,7 +13,9 @@ extends Node3D
 ## first, then the pillars and the divider are added back into the empty space,
 ## and only then is the doorway cut through the divider.
 
-const HULL_MATERIAL := preload("res://prototypes/power_and_lighting/imported/materials/hull_material.tres")
+const HULL_MATERIAL := preload(
+	"res://prototypes/power_and_lighting/imported/materials/hull_material.tres"
+)
 const CARRY_OBJECT_MATERIAL := preload(
 	"res://prototypes/power_and_lighting/imported/materials/carry_object_material.tres"
 )
@@ -76,9 +78,7 @@ func _assemble_combiner() -> void:
 	for pillar: Dictionary in MovementKnobs.PILLARS:
 		var pillar_center: Vector3 = pillar["center"]
 		var pillar_size: Vector3 = pillar["size"]
-		combiner.add_child(
-			_make_brush(pillar_center, pillar_size, CSGShape3D.OPERATION_UNION)
-		)
+		combiner.add_child(_make_brush(pillar_center, pillar_size, CSGShape3D.OPERATION_UNION))
 
 	for pillar: Dictionary in MovementKnobs.ROUND_PILLARS:
 		var pillar_center: Vector3 = pillar["center"]

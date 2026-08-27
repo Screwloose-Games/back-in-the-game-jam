@@ -54,6 +54,24 @@ func _ready() -> void:
 Blank lines: two before each function, one between logical blocks. `gdformat` owns
 this — don't hand-tune it.
 
+## Indentation: tabs, always
+
+`gdformat` emits tabs and has no option not to, so tabs are not a preference here
+-- they are the only thing that passes `gdformat --check` in the commit hook and
+in CI. Never write a `.gd` file indented with spaces, in any tool.
+
+The trap is the Godot script editor. `text_editor/behavior/files/convert_indent_on_save`
+defaults to on and rewrites the indentation of the **whole file** on every save,
+so an editor whose `text_editor/behavior/indent/type` is set to Spaces silently
+reformats every script it touches. `gdformat` converts it straight back, and the
+file then flips between tabs and spaces from commit to commit -- which is exactly
+what happened to `common/ui/main_menu/main_menu.gd`.
+
+`addons/repo_hooks` sets `indent/type` back to Tabs when the project is opened,
+so that is handled. `.editorconfig` is not enough on its own: Godot never reads
+it. Neither is `.gitattributes`, which normalizes line endings and cannot touch
+indentation.
+
 ## Checking your work
 
 ```bash
@@ -65,6 +83,9 @@ pre-commit run          # both, on staged files (what the commit hook runs)
 
 `addons/` is third-party and excluded everywhere — `gdlintrc`, `gdformatrc`,
 `.pre-commit-config.yaml`, and CI. Don't lint or reformat it.
+
+`prototypes/` is **not** excluded. It is exempt from the naming and structural
+conventions, but `gdformat` and `gdlint` still gate it like anything else.
 
 Note: `excluded_directories` in `gdlintrc`/`gdformatrc` is ignored when you pass
 explicit file paths, so running `gdlint addons/some_file.gd` by hand will report

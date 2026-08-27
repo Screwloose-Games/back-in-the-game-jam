@@ -14,11 +14,15 @@
         ]
       },
       {
-        "matcher": "Edit|Write",
+        "//": "Auto-formats GDScript the moment it is written, which is what keeps tabs from drifting into the tree. Reads the path from the hook's stdin JSON -- this previously used $CLAUDE_FILE_PATHS, which this version of Claude Code does not set, so the hook silently never ran and space-indented files reached commits. The sibling gdlint hook above uses the same stdin pattern, which is how the working shape was confirmed. gdformat rewrites in place; it only reports back when the file cannot be parsed.",
+        "matcher": "Write|Edit|MultiEdit",
         "hooks": [
           {
             "type": "command",
-            "command": "if echo \"$CLAUDE_FILE_PATHS\" | grep -q '\\.gd$'; then gdformat $CLAUDE_FILE_PATHS && gdlint $CLAUDE_FILE_PATHS; fi"
+            "command": "jq -r '.tool_input.file_path // .tool_response.filePath // empty' | tr -d '\\r' | { read -r f; case \"$f\" in *.gd) out=$(gdformat \"$f\" 2>&1) || printf '%s' \"$out\" | jq -Rsc '{hookSpecificOutput:{hookEventName:\"PostToolUse\",additionalContext:(\"gdformat could not format this file:\\n\"+.)}}';; esac; } 2>/dev/null || true",
+            "shell": "bash",
+            "timeout": 30,
+            "statusMessage": "Running gdformat..."
           }
         ]
       },
@@ -32,6 +36,20 @@
             "shell": "bash",
             "timeout": 60,
             "statusMessage": "Validating 3D model..."
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "//": "Last line of defence for the write paths the PostToolUse matchers cannot see: Bash heredocs and sed, and the godot_ai MCP script tools. Formats every dirty .gd once at the end of the turn. gdformat is idempotent, so a clean tree costs one git call and nothing else.",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "git ls-files --modified --others --exclude-standard -- '*.gd' | grep -v '^addons/' | while read -r f; do [ -f \"$f\" ] && gdformat \"$f\" >/dev/null 2>&1; done; exit 0",
+            "shell": "bash",
+            "timeout": 60,
+            "statusMessage": "Formatting GDScript..."
           }
         ]
       }

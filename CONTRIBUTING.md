@@ -30,6 +30,21 @@ So `pip install pre-commit` is worth having and is not setup. It builds its own
 isolated environments, which means you do **not** need `gdtoolkit`, `numpy`,
 `pyyaml` or `jsonschema` on your own `PATH`.
 
+### Indentation
+
+GDScript is indented with **tabs**. `gdformat` emits tabs and has no option not
+to, so this is what the commit hook and CI check, not a preference.
+
+Opening the project also sets the Godot script editor's indent type to Tabs, via
+the same `addons/repo_hooks` plugin. That matters more than it sounds: Godot's
+`convert_indent_on_save` rewrites the indentation of the whole file every time
+you save it, so an editor set to Spaces reformats every script it touches and
+`gdformat` converts it back on the next commit. Note this is a per-user editor
+setting rather than a project one, so it applies to your other Godot projects
+too; the plugin prints a line when it changes anything.
+
+`.editorconfig` covers other editors. Godot does not read it.
+
 ## Before you push
 
 Run the gate for whatever you touched — these are the same commands CI runs:

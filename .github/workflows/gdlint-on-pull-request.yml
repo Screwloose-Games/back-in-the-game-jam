@@ -54,17 +54,25 @@ jobs:
           restore-keys: |
             gdtoolkit-4-${{ runner.os }}-
 
+      # Pinned to the same release .pre-commit-config.yaml pins, so a local
+      # verdict and a CI verdict are computed by the same tools. A floating 4.*
+      # lets a new release reformat files CI has already passed, which is the
+      # churn these gates exist to stop.
+      - name: Install gdtoolkit
+        if: steps.changed-files.outputs.any_changed == 'true'
+        run: |
+          pip install --no-warn-script-location gdtoolkit==4.5.0
+          for tool in gdlint gdformat; do
+            if ! command -v "$tool" &> /dev/null; then
+              echo "$tool could not be found, please check the installation"
+              exit 1
+            fi
+          done
+
       - name: Lint changed files
         id: lint
         if: steps.changed-files.outputs.any_changed == 'true'
         run: |
-          pip install --no-warn-script-location gdtoolkit==4.*
-          # Ensure gdlint command is available
-          if ! command -v gdlint &> /dev/null; then
-            echo "gdlint could not be found, please check the installation"
-            exit 1
-          fi
-          
           # Convert space-separated list to array and process
           echo "Changed files: ${{ steps.changed-files.outputs.all_changed_files }}"
           echo "Converting changed files to array"
@@ -99,6 +107,41 @@ jobs:
           exit $exit_code
         continue-on-error: true
 
+      # The whitespace gate. gdlint does NOT catch indentation: a file indented
+      # entirely with spaces passes it clean, because `mixed-tabs-and-spaces`
+      # only fires on tabs and spaces mixed together. gdformat is the only check
+      # that has an opinion about tabs, which is why this step exists separately
+      # from the one above.
+      #
+      # `--check` reports without rewriting, matching .pre-commit-config.yaml, so
+      # the fix is always the same command locally: `gdformat <file>`.
+      - name: Check formatting of changed files
+        id: format
+        if: steps.changed-files.outputs.any_changed == 'true'
+        run: |
+          files_array=(${{ steps.changed-files.outputs.all_changed_files }})
+          if [ ${#files_array[@]} -eq 0 ]; then
+            echo "No files to check"
+            exit 0
+          fi
+
+          echo "Running gdformat --check on ${#files_array[@]} files"
+          set +e
+          format_output=$(gdformat --check "${files_array[@]}" 2>&1)
+          exit_code=$?
+          set -e
+          echo "$format_output"
+
+          {
+            echo "format_output<<EOF"
+            echo "$format_output"
+            echo "EOF"
+            echo "exit_code=$exit_code"
+          } >> $GITHUB_OUTPUT
+
+          exit $exit_code
+        continue-on-error: true
+
       - name: Comment PR with gdlint Output
         if: steps.changed-files.outputs.any_changed == 'true' && steps.lint.outputs.lint_output != ''
         uses: thollander/actions-comment-pull-request@v3
@@ -116,9 +159,22 @@ jobs:
             ${{ steps.lint.outputs.lint_output }}
             ```
             
-      - name: Fail the job if lint issues found
-        if: steps.changed-files.outputs.any_changed == 'true' && steps.lint.outputs.exit_code != '0'
+            ## 🎨 GDScript Format Check
+            
+            ${{ steps.format.outputs.exit_code == '0' && '✅ Formatting is clean' || '❌ Formatting drift — run `gdformat <file>` on the files below' }}
+            
+            ```text
+            ${{ steps.format.outputs.format_output }}
+            ```
+            
+      - name: Fail the job if lint or formatting issues found
+        if: steps.changed-files.outputs.any_changed == 'true' && (steps.lint.outputs.exit_code != '0' || steps.format.outputs.exit_code != '0')
         run: |
-          echo "Error: Lint issues found in this PR. Please fix them before merging."
+          if [ "${{ steps.lint.outputs.exit_code }}" != "0" ]; then
+            echo "Error: Lint issues found in this PR. Please fix them before merging."
+          fi
+          if [ "${{ steps.format.outputs.exit_code }}" != "0" ]; then
+            echo "Error: Formatting drift found in this PR. Run 'gdformat <file>' on the files listed above."
+          fi
           exit 1
       
