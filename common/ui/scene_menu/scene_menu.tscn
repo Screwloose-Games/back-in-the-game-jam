@@ -1,0 +1,84 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://common/ui/scene_menu/scene_menu.gd" id="1_menu"]
+[ext_resource type="Theme" uid="uid://dxcditpyjnw8h" path="res://common/themes/theme.tres" id="2_theme"]
+[ext_resource type="Script" uid="uid://bbffeeruv7sea" path="res://common/ui/main_menu/SFX/main_menu_audio.gd" id="3_audio"]
+[ext_resource type="AudioStream" uid="uid://camm2n4s878j" path="res://common/audio/sfx/ui/aud_ui_navigate.wav" id="4_nav"]
+[ext_resource type="AudioStream" uid="uid://cjqacppbmh2tk" path="res://common/audio/sfx/ui/aud_ui_open.wav" id="5_open"]
+[ext_resource type="AudioStream" uid="uid://50crscd7p7bx" path="res://common/audio/sfx/ui/aud_ui_close.wav" id="6_close"]
+
+[node name="SceneMenu" type="Control"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme = ExtResource("2_theme")
+script = ExtResource("1_menu")
+
+[node name="AudioControl" type="Control" parent="."]
+unique_name_in_owner = true
+anchors_preset = 0
+offset_right = 40.0
+offset_bottom = 40.0
+mouse_filter = 2
+script = ExtResource("3_audio")
+navigate_sound = ExtResource("4_nav")
+open_sound = ExtResource("5_open")
+close_sound = ExtResource("6_close")
+
+[node name="Margin" type="MarginContainer" parent="."]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+theme_override_constants/margin_left = 96
+theme_override_constants/margin_top = 48
+theme_override_constants/margin_right = 96
+theme_override_constants/margin_bottom = 48
+
+[node name="Panel" type="PanelContainer" parent="Margin"]
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 3
+
+[node name="Body" type="MarginContainer" parent="Margin/Panel"]
+layout_mode = 2
+theme_override_constants/margin_left = 32
+theme_override_constants/margin_top = 16
+theme_override_constants/margin_right = 32
+theme_override_constants/margin_bottom = 16
+
+[node name="Rows" type="VBoxContainer" parent="Margin/Panel/Body"]
+layout_mode = 2
+theme_override_constants/separation = 16
+
+[node name="Title" type="Label" parent="Margin/Panel/Body/Rows"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 40
+text = "SCENES"
+horizontal_alignment = 1
+
+[node name="Scroll" type="ScrollContainer" parent="Margin/Panel/Body/Rows"]
+custom_minimum_size = Vector2(560, 0)
+layout_mode = 2
+size_flags_vertical = 3
+follow_focus = true
+horizontal_scroll_mode = 0
+
+[node name="List" type="VBoxContainer" parent="Margin/Panel/Body/Rows/Scroll"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 6
+
+[node name="BackButton" type="Button" parent="Margin/Panel/Body/Rows"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 4
+text = "BACK"
+
+[connection signal="mouse_entered" from="Margin/Panel/Body/Rows/BackButton" to="AudioControl" method="_on_hover"]
+[connection signal="pressed" from="Margin/Panel/Body/Rows/BackButton" to="AudioControl" method="_on_close"]

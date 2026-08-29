@@ -7,10 +7,12 @@ extends Control
 @onready var online_status: Label = %OnlineStatus
 @onready var options_button: Button = %OptionsButton
 @onready var credits_button: Button = %CreditsButton
+@onready var scenes_button: Button = %ScenesButton
 @onready var quit_button: Button = %QuitButton
 @onready var shell: Control = %Shell
 @onready var pointer: MainMenuPointer = %Pointer
 @onready var options_menu: OptionsMenu = %OptionsMenu
+@onready var scene_menu: SceneMenu = %SceneMenu
 
 
 func _ready() -> void:
@@ -20,9 +22,12 @@ func _ready() -> void:
 	join_code_input.text_submitted.connect(_on_join_code_submitted)
 	options_button.pressed.connect(_on_options_pressed)
 	credits_button.pressed.connect(_on_credits_pressed)
+	scenes_button.pressed.connect(_on_scenes_pressed)
 	quit_button.pressed.connect(_on_quit_pressed)
 	options_menu.back_pressed.connect(_on_options_back_pressed)
 	options_menu.visible = false
+	scene_menu.back_pressed.connect(_on_scene_menu_back_pressed)
+	scene_menu.visible = false
 	online_status.text = OnlineSession.consume_last_error()
 	online_status.visible = not online_status.text.is_empty()
 
@@ -30,7 +35,13 @@ func _ready() -> void:
 		quit_button.visible = false
 
 	var items: Array[Button] = [
-		start_button, host_button, join_button, options_button, credits_button, quit_button
+		start_button,
+		host_button,
+		join_button,
+		options_button,
+		credits_button,
+		scenes_button,
+		quit_button
 	]
 	pointer.follow(items.filter(func(item: Button) -> bool: return item.visible))
 
@@ -84,6 +95,19 @@ func _on_options_pressed():
 func _on_options_back_pressed():
 	options_menu.visible = false
 	shell.visible = true
+
+
+func _on_scenes_pressed() -> void:
+	shell.visible = false
+	scene_menu.open()
+
+
+func _on_scene_menu_back_pressed() -> void:
+	scene_menu.visible = false
+	shell.visible = true
+	# Puts the pointer back beside the button that opened the list; the options menu
+	# skips this and leaves its pointer stranded wherever it last was.
+	scenes_button.grab_focus()
 
 
 func _on_quit_pressed():
