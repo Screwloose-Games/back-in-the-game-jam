@@ -15,6 +15,11 @@ const SURFACE_LIFT := 0.05
 ## degenerate and the body spins rather than leans. CrawlerBody's figure.
 const PARALLEL_LIMIT := 0.985
 
+## How far past the equator of the hemisphere the escape fan reaches. Negative on purpose:
+## a ray can then graze back along the surface and find the wall a boulder is planted in,
+## which is where the body wants to go and is at ninety degrees to the face it is stood on.
+const LEAP_FAN_FLOOR := -0.15
+
 ## Six world axes and eight cube diagonals -- CorridorProbe's set, without the dependency.
 ## Only ever cast when the body has lost the surface it was holding; an ordinary tick is
 ## one ray straight into the rock.
@@ -125,3 +130,46 @@ static func orbit_target(
 ## Frame-rate independent lerp weight for a first-order chase at `rate` per second.
 static func smoothing(rate: float, delta: float) -> float:
 	return 1.0 - exp(-maxf(rate, 0.0) * maxf(delta, 0.0))
+
+
+## `count` roughly even directions in the hemisphere about `up`, for a body looking for
+## somewhere else to be.
+##
+## AN EVEN FAN MATTERS HERE IN A WAY IT DOES NOT FOR `FAN`. That one is fourteen
+## axis-aligned rays hunting the nearest surface within a metre, where clumping costs
+## nothing. This one searches eighteen, and an axis-aligned fan on a tilted wall samples it
+## in clusters and misses whole quadrants.
+static func leap_fan(up: Vector3, count: int) -> Array[Vector3]:
+	var directions: Array[Vector3] = []
+	var axis := up.normalized()
+	if axis.is_zero_approx() or count <= 0:
+		return directions
+	# A seed that cannot be parallel to `axis`, or basis_from returns IDENTITY and the whole
+	# fan silently points along the world axes instead of at this surface.
+	var seed_forward := Vector3.UP if absf(axis.x) >= 0.9 else Vector3.RIGHT
+	var frame := basis_from(seed_forward, axis)
+	var golden := PI * (3.0 - sqrt(5.0))
+	for index: int in count:
+		var height := lerpf(1.0, LEAP_FAN_FLOOR, float(index) / float(maxi(count - 1, 1)))
+		var radius := sqrt(maxf(1.0 - height * height, 0.0))
+		var theta := golden * index
+		directions.append(frame * Vector3(cos(theta) * radius, height, sin(theta) * radius))
+	return directions
+
+
+## `count` offsets evenly around a circle of `radius` in the tangent plane of `normal`, for
+## asking how much surface there is around a point rather than just at it.
+static func disc_offsets(normal: Vector3, radius: float, count: int) -> Array[Vector3]:
+	var offsets: Array[Vector3] = []
+	var up := normal.normalized()
+	if up.is_zero_approx() or count <= 0 or radius <= 0.0:
+		return offsets
+	var side := project(Vector3.UP if absf(up.x) >= 0.9 else Vector3.RIGHT, up)
+	if side.is_zero_approx():
+		return offsets
+	side = side.normalized()
+	var other := up.cross(side)
+	for index: int in count:
+		var theta := TAU * float(index) / float(count)
+		offsets.append(side * (cos(theta) * radius) + other * (sin(theta) * radius))
+	return offsets

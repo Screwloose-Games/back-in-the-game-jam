@@ -49,8 +49,12 @@ const PEEK_DISTANCE := 0.4
 
 ## Turned this far about the surface normal every time a step finds nothing to stand on.
 ## A body with no legal move should take a bad move over no move.
+##
+## STALL_LIMIT used to sit here and did nothing: `_stalls` was compared against it and then
+## only ever reset to zero, so reaching it was indistinguishable from not. Taking the same
+## turn several times a second is now what ClingerStuck reads as thrashing, and `_stalls`
+## is left as an honest raw counter for debug_state rather than a mod-9 one.
 const EDGE_TURN_DEGREES := 40.0
-const STALL_LIMIT := 9
 
 const ADHESION_RATE := 12.0
 
@@ -65,7 +69,51 @@ const LEAP_TIMEOUT_SLACK := 2.5
 
 ## Push-off along the surface normal as it launches, so departure reads as a leap off the
 ## rock rather than a dart out of it.
+##
+## ONLY THE POUNCE GETS IT. It is a constant sideways velocity for the whole flight, not an
+## impulse, so over the two seconds an eighteen-metre escape takes it is three metres of
+## drift and the body arrives above what it aimed at. Four metres of pounce hides that;
+## _begin_surface_leap folds SURFACE_LEAP_CLEARANCE into the aim instead.
 const LEAP_KICK := 1.4
+
+## Rays in the hemisphere the escape search casts looking for somewhere else to be.
+const LEAP_FAN_RAYS := 18
+
+## Nearer than this a leap is worth less than the crawl it replaces, and it also fails to
+## clear a whole MineralDeposit cluster.
+const SURFACE_LEAP_MIN_DISTANCE := 3.0
+
+## Metres of lift folded into an escape leap's aim, so it clears the lip it launches over.
+## At eighteen metres this is a 1.1 degree bias and still lands inside the patch it scored.
+const SURFACE_LEAP_CLEARANCE := 0.35
+
+## Two candidates closer together than this are one wall, not two.
+const CANDIDATE_SPACING := 2.4
+
+## How many candidates are worth the eight probes it costs to measure one.
+const PATCH_SCORE_LIMIT := 6
+
+## The ring the patch score walks, and how many points it stops at.
+##
+## PATCH_RADIUS IS THE NUMBER THAT MAKES THIS WORK, and it is a mineral chunk's own width.
+## A ring of that radius centred on a chunk face falls off it on six of eight probes; a cave
+## wall keeps all eight so long as it curves more gently than a 2.9 m tube -- and a tube
+## tighter than that genuinely is a bad place to crawl.
+const PATCH_RADIUS := 1.2
+const PATCH_PROBES := 8
+
+## Each probe drops from this far outside the patch and looks this much further in, so a
+## point just past a convex lip still finds the surface rather than missing behind it.
+const PATCH_PROBE_LIFT := 0.5
+const PATCH_PROBE_DEPTH := 1.0
+
+## How far a probe's normal may lean from the patch's before it is a different surface.
+const PATCH_NORMAL_TOLERANCE := 0.5
+
+## Probes of PATCH_PROBES a patch has to keep to be worth crossing a room for. Not eight:
+## _ray substitutes -heading for a degenerate trimesh normal, which for a probe cast along
+## -normal reads as open, so the score is an optimistic bound and the bar allows for it.
+const PATCH_MIN_OPEN := 6
 
 ## Seconds a landed clinger spends re-gripping before it crawls again.
 const SETTLE_SECONDS := 0.3
@@ -98,6 +146,7 @@ var _velocity := Vector3.ZERO
 var _noise_at := Vector3.ZERO
 var _noise_age := INF
 var _cooldown_left := 0.0
+var _surface_cooldown_left := 0.0
 var _leap_left := 0.0
 var _settle_left := 0.0
 var _despawn_left := 0.0
@@ -107,6 +156,9 @@ var _damage_taken := 0.0
 var _hit_this_frame := false
 var _hit_at := Vector3.ZERO
 var _victim: Node3D = null
+var _stuck := ClingerStuck.new()
+var _patch_open := 0
+var _patch_at := Vector3.ZERO
 
 @onready var _ears: ClingerEars = $Ears
 @onready var _grip: ClingerGrip = $Grip
@@ -128,6 +180,11 @@ func _ready() -> void:
 	process_physics_priority = 120
 	_ears.settings = settings
 	_grip.settings = settings
+	_stuck.window = settings.clinger_stuck_window
+	_stuck.windows_needed = settings.clinger_stuck_windows
+	_stuck.progress_metres = settings.clinger_stuck_progress_metres()
+	_stuck.wander_limit = settings.clinger_stuck_wander_limit
+	_stuck.turn_rate_limit = settings.clinger_stuck_turn_rate
 	_ears.heard.connect(_on_heard)
 	_grip.shed.connect(_on_shed)
 	_grip.peeled.connect(_on_peeled)
@@ -152,6 +209,7 @@ func _physics_process(delta: float) -> void:
 	if _resolve_mining():
 		return
 	_cooldown_left = maxf(_cooldown_left - delta, 0.0)
+	_surface_cooldown_left = maxf(_surface_cooldown_left - delta, 0.0)
 	_noise_age += delta
 	_ears.advance(delta, _position)
 	match _phase:
@@ -159,7 +217,7 @@ func _physics_process(delta: float) -> void:
 			_advance_dead(delta)
 		ClingerState.Phase.ATTACHED:
 			_advance_attached(delta)
-		ClingerState.Phase.LEAPING:
+		ClingerState.Phase.LEAPING, ClingerState.Phase.SURFACE_LEAPING:
 			_advance_leap(delta)
 		_:
 			_advance_crawl(delta)
@@ -229,10 +287,15 @@ func debug_state() -> Dictionary:
 		"lift": _lift(),
 		"damage_taken": _damage_taken,
 		"cooldown_left": _cooldown_left,
+		"surface_cooldown_left": _surface_cooldown_left,
 		"noise_age": _noise_age,
 		"noise_at": _noise_at,
 		"despawn_left": _despawn_left,
 		"stalls": _stalls,
+		# A failed search recording a zero score is the reading that tells "the detector
+		# never fired" apart from "it fired and there was nowhere to go".
+		"patch": {"score": _patch_open, "at": _patch_at},
+		"stuck": _stuck.debug_state(),
 		"grip": _grip.debug_state(),
 		"ears": _ears.debug_state(),
 		"legs": _legs.debug_state(),
@@ -275,6 +338,12 @@ func _advance_crawl(delta: float) -> void:
 		_steer(delta, _target(delta))
 		_step(delta)
 		_consider_leap()
+		_consider_escape(delta)
+	else:
+		# Forgotten, not paused. A dormant body, or one still re-gripping, has not been
+		# failing to make progress -- it has not been trying, and those seconds must not be
+		# banked against the ones after it starts again.
+		_stuck.reset()
 	_settle_left = maxf(_settle_left - delta, 0.0)
 	if _phase == ClingerState.Phase.CRAWLING and _noise_age > settings.clinger_forget_seconds:
 		_set_phase(ClingerState.Phase.DORMANT)
@@ -322,8 +391,6 @@ func _step(delta: float) -> void:
 	if seat.is_empty():
 		_stalls += 1
 		_forward = _forward.rotated(_up, deg_to_rad(EDGE_TURN_DEGREES))
-		if _stalls >= STALL_LIMIT:
-			_stalls = 0
 		return
 	_stalls = 0
 	_up = seat["normal"]
@@ -333,6 +400,9 @@ func _step(delta: float) -> void:
 ## Knocked into open space, which is where a shed clinger or a leap that missed everything
 ## ends up. Coast toward whatever it was heading for until a ray lands again.
 func _drift(delta: float) -> void:
+	# A body with no seat has nothing to leap off, and its straight-line coast would read as
+	# perfectly healthy anyway.
+	_stuck.reset()
 	var heading := _target(delta) - _position
 	if heading.is_zero_approx():
 		heading = _forward
@@ -355,6 +425,101 @@ func _consider_leap() -> void:
 	)
 	if reachable and _can_see(at):
 		_begin_leap(victim, at)
+
+
+## Sampled after the step and before _apply_pose, so the heading and position it judges are
+## the ones this tick actually navigated to. The pose slew that follows is cosmetic
+## re-orthogonalisation and would only add churn that means nothing.
+func _consider_escape(delta: float) -> void:
+	var stuck := _stuck.note(_position, _forward, delta)
+	if not ClingerState.can_surface_leap(_surface_cooldown_left, stuck, _phase):
+		return
+	# Charged BEFORE the search, and whether or not it finds anywhere. A clinger in a chamber
+	# with nothing in range is stuck for good, and without this it would pay for that answer
+	# every clinger_stuck_window for the rest of the run.
+	_surface_cooldown_left = settings.clinger_surface_leap_cooldown
+	_stuck.reset()
+	var patch := _find_escape_patch()
+	if patch.is_empty():
+		return
+	_begin_surface_leap(patch["position"], patch["normal"])
+
+
+## The roomiest surface within clinger_surface_leap_range, or nothing.
+##
+## THE SURFACE IT IS STANDING ON IS EXCLUDED GEOMETRICALLY, NOT BY COLLIDER. The whole cave
+## is one CSGCombiner3D, so "not the body I am on" would rule out every wall and leave only
+## other mineral chunks -- and it would answer nothing at all for a clinger wedged in a fold
+## of the cave itself. Distance plus a quality bar does the job without knowing what it hit.
+func _find_escape_patch() -> Dictionary:
+	var reach := settings.clinger_surface_leap_range
+	var candidates: Array[Dictionary] = []
+	for direction: Vector3 in ClingerSurface.leap_fan(_up, LEAP_FAN_RAYS):
+		var hit := _ray(_position, direction, reach)
+		if hit.is_empty():
+			continue
+		var at: Vector3 = hit["position"]
+		if (
+			_position.distance_to(at) < SURFACE_LEAP_MIN_DISTANCE
+			or _near_a_candidate(candidates, at)
+		):
+			continue
+		candidates.append(hit)
+	# Furthest first, so among patches that score alike the one that puts most room between
+	# the body and whatever trapped it wins.
+	candidates.sort_custom(
+		func(a: Dictionary, b: Dictionary) -> bool:
+			return _position.distance_to(a["position"]) > _position.distance_to(b["position"])
+	)
+	_patch_open = 0
+	_patch_at = Vector3.ZERO
+	var best := {}
+	for index: int in mini(candidates.size(), PATCH_SCORE_LIMIT):
+		var candidate: Dictionary = candidates[index]
+		var open := _patch_score(candidate["position"], candidate["normal"])
+		if open < PATCH_MIN_OPEN or open <= _patch_open:
+			continue
+		_patch_open = open
+		_patch_at = candidate["position"]
+		best = candidate
+	return best
+
+
+func _near_a_candidate(candidates: Array[Dictionary], at: Vector3) -> bool:
+	for candidate: Dictionary in candidates:
+		if (candidate["position"] as Vector3).distance_to(at) < CANDIDATE_SPACING:
+			return true
+	return false
+
+
+## How much room a patch has, as the number of points on a ring around it that still find
+## surface facing the same way.
+func _patch_score(at: Vector3, normal: Vector3) -> int:
+	var open := 0
+	for offset: Vector3 in ClingerSurface.disc_offsets(normal, PATCH_RADIUS, PATCH_PROBES):
+		var probe := _ray(
+			at + offset + normal * PATCH_PROBE_LIFT, -normal, PATCH_PROBE_LIFT + PATCH_PROBE_DEPTH
+		)
+		if probe.is_empty() or (probe["normal"] as Vector3).dot(normal) < PATCH_NORMAL_TOLERANCE:
+			continue
+		open += 1
+	return open
+
+
+## The push off the wall is folded into the AIM rather than added to the velocity, which is
+## the whole difference from _begin_leap. See LEAP_KICK.
+func _begin_surface_leap(at: Vector3, _normal: Vector3) -> void:
+	var aim := at - _position + _up * SURFACE_LEAP_CLEARANCE
+	if aim.is_zero_approx():
+		aim = _up
+	var speed := maxf(settings.clinger_leap_speed, 0.01)
+	_velocity = aim.normalized() * speed
+	# The deadline comes from the aim's own length, not the setting's ceiling: a three-metre
+	# hop that misses must not get an eighteen-metre timeout.
+	_leap_left = aim.length() / speed * LEAP_TIMEOUT_SLACK
+	global_transform = Transform3D(ClingerSurface.basis_from(_forward, _up), _position)
+	_set_phase(ClingerState.Phase.SURFACE_LEAPING)
+	world_noise.emit(_position, LEAP_LOUDNESS)
 
 
 func _begin_leap(victim: Node3D, at: Vector3) -> void:
@@ -384,7 +549,13 @@ func _advance_leap(delta: float) -> void:
 	var victim := _player_root(hit.get_collider() as Node)
 	# Anywhere on the suit is the face. The only collider a player body owns is one hull
 	# sphere, so there is no per-limb bookkeeping to get wrong.
-	if victim != null and _grip.attach(victim):
+	#
+	# A POUNCE MAY TAKE A SUIT; AN ESCAPE MAY NOT. A body crossing the room to get off a
+	# mineral chunk is not attacking, and letting it latch would take a suit from eighteen
+	# metres -- past mining_range, which is the one thing clinger_jump_range's invariant
+	# exists to prevent. It lands ON the suit instead and pounces next frame if the real
+	# guard allows, which is a better creature anyway.
+	if victim != null and _phase == ClingerState.Phase.LEAPING and _grip.attach(victim):
 		_take_hold(victim)
 		return
 	_land_on(hit.get_position(), hit.get_normal())
@@ -584,6 +755,10 @@ func _set_phase(phase: ClingerState.Phase) -> void:
 	if phase == _phase:
 		return
 	_phase = phase
+	# Every transition forgets the window. What the body was doing a moment ago is not
+	# evidence about what it is doing now, and a landing that inherited a half-full window
+	# would report a wedge before it had taken a step.
+	_stuck.reset()
 	state_changed.emit(phase)
 
 

@@ -58,7 +58,7 @@ static func pose_for(phase: ClingerState.Phase, peel: float) -> float:
 			return CURLED_DEGREES
 		ClingerState.Phase.ATTACHED:
 			return lerpf(GRIP_DEGREES, PEELED_DEGREES, clampf(peel, 0.0, 1.0))
-		ClingerState.Phase.LEAPING:
+		ClingerState.Phase.LEAPING, ClingerState.Phase.SURFACE_LEAPING:
 			return GRIP_DEGREES
 		ClingerState.Phase.DEAD:
 			return CURLED_DEGREES

@@ -6,10 +6,15 @@ extends RefCounted
 ## builds a scene. `Clinger` holds the state; this decides what it should be.
 
 ## Dormant on a wall until something wakes it; crawling toward whatever it heard; in
-## flight; riding a visor; circling a player it has been shed by; or dead and counting
-## down to a despawn. ALERTED is not here on purpose -- it has one guard and one exit, so
-## it is a timer inside DORMANT rather than a row in the table.
-enum Phase { DORMANT, CRAWLING, LEAPING, ATTACHED, ORBITING, DEAD }
+## flight; riding a visor; circling a player it has been shed by; dead and counting
+## down to a despawn; or crossing the room to get off a surface it cannot navigate.
+## ALERTED is not here on purpose -- it has one guard and one exit, so it is a timer inside
+## DORMANT rather than a row in the table.
+##
+## SURFACE_LEAPING IS APPENDED AND NOT FILED NEXT TO LEAPING. phase_name() is
+## `Phase.keys()[phase]` and `state_changed` carries the raw int, so inserting a value
+## renumbers every phase after it and silently relabels anything already connected.
+enum Phase { DORMANT, CRAWLING, LEAPING, ATTACHED, ORBITING, DEAD, SURFACE_LEAPING }
 
 
 static func phase_name(phase: Phase) -> String:
@@ -37,6 +42,23 @@ static func hears(
 ## `clinger_attack_cooldown` read as "at most once every n seconds".
 static func can_leap(cooldown_left: float, distance: float, jump_range: float) -> bool:
 	return cooldown_left <= 0.0 and distance <= jump_range
+
+
+## The escape leap's gate, and deliberately NOT can_leap's. That one asks whether a victim
+## is in reach; this one asks whether the body has anywhere better to be.
+##
+## SEPARATE COOLDOWNS ON PURPOSE. An escape that spent `clinger_attack_cooldown` would have
+## getting unstuck silently cost the creature its next attack, and a stuck clinger is one
+## the player has already been ignoring.
+##
+## CRAWLING OR ORBITING. A clinger thrashing on a rock beside the player is the most visible
+## way this fails, so the orbit is not exempt -- and at the shipped numbers an orbit cannot
+## trip the detector anyway. The invariant in PlayerSettings keeps that true if the orbit is
+## ever retuned.
+static func can_surface_leap(cooldown_left: float, stuck: bool, phase: Phase) -> bool:
+	if not stuck or cooldown_left > 0.0:
+		return false
+	return phase == Phase.CRAWLING or phase == Phase.ORBITING
 
 
 ## How far off the glass `presses` have taken it, 0 to 1. Mashing past the count does not

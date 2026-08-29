@@ -105,3 +105,41 @@ func test_parallel_detection_catches_the_case_that_spins_the_body() -> void:
 	assert_true(ClingerSurface.too_parallel(Vector3.UP, Vector3.DOWN), "opposed vectors passed")
 	assert_false(ClingerSurface.too_parallel(Vector3.UP, Vector3.RIGHT), "a right angle failed")
 	assert_true(ClingerSurface.too_parallel(Vector3.ZERO, Vector3.UP), "a zero vector passed")
+
+
+## LOOPED OVER FIVE UP VECTORS ON PURPOSE. A fan that only worked on a floor would search
+## walls and ceilings badly and silently, and the clinger spends most of its life on both.
+func test_the_leap_fan_never_aims_into_the_rock_it_stands_on() -> void:
+	for up: Vector3 in [
+		Vector3.UP, Vector3.RIGHT, Vector3.LEFT, Vector3.BACK, Vector3(1, 2, -3).normalized()
+	]:
+		for direction: Vector3 in ClingerSurface.leap_fan(up, 18):
+			assert_true(absf(direction.length() - 1.0) < EPSILON, "a fan ray was not unit length")
+			assert_true(
+				direction.dot(up) >= ClingerSurface.LEAP_FAN_FLOOR - EPSILON,
+				"a ray off %s aimed into the surface" % up
+			)
+
+
+func test_the_leap_fan_returns_the_count_it_was_asked_for() -> void:
+	assert_eq(ClingerSurface.leap_fan(Vector3.UP, 18).size(), 18, "the fan lost rays")
+
+
+func test_a_degenerate_leap_fan_returns_nothing_rather_than_nan() -> void:
+	assert_true(ClingerSurface.leap_fan(Vector3.ZERO, 18).is_empty(), "a zero up produced a fan")
+	assert_true(ClingerSurface.leap_fan(Vector3.UP, 0).is_empty(), "a zero count produced a fan")
+
+
+func test_disc_offsets_ring_the_patch_in_its_own_plane() -> void:
+	var normal := Vector3(1, 2, -3).normalized()
+	var offsets := ClingerSurface.disc_offsets(normal, 1.2, 8)
+	assert_eq(offsets.size(), 8, "the ring lost probes")
+	for offset: Vector3 in offsets:
+		assert_true(absf(offset.dot(normal)) < EPSILON, "an offset left the tangent plane")
+		assert_true(absf(offset.length() - 1.2) < EPSILON, "an offset was the wrong radius")
+
+
+func test_a_degenerate_disc_returns_nothing_rather_than_nan() -> void:
+	assert_true(ClingerSurface.disc_offsets(Vector3.ZERO, 1.2, 8).is_empty(), "a zero normal rang")
+	assert_true(ClingerSurface.disc_offsets(Vector3.UP, 0.0, 8).is_empty(), "a zero radius rang")
+	assert_true(ClingerSurface.disc_offsets(Vector3.UP, 1.2, 0).is_empty(), "a zero count rang")

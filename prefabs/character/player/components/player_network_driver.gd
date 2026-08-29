@@ -11,7 +11,14 @@ extends Node
 const HOST_PEER_ID := 1
 const AUTHORITY_COLLISION_LAYER := 2
 const REPLICA_COLLISION_LAYER := 0
-const HULL_COLLISION_MASK := 1
+## Layers 1 and 6, `hull` and `ore`. Ore is here because mineral chunks moved off layer 1 --
+## a suit that flew through every deposit in multiplayer would be the regression.
+##
+## NOTE THIS IS NARROWER THAN THE 573 prefab_player.tscn AUTHORS, and it overwrites it. A
+## networked suit therefore does not collide with debris, carryables, creatures or hazards.
+## That is pre-existing and is not this change's to fix, but it is why the two numbers do
+## not match and neither is a typo.
+const HULL_COLLISION_MASK := 33
 const REPLICA_COLLISION_MASK := 0
 const PHYSICS_PRIORITY := -70
 

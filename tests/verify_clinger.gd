@@ -21,8 +21,22 @@ const WALL := 0.5
 ## Layer 1, `hull`, which is the only thing the clinger's probe looks for.
 const HULL_LAYER := 1
 
+## prefab_mineral_chunk.tscn's BoxShape3D, to the centimetre. The chunk itself is on `ore`
+## now, but anything this size on layer 1 -- a blockage, a shaft rib, a fold of the cave --
+## is the same unnavigable island, and that is what the escape leap is really for.
+const CHUNK := Vector3(1.2, 2.6, 1.2)
+
+## Two stuck windows at the shipped 3 s, plus the crossing, plus slack. Not open-ended: a
+## case that passes only because it waited long enough is not a pass.
+const ESCAPE_FRAMES := 900
+
+## Past the corner of the box with room to spare, so a clinger that merely slid off it does
+## not count as having escaped it.
+const ESCAPE_DISTANCE := 5.0
+
 var _failures: PackedStringArray = []
 var _leaps := 0
+var _escapes := 0
 var _attaches := 0
 var _sheds := 0
 var _deaths := 0
@@ -42,6 +56,8 @@ func _ready() -> void:
 	await _verify_a_leap_that_misses()
 	await _verify_release_on_death()
 	await _verify_mining_death()
+	await _verify_escape_from_a_surface_too_small_to_crawl()
+	await _verify_a_healthy_crawl_is_left_alone()
 	for failure in _failures:
 		printerr("FAIL: %s" % failure)
 	if _failures.is_empty():
@@ -99,6 +115,7 @@ func _spawn_clinger(at: Vector3, dormant := true) -> Clinger:
 	clinger.died.connect(_on_died)
 	clinger.world_noise.connect(_on_world_noise)
 	_leaps = 0
+	_escapes = 0
 	_attaches = 0
 	_sheds = 0
 	_deaths = 0
@@ -135,9 +152,81 @@ func _depth_in(at: Vector3, centre: Vector3) -> float:
 	return minf(minf(half.x - absf(local.x), half.y - absf(local.y)), half.z - absf(local.z))
 
 
+## A box the size of a mineral chunk, on layer 1, for a clinger to get marooned on.
+func _pillar(at: Vector3) -> StaticBody3D:
+	var pillar := StaticBody3D.new()
+	pillar.collision_layer = HULL_LAYER
+	pillar.collision_mask = 0
+	var shape := BoxShape3D.new()
+	shape.size = CHUNK
+	var collider := CollisionShape3D.new()
+	collider.shape = shape
+	pillar.add_child(collider)
+	add_child(pillar)
+	pillar.global_position = at
+	return pillar
+
+
+## THE CASE THE WHOLE FEATURE EXISTS FOR. Seated on a face 1.2 m across, `_step` runs off an
+## edge every few frames and turns EDGE_TURN_DEGREES to find a new heading, so the creature
+## spends the rest of the run walking a square instead of going where it was sent.
+func _verify_escape_from_a_surface_too_small_to_crawl() -> void:
+	print("\nescaping a surface too small to crawl")
+	var centre := Vector3(2000, 0, 0)
+	_room(centre)
+	_pillar(centre)
+	var clinger := await _spawn_clinger(centre + Vector3(0, CHUNK.y * 0.5 + 0.11, 0), false)
+	await _step(30)
+	check(
+		clinger.global_position.distance_to(centre) < 2.0,
+		"it seated on the box rather than falling off it before the case began"
+	)
+	# Sent somewhere it cannot walk to, which is what makes it keep trying and keep turning.
+	clinger.wake(centre + Vector3(0.0, 0.0, 7.0))
+	var escaped := false
+	for _frame: int in ESCAPE_FRAMES:
+		await get_tree().physics_frame
+		if clinger.global_position.distance_to(centre) > ESCAPE_DISTANCE:
+			escaped = true
+			break
+	var state := clinger.debug_state()
+	var stuck: Dictionary = state["stuck"]
+	check(escaped, "it got clear of the box within %d frames" % ESCAPE_FRAMES)
+	check(int(stuck["trips"]) > 0, "the stuck detector is what noticed, not luck")
+	check(_escapes > 0, "it left by leaping rather than by sliding off")
+	await _step(60)
+	check(
+		absf(_depth_in(clinger.global_position, centre) - clinger.debug_state()["lift"]) < 0.2,
+		"it landed on a wall and gripped it rather than drifting"
+	)
+	clinger.queue_free()
+	await _step(2)
+
+
+## THE NEGATIVE, AND IT IS THE ONE THAT FAILS SILENTLY. A detector that fires on a healthy
+## crawl sends the creature across the room for no reason -- which in a playtest is
+## indistinguishable from the feature working, because a clinger leaping somewhere is
+## exactly what this looks like when it is right.
+func _verify_a_healthy_crawl_is_left_alone() -> void:
+	print("\na healthy crawl is left alone")
+	var centre := Vector3(2200, 0, 0)
+	_room(centre)
+	var clinger := await _spawn_clinger(centre + Vector3(-7.0, 0.0, 0.0), false)
+	await _step(30)
+	clinger.wake(centre + Vector3(-7.0, 0.0, 6.0))
+	await _step(600)
+	var stuck: Dictionary = clinger.debug_state()["stuck"]
+	check(int(stuck["trips"]) == 0, "ten seconds of ordinary crawling was never called stuck")
+	check(_escapes == 0, "it stayed on the wall instead of leaping off a perfectly good one")
+	clinger.queue_free()
+	await _step(2)
+
+
 func _on_state_changed(phase: ClingerState.Phase) -> void:
 	if phase == ClingerState.Phase.LEAPING:
 		_leaps += 1
+	elif phase == ClingerState.Phase.SURFACE_LEAPING:
+		_escapes += 1
 
 
 func _on_attached(_victim: Node3D) -> void:

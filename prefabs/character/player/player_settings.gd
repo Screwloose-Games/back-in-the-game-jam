@@ -25,6 +25,11 @@ const ARC_MIN_DRAIN_SECONDS := 3.0
 ## reserves killing outright for the thing you cannot shed by pressing a button.
 const CLINGER_MIN_SURVIVAL_SECONDS := 25.0
 
+## The seconds a landed clinger spends re-gripping. Mirrored from Clinger.SETTLE_SECONDS so
+## the stuck window can be checked against it without this resource importing a node script
+## that already imports this one. test_player_settings.gd stops the two drifting apart.
+const CLINGER_SETTLE_SECONDS := 0.3
+
 ## How many multiples of a reference-speed impact the worst crash can cost. The
 ## stalker owns instant death; a wall must not be able to take it.
 const IMPACT_HARDNESS_CAP := 3.0
@@ -489,6 +494,48 @@ var interact_hold_threshold: float = InteractionHold.DEFAULT_THRESHOLD
 ## makes staying calm and losing the air the harder, better play.
 @export_range(0.0, 20.0, 0.5) var clinger_struggle_noise_strength: float = 7.0
 
+## How far it will leap to get OFF a surface it cannot navigate. Nothing to do with
+## clinger_jump_range, which is the pounce: an escape leap never takes a suit, so it is free
+## to out-range the beam -- and it must, or it lands back inside the trouble it left.
+## Checked in invariant_failures().
+@export_range(2.0, 40.0, 0.5, "suffix:m") var clinger_surface_leap_range: float = 18.0
+
+## The shortest gap between two escape leaps, counted from the frame one is DECIDED and
+## charged even when the search finds nowhere to go -- so one alone in a chamber pays for
+## that answer once every this many seconds rather than once every clinger_stuck_window.
+## "Only rarely" is this number. Checked in invariant_failures().
+@export_range(1.0, 120.0, 0.5, "suffix:s") var clinger_surface_leap_cooldown: float = 10.0
+
+## Seconds of crawling the stuck detector judges as one verdict. Long enough to outlast the
+## re-grip a landing spends settling, and short enough that a shed one circling you at
+## clinger_orbit_radius() never looks like a body going round in circles. Checked in
+## invariant_failures().
+@export_range(0.5, 30.0, 0.1, "suffix:s") var clinger_stuck_window: float = 3.0
+
+## Consecutive windows that have to fail before it gives up on the surface. THIS IS THE
+## KNOB THAT MAKES IT RARE. One window of churn is ordinary -- a body rounding a corner
+## between two walls sees its goal jump into a new tangent plane and turns hard once, and
+## at 1 a shed clinger circling you in a small room escapes on that transient and ends the
+## encounter. Two windows is not cornering, it is stuck.
+@export_range(1, 10, 1) var clinger_stuck_windows: int = 2
+
+## Fraction of the ground a healthy crawl covers in one window that a stuck one fails to.
+##
+## A FRACTION AND NOT A DISTANCE ON PURPOSE. Authored raw, halving clinger_crawl_speed would
+## quietly make every healthy crawl look wedged and send the creature across the room for no
+## reason -- which in a playtest is indistinguishable from the feature working.
+@export_range(0.01, 0.9, 0.01) var clinger_stuck_progress_fraction: float = 0.15
+
+## Path length over net displacement past which it is going round in circles rather than
+## going anywhere. CreatureDebugReadout's `wander`, which is where the shape came from: a
+## body orbiting covers metres of path and trips a pure-displacement watchdog not at all.
+@export_range(1.5, 20.0, 0.1, "suffix:x") var clinger_stuck_wander_limit: float = 4.0
+
+## Radians of heading change per second past which it is thrashing rather than steering. A
+## crawl settled on a heading turns at about 0.2; one bouncing off the edges of a mineral
+## chunk takes EDGE_TURN_DEGREES several times a second, which is over 2.
+@export_range(0.5, 12.0, 0.1, "suffix:rad/s") var clinger_stuck_turn_rate: float = 2.0
+
 @export_group("Noise")
 
 ## How loud full thrust is. There is no silent way to travel.
@@ -655,6 +702,46 @@ func invariant_failures() -> PackedStringArray:
 				)
 			)
 		)
+	if clinger_surface_leap_range <= clinger_jump_range:
+		(
+			failures
+			. append(
+				(
+					"clinger_surface_leap_range %.1f does not out-range clinger_jump_range %.1f; an escape that short lands back on the surface it left"
+					% [clinger_surface_leap_range, clinger_jump_range]
+				)
+			)
+		)
+	if clinger_surface_leap_cooldown <= 0.0:
+		(
+			failures
+			. append(
+				(
+					"clinger_surface_leap_cooldown is %.2f; with no floor a clinger with nowhere to go searches every window forever and 'rarely' becomes 'constantly'"
+					% clinger_surface_leap_cooldown
+				)
+			)
+		)
+	if clinger_stuck_window <= CLINGER_SETTLE_SECONDS:
+		(
+			failures
+			. append(
+				(
+					"clinger_stuck_window %.2f does not outlast the %.2fs a landing spends settling; every landing would read as a wedge and it would bounce wall to wall"
+					% [clinger_stuck_window, CLINGER_SETTLE_SECONDS]
+				)
+			)
+		)
+	if clinger_orbit_turn_rate() >= clinger_stuck_turn_rate:
+		(
+			failures
+			. append(
+				(
+					"a shed clinger orbits at %.2f rad/s against a clinger_stuck_turn_rate of %.2f; circling you would read as thrashing and it would leap away mid-encounter"
+					% [clinger_orbit_turn_rate(), clinger_stuck_turn_rate]
+				)
+			)
+		)
 	return failures
 
 
@@ -707,6 +794,18 @@ func seconds_of_clinger_grip() -> float:
 ## How far off you a shed clinger circles, in metres.
 func clinger_orbit_radius() -> float:
 	return clinger_jump_range * clinger_orbit_fraction
+
+
+## How fast a shed one turns while circling you, in radians per second. The stuck detector
+## has to stay above this or the orbit reads as thrashing.
+func clinger_orbit_turn_rate() -> float:
+	return clinger_crawl_speed / maxf(clinger_orbit_radius(), 0.01)
+
+
+## Metres a stuck crawl fails to cover in one window. Derived from the crawl speed rather
+## than authored, so the detector tracks the creature instead of a designer's memory of it.
+func clinger_stuck_progress_metres() -> float:
+	return clinger_crawl_speed * clinger_stuck_window * clinger_stuck_progress_fraction
 
 
 func seconds_of_arc_drain() -> float:

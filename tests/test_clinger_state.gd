@@ -49,6 +49,44 @@ func test_it_will_not_leap_from_outside_its_range() -> void:
 	assert_false(ClingerState.can_leap(0.0, 4.01, 4.0), "leapt from past its range")
 
 
+func test_an_escape_leap_needs_a_stuck_body_and_a_clear_cooldown() -> void:
+	var crawling := ClingerState.Phase.CRAWLING
+	assert_true(ClingerState.can_surface_leap(0.0, true, crawling), "a stuck body did not escape")
+	assert_false(ClingerState.can_surface_leap(0.1, true, crawling), "escaped during the cooldown")
+	assert_false(ClingerState.can_surface_leap(0.0, false, crawling), "escaped without being stuck")
+
+
+## A clinger thrashing on a rock beside you is the most visible way this fails, so circling
+## is not exempt. Everything else is either not navigating or not on a surface.
+func test_a_crawling_or_orbiting_clinger_escape_leaps_and_nothing_else_does() -> void:
+	for phase: ClingerState.Phase in [ClingerState.Phase.CRAWLING, ClingerState.Phase.ORBITING]:
+		assert_true(
+			ClingerState.can_surface_leap(0.0, true, phase),
+			"a stuck %s clinger stayed stuck" % ClingerState.phase_name(phase)
+		)
+	for phase: ClingerState.Phase in [
+		ClingerState.Phase.DORMANT,
+		ClingerState.Phase.LEAPING,
+		ClingerState.Phase.ATTACHED,
+		ClingerState.Phase.DEAD,
+		ClingerState.Phase.SURFACE_LEAPING,
+	]:
+		assert_false(
+			ClingerState.can_surface_leap(0.0, true, phase),
+			"a %s clinger escape-leapt" % ClingerState.phase_name(phase)
+		)
+
+
+## Shared, getting unstuck would silently cost the creature its next attack -- and a stuck
+## clinger is one the player has already been ignoring.
+func test_the_escape_cooldown_is_not_the_attack_cooldown() -> void:
+	assert_true(
+		ClingerState.can_surface_leap(0.0, true, ClingerState.Phase.CRAWLING),
+		"the escape clock was not its own"
+	)
+	assert_true(ClingerState.can_leap(0.0, 1.0, 4.0), "and the pounce should be unaffected")
+
+
 func test_the_peel_walks_from_nothing_to_all_of_it() -> void:
 	assert_true(absf(ClingerState.peel_fraction(0, 4)) < EPSILON, "a fresh grip was already open")
 	assert_true(absf(ClingerState.peel_fraction(2, 4) - 0.5) < EPSILON, "half is not half")

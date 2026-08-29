@@ -26,6 +26,12 @@ const META_ZONE := &"_scatter_zone"
 ## for having come back on the mask at all.
 const HULL_MASK := 1
 
+## Layers 1 and 6, for the one query that has to see deposits already placed. The seat ray
+## wants rock and only rock, so it keeps HULL_MASK; the clearance check wants "is anything
+## in the way", and since chunks moved to `ore` a bare hull mask would let a scatter drop a
+## deposit straight through an existing one.
+const CLEARANCE_MASK := 33
+
 ## Fraction of a chamber or bore a ray is started inside. The carve is a
 ## 16-segment approximation of its own analytic shape, so the outer ~2% of the
 ## radius can be solid rock; the ray, not the sample point, finds the wall.
@@ -480,7 +486,7 @@ func _on_cross_section(rng: RandomNumberGenerator, half: Vector2, is_round: bool
 func _has_clearance(at: Vector3, normal: Vector3) -> bool:
 	if min_clearance <= 0.0:
 		return true
-	var query := PhysicsRayQueryParameters3D.create(at, at + normal * min_clearance, HULL_MASK)
+	var query := PhysicsRayQueryParameters3D.create(at, at + normal * min_clearance, CLEARANCE_MASK)
 	return get_world_3d().direct_space_state.intersect_ray(query).is_empty()
 
 

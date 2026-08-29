@@ -5,6 +5,15 @@ extends RigidBody3D
 ## beam stays on it; each whole point crossed transfers one mineral piece to
 ## the player immediately, so the count ticks up smoothly rather than in one
 ## lump at the end. The chunk is spent and removed once its health runs out.
+##
+## THE SCENE PUTS IT ON LAYER 6, `ore`, AND THAT IS LOAD-BEARING RATHER THAN TIDINESS.
+## It carried no collision_layer line at all, so it inherited RigidBody3D's default of 1 --
+## the `hull` layer, byte-identical to cave rock for every ray in the game. A 1.2 x 2.6 m
+## box that reads as rock is a navigable island the clinger crawls onto and cannot get off,
+## and it also bakes into the stalker's nav graph as permanent rock that survives the chunk
+## being mined out. Anything that needs to hit ore names bit 6; the mining beam passes no
+## mask at all and is unaffected. The note lives here because an editor save drops .tscn
+## comments.
 
 const DEFAULT_TUNING := preload("res://systems/minerals/mining_tuning_default.tres")
 

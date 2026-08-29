@@ -8,6 +8,7 @@
 size = Vector3(1.2, 2.6, 1.2)
 
 [node name="prefab_mineral_chunk" type="RigidBody3D" unique_id=1852599349]
+collision_layer = 32
 script = ExtResource("1_pwiwr")
 
 [node name="sm_mineral_chunk" parent="." unique_id=2110802243 instance=ExtResource("2_03aqn")]
