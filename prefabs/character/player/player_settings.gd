@@ -12,6 +12,28 @@ extends Resource
 ## worst frame of idle_float, so a half-angle past that sees through it.
 const CAMERA_FOV_NECK_SEAM_LIMIT := 72.0
 
+## The shortest an empty tank may take to kill from full health. Under this the
+## suffocation clock is a cliff again, which is the thing the pool exists to replace.
+const SUFFOCATION_MIN_SECONDS := 4.0
+
+## The shortest a live arc may take to empty a full suit. Under this, crossing one is
+## a sentence rather than a price.
+const ARC_MIN_DRAIN_SECONDS := 3.0
+
+## The least time an attached clinger may take to empty a full health pool. Under this
+## it starts competing with the stalker for the same job, and it must not: Pillar 1
+## reserves killing outright for the thing you cannot shed by pressing a button.
+const CLINGER_MIN_SURVIVAL_SECONDS := 25.0
+
+## The seconds a landed clinger spends re-gripping. Mirrored from Clinger.SETTLE_SECONDS so
+## the stuck window can be checked against it without this resource importing a node script
+## that already imports this one. test_player_settings.gd stops the two drifting apart.
+const CLINGER_SETTLE_SECONDS := 0.3
+
+## How many multiples of a reference-speed impact the worst crash can cost. The
+## stalker owns instant death; a wall must not be able to take it.
+const IMPACT_HARDNESS_CAP := 3.0
+
 ## Thruster strength in metres per second squared, per axis.
 @export_group("Thrusters")
 @export_range(1.0, 40.0, 0.5) var thrust_acceleration: float = 10.0
@@ -300,6 +322,220 @@ const CAMERA_FOV_NECK_SEAM_LIMIT := 72.0
 ## Radius the beam is drawn at.
 @export_range(0.005, 0.2, 0.005, "suffix:m") var mining_beam_radius: float = 0.03
 
+## multiplies the minerals collected by this value
+@export_range(1, 50, 1) var mining_multiplier: int = 1
+
+@export_group("Radar")
+
+## How far one pulse reaches before it dies. Tuned so the creature shows up only as it
+## is about to enter your general proximity, not while it is still a room away.
+@export_range(10.0, 200.0, 1.0, "suffix:m") var radar_range: float = 80.0
+
+## How fast the wavefront travels outward. Range over this is the sweep, and the HUD's
+## four rings are stretched to match, so the outermost ring touches the rim of the dish
+## on the frame the pulse touches its range.
+@export_range(5.0, 400.0, 1.0, "suffix:m/s") var radar_pulse_speed: float = 80.0
+
+## Seconds from one pulse leaving to the next. Must not be shorter than a sweep --
+## checked in invariant_failures().
+@export_range(0.25, 20.0, 0.05, "suffix:s") var radar_interval: float = 2.0
+
+## Charge spent the instant a pulse fires. Priced per pulse rather than per second
+## because the radar is an event, not a beam.
+@export_range(0.0, 20.0, 0.05) var radar_power_per_pulse: float = 0.25
+
+## What a pulse can see. Layer 8, and deliberately nothing else -- an 80 m sphere that
+## also masked the hull would test against every wall in the asteroid.
+@export_flags_3d_physics var radar_detectable_layers: int = RadarDetectable.LAYER
+
+@export_group("Interaction")
+
+## How far the suit's reach extends. The same order as grab_range on purpose: what you
+## can address should be what you could touch, or one press means different things at
+## different distances.
+@export_range(0.5, 8.0, 0.1, "suffix:m") var interact_range: float = 2.5
+
+## How far off your forward axis something may sit and still be addressed, as a dot
+## product. -0.2 is about 101 degrees, so nothing behind you is ever prompted.
+@export_range(-1.0, 1.0, 0.05) var interact_min_facing: float = -0.2
+
+## What being off-axis costs, as a multiple of true distance at 90 degrees. 0.0 makes
+## selection purely nearest, which is what a plain trigger volume wants.
+@export_range(0.0, 8.0, 0.1) var interact_facing_weight: float = 2.0
+
+## The discount the thing already focused gets. Without it, two consoles that score alike
+## swap the prompt every frame.
+@export_range(0.0, 0.5, 0.01) var interact_focus_stickiness: float = 0.15
+
+## How long the key is held before the press stops being a tap.
+@export_range(0.05, 1.0, 0.01, "suffix:s")
+var interact_hold_threshold: float = InteractionHold.DEFAULT_THRESHOLD
+
+## What the reach can see. Layer 9, and deliberately nothing else -- a sphere that also
+## masked the hull would test against every wall in the asteroid.
+@export_flags_3d_physics var interactable_layers: int = Interactable.LAYER
+
+@export_group("Health")
+
+## The damage pool. Only ratios reach the HUD; the debug readout shows points.
+@export_range(10.0, 500.0, 5.0) var max_health: float = 100.0
+
+## How intact the suit starts.
+@export_range(0.0, 1.0, 0.05) var health_start_fraction: float = 1.0
+
+## Points recovered per second once nothing has hit you for health_regen_delay.
+## Deliberately slow: attrition you cannot outheal is what makes depth cost something.
+@export_range(0.0, 20.0, 0.1, "suffix:/s") var health_regen_per_second: float = 2.0
+
+## Quiet seconds before the suit starts sealing itself. Suffocation restarts this every
+## frame, so recovery does not begin the instant air comes back.
+@export_range(0.0, 30.0, 0.5, "suffix:s") var health_regen_delay: float = 6.0
+
+@export_group("Hazards")
+
+## What an empty tank costs per second. This is the suffocation clock's new shape: a
+## bad decision becomes survivable-but-expensive instead of fatal on the frame.
+@export_range(0.0, 40.0, 0.5, "suffix:/s") var suffocation_damage_per_second: float = 6.0
+
+## Below this a contact is a scrape and costs nothing. Well above PlayerSfx's own
+## 0.8 m/s floor on purpose: you hear every knock and are billed only for the hard ones.
+@export_range(0.0, 20.0, 0.5, "suffix:m/s") var impact_damage_min_speed: float = 4.0
+
+## What an impact at impact_reference_speed costs. Damage climbs linearly from the
+## deadband and is capped at IMPACT_HARDNESS_CAP multiples of this.
+@export_range(0.0, 100.0, 1.0) var impact_damage_at_reference_speed: float = 18.0
+
+## What a gas pod costs at the epicentre, falling off to nothing at its blast radius.
+@export_range(0.0, 200.0, 1.0) var hazard_gas_pod_damage: float = 35.0
+
+## How wide a gas pod's bubble is across its base. The prefab authors its dome at one
+## metre, so this scales it and its two triggers directly.
+@export_range(0.1, 4.0, 0.05, "suffix:m") var hazard_gas_pod_diameter: float = 0.9
+
+## How close you may get to a gas pod before it starts counting down, measured from the
+## pod's centre.
+##
+## The band you can occupy WITHOUT already touching it is this minus half the bubble and
+## the suit's own hull. Go under that and the contact trigger fires first, the countdown
+## never gets a turn, and the entire warning is lost without an error -- which is what
+## invariant_failures() checks.
+@export_range(0.2, 10.0, 0.1, "suffix:m") var hazard_gas_pod_trigger_range: float = 1.0
+
+## What standing inside a live arc costs per second. Small: the charge is the real bill.
+@export_range(0.0, 60.0, 0.5, "suffix:/s") var hazard_arc_damage_per_second: float = 4.0
+
+## What a live arc pulls out of the suit per second. The meter you have been carefully
+## managing drops for reasons that are not your fault.
+@export_range(0.0, 100.0, 0.5, "suffix:/s") var hazard_arc_power_drain_per_second: float = 20.0
+
+@export_group("Clinger")
+
+## How close it has to get before it will leap, measured to the head it is aiming at.
+##
+## Deliberately inside mining_range: a thing that leaps from further than you can answer
+## it is a hazard with no counterplay. Checked in invariant_failures().
+@export_range(0.5, 12.0, 0.1, "suffix:m") var clinger_jump_range: float = 4.0
+
+## How fast it crawls. "Slowly, visibly, on the rock -- you can outrun it" is the whole
+## counter, so this has to stay well under max_speed. Checked in invariant_failures().
+@export_range(0.2, 6.0, 0.1, "suffix:m/s") var clinger_crawl_speed: float = 1.1
+
+## How fast it travels mid-leap. Zero-g, so this is a straight line rather than an arc.
+@export_range(1.0, 30.0, 0.5, "suffix:m/s") var clinger_leap_speed: float = 8.0
+
+## The shortest gap between two leaps, counted from the frame one STARTS rather than from
+## the landing. Also how long a shed one circles you, so this one number is the rhythm of
+## the whole encounter.
+@export_range(0.5, 60.0, 0.5, "suffix:s") var clinger_attack_cooldown: float = 6.0
+
+## How far off you a shed one circles, as a fraction of clinger_jump_range. Under 1 so it
+## is always already inside leap distance when the cooldown clears.
+@export_range(0.2, 1.0, 0.05) var clinger_orbit_fraction: float = 0.85
+
+## How far it can hear. The stalker's is 120 m in the asteroid; this is short on purpose,
+## because a creature that answers every noise in the level is never escaped, only outrun.
+@export_range(1.0, 120.0, 1.0, "suffix:m") var clinger_hearing_range: float = 30.0
+
+## The noise strength that wakes a dormant one. Above thrust_noise_strength at a trickle
+## and below it at speed, so drifting past one is quiet and flying past one is not.
+@export_range(0.0, 20.0, 0.5) var clinger_wake_strength: float = 2.0
+
+## How long it keeps crawling toward a noise nothing has repeated. Go quiet and it loses
+## you; this is how long that takes.
+@export_range(0.5, 60.0, 0.5, "suffix:s") var clinger_forget_seconds: float = 8.0
+
+## What one riding your visor pulls out of the suit battery per second. Double
+## suit_drain_per_second, so the meter you have been managing halves while you deal with it.
+@export_range(0.0, 40.0, 0.5, "suffix:/s") var clinger_power_drain_per_second: float = 6.0
+
+## What it costs you in air per second. It is sitting on the intake -- this on top of
+## oxygen_idle_drain_per_second is four times the resting rate.
+@export_range(0.0, 20.0, 0.1, "suffix:/s") var clinger_oxygen_drain_per_second: float = 3.0
+
+## What it costs you in health per second. Must beat health_regen_per_second or wearing one
+## is free, and must still leave the suit alive long past a shed -- both are checked in
+## invariant_failures().
+@export_range(0.0, 20.0, 0.1, "suffix:/s") var clinger_health_drain_per_second: float = 2.5
+
+## How much mining beam it takes to kill one. A gas pod is 2, a mineral chunk 5, a blockage
+## 25, so three seconds of held beam puts this between "free" and "a decision" -- and those
+## three seconds are the loudest sustained noise in the game, which is the real price.
+@export_range(0.5, 60.0, 0.5) var clinger_hp: float = 3.0
+
+## Presses of any bound action needed to peel one off. Each takes it a further 1/n off the
+## glass, so this is also how much visor one press buys back.
+@export_range(1, 20, 1) var clinger_interaction_count: int = 4
+
+## How long a dead one stays before it despawns. Long enough to watch it let go and drift,
+## short enough that a chamber does not silt up with corpses on a web build.
+@export_range(0.0, 60.0, 0.5, "suffix:s") var clinger_death_despawn_time: float = 6.0
+
+## How loud one struggle press is. Thrashing paints you for the stalker, which is what
+## makes staying calm and losing the air the harder, better play.
+@export_range(0.0, 20.0, 0.5) var clinger_struggle_noise_strength: float = 7.0
+
+## How far it will leap to get OFF a surface it cannot navigate. Nothing to do with
+## clinger_jump_range, which is the pounce: an escape leap never takes a suit, so it is free
+## to out-range the beam -- and it must, or it lands back inside the trouble it left.
+## Checked in invariant_failures().
+@export_range(2.0, 40.0, 0.5, "suffix:m") var clinger_surface_leap_range: float = 18.0
+
+## The shortest gap between two escape leaps, counted from the frame one is DECIDED and
+## charged even when the search finds nowhere to go -- so one alone in a chamber pays for
+## that answer once every this many seconds rather than once every clinger_stuck_window.
+## "Only rarely" is this number. Checked in invariant_failures().
+@export_range(1.0, 120.0, 0.5, "suffix:s") var clinger_surface_leap_cooldown: float = 10.0
+
+## Seconds of crawling the stuck detector judges as one verdict. Long enough to outlast the
+## re-grip a landing spends settling, and short enough that a shed one circling you at
+## clinger_orbit_radius() never looks like a body going round in circles. Checked in
+## invariant_failures().
+@export_range(0.5, 30.0, 0.1, "suffix:s") var clinger_stuck_window: float = 3.0
+
+## Consecutive windows that have to fail before it gives up on the surface. THIS IS THE
+## KNOB THAT MAKES IT RARE. One window of churn is ordinary -- a body rounding a corner
+## between two walls sees its goal jump into a new tangent plane and turns hard once, and
+## at 1 a shed clinger circling you in a small room escapes on that transient and ends the
+## encounter. Two windows is not cornering, it is stuck.
+@export_range(1, 10, 1) var clinger_stuck_windows: int = 2
+
+## Fraction of the ground a healthy crawl covers in one window that a stuck one fails to.
+##
+## A FRACTION AND NOT A DISTANCE ON PURPOSE. Authored raw, halving clinger_crawl_speed would
+## quietly make every healthy crawl look wedged and send the creature across the room for no
+## reason -- which in a playtest is indistinguishable from the feature working.
+@export_range(0.01, 0.9, 0.01) var clinger_stuck_progress_fraction: float = 0.15
+
+## Path length over net displacement past which it is going round in circles rather than
+## going anywhere. CreatureDebugReadout's `wander`, which is where the shape came from: a
+## body orbiting covers metres of path and trips a pure-displacement watchdog not at all.
+@export_range(1.5, 20.0, 0.1, "suffix:x") var clinger_stuck_wander_limit: float = 4.0
+
+## Radians of heading change per second past which it is thrashing rather than steering. A
+## crawl settled on a heading turns at about 0.2; one bouncing off the edges of a mineral
+## chunk takes EDGE_TURN_DEGREES several times a second, which is over 2.
+@export_range(0.5, 12.0, 0.1, "suffix:rad/s") var clinger_stuck_turn_rate: float = 2.0
+
 @export_group("Noise")
 
 ## How loud full thrust is. There is no silent way to travel.
@@ -352,11 +588,158 @@ func invariant_failures() -> PackedStringArray:
 				% [helmet_lamp_range, camera_far]
 			)
 		)
+	if radar_pulse_speed > 0.0 and radar_interval < radar_range / radar_pulse_speed:
+		failures.append(
+			(
+				"radar_interval %.2fs is shorter than one sweep (%.2fs); pulses overlap"
+				% [radar_interval, radar_range / radar_pulse_speed]
+			)
+		)
 	if tether_rope_draw_radius > tether_rope_radius:
 		failures.append(
 			(
 				"tether_rope_draw_radius %.2f exceeds tether_rope_radius %.2f; the rope will pinch"
 				% [tether_rope_draw_radius, tether_rope_radius]
+			)
+		)
+	if suffocation_damage_per_second <= health_regen_per_second:
+		(
+			failures
+			. append(
+				(
+					"suffocation_damage_per_second %.2f does not beat health_regen_per_second %.2f; running out of air would never kill"
+					% [suffocation_damage_per_second, health_regen_per_second]
+				)
+			)
+		)
+	if seconds_of_suffocation() < SUFFOCATION_MIN_SECONDS:
+		(
+			failures
+			. append(
+				(
+					"an empty tank kills in %.1fs, under the %.1fs that keeps suffocation a slope rather than a cliff"
+					% [seconds_of_suffocation(), SUFFOCATION_MIN_SECONDS]
+				)
+			)
+		)
+	if hazard_gas_pod_damage >= max_health:
+		(
+			failures
+			. append(
+				(
+					"hazard_gas_pod_damage %.1f is not under max_health %.1f; a pod would kill outright, which only the stalker may do"
+					% [hazard_gas_pod_damage, max_health]
+				)
+			)
+		)
+	if hazard_gas_pod_trigger_range <= gas_pod_contact_distance():
+		(
+			failures
+			. append(
+				(
+					"hazard_gas_pod_trigger_range %.2f is not past the %.2f m at which a suit is already touching the bubble; the proximity countdown would never get a turn"
+					% [hazard_gas_pod_trigger_range, gas_pod_contact_distance()]
+				)
+			)
+		)
+	if seconds_of_arc_drain() < ARC_MIN_DRAIN_SECONDS:
+		(
+			failures
+			. append(
+				(
+					"an arc empties the suit in %.1fs, under the %.1fs that keeps crossing one a price rather than a sentence"
+					% [seconds_of_arc_drain(), ARC_MIN_DRAIN_SECONDS]
+				)
+			)
+		)
+	if impact_damage_min_speed >= impact_reference_speed:
+		(
+			failures
+			. append(
+				(
+					"impact_damage_min_speed %.1f is not below impact_reference_speed %.1f; a reference impact would cost nothing"
+					% [impact_damage_min_speed, impact_reference_speed]
+				)
+			)
+		)
+	if clinger_health_drain_per_second <= health_regen_per_second:
+		(
+			failures
+			. append(
+				(
+					"clinger_health_drain_per_second %.2f does not beat health_regen_per_second %.2f; wearing one would cost nothing"
+					% [clinger_health_drain_per_second, health_regen_per_second]
+				)
+			)
+		)
+	if seconds_of_clinger_grip() < CLINGER_MIN_SURVIVAL_SECONDS:
+		(
+			failures
+			. append(
+				(
+					"a clinger empties the pool in %.1fs, under the %.1fs that keeps shedding one an escape rather than a fight"
+					% [seconds_of_clinger_grip(), CLINGER_MIN_SURVIVAL_SECONDS]
+				)
+			)
+		)
+	if clinger_jump_range > mining_range:
+		(
+			failures
+			. append(
+				(
+					"clinger_jump_range %.1f is past mining_range %.1f; it could leap from outside the range you can answer it at"
+					% [clinger_jump_range, mining_range]
+				)
+			)
+		)
+	if clinger_crawl_speed >= max_speed:
+		(
+			failures
+			. append(
+				(
+					"clinger_crawl_speed %.2f is not under max_speed %.2f; you could not outrun one, and outrunning it is the counter"
+					% [clinger_crawl_speed, max_speed]
+				)
+			)
+		)
+	if clinger_surface_leap_range <= clinger_jump_range:
+		(
+			failures
+			. append(
+				(
+					"clinger_surface_leap_range %.1f does not out-range clinger_jump_range %.1f; an escape that short lands back on the surface it left"
+					% [clinger_surface_leap_range, clinger_jump_range]
+				)
+			)
+		)
+	if clinger_surface_leap_cooldown <= 0.0:
+		(
+			failures
+			. append(
+				(
+					"clinger_surface_leap_cooldown is %.2f; with no floor a clinger with nowhere to go searches every window forever and 'rarely' becomes 'constantly'"
+					% clinger_surface_leap_cooldown
+				)
+			)
+		)
+	if clinger_stuck_window <= CLINGER_SETTLE_SECONDS:
+		(
+			failures
+			. append(
+				(
+					"clinger_stuck_window %.2f does not outlast the %.2fs a landing spends settling; every landing would read as a wedge and it would bounce wall to wall"
+					% [clinger_stuck_window, CLINGER_SETTLE_SECONDS]
+				)
+			)
+		)
+	if clinger_orbit_turn_rate() >= clinger_stuck_turn_rate:
+		(
+			failures
+			. append(
+				(
+					"a shed clinger orbits at %.2f rad/s against a clinger_stuck_turn_rate of %.2f; circling you would read as thrashing and it would leap away mid-encounter"
+					% [clinger_orbit_turn_rate(), clinger_stuck_turn_rate]
+				)
 			)
 		)
 	return failures
@@ -372,3 +755,60 @@ func thrust_acceleration_for(sprint_engaged: bool) -> float:
 ## The gain look input feeds into angular velocity in INERTIAL mode.
 func aim_gain() -> float:
 	return mouse_sensitivity * angular_acceleration
+
+
+## Health one impact costs, priced against the same reference speed the noise uses.
+func impact_damage_for(closing_speed: float) -> float:
+	return PlayerHealthModel.impact_damage(
+		closing_speed,
+		impact_damage_min_speed,
+		impact_reference_speed,
+		impact_damage_at_reference_speed,
+		IMPACT_HARDNESS_CAP
+	)
+
+
+## How long an empty tank takes to kill from full health, or INF when it never does.
+func seconds_of_suffocation() -> float:
+	if suffocation_damage_per_second <= 0.0:
+		return INF
+	return max_health / suffocation_damage_per_second
+
+
+## How far from a gas pod's centre a suit is already touching its bubble, which is the
+## floor hazard_gas_pod_trigger_range has to clear to leave any countdown band at all.
+func gas_pod_contact_distance() -> float:
+	return hazard_gas_pod_diameter * 0.5 + hull_radius
+
+
+## How long a live arc takes to empty a full suit, or INF when it never does.
+## How long an attached clinger takes to empty a full health pool, or INF when it never
+## does. Health only: an empty battery and an empty tank are prices, and suffocation is
+## already a slope, but health reaching zero is the one outcome the stalker owns.
+func seconds_of_clinger_grip() -> float:
+	if clinger_health_drain_per_second <= 0.0:
+		return INF
+	return max_health / clinger_health_drain_per_second
+
+
+## How far off you a shed clinger circles, in metres.
+func clinger_orbit_radius() -> float:
+	return clinger_jump_range * clinger_orbit_fraction
+
+
+## How fast a shed one turns while circling you, in radians per second. The stuck detector
+## has to stay above this or the orbit reads as thrashing.
+func clinger_orbit_turn_rate() -> float:
+	return clinger_crawl_speed / maxf(clinger_orbit_radius(), 0.01)
+
+
+## Metres a stuck crawl fails to cover in one window. Derived from the crawl speed rather
+## than authored, so the detector tracks the creature instead of a designer's memory of it.
+func clinger_stuck_progress_metres() -> float:
+	return clinger_crawl_speed * clinger_stuck_window * clinger_stuck_progress_fraction
+
+
+func seconds_of_arc_drain() -> float:
+	if hazard_arc_power_drain_per_second <= 0.0:
+		return INF
+	return suit_capacity / hazard_arc_power_drain_per_second

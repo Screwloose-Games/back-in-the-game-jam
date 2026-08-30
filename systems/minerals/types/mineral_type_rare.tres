@@ -1,0 +1,11 @@
+[gd_resource type="Resource" script_class="MineralType" load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://systems/minerals/mineral_type.gd" id="1_type"]
+[ext_resource type="Material" path="res://assets/art/environment/minerals/mat_mineral_rare.tres" id="2_mat"]
+
+[resource]
+script = ExtResource("1_type")
+id = &"rare"
+display_name = "Rare Ore"
+value = 4
+chunk_material = ExtResource("2_mat")

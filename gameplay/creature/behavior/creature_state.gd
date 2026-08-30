@@ -1,7 +1,7 @@
 class_name CreatureState
 extends RefCounted
 
-## The four HFSM modes (fsm.md, "The four states"), and nothing else.
+## The five HFSM modes (fsm.md, "The states"), and nothing else.
 ##
 ## ITS OWN FILE SO THE DIRECTOR CAN NAME IT. `EncounterReport.state` is typed on this enum,
 ## and `gameplay/director/` must not depend on the Behavior facade to say so. Godot has no
@@ -21,6 +21,9 @@ enum State {
 	HUNTING,
 	## End the encounter legibly. The player has to KNOW it is over.
 	RETREATING,
+	## Stop, because what it was trying to do is not working. It holds still, writes the lead
+	## off and goes back to wandering -- see ReconsideringState.
+	RECONSIDERING,
 }
 
 
@@ -34,4 +37,6 @@ static func state_name(value: State) -> String:
 			return "hunting"
 		State.RETREATING:
 			return "retreating"
+		State.RECONSIDERING:
+			return "reconsidering"
 	return "?"

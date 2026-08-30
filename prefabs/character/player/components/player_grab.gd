@@ -20,8 +20,9 @@ var externally_driven := false
 
 ## The carryable in your hands, or null.
 var _held: RigidBody3D
-## A carryable under the crosshair, attached or not. The reticle reads this to
-## say "grabbable" before you commit.
+## A carryable under the crosshair, attached or not. PlayerTether is the only
+## reader: grabbing is proximity-based through PlayerInteractor, but clipping a
+## line to something is still a question about what you are pointing at.
 var _targeted: RigidBody3D
 ## Where each hand has hold, in the object's local space. Fixed at grab time.
 var _hand_anchors: Array[Vector3] = []
@@ -33,7 +34,6 @@ var _free_mass := 0.0
 var _strain := 0.0
 
 @onready var body: CharacterBody3D = get_parent()
-@onready var input: PlayerInput = %Input
 @onready var locomotion: PlayerLocomotion = %Locomotion
 @onready var grab_ray: RayCast3D = %GrabRay
 
@@ -44,8 +44,6 @@ func _ready() -> void:
 		settings = PlayerSettings.new()
 		push_warning("PlayerGrab has no settings; running on PlayerSettings defaults.")
 	grab_ray.target_position = Vector3(0.0, 0.0, -settings.grab_range)
-	if not externally_driven:
-		input.grab_toggled.connect(_on_grab_toggled)
 
 
 func _physics_process(delta: float) -> void:
@@ -63,9 +61,21 @@ func targeted_object() -> RigidBody3D:
 	return _targeted
 
 
+## What tethering should act on right now. What is already in your hands outranks what
+## the ray merely happens to be touching.
+func tether_target() -> RigidBody3D:
+	return _held if _held != null else _targeted
+
+
 ## Where on the target the ray landed, in world space.
 func target_point() -> Vector3:
 	return grab_ray.get_collision_point()
+
+
+## Where a tether should clip right now. A held load gets its centre, because the carry
+## pose does not preserve a ray hit and the rope only needs a stable point on the body.
+func tether_point() -> Vector3:
+	return _held.global_position if _held != null else target_point()
 
 
 func is_holding() -> bool:
@@ -119,18 +129,6 @@ func take_hold_of(object: RigidBody3D, grab_point: Vector3) -> void:
 	_settle = 0.0
 	_strain = 0.0
 	took_hold.emit(object)
-
-
-func _on_grab_toggled() -> void:
-	if _held != null:
-		release()
-		return
-	if _targeted == null:
-		return
-	var hands := get_parent().get_node_or_null("Hands") as PlayerHands
-	if hands != null and not hands.can_take_hold():
-		return
-	take_hold_of(_targeted, target_point())
 
 
 ## The ray only collides with the carryable layer, so anything it reports is

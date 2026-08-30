@@ -12,6 +12,7 @@
 [ext_resource type="Script" uid="uid://d21n0glimaot8" path="res://common/ui/main_menu/main_menu_frame.gd" id="9_frame"]
 [ext_resource type="Script" uid="uid://d1riq7o8o5ljq" path="res://common/ui/main_menu/main_menu_pointer.gd" id="10_pointer"]
 [ext_resource type="Texture2D" uid="uid://d3b0aweecincm" path="res://assets/art/ui/main_menu/t_main_menu_backdrop.png" id="11_backdrop"]
+[ext_resource type="PackedScene" path="res://common/ui/scene_menu/scene_menu.tscn" id="12_scenes"]
 
 [node name="MainMenu" type="Control" unique_id=1571659660]
 layout_mode = 3
@@ -111,7 +112,7 @@ offset_left = 64.0
 offset_top = 255.0
 offset_right = 560.0
 offset_bottom = 700.0
-theme_override_constants/separation = 16
+theme_override_constants/separation = 8
 
 [node name="StartButton" type="Button" parent="Shell/Menu" unique_id=1340189053]
 unique_name_in_owner = true
@@ -146,6 +147,13 @@ unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 0
 text = "Credits"
+alignment = 0
+
+[node name="ScenesButton" type="Button" parent="Shell/Menu"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 0
+text = "Scenes"
 alignment = 0
 
 [node name="QuitButton" type="Button" parent="Shell/Menu" unique_id=823228757]
@@ -221,6 +229,16 @@ anchor_bottom = 0.0
 grow_horizontal = 1
 grow_vertical = 1
 
+[node name="SceneMenu" parent="." instance=ExtResource("12_scenes")]
+unique_name_in_owner = true
+visible = false
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
 [connection signal="mouse_entered" from="Shell/Menu/StartButton" to="Audio Control" method="_on_hover"]
 [connection signal="pressed" from="Shell/Menu/StartButton" to="Audio Control" method="_on_open"]
 [connection signal="mouse_entered" from="Shell/Menu/HostButton" to="Audio Control" method="_on_hover"]
@@ -231,5 +249,7 @@ grow_vertical = 1
 [connection signal="pressed" from="Shell/Menu/OptionsButton" to="Audio Control" method="_on_open"]
 [connection signal="mouse_entered" from="Shell/Menu/CreditsButton" to="Audio Control" method="_on_hover"]
 [connection signal="pressed" from="Shell/Menu/CreditsButton" to="Audio Control" method="_on_open"]
+[connection signal="mouse_entered" from="Shell/Menu/ScenesButton" to="Audio Control" method="_on_hover"]
+[connection signal="pressed" from="Shell/Menu/ScenesButton" to="Audio Control" method="_on_open"]
 [connection signal="mouse_entered" from="Shell/Menu/QuitButton" to="Audio Control" method="_on_hover"]
 [connection signal="pressed" from="Shell/Menu/QuitButton" to="Audio Control" method="_on_close"]

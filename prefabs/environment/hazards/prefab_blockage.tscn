@@ -1,0 +1,56 @@
+[gd_scene load_steps=7 format=3]
+
+[ext_resource type="Script" path="res://prefabs/environment/hazards/blockage.gd" id="1_blockage"]
+[ext_resource type="PackedScene" uid="uid://i3hpsl5mx2me" path="res://prefabs/gameplay/mining_impact/mining_impact.tscn" id="2_impact"]
+[ext_resource type="AudioStream" uid="uid://614snr0asl4e" path="res://assets/sfx/environment/Ore_Impacts_RockBreak_01.wav" id="3_collapse"]
+[ext_resource type="PackedScene" path="res://prefabs/environment/hazards/hazard_label.tscn" id="9_label"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_plug"]
+size = Vector3(4.4, 4.4, 1.8)
+
+[sub_resource type="BoxMesh" id="BoxMesh_chunk"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_rock"]
+albedo_color = Color(0.29, 0.27, 0.25, 1)
+roughness = 0.95
+
+[node name="prefab_blockage" type="StaticBody3D" unique_id=1441038400]
+collision_layer = 512
+collision_mask = 0
+script = ExtResource("1_blockage")
+metadata/placeholder = true
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="." unique_id=1441038401]
+shape = SubResource("BoxShape3D_plug")
+
+[node name="Rubble" type="Node3D" parent="." unique_id=1441038402]
+
+[node name="Chunk1" type="MeshInstance3D" parent="Rubble" unique_id=1441038403]
+transform = Transform3D(4, 0, 0, 0, 4, 0, 0, 0, 1.5, 0, 0, 0)
+cast_shadow = 0
+mesh = SubResource("BoxMesh_chunk")
+surface_material_override/0 = SubResource("StandardMaterial3D_rock")
+
+[node name="Chunk2" type="MeshInstance3D" parent="Rubble" unique_id=1441038404]
+transform = Transform3D(2.6, 0, 0, 0, 3.2, 0, 0, 0, 1.9, 1.1, 0.9, 0.2)
+cast_shadow = 0
+mesh = SubResource("BoxMesh_chunk")
+surface_material_override/0 = SubResource("StandardMaterial3D_rock")
+
+[node name="Chunk3" type="MeshInstance3D" parent="Rubble" unique_id=1441038405]
+transform = Transform3D(3, 0, 0, 0, 2.2, 0, 0, 0, 1.7, -1, -1.1, -0.2)
+cast_shadow = 0
+mesh = SubResource("BoxMesh_chunk")
+surface_material_override/0 = SubResource("StandardMaterial3D_rock")
+
+[node name="MiningImpact" parent="." unique_id=1441038406 instance=ExtResource("2_impact")]
+
+[node name="Sfx" type="AudioStreamPlayer3D" parent="." unique_id=1441038407]
+stream = ExtResource("3_collapse")
+unit_size = 10.0
+max_distance = 40.0
+bus = &"SFX"
+
+[node name="HazardLabel" parent="." unique_id=1441038490 instance=ExtResource("9_label")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.9, 0)
+text = "BLOCKAGE"

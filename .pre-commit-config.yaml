@@ -17,9 +17,14 @@
 # Notes:
 # - pre-commit builds its own isolated venv for gdtoolkit, so contributors do
 #   NOT need gdlint/gdformat on their PATH.
-# - `rev` is pinned so every dev and CI run agree. CI installs `gdtoolkit==4.*`
-#   (.github/workflows/gdlint-on-pull-request.yml), which currently resolves to
-#   this same release.
+# - `rev` is pinned so every dev and CI run agree. CI pins the same release
+#   explicitly (`gdtoolkit==4.5.0` in
+#   .github/workflows/gdlint-on-pull-request.yml); bump both together. It used to
+#   install `gdtoolkit==4.*`, which let a new release reformat files CI had
+#   already passed.
+# - That workflow runs `gdformat --check` as well as `gdlint`. It has to:
+#   `gdlint` has no opinion about indentation, so a file indented entirely with
+#   spaces passes it clean and only `gdformat` rejects it.
 # - `exclude` is required even though gdlintrc/gdformatrc list `addons` under
 #   `excluded_directories`: that setting is ignored when file paths are passed
 #   explicitly, and pre-commit always passes explicit staged paths. This mirrors

@@ -1,0 +1,24 @@
+[gd_resource type="Resource" script_class="CutsceneData" format=3]
+
+[ext_resource type="Script" uid="uid://4dc8571pdbd6" path="res://common/cutscene/cutscene_data.gd" id="1_data"]
+[ext_resource type="Script" uid="uid://bejsjcumi6eyp" path="res://common/cutscene/cutscene_timed_effect.gd" id="2_effect"]
+
+[sub_resource type="Resource" id="Effect_crew_aboard"]
+script = ExtResource("2_effect")
+effect_name = &"crew_aboard"
+
+[sub_resource type="Resource" id="Effect_doors_locked"]
+script = ExtResource("2_effect")
+time = 3.5
+effect_name = &"doors_locked"
+
+[sub_resource type="Resource" id="Effect_car_ascending"]
+script = ExtResource("2_effect")
+time = 3.9
+effect_name = &"car_ascending"
+
+[resource]
+script = ExtResource("1_data")
+animation_name = &"elevator_outro"
+skippable = false
+effects = Array[ExtResource("2_effect")]([SubResource("Effect_crew_aboard"), SubResource("Effect_doors_locked"), SubResource("Effect_car_ascending")])

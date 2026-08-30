@@ -1,0 +1,10 @@
+[gd_resource type="AnimationLibrary" format=3 uid="uid://cmc7k3iwttv4o"]
+
+[ext_resource type="Animation" uid="uid://bfcusowva5nof" path="res://levels/asteroid_level/intro/animations/elevator_intro_reset.anim.tres" id="1_qke3g"]
+[ext_resource type="Animation" uid="uid://dnxwohca6uq7t" path="res://levels/asteroid_level/intro/animations/elevator_intro.anim.tres" id="2_llk1w"]
+
+[resource]
+_data = {
+&"RESET": ExtResource("1_qke3g"),
+&"elevator_intro": ExtResource("2_llk1w")
+}

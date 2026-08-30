@@ -595,6 +595,35 @@ Those would bypass the evidence model.
 
 Instead, Behavior causes the creature to investigate, Perception observes the result, and Suspicion updates accordingly.
 
+## The one sanctioned exception
+
+```gdscript
+func mark_unreachable(hotspot_id: int) -> void
+```
+
+This is a claim about the **creature**, not about the world: *I could not get there.*
+
+It is not `mark_investigation_complete()` wearing a different name, and the difference is
+testable rather than rhetorical. It subtracts nothing. `get_overall_suspicion`,
+`get_suspicion_near`, `get_hotspot` and `get_hotspots` all read exactly what they read before
+it was called. The creature goes on being precisely as afraid of that place as it was — which
+is what keeps hunt sustain and the Director's pressure model honest.
+
+What it changes is which places Behavior is **offered** as somewhere to walk. The two lead
+queries, `get_strongest_hotspot` and `get_hotspots_above`, stop returning that place for
+`unreachable_suppression_s`; nothing else filters.
+
+It exists because lead selection has no memory. Without it, an alien that gives up on a
+hotspot it physically cannot reach re-selects the very same hotspot on the next tick, forever
+— and neither evidence nor disconfirmation can express "my legs do not fit down there",
+because neither is a statement about the creature.
+
+The suppression is keyed by **position, not by hotspot id**. Hotspot identity is carried by
+shared contributing evidence, so a lead that decays out and re-forms from the next noise is a
+*new id at the same spot*; an id-keyed suppression would lift itself the moment the player made
+another sound, which is the loop it exists to break. A sphere also expires for the right
+reason: a hotspot whose centre drifts out of it genuinely is somewhere else.
+
 ---
 
 # Director → Suspicion

@@ -1,0 +1,8 @@
+[gd_resource type="AnimationLibrary" format=3 uid="uid://bsjimuecswnqc"]
+
+[ext_resource type="Animation" uid="uid://cehy4fs4xcbeq" path="res://levels/asteroid_level/intro/animations/player_door_press.anim.tres" id="1_skcgs"]
+
+[resource]
+_data = {
+&"door_press": ExtResource("1_skcgs")
+}

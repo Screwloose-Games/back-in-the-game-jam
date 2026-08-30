@@ -1,7 +1,8 @@
 @tool
 extends EditorPlugin
 
-## Wires this clone's git hooks to the versioned .githooks/ directory.
+## Wires this clone's git hooks to the versioned .githooks/ directory, and holds
+## the script editor to tab indentation.
 ##
 ## Git deliberately gives a repository no way to install its own hooks on clone
 ## - if it did, `git clone` would be remote code execution. So the setup step
@@ -10,9 +11,9 @@ extends EditorPlugin
 ## project in the editor, so that is what triggers it.
 ##
 ## Everything this can reach is one `git config` write inside the current
-## checkout. It runs no hook, fetches nothing, and installs nothing - the
-## checks themselves live in .githooks/pre-commit, which is reviewed like any
-## other file in the repo.
+## checkout and two editor settings. It runs no hook, fetches nothing, and
+## installs nothing - the checks themselves live in .githooks/pre-commit, which
+## is reviewed like any other file in the repo.
 ##
 ## Deliberately not `pre-commit install`: that copies a shim into .git/hooks/
 ## and the copy goes stale when the hook changes. core.hooksPath points at a
@@ -21,11 +22,70 @@ extends EditorPlugin
 
 const HOOKS_PATH := ".githooks"
 
+## Godot's own enum for text_editor/behavior/indent/type is "Tabs,Spaces", so
+## tabs is 0. gdformat emits tabs and has no option not to, which is what makes
+## this settable rather than arguable.
+const INDENT_TABS := 0
+const INDENT_TYPE_SETTING := "text_editor/behavior/indent/type"
+const INDENT_SIZE_SETTING := "text_editor/behavior/indent/size"
+const CONVERT_INDENT_SETTING := "text_editor/behavior/files/convert_indent_on_save"
+## Matches tab_width in .editorconfig. With tabs this only sets display width.
+const INDENT_SIZE := 4
+
 
 func _enter_tree() -> void:
 	# Deferred so a slow or hung `git` cannot stall the editor coming up. It has
 	# never had to run before this frame and it does not have to run in it.
 	_wire_hooks.call_deferred()
+	_wire_editor_indent.call_deferred()
+
+
+## Holds the script editor to tabs, because convert_indent_on_save rewrites the
+## indentation of the *whole* file on every save - so an editor set to Spaces
+## silently reformats every script it touches, gdformat converts it back, and
+## the file ping-pongs across commits. Setting it to Tabs turns that same
+## rewrite into an ally: Godot and gdformat then agree on every save.
+##
+## These are EditorSettings, which are per-user rather than per-project, so this
+## reaches the contributor's other Godot projects too. That is why it prints
+## what it changed instead of doing it quietly. Godot's own default is Tabs, so
+## for almost everyone this is a no-op that never prints at all.
+func _wire_editor_indent() -> void:
+	var settings := EditorInterface.get_editor_settings()
+	if settings == null or not settings.has_setting(INDENT_TYPE_SETTING):
+		return
+
+	var changed: Array[String] = []
+
+	if int(settings.get_setting(INDENT_TYPE_SETTING)) != INDENT_TABS:
+		settings.set_setting(INDENT_TYPE_SETTING, INDENT_TABS)
+		changed.append("indent type -> Tabs")
+
+	if settings.has_setting(INDENT_SIZE_SETTING):
+		if int(settings.get_setting(INDENT_SIZE_SETTING)) != INDENT_SIZE:
+			settings.set_setting(INDENT_SIZE_SETTING, INDENT_SIZE)
+			changed.append("indent size -> %d" % INDENT_SIZE)
+
+	# Left on rather than off: with the type above set to Tabs, the on-save
+	# rewrite is what repairs a file that arrived indented with spaces.
+	if settings.has_setting(CONVERT_INDENT_SETTING):
+		if not bool(settings.get_setting(CONVERT_INDENT_SETTING)):
+			settings.set_setting(CONVERT_INDENT_SETTING, true)
+			changed.append("convert indent on save -> on")
+
+	if changed.is_empty():
+		return
+
+	print_rich(
+		(
+			(
+				"[color=green]repo_hooks:[/color] script editor set to tab indentation "
+				+ "(%s). This is a per-user editor setting, so it applies to your other "
+				+ "Godot projects as well."
+			)
+			% ", ".join(changed)
+		)
+	)
 
 
 func _wire_hooks() -> void:

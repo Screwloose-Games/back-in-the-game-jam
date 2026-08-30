@@ -142,9 +142,9 @@ func _on_tether_toggled() -> void:
 		unclip()
 		return
 	var grab := get_parent().get_node_or_null("Grab") as PlayerGrab
-	if grab == null or grab.targeted_object() == null:
+	if grab == null or grab.tether_target() == null:
 		return
-	clip_to(grab.targeted_object(), grab.target_point())
+	clip_to(grab.tether_target(), grab.tether_point())
 
 
 ## A rope: nothing at all below its length, and past that a pull along its own

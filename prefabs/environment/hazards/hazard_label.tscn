@@ -1,0 +1,14 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://prefabs/environment/hazards/hazard_label.gd" id="1_hazard_label"]
+
+[node name="HazardLabel" type="Label3D" unique_id=1441040000]
+billboard = 1
+alpha_cut = 1
+double_sided = false
+text = "HAZARD"
+font_size = 64
+outline_size = 16
+modulate = Color(1, 0.84, 0.38, 1)
+outline_modulate = Color(0, 0, 0, 0.85)
+script = ExtResource("1_hazard_label")

@@ -1,0 +1,18 @@
+[gd_resource type="Animation" format=3 uid="uid://cehy4fs4xcbeq"]
+
+[resource]
+length = 0.03333333333333333
+tracks/0/type = "rotation_3d"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("player_character_armature/Skeleton3D:LeftUpperArm")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = PackedFloat32Array(0, 1, -0.072362006, 0.77497363, 0.48940632, 0.39326987, 0.033333335, 1, -0.072362006, 0.77497363, 0.48940632, 0.39326987)
+tracks/1/type = "rotation_3d"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("player_character_armature/Skeleton3D:LeftLowerArm")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = PackedFloat32Array(0, 1, 0.012986541, 0.10247602, -0.06845911, 0.99229205, 0.033333335, 1, 0.012986541, 0.10247602, -0.06845911, 0.99229205)

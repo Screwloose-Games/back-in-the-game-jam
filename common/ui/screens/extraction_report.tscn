@@ -1,0 +1,76 @@
+; The run's receipt. Reached only from the ending, and it hands off to the credits.
+;
+; The breakdown rows are NOT authored here: how many kinds of ore a run turned up is not
+; something the scene can know, so extraction_report.gd builds them between Balance and
+; Continue. That is why Continue is last, and why moving it would break the insert.
+
+[gd_scene load_steps=3 format=3]
+
+[ext_resource type="Script" uid="uid://c1tsfk1wl6s8s" path="res://common/ui/screens/extraction_report.gd" id="1_report"]
+[ext_resource type="Theme" uid="uid://dxcditpyjnw8h" path="res://common/themes/theme.tres" id="2_theme"]
+
+[node name="ExtractionReport" type="Control" unique_id=771002001]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme = ExtResource("2_theme")
+script = ExtResource("1_report")
+
+[node name="Backdrop" type="ColorRect" parent="." unique_id=771002002]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+color = Color(0.03, 0.04, 0.05, 1)
+
+[node name="Margin" type="MarginContainer" parent="." unique_id=771002003]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/margin_left = 96
+theme_override_constants/margin_top = 72
+theme_override_constants/margin_right = 96
+theme_override_constants/margin_bottom = 72
+
+[node name="Rows" type="VBoxContainer" parent="Margin" unique_id=771002004]
+unique_name_in_owner = true
+layout_mode = 2
+alignment = 1
+theme_override_constants/separation = 12
+
+[node name="Title" type="Label" parent="Margin/Rows" unique_id=771002005]
+layout_mode = 2
+theme_override_font_sizes/font_size = 48
+text = "EXTRACTION REPORT"
+horizontal_alignment = 1
+
+[node name="Recovered" type="Label" parent="Margin/Rows" unique_id=771002006]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_font_sizes/font_size = 32
+horizontal_alignment = 1
+
+[node name="Quota" type="Label" parent="Margin/Rows" unique_id=771002007]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_font_sizes/font_size = 32
+horizontal_alignment = 1
+
+[node name="Balance" type="Label" parent="Margin/Rows" unique_id=771002008]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_font_sizes/font_size = 32
+modulate = Color(0.35, 1, 0.55, 1)
+horizontal_alignment = 1
+
+[node name="Continue" type="Button" parent="Margin/Rows" unique_id=771002009]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 4
+text = "CONTINUE"

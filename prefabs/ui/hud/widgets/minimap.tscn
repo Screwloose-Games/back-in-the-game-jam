@@ -10,5 +10,4 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1_f2xvd")
-radar_blips = PackedVector3Array(0, 30, 0)
-max_distance = 29.0
+max_distance = 80.0

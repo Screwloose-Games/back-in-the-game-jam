@@ -1,0 +1,10 @@
+[gd_scene format=3 uid="uid://b1h45dfpk846w"]
+
+[ext_resource type="Script" uid="uid://bapj8gupamyi2" path="res://prefabs/environment/minerals/mineral_deposit.gd" id="1_deposit"]
+
+[node name="prefab_mineral_deposit" type="Node3D" unique_id=1604037835]
+script = ExtResource("1_deposit")
+
+[node name="MineralFormationBottom" type="Marker3D" parent="." unique_id=1873325065]
+unique_name_in_owner = true
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.41576928, 0)

@@ -1,0 +1,171 @@
+[gd_scene format=3 uid="uid://fsfetmlq0amg"]
+
+[ext_resource type="Script" uid="uid://dpi827wp3iwjm" path="res://prefabs/environment/elevator/elevator_car.gd" id="0_car"]
+[ext_resource type="PackedScene" uid="uid://b2emeuolv1oox" path="res://assets/art/environment/elevator_car/sm_elevator_car.tscn" id="1_model"]
+[ext_resource type="PackedScene" uid="uid://cq2n4v8xelsc1" path="res://prefabs/environment/elevator/prefab_elevator_screen.tscn" id="2_screen"]
+[ext_resource type="Material" path="res://prefabs/environment/elevator/screen_bezel_material.tres" id="3_bezel"]
+[ext_resource type="PackedScene" uid="uid://fscwgwi3yio4" path="res://prefabs/environment/elevator/prefab_wall_switch.tscn" id="4_switch"]
+[ext_resource type="Script" uid="uid://bpav8a80vrdap" path="res://systems/interaction/interactable.gd" id="5_doorway"]
+[ext_resource type="Script" uid="uid://p50g1q2y8qut" path="res://systems/interaction/interaction_prompt.gd" id="6_prompt"]
+[ext_resource type="Script" uid="uid://sotbn382i0sj" path="res://prefabs/environment/elevator/elevator_exit.gd" id="7_exit"]
+[ext_resource type="AudioStream" uid="uid://ckkqt6m7atcnm" path="res://assets/vo/vo_elevator_access_denied.wav" id="8_vo"]
+
+[sub_resource type="BoxShape3D" id="Shape_floor"]
+size = Vector3(3.72, 0.12, 3.72)
+
+[sub_resource type="BoxShape3D" id="Shape_ceiling"]
+size = Vector3(3.72, 0.42, 3.72)
+
+[sub_resource type="BoxShape3D" id="Shape_wall_back"]
+size = Vector3(3.72, 2.64, 0.18)
+
+[sub_resource type="BoxShape3D" id="Shape_wall_side"]
+size = Vector3(0.18, 2.64, 3.36)
+
+[sub_resource type="BoxShape3D" id="Shape_pier"]
+size = Vector3(0.66, 2.64, 0.18)
+
+[sub_resource type="BoxShape3D" id="Shape_lintel"]
+size = Vector3(2.04, 0.72, 0.18)
+
+[sub_resource type="BoxShape3D" id="Shape_door_leaf"]
+size = Vector3(1.08, 1.92, 0.12)
+
+[sub_resource type="BoxShape3D" id="Shape_doorway_reach"]
+size = Vector3(2.04, 2.16, 0.6)
+
+[sub_resource type="BoxMesh" id="Box_placard_plate"]
+size = Vector3(0.85, 0.6, 0.03)
+
+[node name="prefab_elevator_car" type="Node3D" unique_id=848792924]
+script = ExtResource("0_car")
+
+[node name="Shell" type="Node3D" parent="." unique_id=1149428565]
+
+[node name="sm_elevator_car" parent="Shell" unique_id=1149428566 instance=ExtResource("1_model")]
+
+[node name="ShellBody" type="StaticBody3D" parent="Shell" unique_id=1149428567]
+collision_mask = 0
+
+[node name="Floor" type="CollisionShape3D" parent="Shell/ShellBody" unique_id=1149428568]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.06, 0)
+shape = SubResource("Shape_floor")
+
+[node name="Ceiling" type="CollisionShape3D" parent="Shell/ShellBody" unique_id=1149428569]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.97, 0)
+shape = SubResource("Shape_ceiling")
+
+[node name="WallBack" type="CollisionShape3D" parent="Shell/ShellBody" unique_id=1149428570]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.44, 1.77)
+shape = SubResource("Shape_wall_back")
+
+[node name="WallLeft" type="CollisionShape3D" parent="Shell/ShellBody" unique_id=1149428571]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.77, 1.44, 0)
+shape = SubResource("Shape_wall_side")
+
+[node name="WallRight" type="CollisionShape3D" parent="Shell/ShellBody" unique_id=1149428572]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.77, 1.44, 0)
+shape = SubResource("Shape_wall_side")
+
+[node name="PierLeft" type="CollisionShape3D" parent="Shell/ShellBody" unique_id=1149428573]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.35, 1.44, -1.77)
+shape = SubResource("Shape_pier")
+
+[node name="PierRight" type="CollisionShape3D" parent="Shell/ShellBody" unique_id=1149428574]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.35, 1.44, -1.77)
+shape = SubResource("Shape_pier")
+
+[node name="Lintel" type="CollisionShape3D" parent="Shell/ShellBody" unique_id=1149428575]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.4, -1.77)
+shape = SubResource("Shape_lintel")
+
+[node name="Doors" type="Node3D" parent="." unique_id=186343704]
+
+[node name="DoorLeft" type="Node3D" parent="Doors" unique_id=1435977658]
+
+[node name="sm_elevator_car" parent="Doors/DoorLeft" unique_id=1436826576 instance=ExtResource("1_model")]
+
+[node name="LeafBody" type="StaticBody3D" parent="Doors/DoorLeft" unique_id=2095761844]
+collision_mask = 0
+
+[node name="LeafShape" type="CollisionShape3D" parent="Doors/DoorLeft/LeafBody" unique_id=1294018824]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.54, 1.08, -1.62)
+shape = SubResource("Shape_door_leaf")
+
+[node name="DoorRight" type="Node3D" parent="Doors" unique_id=467854076]
+
+[node name="sm_elevator_car" parent="Doors/DoorRight" unique_id=119321020 instance=ExtResource("1_model")]
+
+[node name="LeafBody" type="StaticBody3D" parent="Doors/DoorRight" unique_id=1298896089]
+collision_mask = 0
+
+[node name="LeafShape" type="CollisionShape3D" parent="Doors/DoorRight/LeafBody" unique_id=1768298643]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.54, 1.08, -1.62)
+shape = SubResource("Shape_door_leaf")
+
+[node name="Doorway" type="Area3D" parent="Doors" unique_id=186343710]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.2, -1.7)
+script = ExtResource("5_doorway")
+prompt = "DEPART"
+
+[node name="DoorwayShape" type="CollisionShape3D" parent="Doors/Doorway" unique_id=186343711]
+shape = SubResource("Shape_doorway_reach")
+
+[node name="Prompt" type="Label3D" parent="Doors/Doorway" unique_id=186343712 node_paths=PackedStringArray("interactable")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -0.10424185)
+pixel_size = 0.0026
+modulate = Color(0.86, 0.92, 0.9, 1)
+font_size = 24
+script = ExtResource("6_prompt")
+interactable = NodePath("..")
+
+[node name="QuotaScreen" parent="." unique_id=1362396972 instance=ExtResource("2_screen")]
+transform = Transform3D(0.593, 0, 0, 0, 0.593, 0, 0, 0, 0.593, 0, 2.4, -1.67)
+
+[node name="Placard" type="Node3D" parent="." unique_id=1632009986]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 1.63, 1.57, 0.55)
+
+[node name="Plate" type="MeshInstance3D" parent="Placard" unique_id=1876942308]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -0.02)
+material_override = ExtResource("3_bezel")
+mesh = SubResource("Box_placard_plate")
+
+[node name="PlacardText" type="Label3D" parent="Placard" unique_id=31713688]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0.01)
+pixel_size = 0.0016
+alpha_cut = 1
+modulate = Color(0.86, 0.88, 0.9, 1)
+text = "PROPERTY OF"
+font_size = 24
+line_spacing = 2.0
+
+[node name="CeilingLight" type="OmniLight3D" parent="." unique_id=1703823430]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.56, 0)
+light_color = Color(0.92, 0.95, 1, 1)
+light_energy = 1.6
+omni_range = 6.5
+
+[node name="WarningStrobe" type="OmniLight3D" parent="." unique_id=231867564]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.12, -1.4)
+light_color = Color(1, 0.28, 0.2, 1)
+light_energy = 0.0
+omni_range = 4.0
+
+[node name="CallPanel" type="Node3D" parent="." unique_id=848792930]
+transform = Transform3D(0.65, 0, 0, 0, 0.65, 0, 0, 0, 0.65, 1.38, 0.78, -1.77)
+
+[node name="prefab_wall_switch" parent="CallPanel" unique_id=848792931 instance=ExtResource("4_switch")]
+
+[node name="PressTarget" type="Marker3D" parent="CallPanel" unique_id=848792932]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, -0.46)
+
+[node name="Exit" type="Node3D" parent="." unique_id=1086496499]
+script = ExtResource("7_exit")
+
+[node name="RefusalVo" type="AudioStreamPlayer3D" parent="Exit" unique_id=848792951]
+stream = ExtResource("8_vo")
+volume_db = -4.0
+unit_size = 8.0
+max_db = 0.0
+max_distance = 40.0
+bus = &"Dialogue"

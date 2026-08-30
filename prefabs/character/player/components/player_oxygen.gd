@@ -104,6 +104,25 @@ func refill(amount: float) -> void:
 	_announce()
 
 
+## The other half of refill, for anything billing the tank directly, reporting what
+## was actually taken the way PlayerPowerClient.spend does.
+##
+## It carries the `emptied` edge and refill does not, because a tank a hazard drains
+## has to start the suffocation clock exactly as one the suit drained does -- and
+## writing `oxygen` from outside would skip it silently.
+func spend(amount: float) -> float:
+	var taken := minf(maxf(amount, 0.0), oxygen)
+	if taken <= 0.0:
+		return 0.0
+	oxygen = PlayerOxygenModel.step(oxygen, settings.oxygen_capacity, -taken, 1.0)
+	_announce()
+	var empty := oxygen <= 0.0
+	if empty and not _was_empty:
+		emptied.emit()
+	_was_empty = empty
+	return taken
+
+
 func _announce() -> void:
 	var current := fraction()
 	if absf(current - _announced_fraction) < CHANGE_EPSILON:

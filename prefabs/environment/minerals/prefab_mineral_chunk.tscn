@@ -1,0 +1,19 @@
+[gd_scene format=3 uid="uid://cqaq3sx674g5a"]
+
+[ext_resource type="Script" uid="uid://c6v3p6u1fdjh0" path="res://prefabs/environment/minerals/mineral_chunk.gd" id="1_pwiwr"]
+[ext_resource type="PackedScene" uid="uid://b35ko0dnnut64" path="res://assets/art/environment/minerals/sm_mineral_chunk.tscn" id="2_03aqn"]
+[ext_resource type="PackedScene" uid="uid://i3hpsl5mx2me" path="res://prefabs/gameplay/mining_impact/mining_impact.tscn" id="3_03aqn"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_d403r"]
+size = Vector3(1.2, 2.6, 1.2)
+
+[node name="prefab_mineral_chunk" type="RigidBody3D" unique_id=1852599349]
+collision_layer = 32
+script = ExtResource("1_pwiwr")
+
+[node name="sm_mineral_chunk" parent="." unique_id=2110802243 instance=ExtResource("2_03aqn")]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="." unique_id=1927273592]
+shape = SubResource("BoxShape3D_d403r")
+
+[node name="MiningImpact" parent="." unique_id=1908948224 instance=ExtResource("3_03aqn")]

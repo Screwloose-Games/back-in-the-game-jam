@@ -1,0 +1,6 @@
+[gd_scene format=3 uid="uid://c8h4ftvsx1ela"]
+
+[ext_resource type="Script" path="res://prefabs/environment/elevator/elevator_shaft.gd" id="0_shaft"]
+
+[node name="prefab_elevator_shaft" type="Node3D"]
+script = ExtResource("0_shaft")

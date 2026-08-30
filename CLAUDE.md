@@ -17,7 +17,7 @@ texture budgets are tight.
 | `tools/blender-vehicle/` | Procedural vehicle toolkit + the retrospective that produced it. |
 | `.claude/rules/` | Path-scoped rules that load when you touch matching files. |
 | `assets/art/{category}/{object}/` | All art, 2D and 3D, grouped by category rather than by media type. One directory per object. |
-| `prototypes/` | Self-contained "is this loop fun?" prototypes. Exempt from shared conventions on purpose — do not tidy them into line. |
+| `prototypes/` | Self-contained "is this loop fun?" prototypes. Exempt from shared conventions on purpose — do not tidy them into line. `gdformat` and `gdlint` are the exception and still apply: they are gates, not conventions. |
 | `assets/art/examples/` | Validator fixtures named for the check they trip, plus third-party art. Also exempt — several exist in order to fail. |
 
 ## Generated files
@@ -91,6 +91,10 @@ does never opening the editor. CI is the copy that decides.
   `Vector3.FORWARD`. This is deliberately *not* the glTF spec's +Z-front
   convention; matching the engine matters more than matching viewers.
 - **Units:** metres, 1 Blender unit = 1 m.
+- **GDScript is indented with tabs.** `gdformat` emits tabs and has no option
+  not to, so the commit hook and CI both check it. Godot's script editor rewrites
+  a whole file's indentation on save, so `addons/repo_hooks` pins its indent type
+  to Tabs on project open. Godot ignores `.editorconfig`.
 - **GDScript declaration order is linted** (`class_name` above `extends`). See
   `.claude/rules/gdscript-style.md`.
 - **Commit `.import` sidecars** alongside every asset. Godot hides them in its own

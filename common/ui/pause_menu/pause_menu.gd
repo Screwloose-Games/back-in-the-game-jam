@@ -45,14 +45,17 @@ func pause():
 
 	if should_pause:
 		_refresh_session_status()
+		_grab_menu_focus()
 		GlobalSignalBus.game_paused.emit()
 	else:
+		_release_menu_focus()
 		GlobalSignalBus.game_unpaused.emit()
 
 
 func unpause():
 	if not OnlineSession.is_online():
 		get_tree().paused = false
+	_release_menu_focus()
 	visible = false
 	GlobalSignalBus.game_unpaused.emit()
 
@@ -74,11 +77,13 @@ func on_options_pressed():
 	options_menu_instance.back_pressed.connect(on_options_back_pressed.bind(options_menu_instance))
 	pause_menu_body.visible = false
 	add_child(options_menu_instance)
+	options_menu_instance.back_button.grab_focus()
 
 
 func on_options_back_pressed(options_menu: OptionsMenu):
 	pause_menu_body.visible = true
 	options_menu.queue_free()
+	_grab_menu_focus()
 
 
 func _refresh_session_status() -> void:
@@ -108,3 +113,17 @@ func _on_copy_session_code_pressed() -> void:
 	DisplayServer.clipboard_set(session_code_input.text)
 	session_code_input.select_all()
 	copy_session_code_button.text = "Copied!"
+
+
+## Without this the menu is mouse-only: nothing is focused, so arrows and Enter do nothing.
+func _grab_menu_focus() -> void:
+	continue_button.grab_focus()
+
+
+## A Control that keeps focus while hidden still eats ui_accept, ui_down and Tab -- which
+## is Tab's whole pause binding gone, and Enter silently re-pressing the last button. Only
+## focus this menu owns is dropped, so an overlay that took it meanwhile is left alone.
+func _release_menu_focus() -> void:
+	var focused: Control = get_viewport().gui_get_focus_owner()
+	if focused != null and is_ancestor_of(focused):
+		focused.release_focus()

@@ -140,6 +140,21 @@ protect:
 | No physics query anywhere | There is no probe in this module and there is not meant to be one. |
 | Nothing reads a wall clock | `CreatureSuspicion.clock` is fed from the delta it is handed. `Time.get_ticks_msec()` ignores `get_tree().paused` and `Engine.time_scale`, so belief would decay in a paused game, and no test could drive it. |
 | No `reduce_suspicion` / `clear_hotspot` / `mark_investigation_complete`, anywhere | Belief changes through evidence or not at all. Behavior makes the creature investigate; Perception observes the result. |
+
+`mark_unreachable(hotspot_id)` is the one method that looks like a breach and is not. It is a
+claim about the **creature**, not about the world: *I could not get there.* It subtracts
+nothing, suppresses no evidence, and leaves `get_overall_suspicion`, `get_suspicion_near`,
+`get_hotspot` and `get_hotspots` reading exactly what they read before — `tests/test_unreachable.gd`
+asserts every one of those. All it does is stop the two LEAD queries, `get_strongest_hotspot`
+and `get_hotspots_above`, offering that place as somewhere to walk, for
+`unreachable_suppression_s`.
+
+It exists because without it an alien re-selects a lead it physically cannot reach on the tick
+after it gives up, forever — lead selection takes the strongest entry and has no memory. And
+the suppression is keyed by **position, not by hotspot id**, because identity is carried by
+shared contributing evidence: a lead that decays out and re-forms from the next noise is a new
+id at the same spot, and an id-keyed suppression would lift itself the moment the player made
+another sound.
 | No behavioural or perceptual commands | Suspicion describes belief. It does not request scans, transition an HFSM or select a target. |
 | Every `.gd` has its `.uid` sidecar | A missing one is regenerated with a fresh id, and scenes referencing the script by uid then point at nothing. |
 | The overlay sets `vertex_color_use_as_albedo` | Godot does not infer it. Without it the overlay renders flat white and a hotspot the creature is certain about looks exactly like one it has already searched. |

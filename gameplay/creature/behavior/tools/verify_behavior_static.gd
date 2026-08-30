@@ -158,6 +158,8 @@ func _check_layout() -> void:
 		"hfsm/states/investigating_state.gd",
 		"hfsm/states/hunting_state.gd",
 		"hfsm/states/retreating_state.gd",
+		"hfsm/states/reconsidering_state.gd",
+		"hfsm/states/reconsidering_memory.gd",
 		"hfsm/states/search_memory.gd",
 		"hfsm/states/hunting_memory.gd",
 		"hfsm/states/retreating_memory.gd",

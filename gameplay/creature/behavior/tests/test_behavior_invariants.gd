@@ -73,12 +73,9 @@ func test_no_condition_can_report_running() -> void:
 ## Every state must be reachable and answer for itself, or a transition into it is a silent
 ## no-op that leaves the creature in the state it was already in.
 func test_every_state_is_registered_and_names_itself() -> void:
-	for id: int in [
-		CreatureState.State.UNALERTED,
-		CreatureState.State.INVESTIGATING,
-		CreatureState.State.HUNTING,
-		CreatureState.State.RETREATING,
-	]:
+	# Every member of the enum, so a state added without an add_state fails here rather than
+	# silently overwriting the UNALERTED slot -- BehaviorState.state_id defaults to it.
+	for id: int in CreatureState.State.values():
 		var state: BehaviorState = _behavior.hfsm.state_of(id)
 		assert_not_null(state, "%s is not registered" % CreatureState.state_name(id))
 		assert_eq(state.state_id(), id, "a state answers for the wrong id")

@@ -27,7 +27,8 @@ common/
   ui/
     main_menu/          Main menu (main scene)
     options_menu/       Volume sliders + windowed/fullscreen toggle
-    pause_menu/         In-game pause overlay (Esc / P)
+    pause_menu/         In-game pause overlay (Esc / P / Tab)
+    scene_menu/         Launcher for the levels and test rooms, off the main menu
     scene_transitions/  Fade + circle transitions
     screens/            Credits (auto-scrolls ATTRIBUTION.md)
 globals/        Autoload singletons
@@ -48,9 +49,14 @@ schemas/        JSON schema for GitHub issue form templates
 - **Signals**: gameplay/UI events go through the `GlobalSignalBus` autoload; the sound manager plays SFX by listening to bus signals via `sound_effect.gd` connector nodes in `SoundManager.tscn` — no audio calls needed in gameplay code.
 - **Audio settings**: options menu sliders set `AudioServer` bus volumes and persist via the `GameSettings` autoload (`user://settings.tres`); reapplied on startup.
 - **Music**: `globals/sound_manager/music_player_looper.gd` plays an intro track once, then loops a main track.
-- **Pause**: `pause` input action (Esc or P) toggles the pause menu instanced in the level.
+- **Pause**: `pause` input action (Esc, P or Tab) toggles the pause menu instanced in the
+  level. Prefer **P** in a web build: the browser consumes Esc to release pointer lock, so
+  it never reaches the canvas while the mouse is captured.
 - **Credits**: renders `ATTRIBUTION.md` — edit that file to update the credits screen.
 - **New levels**: add a scene under `levels/`, register it in `globals/scene_manager.gd`.
+- **Scene menu**: the main menu's **Scenes** button lists the levels and test rooms in
+  `common/ui/scene_menu/scene_menu.gd`'s `SCENES` const. Add a line there to expose a scene;
+  it ships in every build, including web, because that is where playtesting happens.
 - **Physics layers**: if you name layers in Project Settings, mirror them in a small `globals/physics_layers.gd` constants class so code never hardcodes layer numbers.
 
 ## CI workflows

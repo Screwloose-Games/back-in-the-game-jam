@@ -15,6 +15,12 @@ const REVIVE_GRACE := 0.2
 ## A knock hard enough to clear PlayerSfx.impact_min_speed several times over.
 const HARD_KNOCK := -5.0
 
+## Three distinct trims, so a value landing on the wrong channel is visible rather
+## than coincidentally right.
+const LOOP_TRIM := -6.0
+const ON_TRIM := 3.0
+const OFF_TRIM := -9.0
+
 var _failures: PackedStringArray = []
 
 
@@ -55,6 +61,7 @@ func _verify_player() -> void:
 	input.enabled = false
 
 	await _verify_thrusters(thrusters, input)
+	await _verify_thruster_mix(thrusters, input)
 
 	collision.impacted.emit(HARD_KNOCK, Vector3.ZERO)
 	check(sfx.impact_player.stream == sfx.suit_impact_wall, "a hard knock plays the wall impact")
@@ -146,6 +153,79 @@ func _verify_thrusters(thrusters: PlayerThrusterSfx, input: PlayerInput) -> void
 	check(right_at.x < 0.0 and left_at.x > 0.0, "and the two are on opposite sides of the helmet")
 
 	input.thrust = Vector3.ZERO
+	await get_tree().physics_frame
+
+
+## The three mix trims, and the latch that holds the thrusters lit while they are set.
+func _verify_thruster_mix(thrusters: PlayerThrusterSfx, input: PlayerInput) -> void:
+	var loop: AudioStreamPlayer3D = thrusters.get_node("UpLoop")
+	var edge: AudioStreamPlayer3D = thrusters.get_node("UpEdge")
+
+	input.thrust = Vector3.UP
+	await get_tree().physics_frame
+	var untrimmed_loop := loop.volume_db
+	var untrimmed_on := edge.volume_db
+	input.thrust = Vector3.ZERO
+	await get_tree().physics_frame
+	var untrimmed_off := edge.volume_db
+	check(is_equal_approx(untrimmed_on, untrimmed_off), "untrimmed, on and off sit level")
+
+	thrusters.loop_trim_db = LOOP_TRIM
+	thrusters.on_trim_db = ON_TRIM
+	thrusters.off_trim_db = OFF_TRIM
+	input.thrust = Vector3.UP
+	await get_tree().physics_frame
+	check(
+		is_equal_approx(loop.volume_db, untrimmed_loop + LOOP_TRIM),
+		"the loop trim moves the loop, live and without a restart"
+	)
+	check(is_equal_approx(edge.volume_db, untrimmed_on + ON_TRIM), "the on trim moves the start")
+	input.thrust = Vector3.ZERO
+	await get_tree().physics_frame
+	check(
+		is_equal_approx(edge.volume_db, untrimmed_off + OFF_TRIM),
+		"and the off trim moves the stop, which one shared channel volume could not"
+	)
+
+	thrusters.loop_trim_db = 0.0
+	thrusters.on_trim_db = 0.0
+	thrusters.off_trim_db = 0.0
+	await _verify_latch(thrusters)
+
+
+## The latch has to light all eight from no input at all, and only while debug is on.
+func _verify_latch(thrusters: PlayerThrusterSfx) -> void:
+	var debug: Node = thrusters.get_node_or_null(^"/root/DebugMode")
+	if debug == null:
+		check(false, "the DebugMode autoload is loaded")
+		return
+
+	debug.set_enabled(false)
+	await _press_latch()
+	check(
+		not thrusters.is_firing(PlayerThrusterSfx.Thruster.UP), "the latch is inert with debug off"
+	)
+
+	debug.set_enabled(true)
+	await _press_latch()
+	var lit := 0
+	for thruster in PlayerThrusterSfx.THRUSTERS.size():
+		if thrusters.is_firing(thruster):
+			lit += 1
+	check(lit == PlayerThrusterSfx.THRUSTERS.size(), "the latch holds all eight lit on no input")
+
+	await _press_latch()
+	check(not thrusters.is_firing(PlayerThrusterSfx.Thruster.UP), "and pressing it again lets go")
+	debug.set_enabled(false)
+
+
+func _press_latch() -> void:
+	for pressed in [true, false]:
+		var key := InputEventKey.new()
+		key.physical_keycode = KEY_K
+		key.pressed = pressed
+		get_tree().root.push_input(key)
+	await get_tree().physics_frame
 	await get_tree().physics_frame
 
 

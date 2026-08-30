@@ -5,6 +5,21 @@
 [ext_resource type="Script" uid="uid://dqak1y4u3bt1o" path="res://levels/design/level_geometry_builder.gd" id="3_builder"]
 [ext_resource type="PackedScene" path="res://assets/art/environment/level_blockout/sm_level_full_blockout.tscn" id="4_baked"]
 [ext_resource type="PackedScene" uid="uid://b3kx7mqp2wvda" path="res://prefabs/gameplay/prefab_life_support_cube.tscn" id="5_life_support"]
+[ext_resource type="PackedScene" uid="uid://b1h45dfpk846w" path="res://prefabs/environment/minerals/prefab_mineral_deposit.tscn" id="6_deposit"]
+[ext_resource type="Resource" path="res://systems/minerals/types/mineral_type_common.tres" id="7_common"]
+[ext_resource type="Resource" path="res://systems/minerals/types/mineral_type_uncommon.tres" id="8_uncommon"]
+[ext_resource type="PackedScene" uid="uid://cqaq3sx674g5a" path="res://prefabs/environment/minerals/prefab_mineral_chunk.tscn" id="9_3u1nn"]
+[ext_resource type="Resource" path="res://systems/minerals/types/mineral_type_rare.tres" id="9_rare"]
+[ext_resource type="PackedScene" uid="uid://b1el3v4tor1nt" path="res://levels/asteroid_level/intro/elevator_intro.tscn" id="10_intro"]
+[ext_resource type="Script" uid="uid://bcxve0vdxhkgh" path="res://prefabs/environment/minerals/mineral_scatter.gd" id="13_3f8jx"]
+[ext_resource type="Script" uid="uid://dsh0vruaapm0v" path="res://systems/minerals/mineral_zone_rule.gd" id="14_h0xhv"]
+[ext_resource type="Resource" path="res://levels/asteroid_level/mineral_zones/zone_mine.tres" id="15_6yqau"]
+[ext_resource type="Resource" path="res://levels/asteroid_level/mineral_zones/zone_ravine.tres" id="16_gxtge"]
+[ext_resource type="Resource" path="res://levels/asteroid_level/mineral_zones/zone_hive.tres" id="17_2x2hl"]
+[ext_resource type="PackedScene" path="res://prefabs/environment/hazards/prefab_gas_pod.tscn" id="18_gas_pod"]
+[ext_resource type="PackedScene" path="res://prefabs/environment/hazards/prefab_arc_hazard.tscn" id="19_arc"]
+[ext_resource type="PackedScene" path="res://prefabs/environment/hazards/prefab_blockage.tscn" id="20_blockage"]
+[ext_resource type="PackedScene" path="res://prefabs/character/clinger/prefab_clinger.tscn" id="21_clinger"]
 
 [sub_resource type="Environment" id="Environment_void"]
 background_mode = 1
@@ -31,7 +46,10 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -90.7799, -32.95, 33.8)
 
 [node name="PlayerSpawn" type="Marker3D" parent="." unique_id=2094374759]
 unique_name_in_owner = true
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -90.7799, -32.8231, 35.425)
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, -90.7799, -32.8231, 35.425)
+
+[node name="ElevatorIntro" parent="." unique_id=60046056 instance=ExtResource("10_intro")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, -93.3299, -32.8431, 33.955)
 
 [node name="CreatureInitialSpawnMarker3D" type="Marker3D" parent="." unique_id=1509833471]
 unique_name_in_owner = true
@@ -44,3 +62,1246 @@ unique_name_in_owner = true
 unique_name_in_owner = true
 spawn_path = NodePath("../Players")
 spawn_limit = 2
+
+[node name="Minerals" type="Node3D" parent="." unique_id=300544401]
+
+[node name="MineralCommon" parent="Minerals" unique_id=300544402 instance=ExtResource("6_deposit")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -86.950485, -33.174862, 31.712193)
+mineral_type = ExtResource("7_common")
+
+[node name="prefab_mineral_chunk" parent="Minerals/MineralCommon" unique_id=1852599349 instance=ExtResource("9_3u1nn")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.48651886, -2.1421623, 0.15737152)
+mineral_type = ExtResource("7_common")
+
+[node name="@RigidBody3D@46274" parent="Minerals/MineralCommon" unique_id=1274778089 instance=ExtResource("9_3u1nn")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.124046326, -1.1834564, 0.9119415)
+mineral_type = ExtResource("7_common")
+
+[node name="@RigidBody3D@46275" parent="Minerals/MineralCommon" unique_id=377062224 instance=ExtResource("9_3u1nn")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.89219666, -1.4201317, 1.0357285)
+mineral_type = ExtResource("7_common")
+
+[node name="@RigidBody3D@46276" parent="Minerals/MineralCommon" unique_id=2035445218 instance=ExtResource("9_3u1nn")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.0807953, -0.9542656, 1.0871582)
+mineral_type = ExtResource("7_common")
+
+[node name="@RigidBody3D@46277" parent="Minerals/MineralCommon" unique_id=1289406450 instance=ExtResource("9_3u1nn")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.56866455, -2.1212234, 0.2301445)
+mineral_type = ExtResource("7_common")
+
+[node name="MineralCommon2" parent="Minerals" unique_id=1604037835 instance=ExtResource("6_deposit")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -84.86512, -33.195595, 36.45799)
+mineral_type = ExtResource("7_common")
+
+[node name="prefab_mineral_chunk" parent="Minerals/MineralCommon2" unique_id=2078322819 instance=ExtResource("9_3u1nn")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.48651886, -1.1490746, 0.15737152)
+mineral_type = ExtResource("7_common")
+
+[node name="_RigidBody3D_46274" parent="Minerals/MineralCommon2" unique_id=585207865 instance=ExtResource("9_3u1nn")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.124046326, -1.2179718, 0.91194344)
+mineral_type = ExtResource("7_common")
+
+[node name="_RigidBody3D_46275" parent="Minerals/MineralCommon2" unique_id=147765074 instance=ExtResource("9_3u1nn")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.89219666, -1.4546432, 1.0357304)
+mineral_type = ExtResource("7_common")
+
+[node name="_RigidBody3D_46276" parent="Minerals/MineralCommon2" unique_id=1344810224 instance=ExtResource("9_3u1nn")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.0807953, -0.98877716, 1.0871601)
+mineral_type = ExtResource("7_common")
+
+[node name="_RigidBody3D_46277" parent="Minerals/MineralCommon2" unique_id=1890385217 instance=ExtResource("9_3u1nn")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.56866455, -1.1281357, 0.2301445)
+mineral_type = ExtResource("7_common")
+
+[node name="MineralCommon3" parent="Minerals" unique_id=200109642 instance=ExtResource("6_deposit")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -77.646706, -37.439667, 33.73826)
+mineral_type = ExtResource("7_common")
+
+[node name="prefab_mineral_chunk" parent="Minerals/MineralCommon3" unique_id=536204014 instance=ExtResource("9_3u1nn")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.48651886, 1.0091705, 0.15737152)
+mineral_type = ExtResource("7_common")
+
+[node name="_RigidBody3D_46274" parent="Minerals/MineralCommon3" unique_id=1702972936 instance=ExtResource("9_3u1nn")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.124046326, 0.9402771, 0.91194534)
+mineral_type = ExtResource("7_common")
+
+[node name="_RigidBody3D_46275" parent="Minerals/MineralCommon3" unique_id=357881245 instance=ExtResource("9_3u1nn")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.89219666, 0.70360184, 1.0357323)
+mineral_type = ExtResource("7_common")
+
+[node name="_RigidBody3D_46276" parent="Minerals/MineralCommon3" unique_id=1532503001 instance=ExtResource("9_3u1nn")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.0807953, 1.1694679, 1.087162)
+mineral_type = ExtResource("7_common")
+
+[node name="_RigidBody3D_46277" parent="Minerals/MineralCommon3" unique_id=746984973 instance=ExtResource("9_3u1nn")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.56866455, 1.0301094, 0.2301445)
+mineral_type = ExtResource("7_common")
+
+[node name="MineralRare" parent="Minerals" unique_id=300544404 instance=ExtResource("6_deposit")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -55.906307, -43.25862, 34)
+mineral_type = ExtResource("9_rare")
+
+[node name="MineralScatter" type="Node3D" parent="Minerals" unique_id=1210765454]
+script = ExtResource("13_3f8jx")
+zones = Array[ExtResource("14_h0xhv")]([ExtResource("15_6yqau"), ExtResource("16_gxtge"), ExtResource("17_2x2hl")])
+min_chamber_radius = 4.0
+keep_out = Array[NodePath]([NodePath("../../PlayerSpawn"), NodePath("../../CreatureInitialSpawnMarker3D"), NodePath("../../ElevatorIntro")])
+
+[node name="MineBlockout" type="Node3D" parent="Minerals/MineralScatter" unique_id=376994127]
+
+[node name="Mine_01" parent="Minerals/MineralScatter/MineBlockout" unique_id=63981155 groups=["mineral_scatter"] instance=ExtResource("6_deposit")]
+transform = Transform3D(0.18705286, -0.97736883, -0.09879972, -0.61571634, -0.19501399, 0.7634546, -0.7654441, -0.08197376, -0.6382599, -48.743645, -60.37607, 16.52217)
+mineral_type = ExtResource("7_common")
+chunk_count = 4
+metadata/_scatter_transform = Transform3D(0.18705286, -0.97736883, -0.09879972, -0.61571634, -0.19501399, 0.7634546, -0.7654441, -0.08197376, -0.6382599, -48.743645, -60.37607, 16.52217)
+metadata/_scatter_zone = &"MineBlockout"
+
+[node name="Chunk1" parent="Minerals/MineralScatter/MineBlockout/Mine_01" unique_id=1929299130 instance=ExtResource("9_3u1nn")]
+transform = Transform3D(1, 0, -5.9604645e-08, 0, 1, -1.4901161e-08, 0, 0, 1, -1.1308022, 0.29154587, -0.50374603)
+mineral_type = ExtResource("7_common")
+
+[node name="Chunk2" parent="Minerals/MineralScatter/MineBlockout/Mine_01" unique_id=1950597254 instance=ExtResource("9_3u1nn")]
+transform = Transform3D(1, 0, -5.9604645e-08, 0, 1, -1.4901161e-08, 0, 0, 1, 0.20586395, 0.21221924, -0.874794)
+mineral_type = ExtResource("7_common")
+
+[node name="Chunk3" parent="Minerals/MineralScatter/MineBlockout/Mine_01" unique_id=1341036933 instance=ExtResource("9_3u1nn")]
+transform = Transform3D(1, 0, -5.9604645e-08, 0, 1, -1.4901161e-08, 0, 0, 1, 0.9520674, 0.3552475, -0.92567825)
+mineral_type = ExtResource("7_common")
+
+[node name="Chunk4" parent="Minerals/MineralScatter/MineBlockout/Mine_01" unique_id=1166234016 instance=ExtResource("9_3u1nn")]
+transform = Transform3D(1, 0, -5.9604645e-08, 0, 1, -1.4901161e-08, 0, 0, 1, 1.0778112, -0.0895195, 0.40699768)
+mineral_type = ExtResource("7_common")
+
+[node name="Mine_02" parent="Minerals/MineralScatter/MineBlockout" unique_id=390350560 groups=["mineral_scatter"] instance=ExtResource("6_deposit")]
+transform = Transform3D(-0.5036019, 0.17402422, 0.8462274, -0.85593534, -0.23349607, -0.46136147, 0.11730271, -0.9566583, 0.26654255, -55.616047, -58.61697, 20.749605)
+mineral_type = ExtResource("7_common")
+chunk_count = 4
+metadata/_scatter_transform = Transform3D(-0.5036019, 0.17402422, 0.8462274, -0.85593534, -0.23349607, -0.46136147, 0.11730271, -0.9566583, 0.26654255, -55.616047, -58.61697, 20.749605)
+metadata/_scatter_zone = &"MineBlockout"
+
+[node name="Chunk1" parent="Minerals/MineralScatter/MineBlockout/Mine_02" unique_id=1390127288 instance=ExtResource("9_3u1nn")]
+transform = Transform3D(1.0000001, 7.450581e-09, 7.450581e-09, -7.450581e-09, 1.0000001, 0, 1.1175871e-08, 0, 1.0000001, 0.89660645, 0.08443642, 1.1815968)
+mineral_type = ExtResource("7_common")
+
+[node name="Chunk2" parent="Minerals/MineralScatter/MineBlockout/Mine_02" unique_id=902998225 instance=ExtResource("9_3u1nn")]
+transform = Transform3D(1.0000001, 7.450581e-09, 7.450581e-09, -7.450581e-09, 1.0000001, 0, 1.1175871e-08, 0, 1.0000001, 0.7253952, 1.0305634, -0.38690948)
+mineral_type = ExtResource("7_common")
+
+[node name="Chunk3" parent="Minerals/MineralScatter/MineBlockout/Mine_02" unique_id=898829293 instance=ExtResource("9_3u1nn")]
+transform = Transform3D(1.0000001, 7.450581e-09, 7.450581e-09, -7.450581e-09, 1.0000001, 0, 1.1175871e-08, 0, 1.0000001, -0.06705475, 0.026023865, -1.1648808)
+mineral_type = ExtResource("7_common")
+
+[node name="Chunk4" parent="Minerals/MineralScatter/MineBlockout/Mine_02" unique_id=1065726886 instance=ExtResource("9_3u1nn")]
+transform = Transform3D(1.0000001, 7.450581e-09, 7.450581e-09, -7.450581e-09, 1.0000001, 0, 1.1175871e-08, 0, 1.0000001, -0.5517044, 0.014125824, 0.4744196)
+mineral_type = ExtResource("7_common")
+
+[node name="Mine_03" parent="Minerals/MineralScatter/MineBlockout" unique_id=1271334545 groups=["mineral_scatter"] instance=ExtResource("6_deposit")]
+transform = Transform3D(0.9093977, 0.10767184, 0.4017495, 0.41554576, -0.27658814, -0.8664992, 0.017821588, 0.9549376, -0.2962712, -56.555378, -58.12827, 8.693188)
+mineral_type = ExtResource("7_common")
+chunk_count = 4
+metadata/_scatter_transform = Transform3D(0.9093977, 0.10767184, 0.4017495, 0.41554576, -0.27658814, -0.8664992, 0.017821588, 0.9549376, -0.2962712, -56.555378, -58.12827, 8.693188)
+metadata/_scatter_zone = &"MineBlockout"
+
+[node name="Chunk1" parent="Minerals/MineralScatter/MineBlockout/Mine_03" unique_id=2064900742 instance=ExtResource("9_3u1nn")]
+transform = Transform3D(1, 5.5879354e-09, -2.7939677e-09, -9.313226e-09, 0.99999994, 2.9802322e-08, 2.514571e-08, -2.9802322e-08, 0.99999994, -0.7590561, 0.11951065, 0.09421921)
+mineral_type = ExtResource("7_common")
+
+[node name="Chunk2" parent="Minerals/MineralScatter/MineBlockout/Mine_03" unique_id=86888213 instance=ExtResource("9_3u1nn")]
+transform = Transform3D(1, 5.5879354e-09, -2.7939677e-09, -9.313226e-09, 0.99999994, 2.9802322e-08, 2.514571e-08, -2.9802322e-08, 0.99999994, -0.071128845, 0.03133011, -0.158247)
+mineral_type = ExtResource("7_common")
+
+[node name="Chunk3" parent="Minerals/MineralScatter/MineBlockout/Mine_03" unique_id=477972006 instance=ExtResource("9_3u1nn")]
+transform = Transform3D(1, 5.5879354e-09, -2.7939677e-09, -9.313226e-09, 0.99999994, 2.9802322e-08, 2.514571e-08, -2.9802322e-08, 0.99999994, 0.6778183, 0.04717064, -0.111133575)
+mineral_type = ExtResource("7_common")
+
+[node name="Chunk4" parent="Minerals/MineralScatter/MineBlockout/Mine_03" unique_id=206373366 instance=ExtResource("9_3u1nn")]
+transform = Transform3D(1, 5.5879354e-09, -2.7939677e-09, -9.313226e-09, 0.99999994, 2.9802322e-08, 2.514571e-08, -2.9802322e-08, 0.99999994, 0.41240692, -0.011638641, 0.10986328)
+mineral_type = ExtResource("7_common")
+
+[node name="Mine_04" parent="Minerals/MineralScatter/MineBlockout" unique_id=290093541 groups=["mineral_scatter"] instance=ExtResource("6_deposit")]
+transform = Transform3D(-0.6613499, 0.72615856, -0.18790972, 0.4344881, 0.575086, 0.69317836, 0.6114217, 0.37678885, -0.6958403, -58.882988, -65.10231, 11.68899)
+mineral_type = ExtResource("7_common")
+chunk_count = 4
+metadata/_scatter_transform = Transform3D(-0.6613499, 0.72615856, -0.18790972, 0.4344881, 0.575086, 0.69317836, 0.6114217, 0.37678885, -0.6958403, -58.882988, -65.10231, 11.68899)
+metadata/_scatter_zone = &"MineBlockout"
+
+[node name="Chunk1" parent="Minerals/MineralScatter/MineBlockout/Mine_04" unique_id=857552506 instance=ExtResource("9_3u1nn")]
+transform = Transform3D(1, 1.4901161e-08, 2.9802322e-08, -1.4901161e-08, 1, 2.9802322e-08, -2.9802322e-08, 0, 1, -0.77238274, 1.2866287, 1.1529045)
+mineral_type = ExtResource("7_common")
+
+[node name="Chunk2" parent="Minerals/MineralScatter/MineBlockout/Mine_04" unique_id=386825036 instance=ExtResource("9_3u1nn")]
+transform = Transform3D(1, 1.4901161e-08, 2.9802322e-08, -1.4901161e-08, 1, 2.9802322e-08, -2.9802322e-08, 0, 1, -0.3165989, 1.1306839, -0.6788559)
+mineral_type = ExtResource("7_common")
+
+[node name="Chunk3" parent="Minerals/MineralScatter/MineBlockout/Mine_04" unique_id=815290284 instance=ExtResource("9_3u1nn")]
+transform = Transform3D(1, 1.4901161e-08, 2.9802322e-08, -1.4901161e-08, 1, 2.9802322e-08, -2.9802322e-08, 0, 1, 0.6500435, 0.068725586, 1.0999947)
+mineral_type = ExtResource("7_common")
+
+[node name="Chunk4" parent="Minerals/MineralScatter/MineBlockout/Mine_04" unique_id=750302236 instance=ExtResource("9_3u1nn")]
+transform = Transform3D(1, 1.4901161e-08, 2.9802322e-08, -1.4901161e-08, 1, 2.9802322e-08, -2.9802322e-08, 0, 1, -0.22533417, 0.049819946, 0.10940933)
+mineral_type = ExtResource("7_common")
+
+[node name="Mine_05" parent="Minerals/MineralScatter/MineBlockout" unique_id=482859850 groups=["mineral_scatter"] instance=ExtResource("6_deposit")]
+transform = Transform3D(-0.20848292, 0.97798425, 0.009042505, -0.87830716, -0.18315084, -0.44162464, -0.43024582, -0.100013286, 0.89715433, -61.281136, -58.840176, 14.860584)
+mineral_type = ExtResource("7_common")
+chunk_count = 4
+metadata/_scatter_transform = Transform3D(-0.20848292, 0.97798425, 0.009042505, -0.87830716, -0.18315084, -0.44162464, -0.43024582, -0.100013286, 0.89715433, -61.281136, -58.840176, 14.860584)
+metadata/_scatter_zone = &"MineBlockout"
+
+[node name="Chunk1" parent="Minerals/MineralScatter/MineBlockout/Mine_05" unique_id=12333818 instance=ExtResource("9_3u1nn")]
+transform = Transform3D(0.9999999, -3.7252903e-09, 0, 3.7252903e-09, 1, 7.450581e-09, 0, 0, 0.99999994, 0.13211441, 1.0255623, 0.41083145)
+mineral_type = ExtResource("7_common")
+
+[node name="Chunk2" parent="Minerals/MineralScatter/MineBlockout/Mine_05" unique_id=1481310434 instance=ExtResource("9_3u1nn")]
+transform = Transform3D(0.9999999, -3.7252903e-09, 0, 3.7252903e-09, 1, 7.450581e-09, 0, 0, 0.99999994, 0.8185272, 0.055290222, -0.27905655)
+mineral_type = ExtResource("7_common")
+
+[node name="Chunk3" parent="Minerals/MineralScatter/MineBlockout/Mine_05" unique_id=1795513432 instance=ExtResource("9_3u1nn")]
+transform = Transform3D(0.9999999, -3.7252903e-09, 0, 3.7252903e-09, 1, 7.450581e-09, 0, 0, 0.99999994, -0.44805908, 1.040947, -0.7565079)
+mineral_type = ExtResource("7_common")
+
+[node name="Chunk4" parent="Minerals/MineralScatter/MineBlockout/Mine_05" unique_id=454254633 instance=ExtResource("9_3u1nn")]
+transform = Transform3D(0.9999999, -3.7252903e-09, 0, 3.7252903e-09, 1, 7.450581e-09, 0, 0, 0.99999994, -0.19813919, 0.15978622, -1.0972252)
+mineral_type = ExtResource("7_common")
+
+[node name="Mine_06" parent="Minerals/MineralScatter/MineBlockout" unique_id=1176454424 groups=["mineral_scatter"] instance=ExtResource("6_deposit")]
+transform = Transform3D(0.32949886, -0.17013296, -0.9287009, 0.9412539, -0.017871358, 0.33722657, -0.0739705, -0.98525906, 0.15424973, -35.55675, -42.528175, 36.57472)
+mineral_type = ExtResource("7_common")
+chunk_count = 4
+metadata/_scatter_transform = Transform3D(0.32949886, -0.17013296, -0.9287009, 0.9412539, -0.017871358, 0.33722657, -0.0739705, -0.98525906, 0.15424973, -35.55675, -42.528175, 36.57472)
+metadata/_scatter_zone = &"MineBlockout"
+
+[node name="Chunk1" parent="Minerals/MineralScatter/MineBlockout/Mine_06" unique_id=1106119872 instance=ExtResource("9_3u1nn")]
+transform = Transform3D(1, 0, -2.0489097e-08, 0, 1, 0, -1.9557774e-08, -1.4901161e-08, 1, 0.91908264, 1.1064072, 1.1251717)
+mineral_type = ExtResource("7_common")
+
+[node name="Chunk2" parent="Minerals/MineralScatter/MineBlockout/Mine_06" unique_id=1446762902 instance=ExtResource("9_3u1nn")]
+transform = Transform3D(1, 0, -2.0489097e-08, 0, 1, 0, -1.9557774e-08, -1.4901161e-08, 1, -0.13336563, 0.14227104, 0.9449806)
+mineral_type = ExtResource("7_common")
+
+[node name="Chunk3" parent="Minerals/MineralScatter/MineBlockout/Mine_06" unique_id=311774477 instance=ExtResource("9_3u1nn")]
+transform = Transform3D(1, 0, -2.0489097e-08, 0, 1, 0, -1.9557774e-08, -1.4901161e-08, 1, -0.32482147, 1.1362228, 0.7191086)
+mineral_type = ExtResource("7_common")
+
+[node name="Chunk4" parent="Minerals/MineralScatter/MineBlockout/Mine_06" unique_id=47949377 instance=ExtResource("9_3u1nn")]
+transform = Transform3D(1, 0, -2.0489097e-08, 0, 1, 0, -1.9557774e-08, -1.4901161e-08, 1, 1.0915794, -0.12366295, -0.16623688)
+mineral_type = ExtResource("7_common")
+
+[node name="Mine_07" parent="Minerals/MineralScatter/MineBlockout" unique_id=1189395996 groups=["mineral_scatter"] instance=ExtResource("6_deposit")]
+transform = Transform3D(-0.029324105, -0.14213501, 0.98941284, 0.16832781, 0.97500014, 0.14505342, -0.9852948, 0.17079926, -0.004665733, -64.982346, -76.792114, 0.6928684)
+mineral_type = ExtResource("7_common")
+chunk_count = 4
+metadata/_scatter_transform = Transform3D(-0.029324105, -0.14213501, 0.98941284, 0.16832781, 0.97500014, 0.14505342, -0.9852948, 0.17079926, -0.004665733, -64.982346, -76.792114, 0.6928684)
+metadata/_scatter_zone = &"MineBlockout"
+
+[node name="Chunk1" parent="Minerals/MineralScatter/MineBlockout/Mine_07" unique_id=1794351189 instance=ExtResource("9_3u1nn")]
+transform = Transform3D(1, 0, 4.656613e-10, 0, 0.9999999, -4.4237822e-09, -4.656613e-10, -4.3655746e-09, 0.99999994, 0.57755184, 0.027404785, 0.7452469)
+mineral_type = ExtResource("7_common")
+
+[node name="Chunk2" parent="Minerals/MineralScatter/MineBlockout/Mine_07" unique_id=1822386945 instance=ExtResource("9_3u1nn")]
+transform = Transform3D(1, 0, 4.656613e-10, 0, 0.9999999, -4.4237822e-09, -4.656613e-10, -4.3655746e-09, 0.99999994, 0.45390224, 0.39668274, -0.41433716)
+mineral_type = ExtResource("7_common")
+
+[node name="Chunk3" parent="Minerals/MineralScatter/MineBlockout/Mine_07" unique_id=2094225570 instance=ExtResource("9_3u1nn")]
+transform = Transform3D(1, 0, 4.656613e-10, 0, 0.9999999, -4.4237822e-09, -4.656613e-10, -4.3655746e-09, 0.99999994, 0.8589401, -1.0628357, 0.69047546)
+mineral_type = ExtResource("7_common")
+
+[node name="Chunk4" parent="Minerals/MineralScatter/MineBlockout/Mine_07" unique_id=648085807 instance=ExtResource("9_3u1nn")]
+transform = Transform3D(1, 0, 4.656613e-10, 0, 0.9999999, -4.4237822e-09, -4.656613e-10, -4.3655746e-09, 0.99999994, 1.1471424, 0.17443085, -0.06905365)
+mineral_type = ExtResource("7_common")
+
+[node name="Mine_08" parent="Minerals/MineralScatter/MineBlockout" unique_id=1456624255 groups=["mineral_scatter"] instance=ExtResource("6_deposit")]
+transform = Transform3D(0.9882735, 0.15201855, -0.014353764, -0.15048696, 0.9855989, 0.07712688, 0.02587177, -0.0740624, 0.99691796, -45.697662, -41.1589, -5.0531783)
+mineral_type = ExtResource("7_common")
+chunk_count = 4
+metadata/_scatter_transform = Transform3D(0.9882735, 0.15201855, -0.014353764, -0.15048696, 0.9855989, 0.07712688, 0.02587177, -0.0740624, 0.99691796, -45.697662, -41.1589, -5.0531783)
+metadata/_scatter_zone = &"MineBlockout"
+
+[node name="Chunk1" parent="Minerals/MineralScatter/MineBlockout/Mine_08" unique_id=767552049 instance=ExtResource("9_3u1nn")]
+transform = Transform3D(1, 1.1641532e-10, -1.8626451e-09, 1.5133992e-08, 0.99999994, 0, -1.8626451e-09, 7.450581e-09, 1, 0.651001, 0.0376091, -0.48932314)
+mineral_type = ExtResource("7_common")
+
+[node name="Chunk2" parent="Minerals/MineralScatter/MineBlockout/Mine_08" unique_id=130449645 instance=ExtResource("9_3u1nn")]
+transform = Transform3D(1, 1.1641532e-10, -1.8626451e-09, 1.5133992e-08, 0.99999994, 0, -1.8626451e-09, 7.450581e-09, 1, -0.3911171, -0.014328003, 0.11933851)
+mineral_type = ExtResource("7_common")
+
+[node name="Chunk3" parent="Minerals/MineralScatter/MineBlockout/Mine_08" unique_id=201436052 instance=ExtResource("9_3u1nn")]
+transform = Transform3D(1, 1.1641532e-10, -1.8626451e-09, 1.5133992e-08, 0.99999994, 0, -1.8626451e-09, 7.450581e-09, 1, 0.7779045, -0.029266357, 0.428308)
+mineral_type = ExtResource("7_common")
+
+[node name="Chunk4" parent="Minerals/MineralScatter/MineBlockout/Mine_08" unique_id=1824231735 instance=ExtResource("9_3u1nn")]
+transform = Transform3D(1, 1.1641532e-10, -1.8626451e-09, 1.5133992e-08, 0.99999994, 0, -1.8626451e-09, 7.450581e-09, 1, -0.019992828, 1.0330963, -0.45210886)
+mineral_type = ExtResource("7_common")
+
+[node name="Mine_09" parent="Minerals/MineralScatter/MineBlockout" unique_id=1526477817 groups=["mineral_scatter"] instance=ExtResource("6_deposit")]
+transform = Transform3D(0.67007655, 0.44048133, -0.5974727, -0.48668313, -0.3470498, -0.8016833, -0.5604793, 0.827969, -0.018175103, -74.02251, -49.484394, 6.642505)
+mineral_type = ExtResource("7_common")
+chunk_count = 4
+metadata/_scatter_transform = Transform3D(0.67007655, 0.44048133, -0.5974727, -0.48668313, -0.3470498, -0.8016833, -0.5604793, 0.827969, -0.018175103, -74.02251, -49.484394, 6.642505)
+metadata/_scatter_zone = &"MineBlockout"
+
+[node name="Chunk1" parent="Minerals/MineralScatter/MineBlockout/Mine_09" unique_id=665685557 instance=ExtResource("9_3u1nn")]
+transform = Transform3D(0.9999999, 0, 4.656613e-09, 0, 0.9999999, 2.4214387e-08, -2.8871e-08, 1.8626451e-09, 0.9999999, 0.1708889, -0.0013952255, -0.37467194)
+mineral_type = ExtResource("7_common")
+
+[node name="Chunk2" parent="Minerals/MineralScatter/MineBlockout/Mine_09" unique_id=518016547 instance=ExtResource("9_3u1nn")]
+transform = Transform3D(0.9999999, 0, 4.656613e-09, 0, 0.9999999, 2.4214387e-08, -2.8871e-08, 1.8626451e-09, 0.9999999, 0.16195679, 0.029263496, 0.010635376)
+mineral_type = ExtResource("7_common")
+
+[node name="Chunk3" parent="Minerals/MineralScatter/MineBlockout/Mine_09" unique_id=1903145316 instance=ExtResource("9_3u1nn")]
+transform = Transform3D(0.9999999, 0, 4.656613e-09, 0, 0.9999999, 2.4214387e-08, -2.8871e-08, 1.8626451e-09, 0.9999999, -0.71780205, -0.15926361, -0.71806335)
+mineral_type = ExtResource("7_common")
+
+[node name="Chunk4" parent="Minerals/MineralScatter/MineBlockout/Mine_09" unique_id=145372154 instance=ExtResource("9_3u1nn")]
+transform = Transform3D(0.9999999, 0, 4.656613e-09, 0, 0.9999999, 2.4214387e-08, -2.8871e-08, 1.8626451e-09, 0.9999999, -0.49077988, -0.015133858, 0.80638885)
+mineral_type = ExtResource("7_common")
+
+[node name="Mine_10" parent="Minerals/MineralScatter/MineBlockout" unique_id=159962018 groups=["mineral_scatter"] instance=ExtResource("6_deposit")]
+transform = Transform3D(-0.52043617, 0.13785656, 0.8426991, -0.025586747, 0.98392123, -0.17676091, -0.8535172, -0.11355469, -0.5085409, -47.579823, -42.339535, 34.404182)
+mineral_type = ExtResource("7_common")
+chunk_count = 4
+metadata/_scatter_transform = Transform3D(-0.52043617, 0.13785656, 0.8426991, -0.025586747, 0.98392123, -0.17676091, -0.8535172, -0.11355469, -0.5085409, -48.512978, -43.285492, 33.60247)
+metadata/_scatter_zone = &"MineBlockout"
+
+[node name="Chunk1" parent="Minerals/MineralScatter/MineBlockout/Mine_10" unique_id=980649222 instance=ExtResource("9_3u1nn")]
+transform = Transform3D(1, -7.450581e-09, -1.4901161e-07, -7.450581e-09, 1, 7.450581e-09, 2.9802322e-08, 7.450581e-09, 1, -0.19364738, 0.39405823, 0.8702469)
+mineral_type = ExtResource("7_common")
+
+[node name="Chunk2" parent="Minerals/MineralScatter/MineBlockout/Mine_10" unique_id=1224824689 instance=ExtResource("9_3u1nn")]
+transform = Transform3D(1, -7.450581e-09, -1.4901161e-07, -7.450581e-09, 1, 7.450581e-09, 2.9802322e-08, 7.450581e-09, 1, 0.19056511, -0.04933548, 1.1442184)
+mineral_type = ExtResource("7_common")
+
+[node name="Chunk3" parent="Minerals/MineralScatter/MineBlockout/Mine_10" unique_id=530082659 instance=ExtResource("9_3u1nn")]
+transform = Transform3D(1, -7.450581e-09, -1.4901161e-07, -7.450581e-09, 1, 7.450581e-09, 2.9802322e-08, 7.450581e-09, 1, 0.9906807, 0.030979156, 0.6554146)
+mineral_type = ExtResource("7_common")
+
+[node name="Chunk4" parent="Minerals/MineralScatter/MineBlockout/Mine_10" unique_id=658054453 instance=ExtResource("9_3u1nn")]
+transform = Transform3D(1, -7.450581e-09, -1.4901161e-07, -7.450581e-09, 1, 7.450581e-09, 2.9802322e-08, 7.450581e-09, 1, 0.5094433, -1.0809898, -1.1368179)
+mineral_type = ExtResource("7_common")
+
+[node name="RavineBlockout" type="Node3D" parent="Minerals/MineralScatter" unique_id=1044256240]
+
+[node name="Ravine_01" parent="Minerals/MineralScatter/RavineBlockout" unique_id=1185363197 groups=["mineral_scatter"] instance=ExtResource("6_deposit")]
+transform = Transform3D(0.004003953, -0.98905045, 0.14752376, 0.6629053, 0.11307693, 0.74011505, -0.7486926, 0.0948309, 0.6560995, -5.1503844, -59.46229, 47.019684)
+mineral_type = ExtResource("8_uncommon")
+chunk_count = 4
+metadata/_scatter_transform = Transform3D(0.004003953, -0.98905045, 0.14752376, 0.6629053, 0.11307693, 0.74011505, -0.7486926, 0.0948309, 0.6560995, -5.1503844, -59.46229, 47.019684)
+metadata/_scatter_zone = &"RavineBlockout"
+
+[node name="Chunk1" parent="Minerals/MineralScatter/RavineBlockout/Ravine_01" unique_id=192949129 instance=ExtResource("9_3u1nn")]
+transform = Transform3D(1.0000001, -1.4901161e-08, 0, 7.450581e-09, 1, 0, 2.9802322e-08, 3.7252903e-09, 1.0000001, 0.9696808, 0.24761248, -0.29816818)
+mineral_type = ExtResource("8_uncommon")
+
+[node name="Chunk2" parent="Minerals/MineralScatter/RavineBlockout/Ravine_01" unique_id=1408780291 instance=ExtResource("9_3u1nn")]
+transform = Transform3D(1.0000001, -1.4901161e-08, 0, 7.450581e-09, 1, 0, 2.9802322e-08, 3.7252903e-09, 1.0000001, -1.1688385, 0.05407715, -0.38695335)
+mineral_type = ExtResource("8_uncommon")
+
+[node name="Chunk3" parent="Minerals/MineralScatter/RavineBlockout/Ravine_01" unique_id=220359225 instance=ExtResource("9_3u1nn")]
+transform = Transform3D(1.0000001, -1.4901161e-08, 0, 7.450581e-09, 1, 0, 2.9802322e-08, 3.7252903e-09, 1.0000001, 0.5667267, 0.1501298, 0.04704857)
+mineral_type = ExtResource("8_uncommon")
+
+[node name="Chunk4" parent="Minerals/MineralScatter/RavineBlockout/Ravine_01" unique_id=212633499 instance=ExtResource("9_3u1nn")]
+transform = Transform3D(1.0000001, -1.4901161e-08, 0, 7.450581e-09, 1, 0, 2.9802322e-08, 3.7252903e-09, 1.0000001, 0.4678192, 0.073241234, -0.27381325)
+mineral_type = ExtResource("8_uncommon")
+
+[node name="Ravine_02" parent="Minerals/MineralScatter/RavineBlockout" unique_id=1429988949 groups=["mineral_scatter"] instance=ExtResource("6_deposit")]
+transform = Transform3D(-0.13062367, 0.04246366, 0.99052227, 0.106095746, 0.99394405, -0.028619131, -0.98573893, 0.10135186, -0.13433781, -22.346699, -52.836517, -39.316284)
+mineral_type = ExtResource("8_uncommon")
+chunk_count = 4
+metadata/_scatter_transform = Transform3D(-0.13062367, 0.04246366, 0.99052227, 0.106095746, 0.99394405, -0.028619131, -0.98573893, 0.10135186, -0.13433781, -22.346699, -52.836517, -39.316284)
+metadata/_scatter_zone = &"RavineBlockout"
+
+[node name="Chunk1" parent="Minerals/MineralScatter/RavineBlockout/Ravine_02" unique_id=257405189 instance=ExtResource("9_3u1nn")]
+transform = Transform3D(1, 0, 0, 7.450581e-09, 1, -9.313226e-10, 0, -1.8626451e-09, 1, 0.43829346, 0.011741638, -0.12867165)
+mineral_type = ExtResource("8_uncommon")
+
+[node name="Chunk2" parent="Minerals/MineralScatter/RavineBlockout/Ravine_02" unique_id=885227521 instance=ExtResource("9_3u1nn")]
+transform = Transform3D(1, 0, 0, 7.450581e-09, 1, -9.313226e-10, 0, -1.8626451e-09, 1, -1.0639572, -0.029956818, -0.1368866)
+mineral_type = ExtResource("8_uncommon")
+
+[node name="Chunk3" parent="Minerals/MineralScatter/RavineBlockout/Ravine_02" unique_id=954131906 instance=ExtResource("9_3u1nn")]
+transform = Transform3D(1, 0, 0, 7.450581e-09, 1, -9.313226e-10, 0, -1.8626451e-09, 1, 0.3623848, 0.38521576, 0.90667725)
+mineral_type = ExtResource("8_uncommon")
+
+[node name="Chunk4" parent="Minerals/MineralScatter/RavineBlockout/Ravine_02" unique_id=517946292 instance=ExtResource("9_3u1nn")]
+transform = Transform3D(1, 0, 0, 7.450581e-09, 1, -9.313226e-10, 0, -1.8626451e-09, 1, 0.2965889, -0.057289124, -0.7409115)
+mineral_type = ExtResource("8_uncommon")
+
+[node name="Ravine_03" parent="Minerals/MineralScatter/RavineBlockout" unique_id=153009000 groups=["mineral_scatter"] instance=ExtResource("6_deposit")]
+transform = Transform3D(0.9627967, -0.26125452, 0.0690547, 0.14229202, 0.27289614, -0.9514624, 0.22972906, 0.92589086, 0.29991794, -2.1867266, -59.635387, -5.360079)
+mineral_type = ExtResource("8_uncommon")
+chunk_count = 4
+metadata/_scatter_transform = Transform3D(0.9627967, -0.26125452, 0.0690547, 0.14229202, 0.27289614, -0.9514624, 0.22972906, 0.92589086, 0.29991794, -2.1867266, -59.635387, -5.360079)
+metadata/_scatter_zone = &"RavineBlockout"
+
+[node name="Chunk1" parent="Minerals/MineralScatter/RavineBlockout/Ravine_03" unique_id=1405417294 instance=ExtResource("9_3u1nn")]
+transform = Transform3D(0.99999994, -2.9802322e-08, 0, -1.4901161e-08, 0.9999999, 0, 0, -2.9802322e-08, 0.9999999, 0.47670746, -0.084983826, 0.90576553)
+mineral_type = ExtResource("8_uncommon")
+
+[node name="Chunk2" parent="Minerals/MineralScatter/RavineBlockout/Ravine_03" unique_id=1803645519 instance=ExtResource("9_3u1nn")]
+transform = Transform3D(0.99999994, -2.9802322e-08, 0, -1.4901161e-08, 0.9999999, 0, 0, -2.9802322e-08, 0.9999999, -1.0727692, 0.19696236, 0.87919617)
+mineral_type = ExtResource("8_uncommon")
+
+[node name="Chunk3" parent="Minerals/MineralScatter/RavineBlockout/Ravine_03" unique_id=868725491 instance=ExtResource("9_3u1nn")]
+transform = Transform3D(0.99999994, -2.9802322e-08, 0, -1.4901161e-08, 0.9999999, 0, 0, -2.9802322e-08, 0.9999999, 0.02431488, -0.053325653, 0.87924194)
+mineral_type = ExtResource("8_uncommon")
+
+[node name="Chunk4" parent="Minerals/MineralScatter/RavineBlockout/Ravine_03" unique_id=1698936136 instance=ExtResource("9_3u1nn")]
+transform = Transform3D(0.99999994, -2.9802322e-08, 0, -1.4901161e-08, 0.9999999, 0, 0, -2.9802322e-08, 0.9999999, 0.8959017, -0.13768578, 1.1791534)
+mineral_type = ExtResource("8_uncommon")
+
+[node name="Ravine_04" parent="Minerals/MineralScatter/RavineBlockout" unique_id=1182792435 groups=["mineral_scatter"] instance=ExtResource("6_deposit")]
+transform = Transform3D(0.8725274, -0.4773034, -0.10429485, -0.275266, -0.65662974, 0.7021867, -0.40363914, -0.5839683, -0.7043128, -17.35103, -59.797108, 63.49755)
+mineral_type = ExtResource("8_uncommon")
+chunk_count = 4
+metadata/_scatter_transform = Transform3D(0.8725274, -0.4773034, -0.10429485, -0.275266, -0.65662974, 0.7021867, -0.40363914, -0.5839683, -0.7043128, -17.35103, -59.797108, 63.49755)
+metadata/_scatter_zone = &"RavineBlockout"
+
+[node name="Chunk1" parent="Minerals/MineralScatter/RavineBlockout/Ravine_04" unique_id=852765083 instance=ExtResource("9_3u1nn")]
+transform = Transform3D(1.0000001, -1.4901161e-08, 2.9802322e-08, 1.4901161e-08, 1.0000001, -2.9802322e-08, 0, 0, 1.0000001, 0.31729126, 0.07123947, 0.5576935)
+mineral_type = ExtResource("8_uncommon")
+
+[node name="Chunk2" parent="Minerals/MineralScatter/RavineBlockout/Ravine_04" unique_id=212588844 instance=ExtResource("9_3u1nn")]
+transform = Transform3D(1.0000001, -1.4901161e-08, 2.9802322e-08, 1.4901161e-08, 1.0000001, -2.9802322e-08, 0, 0, 1.0000001, -0.4606514, 0.8097992, -0.6652603)
+mineral_type = ExtResource("8_uncommon")
+
+[node name="Chunk3" parent="Minerals/MineralScatter/RavineBlockout/Ravine_04" unique_id=1595100661 instance=ExtResource("9_3u1nn")]
+transform = Transform3D(1.0000001, -1.4901161e-08, 2.9802322e-08, 1.4901161e-08, 1.0000001, -2.9802322e-08, 0, 0, 1.0000001, -0.3886509, -1.4524307, -1.0428925)
+mineral_type = ExtResource("8_uncommon")
+
+[node name="Chunk4" parent="Minerals/MineralScatter/RavineBlockout/Ravine_04" unique_id=308789523 instance=ExtResource("9_3u1nn")]
+transform = Transform3D(1.0000001, -1.4901161e-08, 2.9802322e-08, 1.4901161e-08, 1.0000001, -2.9802322e-08, 0, 0, 1.0000001, -0.07878876, 1.1558113, 0.7527237)
+mineral_type = ExtResource("8_uncommon")
+
+[node name="Ravine_05" parent="Minerals/MineralScatter/RavineBlockout" unique_id=1110180640 groups=["mineral_scatter"] instance=ExtResource("6_deposit")]
+transform = Transform3D(-0.49778625, 0.23556577, -0.8346961, 0.75376385, -0.35855067, -0.55071, -0.4290093, -0.9032996, 0.00092063285, 26.292994, -48.82094, 49.39721)
+mineral_type = ExtResource("8_uncommon")
+chunk_count = 4
+metadata/_scatter_transform = Transform3D(-0.49778625, 0.23556577, -0.8346961, 0.75376385, -0.35855067, -0.55071, -0.4290093, -0.9032996, 0.00092063285, 26.292994, -48.82094, 49.39721)
+metadata/_scatter_zone = &"RavineBlockout"
+
+[node name="Chunk1" parent="Minerals/MineralScatter/RavineBlockout/Ravine_05" unique_id=607722611 instance=ExtResource("9_3u1nn")]
+transform = Transform3D(1, -2.9802322e-08, -1.9645086e-08, -2.9802322e-08, 1, 1.15833245e-08, 7.741619e-09, -8.381903e-09, 1, 0.76924133, -0.22988129, 1.0430307)
+mineral_type = ExtResource("8_uncommon")
+
+[node name="Chunk2" parent="Minerals/MineralScatter/RavineBlockout/Ravine_05" unique_id=653396261 instance=ExtResource("9_3u1nn")]
+transform = Transform3D(1, -2.9802322e-08, -1.9645086e-08, -2.9802322e-08, 1, 1.15833245e-08, 7.741619e-09, -8.381903e-09, 1, 0.67006683, -0.1614151, 1.0709634)
+mineral_type = ExtResource("8_uncommon")
+
+[node name="Chunk3" parent="Minerals/MineralScatter/RavineBlockout/Ravine_05" unique_id=1230214529 instance=ExtResource("9_3u1nn")]
+transform = Transform3D(1, -2.9802322e-08, -1.9645086e-08, -2.9802322e-08, 1, 1.15833245e-08, 7.741619e-09, -8.381903e-09, 1, -0.5661316, 1.050703, -0.2780304)
+mineral_type = ExtResource("8_uncommon")
+
+[node name="Chunk4" parent="Minerals/MineralScatter/RavineBlockout/Ravine_05" unique_id=617458617 instance=ExtResource("9_3u1nn")]
+transform = Transform3D(1, -2.9802322e-08, -1.9645086e-08, -2.9802322e-08, 1, 1.15833245e-08, 7.741619e-09, -8.381903e-09, 1, 0.027450562, 0.22333527, -1.0627985)
+mineral_type = ExtResource("8_uncommon")
+
+[node name="Ravine_06" parent="Minerals/MineralScatter/RavineBlockout" unique_id=1067008576 groups=["mineral_scatter"] instance=ExtResource("6_deposit")]
+transform = Transform3D(-0.14235362, -0.9297124, 0.33966208, 0.01051625, 0.3417169, 0.9397442, -0.98976, 0.13734795, -0.038867544, 31.390802, -52.53104, 44.562588)
+mineral_type = ExtResource("8_uncommon")
+chunk_count = 4
+metadata/_scatter_transform = Transform3D(-0.14235362, -0.9297124, 0.33966208, 0.01051625, 0.3417169, 0.9397442, -0.98976, 0.13734795, -0.038867544, 31.390802, -52.53104, 44.562588)
+metadata/_scatter_zone = &"RavineBlockout"
+
+[node name="Chunk1" parent="Minerals/MineralScatter/RavineBlockout/Ravine_06" unique_id=1290603568 instance=ExtResource("9_3u1nn")]
+transform = Transform3D(1, 0, -7.450581e-09, -1.4901161e-08, 1.0000001, 2.2351742e-08, 0, -3.7252903e-08, 1.0000001, 1.130291, 0.056922913, -0.28438568)
+mineral_type = ExtResource("8_uncommon")
+
+[node name="Chunk2" parent="Minerals/MineralScatter/RavineBlockout/Ravine_06" unique_id=2032227233 instance=ExtResource("9_3u1nn")]
+transform = Transform3D(1, 0, -7.450581e-09, -1.4901161e-08, 1.0000001, 2.2351742e-08, 0, -3.7252903e-08, 1.0000001, 0.51558685, -0.6239624, 0.10888672)
+mineral_type = ExtResource("8_uncommon")
+
+[node name="Chunk3" parent="Minerals/MineralScatter/RavineBlockout/Ravine_06" unique_id=1541279629 instance=ExtResource("9_3u1nn")]
+transform = Transform3D(1, 0, -7.450581e-09, -1.4901161e-08, 1.0000001, 2.2351742e-08, 0, -3.7252903e-08, 1.0000001, 0.041625977, 0.0911293, -0.6132889)
+mineral_type = ExtResource("8_uncommon")
+
+[node name="Chunk4" parent="Minerals/MineralScatter/RavineBlockout/Ravine_06" unique_id=1521128282 instance=ExtResource("9_3u1nn")]
+transform = Transform3D(1, 0, -7.450581e-09, -1.4901161e-08, 1.0000001, 2.2351742e-08, 0, -3.7252903e-08, 1.0000001, -0.7651062, 0.07665634, 0.11026001)
+mineral_type = ExtResource("8_uncommon")
+
+[node name="Ravine_07" parent="Minerals/MineralScatter/RavineBlockout" unique_id=1181518011 groups=["mineral_scatter"] instance=ExtResource("6_deposit")]
+transform = Transform3D(0.44114557, 0.14122814, -0.8862535, -0.82965696, 0.44067124, -0.34275103, 0.34214032, 0.88648945, 0.31157106, 25.558094, -54.17262, 41.67675)
+mineral_type = ExtResource("8_uncommon")
+chunk_count = 4
+metadata/_scatter_transform = Transform3D(0.44114557, 0.14122814, -0.8862535, -0.82965696, 0.44067124, -0.34275103, 0.34214032, 0.88648945, 0.31157106, 25.558094, -54.17262, 41.67675)
+metadata/_scatter_zone = &"RavineBlockout"
+
+[node name="Chunk1" parent="Minerals/MineralScatter/RavineBlockout/Ravine_07" unique_id=403955735 instance=ExtResource("9_3u1nn")]
+transform = Transform3D(1, 2.9802322e-08, 1.4901161e-08, 0, 0.99999994, 2.9802322e-08, 1.4901161e-08, -2.9802322e-08, 0.99999994, 1.1443176, 0.5318241, 0.92926407)
+mineral_type = ExtResource("8_uncommon")
+
+[node name="Chunk2" parent="Minerals/MineralScatter/RavineBlockout/Ravine_07" unique_id=1120652443 instance=ExtResource("9_3u1nn")]
+transform = Transform3D(1, 2.9802322e-08, 1.4901161e-08, 0, 0.99999994, 2.9802322e-08, 1.4901161e-08, -2.9802322e-08, 0.99999994, 0.12409973, 0.051086426, 0.18501759)
+mineral_type = ExtResource("8_uncommon")
+
+[node name="Chunk3" parent="Minerals/MineralScatter/RavineBlockout/Ravine_07" unique_id=1877977552 instance=ExtResource("9_3u1nn")]
+transform = Transform3D(1, 2.9802322e-08, 1.4901161e-08, 0, 0.99999994, 2.9802322e-08, 1.4901161e-08, -2.9802322e-08, 0.99999994, 1.1033859, 0.11978531, -1.1082201)
+mineral_type = ExtResource("8_uncommon")
+
+[node name="Chunk4" parent="Minerals/MineralScatter/RavineBlockout/Ravine_07" unique_id=726021645 instance=ExtResource("9_3u1nn")]
+transform = Transform3D(1, 2.9802322e-08, 1.4901161e-08, 0, 0.99999994, 2.9802322e-08, 1.4901161e-08, -2.9802322e-08, 0.99999994, -0.5782852, 0.25795746, 0.8083391)
+mineral_type = ExtResource("8_uncommon")
+
+[node name="Ravine_08" parent="Minerals/MineralScatter/RavineBlockout" unique_id=1861194613 groups=["mineral_scatter"] instance=ExtResource("6_deposit")]
+transform = Transform3D(0.80087346, 0.22637925, -0.5543953, 0.5985055, -0.33323434, 0.72852325, -0.01982101, -0.91526353, -0.4023678, -20.254375, -46.264957, -9.32765)
+mineral_type = ExtResource("8_uncommon")
+chunk_count = 4
+metadata/_scatter_transform = Transform3D(0.80087346, 0.22637925, -0.5543953, 0.5985055, -0.33323434, 0.72852325, -0.01982101, -0.91526353, -0.4023678, -20.254375, -46.264957, -9.32765)
+metadata/_scatter_zone = &"RavineBlockout"
+
+[node name="Chunk1" parent="Minerals/MineralScatter/RavineBlockout/Ravine_08" unique_id=1525088495 instance=ExtResource("9_3u1nn")]
+transform = Transform3D(0.99999994, -9.313226e-09, 2.2351742e-08, 0, 1, 0, 8.381903e-08, -2.9802322e-08, 1, -1.01931, 0.21006393, -0.87254906)
+mineral_type = ExtResource("8_uncommon")
+
+[node name="Chunk2" parent="Minerals/MineralScatter/RavineBlockout/Ravine_08" unique_id=1485317937 instance=ExtResource("9_3u1nn")]
+transform = Transform3D(0.99999994, -9.313226e-09, 2.2351742e-08, 0, 1, 0, 8.381903e-08, -2.9802322e-08, 1, 0.5207596, 1.0355206, -0.38502693)
+mineral_type = ExtResource("8_uncommon")
+
+[node name="Chunk3" parent="Minerals/MineralScatter/RavineBlockout/Ravine_08" unique_id=1888359364 instance=ExtResource("9_3u1nn")]
+transform = Transform3D(0.99999994, -9.313226e-09, 2.2351742e-08, 0, 1, 0, 8.381903e-08, -2.9802322e-08, 1, 0.5213852, 1.0310707, -0.41275597)
+mineral_type = ExtResource("8_uncommon")
+
+[node name="Chunk4" parent="Minerals/MineralScatter/RavineBlockout/Ravine_08" unique_id=75589172 instance=ExtResource("9_3u1nn")]
+transform = Transform3D(0.99999994, -9.313226e-09, 2.2351742e-08, 0, 1, 0, 8.381903e-08, -2.9802322e-08, 1, 0.76265335, 0.3382206, 1.1624374)
+mineral_type = ExtResource("8_uncommon")
+
+[node name="Ravine_09" parent="Minerals/MineralScatter/RavineBlockout" unique_id=1738591385 groups=["mineral_scatter"] instance=ExtResource("6_deposit")]
+transform = Transform3D(0.4068917, 0.91303563, 0.02837487, -0.17464238, 0.10824331, -0.9786641, -0.8966266, 0.39325485, 0.20349802, -20.024992, -47.723274, -16.766735)
+mineral_type = ExtResource("8_uncommon")
+chunk_count = 4
+metadata/_scatter_transform = Transform3D(0.4068917, 0.91303563, 0.02837487, -0.17464238, 0.10824331, -0.9786641, -0.8966266, 0.39325485, 0.20349802, -20.024992, -47.723274, -16.766735)
+metadata/_scatter_zone = &"RavineBlockout"
+
+[node name="Chunk1" parent="Minerals/MineralScatter/RavineBlockout/Ravine_09" unique_id=1012338375 instance=ExtResource("9_3u1nn")]
+transform = Transform3D(1, 0, -1.4901161e-08, -2.9802322e-08, 1.0000001, 7.450581e-09, 0, 0, 1, -0.55267525, -0.4988861, 0.104839325)
+mineral_type = ExtResource("8_uncommon")
+
+[node name="Chunk2" parent="Minerals/MineralScatter/RavineBlockout/Ravine_09" unique_id=1512125644 instance=ExtResource("9_3u1nn")]
+transform = Transform3D(1, 0, -1.4901161e-08, -2.9802322e-08, 1.0000001, 7.450581e-09, 0, 0, 1, 0.5789938, -0.06992531, -0.6278763)
+mineral_type = ExtResource("8_uncommon")
+
+[node name="Chunk3" parent="Minerals/MineralScatter/RavineBlockout/Ravine_09" unique_id=188154173 instance=ExtResource("9_3u1nn")]
+transform = Transform3D(1, 0, -1.4901161e-08, -2.9802322e-08, 1.0000001, 7.450581e-09, 0, 0, 1, -0.17937088, -0.15405464, -0.27579498)
+mineral_type = ExtResource("8_uncommon")
+
+[node name="Chunk4" parent="Minerals/MineralScatter/RavineBlockout/Ravine_09" unique_id=813674009 instance=ExtResource("9_3u1nn")]
+transform = Transform3D(1, 0, -1.4901161e-08, -2.9802322e-08, 1.0000001, 7.450581e-09, 0, 0, 1, -0.748003, 0.8148384, -0.49673462)
+mineral_type = ExtResource("8_uncommon")
+
+[node name="Ravine_10" parent="Minerals/MineralScatter/RavineBlockout" unique_id=328604843 groups=["mineral_scatter"] instance=ExtResource("6_deposit")]
+transform = Transform3D(-0.2271138, -0.5853697, -0.77830696, 0.6557439, -0.6827883, 0.32218027, -0.72001344, -0.43719843, 0.53892326, -20.900965, -46.290173, -36.075195)
+mineral_type = ExtResource("8_uncommon")
+chunk_count = 4
+metadata/_scatter_transform = Transform3D(-0.2271138, -0.5853697, -0.77830696, 0.6557439, -0.6827883, 0.32218027, -0.72001344, -0.43719843, 0.53892326, -20.900965, -46.290173, -36.075195)
+metadata/_scatter_zone = &"RavineBlockout"
+
+[node name="Chunk1" parent="Minerals/MineralScatter/RavineBlockout/Ravine_10" unique_id=752945767 instance=ExtResource("9_3u1nn")]
+transform = Transform3D(1, 0, -2.9802322e-08, -2.9802322e-08, 1, 1.4901161e-08, 0, -4.4703484e-08, 1, 0.5268574, 0.11381912, -1.179657)
+mineral_type = ExtResource("8_uncommon")
+
+[node name="Chunk2" parent="Minerals/MineralScatter/RavineBlockout/Ravine_10" unique_id=644453314 instance=ExtResource("9_3u1nn")]
+transform = Transform3D(1, 0, -2.9802322e-08, -2.9802322e-08, 1, 1.4901161e-08, 0, -4.4703484e-08, 1, 1.1948586, 0.21130371, 0.7916336)
+mineral_type = ExtResource("8_uncommon")
+
+[node name="Chunk3" parent="Minerals/MineralScatter/RavineBlockout/Ravine_10" unique_id=1337790593 instance=ExtResource("9_3u1nn")]
+transform = Transform3D(1, 0, -2.9802322e-08, -2.9802322e-08, 1, 1.4901161e-08, 0, -4.4703484e-08, 1, 0.6254349, 0.17356873, 0.9380398)
+mineral_type = ExtResource("8_uncommon")
+
+[node name="Chunk4" parent="Minerals/MineralScatter/RavineBlockout/Ravine_10" unique_id=607297800 instance=ExtResource("9_3u1nn")]
+transform = Transform3D(1, 0, -2.9802322e-08, -2.9802322e-08, 1, 1.4901161e-08, 0, -4.4703484e-08, 1, -0.17279816, 0.03409195, 0.3993187)
+mineral_type = ExtResource("8_uncommon")
+
+[node name="Ravine_11" parent="Minerals/MineralScatter/RavineBlockout" unique_id=1320197532 groups=["mineral_scatter"] instance=ExtResource("6_deposit")]
+transform = Transform3D(-0.6600168, -0.43843025, -0.6100466, 0.47418898, -0.87296504, 0.11435451, -0.5826858, -0.21380147, 0.7840703, -0.25072816, -55.70868, 0.31669024)
+mineral_type = ExtResource("8_uncommon")
+chunk_count = 4
+metadata/_scatter_transform = Transform3D(-0.6600168, -0.43843025, -0.6100466, 0.47418898, -0.87296504, 0.11435451, -0.5826858, -0.21380147, 0.7840703, -0.25072816, -55.70868, 0.31669024)
+metadata/_scatter_zone = &"RavineBlockout"
+
+[node name="Chunk1" parent="Minerals/MineralScatter/RavineBlockout/Ravine_11" unique_id=1775722677 instance=ExtResource("9_3u1nn")]
+transform = Transform3D(0.9999999, 2.2351742e-08, 0, -3.7252903e-08, 0.99999994, 0, 2.9802322e-08, 4.4703484e-08, 1, -0.57725143, 0.847065, 0.673028)
+mineral_type = ExtResource("8_uncommon")
+
+[node name="Chunk2" parent="Minerals/MineralScatter/RavineBlockout/Ravine_11" unique_id=1494581554 instance=ExtResource("9_3u1nn")]
+transform = Transform3D(0.9999999, 2.2351742e-08, 0, -3.7252903e-08, 0.99999994, 0, 2.9802322e-08, 4.4703484e-08, 1, -0.53022957, -0.31123352, 0.35411692)
+mineral_type = ExtResource("8_uncommon")
+
+[node name="Chunk3" parent="Minerals/MineralScatter/RavineBlockout/Ravine_11" unique_id=2066024721 instance=ExtResource("9_3u1nn")]
+transform = Transform3D(0.9999999, 2.2351742e-08, 0, -3.7252903e-08, 0.99999994, 0, 2.9802322e-08, 4.4703484e-08, 1, 0.57644653, 0.059661865, 0.8718562)
+mineral_type = ExtResource("8_uncommon")
+
+[node name="Chunk4" parent="Minerals/MineralScatter/RavineBlockout/Ravine_11" unique_id=1299157291 instance=ExtResource("9_3u1nn")]
+transform = Transform3D(0.9999999, 2.2351742e-08, 0, -3.7252903e-08, 0.99999994, 0, 2.9802322e-08, 4.4703484e-08, 1, -0.7848339, -0.21995926, -0.084952354)
+mineral_type = ExtResource("8_uncommon")
+
+[node name="Ravine_12" parent="Minerals/MineralScatter/RavineBlockout" unique_id=850156130 groups=["mineral_scatter"] instance=ExtResource("6_deposit")]
+transform = Transform3D(0.22690907, 0.97010165, 0.08611128, 0.8704625, -0.16235505, -0.46468902, -0.43681496, 0.18039879, -0.8812769, 3.9034867, -51.878307, 32.76782)
+mineral_type = ExtResource("8_uncommon")
+chunk_count = 4
+metadata/_scatter_transform = Transform3D(0.22690907, 0.97010165, 0.08611128, 0.8704625, -0.16235505, -0.46468902, -0.43681496, 0.18039879, -0.8812769, 3.9034867, -51.878307, 32.76782)
+metadata/_scatter_zone = &"RavineBlockout"
+
+[node name="Chunk1" parent="Minerals/MineralScatter/RavineBlockout/Ravine_12" unique_id=1596704823 instance=ExtResource("9_3u1nn")]
+transform = Transform3D(1, 2.2351742e-08, 2.9802322e-08, -7.450581e-09, 1, 0, -2.9802322e-08, 0, 1, 1.0507507, -0.2186203, -0.58200264)
+mineral_type = ExtResource("8_uncommon")
+
+[node name="Chunk2" parent="Minerals/MineralScatter/RavineBlockout/Ravine_12" unique_id=1019856064 instance=ExtResource("9_3u1nn")]
+transform = Transform3D(1, 2.2351742e-08, 2.9802322e-08, -7.450581e-09, 1, 0, -2.9802322e-08, 0, 1, -0.820549, 0.19826317, 0.8281841)
+mineral_type = ExtResource("8_uncommon")
+
+[node name="Chunk3" parent="Minerals/MineralScatter/RavineBlockout/Ravine_12" unique_id=123451488 instance=ExtResource("9_3u1nn")]
+transform = Transform3D(1, 2.2351742e-08, 2.9802322e-08, -7.450581e-09, 1, 0, -2.9802322e-08, 0, 1, 0.83473206, -0.2936821, -1.1657467)
+mineral_type = ExtResource("8_uncommon")
+
+[node name="Chunk4" parent="Minerals/MineralScatter/RavineBlockout/Ravine_12" unique_id=218675411 instance=ExtResource("9_3u1nn")]
+transform = Transform3D(1, 2.2351742e-08, 2.9802322e-08, -7.450581e-09, 1, 0, -2.9802322e-08, 0, 1, 0.052345276, 0.9074974, -0.5238075)
+mineral_type = ExtResource("8_uncommon")
+
+[node name="Ravine_13" parent="Minerals/MineralScatter/RavineBlockout" unique_id=956524045 groups=["mineral_scatter"] instance=ExtResource("6_deposit")]
+transform = Transform3D(0.075733766, 0.9706501, 0.22826073, 0.99087167, -0.047656536, -0.12610416, -0.11152489, 0.23572743, -0.9653988, 6.3978386, -56.46921, 24.140692)
+mineral_type = ExtResource("8_uncommon")
+chunk_count = 4
+metadata/_scatter_transform = Transform3D(0.075733766, 0.9706501, 0.22826073, 0.99087167, -0.047656536, -0.12610416, -0.11152489, 0.23572743, -0.9653988, 6.3978386, -56.46921, 24.140692)
+metadata/_scatter_zone = &"RavineBlockout"
+
+[node name="Chunk1" parent="Minerals/MineralScatter/RavineBlockout/Ravine_13" unique_id=1625005535 instance=ExtResource("9_3u1nn")]
+transform = Transform3D(1, 1.8626451e-09, 0, 1.8626451e-09, 1, 0, 7.450581e-09, 0, 0.99999994, 0.76861954, -0.1471386, -0.25696278)
+mineral_type = ExtResource("8_uncommon")
+
+[node name="Chunk2" parent="Minerals/MineralScatter/RavineBlockout/Ravine_13" unique_id=710605473 instance=ExtResource("9_3u1nn")]
+transform = Transform3D(1, 1.8626451e-09, 0, 1.8626451e-09, 1, 0, 7.450581e-09, 0, 0.99999994, 1.0144577, -0.13804817, 0.13884926)
+mineral_type = ExtResource("8_uncommon")
+
+[node name="Chunk3" parent="Minerals/MineralScatter/RavineBlockout/Ravine_13" unique_id=1240802233 instance=ExtResource("9_3u1nn")]
+transform = Transform3D(1, 1.8626451e-09, 0, 1.8626451e-09, 1, 0, 7.450581e-09, 0, 0.99999994, 0.34236145, -0.07363129, 0.8797941)
+mineral_type = ExtResource("8_uncommon")
+
+[node name="Chunk4" parent="Minerals/MineralScatter/RavineBlockout/Ravine_13" unique_id=2082267978 instance=ExtResource("9_3u1nn")]
+transform = Transform3D(1, 1.8626451e-09, 0, 1.8626451e-09, 1, 0, 7.450581e-09, 0, 0.99999994, 0.48884964, -0.112524986, 0.21080208)
+mineral_type = ExtResource("8_uncommon")
+
+[node name="Ravine_14" parent="Minerals/MineralScatter/RavineBlockout" unique_id=1649760790 groups=["mineral_scatter"] instance=ExtResource("6_deposit")]
+transform = Transform3D(0.1986555, 0.9488306, 0.24547216, -0.7262887, -0.025648763, 0.68691117, 0.65805835, -0.31474233, 0.68402964, 24.241316, -58.36272, 48.997894)
+mineral_type = ExtResource("8_uncommon")
+chunk_count = 4
+metadata/_scatter_transform = Transform3D(0.1986555, 0.9488306, 0.24547216, -0.7262887, -0.025648763, 0.68691117, 0.65805835, -0.31474233, 0.68402964, 24.241316, -58.36272, 48.997894)
+metadata/_scatter_zone = &"RavineBlockout"
+
+[node name="Chunk1" parent="Minerals/MineralScatter/RavineBlockout/Ravine_14" unique_id=1555104318 instance=ExtResource("9_3u1nn")]
+transform = Transform3D(1, 0, 0, 0, 1, -1.4901161e-08, 2.9802322e-08, -2.9802322e-08, 1, 0.5999069, 0.042905807, -1.1924591)
+mineral_type = ExtResource("8_uncommon")
+
+[node name="Chunk2" parent="Minerals/MineralScatter/RavineBlockout/Ravine_14" unique_id=2074885785 instance=ExtResource("9_3u1nn")]
+transform = Transform3D(1, 0, 0, 0, 1, -1.4901161e-08, 2.9802322e-08, -2.9802322e-08, 1, -0.9316559, -0.9438524, 0.09170151)
+mineral_type = ExtResource("8_uncommon")
+
+[node name="Chunk3" parent="Minerals/MineralScatter/RavineBlockout/Ravine_14" unique_id=653425211 instance=ExtResource("9_3u1nn")]
+transform = Transform3D(1, 0, 0, 0, 1, -1.4901161e-08, 2.9802322e-08, -2.9802322e-08, 1, -0.23538971, -0.97515106, -0.2655487)
+mineral_type = ExtResource("8_uncommon")
+
+[node name="Chunk4" parent="Minerals/MineralScatter/RavineBlockout/Ravine_14" unique_id=344241298 instance=ExtResource("9_3u1nn")]
+transform = Transform3D(1, 0, 0, 0, 1, -1.4901161e-08, 2.9802322e-08, -2.9802322e-08, 1, -0.93543243, -0.35594654, 0.5933876)
+mineral_type = ExtResource("8_uncommon")
+
+[node name="Ravine_15" parent="Minerals/MineralScatter/RavineBlockout" unique_id=1822305568 groups=["mineral_scatter"] instance=ExtResource("6_deposit")]
+transform = Transform3D(-0.85412335, 0.35668117, -0.37848625, 0.4342159, 0.8896233, -0.14151661, 0.2862339, -0.2852174, -0.91472465, 30.047197, -61.312454, 68.5689)
+mineral_type = ExtResource("8_uncommon")
+chunk_count = 4
+metadata/_scatter_transform = Transform3D(-0.85412335, 0.35668117, -0.37848625, 0.4342159, 0.8896233, -0.14151661, 0.2862339, -0.2852174, -0.91472465, 30.047197, -61.312454, 68.5689)
+metadata/_scatter_zone = &"RavineBlockout"
+
+[node name="Chunk1" parent="Minerals/MineralScatter/RavineBlockout/Ravine_15" unique_id=1005122087 instance=ExtResource("9_3u1nn")]
+transform = Transform3D(1, 2.2351742e-08, -2.9802322e-08, 2.2351742e-08, 1, 0, 0, 2.9802322e-08, 1, -0.6917877, 0.23899841, -1.0650864)
+mineral_type = ExtResource("8_uncommon")
+
+[node name="Chunk2" parent="Minerals/MineralScatter/RavineBlockout/Ravine_15" unique_id=575816527 instance=ExtResource("9_3u1nn")]
+transform = Transform3D(1, 2.2351742e-08, -2.9802322e-08, 2.2351742e-08, 1, 0, 0, 2.9802322e-08, 1, 0.7221527, 0.06292343, -1.0963593)
+mineral_type = ExtResource("8_uncommon")
+
+[node name="Chunk3" parent="Minerals/MineralScatter/RavineBlockout/Ravine_15" unique_id=431423877 instance=ExtResource("9_3u1nn")]
+transform = Transform3D(1, 2.2351742e-08, -2.9802322e-08, 2.2351742e-08, 1, 0, 0, 2.9802322e-08, 1, -0.742733, -0.06626129, 0.85969543)
+mineral_type = ExtResource("8_uncommon")
+
+[node name="Chunk4" parent="Minerals/MineralScatter/RavineBlockout/Ravine_15" unique_id=1063801829 instance=ExtResource("9_3u1nn")]
+transform = Transform3D(1, 2.2351742e-08, -2.9802322e-08, 2.2351742e-08, 1, 0, 0, 2.9802322e-08, 1, 0.8611336, 1.0791168, -1.1759415)
+mineral_type = ExtResource("8_uncommon")
+
+[node name="Ravine_16" parent="Minerals/MineralScatter/RavineBlockout" unique_id=812918046 groups=["mineral_scatter"] instance=ExtResource("6_deposit")]
+transform = Transform3D(0.13935368, -0.9527507, 0.26990154, -0.96498215, -0.06948686, 0.25294474, -0.22223863, -0.295699, -0.92907053, 9.531852, -62.602627, 30.942896)
+mineral_type = ExtResource("8_uncommon")
+chunk_count = 4
+metadata/_scatter_transform = Transform3D(0.13935368, -0.9527507, 0.26990154, -0.96498215, -0.06948686, 0.25294474, -0.22223863, -0.295699, -0.92907053, 9.531852, -62.602627, 30.942896)
+metadata/_scatter_zone = &"RavineBlockout"
+
+[node name="Chunk1" parent="Minerals/MineralScatter/RavineBlockout/Ravine_16" unique_id=781561460 instance=ExtResource("9_3u1nn")]
+transform = Transform3D(1, 0, -1.4901161e-08, 0, 1, 0, 1.4901161e-08, 0, 1, -0.9214821, -0.068639755, 0.58696747)
+mineral_type = ExtResource("8_uncommon")
+
+[node name="Chunk2" parent="Minerals/MineralScatter/RavineBlockout/Ravine_16" unique_id=1145992285 instance=ExtResource("9_3u1nn")]
+transform = Transform3D(1, 0, -1.4901161e-08, 0, 1, 0, 1.4901161e-08, 0, 1, 0.8523178, 0.059397697, 0.37417603)
+mineral_type = ExtResource("8_uncommon")
+
+[node name="Chunk3" parent="Minerals/MineralScatter/RavineBlockout/Ravine_16" unique_id=819503384 instance=ExtResource("9_3u1nn")]
+transform = Transform3D(1, 0, -1.4901161e-08, 0, 1, 0, 1.4901161e-08, 0, 1, 1.0827255, 0.076423645, 0.6654701)
+mineral_type = ExtResource("8_uncommon")
+
+[node name="Chunk4" parent="Minerals/MineralScatter/RavineBlockout/Ravine_16" unique_id=1049270225 instance=ExtResource("9_3u1nn")]
+transform = Transform3D(1, 0, -1.4901161e-08, 0, 1, 0, 1.4901161e-08, 0, 1, -0.96650696, -0.07195854, 0.5369301)
+mineral_type = ExtResource("8_uncommon")
+
+[node name="HiveBlockout" type="Node3D" parent="Minerals/MineralScatter" unique_id=2054440286]
+
+[node name="Hive_01" parent="Minerals/MineralScatter/HiveBlockout" unique_id=1407052416 groups=["mineral_scatter"] instance=ExtResource("6_deposit")]
+transform = Transform3D(0.6405971, -0.20499396, -0.7400087, -0.00091713294, 0.9635021, -0.2676991, 0.7678767, 0.17216592, 0.6170287, 72.86135, -72.84169, 2.9152896)
+mineral_type = ExtResource("9_rare")
+chunk_count = 4
+metadata/_scatter_transform = Transform3D(0.6405971, -0.20499396, -0.7400087, -0.00091713294, 0.9635021, -0.2676991, 0.7678767, 0.17216592, 0.6170287, 72.86135, -72.84169, 2.9152896)
+metadata/_scatter_zone = &"HiveBlockout"
+
+[node name="Chunk1" parent="Minerals/MineralScatter/HiveBlockout/Hive_01" unique_id=1554088068 instance=ExtResource("9_3u1nn")]
+transform = Transform3D(0.9999999, 0, -2.9802322e-08, 1.4901161e-08, 1, -2.2351742e-08, 0, 2.2351742e-08, 1, -0.36021805, 0.06918335, -0.8915863)
+mineral_type = ExtResource("9_rare")
+
+[node name="Chunk2" parent="Minerals/MineralScatter/HiveBlockout/Hive_01" unique_id=603546307 instance=ExtResource("9_3u1nn")]
+transform = Transform3D(0.9999999, 0, -2.9802322e-08, 1.4901161e-08, 1, -2.2351742e-08, 0, 2.2351742e-08, 1, 0.52090454, -0.016304016, 0.006526947)
+mineral_type = ExtResource("9_rare")
+
+[node name="Chunk3" parent="Minerals/MineralScatter/HiveBlockout/Hive_01" unique_id=741037354 instance=ExtResource("9_3u1nn")]
+transform = Transform3D(0.9999999, 0, -2.9802322e-08, 1.4901161e-08, 1, -2.2351742e-08, 0, 2.2351742e-08, 1, 0.9827652, 0.94208527, -0.80384064)
+mineral_type = ExtResource("9_rare")
+
+[node name="Chunk4" parent="Minerals/MineralScatter/HiveBlockout/Hive_01" unique_id=963707682 instance=ExtResource("9_3u1nn")]
+transform = Transform3D(0.9999999, 0, -2.9802322e-08, 1.4901161e-08, 1, -2.2351742e-08, 0, 2.2351742e-08, 1, 0.2516365, 0.9667511, -0.7670479)
+mineral_type = ExtResource("9_rare")
+
+[node name="Hive_02" parent="Minerals/MineralScatter/HiveBlockout" unique_id=66886353 groups=["mineral_scatter"] instance=ExtResource("6_deposit")]
+transform = Transform3D(0.7073901, -0.22245888, 0.6709033, -0.25864422, 0.80188155, 0.5385993, -0.6578012, -0.55452514, 0.5097053, 72.67612, -71.03394, 14.876409)
+mineral_type = ExtResource("9_rare")
+chunk_count = 4
+metadata/_scatter_transform = Transform3D(0.7073901, -0.22245888, 0.6709033, -0.25864422, 0.80188155, 0.5385993, -0.6578012, -0.55452514, 0.5097053, 72.67612, -71.03394, 14.876409)
+metadata/_scatter_zone = &"HiveBlockout"
+
+[node name="Chunk1" parent="Minerals/MineralScatter/HiveBlockout/Hive_02" unique_id=367089212 instance=ExtResource("9_3u1nn")]
+transform = Transform3D(1.0000001, 0, 0, 0, 1.0000001, 0, -8.940697e-08, 2.9802322e-08, 1.0000001, -0.9372902, 0.2555008, 0.34184074)
+mineral_type = ExtResource("9_rare")
+
+[node name="Chunk2" parent="Minerals/MineralScatter/HiveBlockout/Hive_02" unique_id=751870946 instance=ExtResource("9_3u1nn")]
+transform = Transform3D(1.0000001, 0, 0, 0, 1.0000001, 0, -8.940697e-08, 2.9802322e-08, 1.0000001, -0.2643051, 0.21321869, -0.45563316)
+mineral_type = ExtResource("9_rare")
+
+[node name="Chunk3" parent="Minerals/MineralScatter/HiveBlockout/Hive_02" unique_id=1075691390 instance=ExtResource("9_3u1nn")]
+transform = Transform3D(1.0000001, 0, 0, 0, 1.0000001, 0, -8.940697e-08, 2.9802322e-08, 1.0000001, -0.63435745, 0.2417984, -0.46930885)
+mineral_type = ExtResource("9_rare")
+
+[node name="Chunk4" parent="Minerals/MineralScatter/HiveBlockout/Hive_02" unique_id=25393922 instance=ExtResource("9_3u1nn")]
+transform = Transform3D(1.0000001, 0, 0, 0, 1.0000001, 0, -8.940697e-08, 2.9802322e-08, 1.0000001, 0.2644539, 1.0011063, -0.087358475)
+mineral_type = ExtResource("9_rare")
+
+[node name="Hive_03" parent="Minerals/MineralScatter/HiveBlockout" unique_id=1570460479 groups=["mineral_scatter"] instance=ExtResource("6_deposit")]
+transform = Transform3D(-0.22364557, -0.6392585, 0.73575217, -0.9211851, 0.38525808, 0.054720275, -0.31843486, -0.665526, -0.67503667, 78.88153, -66.44365, -9.008988)
+mineral_type = ExtResource("9_rare")
+chunk_count = 4
+metadata/_scatter_transform = Transform3D(-0.22364557, -0.6392585, 0.73575217, -0.9211851, 0.38525808, 0.054720275, -0.31843486, -0.665526, -0.67503667, 78.88153, -66.44365, -9.008988)
+metadata/_scatter_zone = &"HiveBlockout"
+
+[node name="Chunk1" parent="Minerals/MineralScatter/HiveBlockout/Hive_03" unique_id=1629773430 instance=ExtResource("9_3u1nn")]
+transform = Transform3D(1.0000001, 1.4901161e-08, 2.9802322e-08, 1.4901161e-08, 1.0000001, 0, 0, 0, 1, -0.27165222, -1.2011185, -1.0943604)
+mineral_type = ExtResource("9_rare")
+
+[node name="Chunk2" parent="Minerals/MineralScatter/HiveBlockout/Hive_03" unique_id=1295755679 instance=ExtResource("9_3u1nn")]
+transform = Transform3D(1.0000001, 1.4901161e-08, 2.9802322e-08, 1.4901161e-08, 1.0000001, 0, 0, 0, 1, 0.018463135, 0.86133575, 0.18543243)
+mineral_type = ExtResource("9_rare")
+
+[node name="Chunk3" parent="Minerals/MineralScatter/HiveBlockout/Hive_03" unique_id=1852270340 instance=ExtResource("9_3u1nn")]
+transform = Transform3D(1.0000001, 1.4901161e-08, 2.9802322e-08, 1.4901161e-08, 1.0000001, 0, 0, 0, 1, -0.22286224, -0.02141571, -0.5652313)
+mineral_type = ExtResource("9_rare")
+
+[node name="Chunk4" parent="Minerals/MineralScatter/HiveBlockout/Hive_03" unique_id=1501940997 instance=ExtResource("9_3u1nn")]
+transform = Transform3D(1.0000001, 1.4901161e-08, 2.9802322e-08, 1.4901161e-08, 1.0000001, 0, 0, 0, 1, -1.0548744, 0.17769623, 0.6468849)
+mineral_type = ExtResource("9_rare")
+
+[node name="Hive_04" parent="Minerals/MineralScatter/HiveBlockout" unique_id=369711693 groups=["mineral_scatter"] instance=ExtResource("6_deposit")]
+transform = Transform3D(-0.6874809, -0.033822812, 0.7254144, 0.02735165, -0.99941206, -0.020676719, 0.7256872, 0.0056264307, 0.6880018, 74.13161, -34.533962, 6.0283265)
+mineral_type = ExtResource("9_rare")
+chunk_count = 4
+metadata/_scatter_transform = Transform3D(-0.6874809, -0.033822812, 0.7254144, 0.02735165, -0.99941206, -0.020676719, 0.7256872, 0.0056264307, 0.6880018, 74.13161, -34.533962, 6.0283265)
+metadata/_scatter_zone = &"HiveBlockout"
+
+[node name="Chunk1" parent="Minerals/MineralScatter/HiveBlockout/Hive_04" unique_id=1713070549 instance=ExtResource("9_3u1nn")]
+transform = Transform3D(1, 9.313226e-10, 2.9802322e-08, -2.3283064e-09, 1, 1.6298145e-09, 2.9802322e-08, -1.1641532e-09, 1.0000001, -0.098861694, -0.7629547, 0.5272522)
+mineral_type = ExtResource("9_rare")
+
+[node name="Chunk2" parent="Minerals/MineralScatter/HiveBlockout/Hive_04" unique_id=1113718136 instance=ExtResource("9_3u1nn")]
+transform = Transform3D(1, 9.313226e-10, 2.9802322e-08, -2.3283064e-09, 1, 1.6298145e-09, 2.9802322e-08, -1.1641532e-09, 1.0000001, -0.78593445, 0.9909439, 0.25647354)
+mineral_type = ExtResource("9_rare")
+
+[node name="Chunk3" parent="Minerals/MineralScatter/HiveBlockout/Hive_04" unique_id=1018785481 instance=ExtResource("9_3u1nn")]
+transform = Transform3D(1, 9.313226e-10, 2.9802322e-08, -2.3283064e-09, 1, 1.6298145e-09, 2.9802322e-08, -1.1641532e-09, 1.0000001, -0.19459152, -0.7472553, 0.17098236)
+mineral_type = ExtResource("9_rare")
+
+[node name="Chunk4" parent="Minerals/MineralScatter/HiveBlockout/Hive_04" unique_id=759238897 instance=ExtResource("9_3u1nn")]
+transform = Transform3D(1, 9.313226e-10, 2.9802322e-08, -2.3283064e-09, 1, 1.6298145e-09, 2.9802322e-08, -1.1641532e-09, 1.0000001, -0.81544495, -0.60206985, -0.16661835)
+mineral_type = ExtResource("9_rare")
+
+[node name="Hive_05" parent="Minerals/MineralScatter/HiveBlockout" unique_id=1065370429 groups=["mineral_scatter"] instance=ExtResource("6_deposit")]
+transform = Transform3D(-0.46844703, 0.2665739, -0.84231573, -0.1568353, -0.96334296, -0.21765362, -0.8694596, 0.030145649, 0.49308333, 82.930016, -50.079956, -19.231604)
+mineral_type = ExtResource("9_rare")
+chunk_count = 4
+metadata/_scatter_transform = Transform3D(-0.46844703, 0.2665739, -0.84231573, -0.1568353, -0.96334296, -0.21765362, -0.8694596, 0.030145649, 0.49308333, 82.930016, -50.079956, -19.231604)
+metadata/_scatter_zone = &"HiveBlockout"
+
+[node name="Chunk1" parent="Minerals/MineralScatter/HiveBlockout/Hive_05" unique_id=115478202 instance=ExtResource("9_3u1nn")]
+transform = Transform3D(1, -7.450581e-09, 2.9802322e-08, 0, 1.0000001, -6.519258e-09, 2.9802322e-08, -8.381903e-09, 1.0000001, -0.6954899, 0.8064804, 0.8626938)
+mineral_type = ExtResource("9_rare")
+
+[node name="Chunk2" parent="Minerals/MineralScatter/HiveBlockout/Hive_05" unique_id=923288508 instance=ExtResource("9_3u1nn")]
+transform = Transform3D(1, -7.450581e-09, 2.9802322e-08, 0, 1.0000001, -6.519258e-09, 2.9802322e-08, -8.381903e-09, 1.0000001, -0.31618118, 0.6283798, -0.27861786)
+mineral_type = ExtResource("9_rare")
+
+[node name="Chunk3" parent="Minerals/MineralScatter/HiveBlockout/Hive_05" unique_id=1484875152 instance=ExtResource("9_3u1nn")]
+transform = Transform3D(1, -7.450581e-09, 2.9802322e-08, 0, 1.0000001, -6.519258e-09, 2.9802322e-08, -8.381903e-09, 1.0000001, -1.1429396, -0.7965698, 0.4047165)
+mineral_type = ExtResource("9_rare")
+
+[node name="Chunk4" parent="Minerals/MineralScatter/HiveBlockout/Hive_05" unique_id=547609801 instance=ExtResource("9_3u1nn")]
+transform = Transform3D(1, -7.450581e-09, 2.9802322e-08, 0, 1.0000001, -6.519258e-09, 2.9802322e-08, -8.381903e-09, 1.0000001, 1.0240707, -0.6540375, 0.62952423)
+mineral_type = ExtResource("9_rare")
+
+[node name="Hive_06" parent="Minerals/MineralScatter/HiveBlockout" unique_id=1951053467 groups=["mineral_scatter"] instance=ExtResource("6_deposit")]
+transform = Transform3D(-0.65397006, -0.09349729, 0.7507206, -0.04124745, 0.99526423, 0.088021964, -0.7553952, 0.026598416, -0.6547295, 95.89633, -54.056496, 9.694838)
+mineral_type = ExtResource("9_rare")
+chunk_count = 4
+metadata/_scatter_transform = Transform3D(-0.65397006, -0.09349729, 0.7507206, -0.04124745, 0.99526423, 0.088021964, -0.7553952, 0.026598416, -0.6547295, 95.89633, -54.056496, 9.694838)
+metadata/_scatter_zone = &"HiveBlockout"
+
+[node name="Chunk1" parent="Minerals/MineralScatter/HiveBlockout/Hive_06" unique_id=870500336 instance=ExtResource("9_3u1nn")]
+transform = Transform3D(1, 3.7252903e-09, -5.9604645e-08, 1.8626451e-09, 0.99999994, -1.8626451e-09, 5.9604645e-08, 1.1175871e-08, 1, -0.7337494, 0.042053223, 0.19443512)
+mineral_type = ExtResource("9_rare")
+
+[node name="Chunk2" parent="Minerals/MineralScatter/HiveBlockout/Hive_06" unique_id=502608839 instance=ExtResource("9_3u1nn")]
+transform = Transform3D(1, 3.7252903e-09, -5.9604645e-08, 1.8626451e-09, 0.99999994, -1.8626451e-09, 5.9604645e-08, 1.1175871e-08, 1, -0.19963074, 0.9517708, 0.5824623)
+mineral_type = ExtResource("9_rare")
+
+[node name="Chunk3" parent="Minerals/MineralScatter/HiveBlockout/Hive_06" unique_id=1524131636 instance=ExtResource("9_3u1nn")]
+transform = Transform3D(1, 3.7252903e-09, -5.9604645e-08, 1.8626451e-09, 0.99999994, -1.8626451e-09, 5.9604645e-08, 1.1175871e-08, 1, 0.046577454, 0.10140228, -0.66851044)
+mineral_type = ExtResource("9_rare")
+
+[node name="Chunk4" parent="Minerals/MineralScatter/HiveBlockout/Hive_06" unique_id=1834351505 instance=ExtResource("9_3u1nn")]
+transform = Transform3D(1, 3.7252903e-09, -5.9604645e-08, 1.8626451e-09, 0.99999994, -1.8626451e-09, 5.9604645e-08, 1.1175871e-08, 1, -0.55901337, 1.0660591, -0.28770065)
+mineral_type = ExtResource("9_rare")
+
+[node name="Hive_07" parent="Minerals/MineralScatter/HiveBlockout" unique_id=1586119981 groups=["mineral_scatter"] instance=ExtResource("6_deposit")]
+transform = Transform3D(-0.9744115, -0.08493033, 0.20810834, -0.12644085, 0.97259855, -0.19510183, -0.1858358, -0.21642284, -0.9584499, 70.799904, -75.70893, -4.060587)
+mineral_type = ExtResource("9_rare")
+chunk_count = 4
+metadata/_scatter_transform = Transform3D(-0.9744115, -0.08493033, 0.20810834, -0.12644085, 0.97259855, -0.19510183, -0.1858358, -0.21642284, -0.9584499, 70.799904, -75.70893, -4.060587)
+metadata/_scatter_zone = &"HiveBlockout"
+
+[node name="Chunk1" parent="Minerals/MineralScatter/HiveBlockout/Hive_07" unique_id=257023428 instance=ExtResource("9_3u1nn")]
+transform = Transform3D(1, -1.1175871e-08, 0, -3.7252903e-09, 1.0000001, 0, 1.4901161e-08, 1.4901161e-08, 1.0000001, 0.57759094, 0.053527832, -0.25448227)
+mineral_type = ExtResource("9_rare")
+
+[node name="Chunk2" parent="Minerals/MineralScatter/HiveBlockout/Hive_07" unique_id=498807546 instance=ExtResource("9_3u1nn")]
+transform = Transform3D(1, -1.1175871e-08, 0, -3.7252903e-09, 1.0000001, 0, 1.4901161e-08, 1.4901161e-08, 1.0000001, 0.10480499, 0.103019714, -0.918705)
+mineral_type = ExtResource("9_rare")
+
+[node name="Chunk3" parent="Minerals/MineralScatter/HiveBlockout/Hive_07" unique_id=580044657 instance=ExtResource("9_3u1nn")]
+transform = Transform3D(1, -1.1175871e-08, 0, -3.7252903e-09, 1.0000001, 0, 1.4901161e-08, 1.4901161e-08, 1.0000001, -0.3807602, 1.0463943, 0.11823273)
+mineral_type = ExtResource("9_rare")
+
+[node name="Chunk4" parent="Minerals/MineralScatter/HiveBlockout/Hive_07" unique_id=51398723 instance=ExtResource("9_3u1nn")]
+transform = Transform3D(1, -1.1175871e-08, 0, -3.7252903e-09, 1.0000001, 0, 1.4901161e-08, 1.4901161e-08, 1.0000001, 0.31394958, 0.08072662, -0.5968895)
+mineral_type = ExtResource("9_rare")
+
+[node name="Hive_08" parent="Minerals/MineralScatter/HiveBlockout" unique_id=1423750025 groups=["mineral_scatter"] instance=ExtResource("6_deposit")]
+transform = Transform3D(0.31896678, 0.63716394, -0.7016284, -0.8087573, 0.5689531, 0.14901005, 0.4941374, 0.51991785, 0.69678813, 32.13899, -38.131035, -30.238346)
+mineral_type = ExtResource("9_rare")
+chunk_count = 4
+metadata/_scatter_transform = Transform3D(0.31896678, 0.63716394, -0.7016284, -0.8087573, 0.5689531, 0.14901005, 0.4941374, 0.51991785, 0.69678813, 32.13899, -38.131035, -30.238346)
+metadata/_scatter_zone = &"HiveBlockout"
+
+[node name="Chunk1" parent="Minerals/MineralScatter/HiveBlockout/Hive_08" unique_id=1011413442 instance=ExtResource("9_3u1nn")]
+transform = Transform3D(1.0000001, -2.9802322e-08, 0, -2.9802322e-08, 1, -2.9802322e-08, 0, 2.9802322e-08, 1, 0.29129028, 0.14352417, 0.9999008)
+mineral_type = ExtResource("9_rare")
+
+[node name="Chunk2" parent="Minerals/MineralScatter/HiveBlockout/Hive_08" unique_id=1812614995 instance=ExtResource("9_3u1nn")]
+transform = Transform3D(1.0000001, -2.9802322e-08, 0, -2.9802322e-08, 1, -2.9802322e-08, 0, 2.9802322e-08, 1, 1.0200901, 0.34677696, -1.1618271)
+mineral_type = ExtResource("9_rare")
+
+[node name="Chunk3" parent="Minerals/MineralScatter/HiveBlockout/Hive_08" unique_id=1760997448 instance=ExtResource("9_3u1nn")]
+transform = Transform3D(1.0000001, -2.9802322e-08, 0, -2.9802322e-08, 1, -2.9802322e-08, 0, 2.9802322e-08, 1, -0.25442505, 0.061584473, -1.0878754)
+mineral_type = ExtResource("9_rare")
+
+[node name="Chunk4" parent="Minerals/MineralScatter/HiveBlockout/Hive_08" unique_id=1455931146 instance=ExtResource("9_3u1nn")]
+transform = Transform3D(1.0000001, -2.9802322e-08, 0, -2.9802322e-08, 1, -2.9802322e-08, 0, 2.9802322e-08, 1, -0.58903885, 0.04932213, -0.78297424)
+mineral_type = ExtResource("9_rare")
+
+[node name="Hive_09" parent="Minerals/MineralScatter/HiveBlockout" unique_id=1679113391 groups=["mineral_scatter"] instance=ExtResource("6_deposit")]
+transform = Transform3D(-0.20470259, -0.0115302, 0.9787563, -0.013752219, -0.9997981, -0.014654296, 0.97872764, -0.016459845, 0.20450267, 73.48712, -28.91138, -15.246592)
+mineral_type = ExtResource("9_rare")
+chunk_count = 4
+metadata/_scatter_transform = Transform3D(-0.20470259, -0.0115302, 0.9787563, -0.013752219, -0.9997981, -0.014654296, 0.97872764, -0.016459845, 0.20450267, 73.48712, -28.91138, -15.246592)
+metadata/_scatter_zone = &"HiveBlockout"
+
+[node name="Chunk1" parent="Minerals/MineralScatter/HiveBlockout/Hive_09" unique_id=342725499 instance=ExtResource("9_3u1nn")]
+transform = Transform3D(1, -1.8626451e-09, 1.4901161e-08, 0, 1, 0, -1.4901161e-08, -1.1641532e-09, 1, -0.1350708, -0.30626297, 0.6875305)
+mineral_type = ExtResource("9_rare")
+
+[node name="Chunk2" parent="Minerals/MineralScatter/HiveBlockout/Hive_09" unique_id=1443104009 instance=ExtResource("9_3u1nn")]
+transform = Transform3D(1, -1.8626451e-09, 1.4901161e-08, 0, 1, 0, -1.4901161e-08, -1.1641532e-09, 1, -0.38604164, 0.06464958, -0.7006073)
+mineral_type = ExtResource("9_rare")
+
+[node name="Chunk3" parent="Minerals/MineralScatter/HiveBlockout/Hive_09" unique_id=1387240980 instance=ExtResource("9_3u1nn")]
+transform = Transform3D(1, -1.8626451e-09, 1.4901161e-08, 0, 1, 0, -1.4901161e-08, -1.1641532e-09, 1, 0.39873123, 1.0695438, -0.92144775)
+mineral_type = ExtResource("9_rare")
+
+[node name="Chunk4" parent="Minerals/MineralScatter/HiveBlockout/Hive_09" unique_id=1898374044 instance=ExtResource("9_3u1nn")]
+transform = Transform3D(1, -1.8626451e-09, 1.4901161e-08, 0, 1, 0, -1.4901161e-08, -1.1641532e-09, 1, 0.45821953, 0.12745476, -1.0996246)
+mineral_type = ExtResource("9_rare")
+
+[node name="Hive_10" parent="Minerals/MineralScatter/HiveBlockout" unique_id=1292946876 groups=["mineral_scatter"] instance=ExtResource("6_deposit")]
+transform = Transform3D(0.9741944, 0.03479676, -0.22301242, 0.0267111, 0.9633285, 0.2669919, 0.22412468, -0.26605892, 0.93753976, 59.506763, -75.53564, -13.742377)
+mineral_type = ExtResource("9_rare")
+chunk_count = 4
+metadata/_scatter_transform = Transform3D(0.9741944, 0.03479676, -0.22301242, 0.0267111, 0.9633285, 0.2669919, 0.22412468, -0.26605892, 0.93753976, 59.506763, -75.53564, -13.742377)
+metadata/_scatter_zone = &"HiveBlockout"
+
+[node name="Chunk1" parent="Minerals/MineralScatter/HiveBlockout/Hive_10" unique_id=2080322390 instance=ExtResource("9_3u1nn")]
+transform = Transform3D(1.0000001, -3.7252903e-09, 1.4901161e-08, -3.7252903e-09, 1.0000001, 0, 0, 2.9802322e-08, 1.0000002, -0.81928253, 0.12472534, 0.56324005)
+mineral_type = ExtResource("9_rare")
+
+[node name="Chunk2" parent="Minerals/MineralScatter/HiveBlockout/Hive_10" unique_id=461120920 instance=ExtResource("9_3u1nn")]
+transform = Transform3D(1.0000001, -3.7252903e-09, 1.4901161e-08, -3.7252903e-09, 1.0000001, 0, 0, 2.9802322e-08, 1.0000002, -0.6021118, 0.057365417, 0.99467087)
+mineral_type = ExtResource("9_rare")
+
+[node name="Chunk3" parent="Minerals/MineralScatter/HiveBlockout/Hive_10" unique_id=1544781811 instance=ExtResource("9_3u1nn")]
+transform = Transform3D(1.0000001, -3.7252903e-09, 1.4901161e-08, -3.7252903e-09, 1.0000001, 0, 0, 2.9802322e-08, 1.0000002, -0.88339233, 0.12770844, 0.6945114)
+mineral_type = ExtResource("9_rare")
+
+[node name="Chunk4" parent="Minerals/MineralScatter/HiveBlockout/Hive_10" unique_id=1734366366 instance=ExtResource("9_3u1nn")]
+transform = Transform3D(1.0000001, -3.7252903e-09, 1.4901161e-08, -3.7252903e-09, 1.0000001, 0, 0, 2.9802322e-08, 1.0000002, 0.318161, -0.0028762817, 0.24703217)
+mineral_type = ExtResource("9_rare")
+
+[node name="Hive_11" parent="Minerals/MineralScatter/HiveBlockout" unique_id=704441784 groups=["mineral_scatter"] instance=ExtResource("6_deposit")]
+transform = Transform3D(-0.96602356, -0.01186405, 0.2581816, -0.24356383, 0.37596047, -0.8940528, -0.08645898, -0.9265598, -0.3660763, 89.56329, -71.28755, 38.02553)
+mineral_type = ExtResource("9_rare")
+chunk_count = 4
+metadata/_scatter_transform = Transform3D(-0.96602356, -0.01186405, 0.2581816, -0.24356383, 0.37596047, -0.8940528, -0.08645898, -0.9265598, -0.3660763, 89.56329, -71.28755, 38.02553)
+metadata/_scatter_zone = &"HiveBlockout"
+
+[node name="Chunk1" parent="Minerals/MineralScatter/HiveBlockout/Hive_11" unique_id=1353168799 instance=ExtResource("9_3u1nn")]
+transform = Transform3D(0.99999994, 0, -3.7252903e-09, 7.450581e-09, 0.9999999, 0, -1.8626451e-08, 2.9802322e-08, 0.99999994, -1.0565262, 0.19828033, -0.1879425)
+mineral_type = ExtResource("9_rare")
+
+[node name="Chunk2" parent="Minerals/MineralScatter/HiveBlockout/Hive_11" unique_id=1081023074 instance=ExtResource("9_3u1nn")]
+transform = Transform3D(0.99999994, 0, -3.7252903e-09, 7.450581e-09, 0.9999999, 0, -1.8626451e-08, 2.9802322e-08, 0.99999994, 0.4666443, -0.067352295, -0.34896088)
+mineral_type = ExtResource("9_rare")
+
+[node name="Chunk3" parent="Minerals/MineralScatter/HiveBlockout/Hive_11" unique_id=1948801294 instance=ExtResource("9_3u1nn")]
+transform = Transform3D(0.99999994, 0, -3.7252903e-09, 7.450581e-09, 0.9999999, 0, -1.8626451e-08, 2.9802322e-08, 0.99999994, 0.8621063, 0.34253693, 1.1178589)
+mineral_type = ExtResource("9_rare")
+
+[node name="Chunk4" parent="Minerals/MineralScatter/HiveBlockout/Hive_11" unique_id=1697320827 instance=ExtResource("9_3u1nn")]
+transform = Transform3D(0.99999994, 0, -3.7252903e-09, 7.450581e-09, 0.9999999, 0, -1.8626451e-08, 2.9802322e-08, 0.99999994, -0.23116302, 0.04252243, -0.6666031)
+mineral_type = ExtResource("9_rare")
+
+[node name="Hive_12" parent="Minerals/MineralScatter/HiveBlockout" unique_id=1117385803 groups=["mineral_scatter"] instance=ExtResource("6_deposit")]
+transform = Transform3D(0.7752716, -0.6184307, 0.12844299, 0.4507877, 0.684184, 0.5733087, -0.4424303, -0.38656938, 0.8092093, 103.11338, -51.47163, 11.728181)
+mineral_type = ExtResource("9_rare")
+chunk_count = 4
+metadata/_scatter_transform = Transform3D(0.7752716, -0.6184307, 0.12844299, 0.4507877, 0.684184, 0.5733087, -0.4424303, -0.38656938, 0.8092093, 103.11338, -51.47163, 11.728181)
+metadata/_scatter_zone = &"HiveBlockout"
+
+[node name="Chunk1" parent="Minerals/MineralScatter/HiveBlockout/Hive_12" unique_id=1309525182 instance=ExtResource("9_3u1nn")]
+transform = Transform3D(1, -2.9802322e-08, 0, -5.9604645e-08, 1, -5.9604645e-08, 2.9802322e-08, 0, 1, -1.1490898, 0.23678589, -0.3811922)
+mineral_type = ExtResource("9_rare")
+
+[node name="Chunk2" parent="Minerals/MineralScatter/HiveBlockout/Hive_12" unique_id=349169715 instance=ExtResource("9_3u1nn")]
+transform = Transform3D(1, -2.9802322e-08, 0, -5.9604645e-08, 1, -5.9604645e-08, 2.9802322e-08, 0, 1, 0.4463005, 1.0467529, 0.42729282)
+mineral_type = ExtResource("9_rare")
+
+[node name="Chunk3" parent="Minerals/MineralScatter/HiveBlockout/Hive_12" unique_id=495026704 instance=ExtResource("9_3u1nn")]
+transform = Transform3D(1, -2.9802322e-08, 0, -5.9604645e-08, 1, -5.9604645e-08, 2.9802322e-08, 0, 1, -0.30255508, 0.16299438, -0.4095106)
+mineral_type = ExtResource("9_rare")
+
+[node name="Chunk4" parent="Minerals/MineralScatter/HiveBlockout/Hive_12" unique_id=1478223502 instance=ExtResource("9_3u1nn")]
+transform = Transform3D(1, -2.9802322e-08, 0, -5.9604645e-08, 1, -5.9604645e-08, 2.9802322e-08, 0, 1, 0.2557602, 0.13066864, -0.29907227)
+mineral_type = ExtResource("9_rare")
+
+[node name="Hive_13" parent="Minerals/MineralScatter/HiveBlockout" unique_id=1297539151 groups=["mineral_scatter"] instance=ExtResource("6_deposit")]
+transform = Transform3D(0.45741066, 0.29523245, 0.8388166, -0.24162136, 0.94905436, -0.20227474, -0.8558006, -0.110153385, 0.50544196, 68.954796, -52.67145, -25.796614)
+mineral_type = ExtResource("9_rare")
+chunk_count = 4
+metadata/_scatter_transform = Transform3D(0.45741066, 0.29523245, 0.8388166, -0.24162136, 0.94905436, -0.20227474, -0.8558006, -0.110153385, 0.50544196, 68.954796, -52.67145, -25.796614)
+metadata/_scatter_zone = &"HiveBlockout"
+
+[node name="Chunk1" parent="Minerals/MineralScatter/HiveBlockout/Hive_13" unique_id=289953062 instance=ExtResource("9_3u1nn")]
+transform = Transform3D(1, 0, -2.9802322e-08, -7.450581e-09, 1, 0, 2.9802322e-08, -1.1175871e-08, 0.99999994, 1.0375748, 0.09309006, 0.71624374)
+mineral_type = ExtResource("9_rare")
+
+[node name="Chunk2" parent="Minerals/MineralScatter/HiveBlockout/Hive_13" unique_id=2063889330 instance=ExtResource("9_3u1nn")]
+transform = Transform3D(1, 0, -2.9802322e-08, -7.450581e-09, 1, 0, 2.9802322e-08, -1.1175871e-08, 0.99999994, 0.74220276, 0.17410278, 1.0225258)
+mineral_type = ExtResource("9_rare")
+
+[node name="Chunk3" parent="Minerals/MineralScatter/HiveBlockout/Hive_13" unique_id=1468739104 instance=ExtResource("9_3u1nn")]
+transform = Transform3D(1, 0, -2.9802322e-08, -7.450581e-09, 1, 0, 2.9802322e-08, -1.1175871e-08, 0.99999994, 0.91078186, 0.94735336, -0.49557114)
+mineral_type = ExtResource("9_rare")
+
+[node name="Chunk4" parent="Minerals/MineralScatter/HiveBlockout/Hive_13" unique_id=2009745516 instance=ExtResource("9_3u1nn")]
+transform = Transform3D(1, 0, -2.9802322e-08, -7.450581e-09, 1, 0, 2.9802322e-08, -1.1175871e-08, 0.99999994, -0.3540039, 0.040103912, -0.6659584)
+mineral_type = ExtResource("9_rare")
+
+[node name="Hive_14" parent="Minerals/MineralScatter/HiveBlockout" unique_id=1281970744 groups=["mineral_scatter"] instance=ExtResource("6_deposit")]
+transform = Transform3D(-0.8818739, -0.1979723, 0.42790824, -0.45813435, 0.5742545, -0.6784871, -0.1114066, -0.7943795, -0.59711796, 105.379585, -74.17304, 14.025018)
+mineral_type = ExtResource("9_rare")
+chunk_count = 4
+metadata/_scatter_transform = Transform3D(-0.8818739, -0.1979723, 0.42790824, -0.45813435, 0.5742545, -0.6784871, -0.1114066, -0.7943795, -0.59711796, 105.379585, -74.17304, 14.025018)
+metadata/_scatter_zone = &"HiveBlockout"
+
+[node name="Chunk1" parent="Minerals/MineralScatter/HiveBlockout/Hive_14" unique_id=1241817954 instance=ExtResource("9_3u1nn")]
+transform = Transform3D(1.0000001, -7.450581e-09, -7.450581e-09, -7.450581e-09, 1, 0, -2.2351742e-08, 0, 1, -1.0208817, 1.4784317, -1.1440582)
+mineral_type = ExtResource("9_rare")
+
+[node name="Chunk2" parent="Minerals/MineralScatter/HiveBlockout/Hive_14" unique_id=2016170161 instance=ExtResource("9_3u1nn")]
+transform = Transform3D(1.0000001, -7.450581e-09, -7.450581e-09, -7.450581e-09, 1, 0, -2.2351742e-08, 0, 1, -0.6569519, 1.3586655, -1.1533432)
+mineral_type = ExtResource("9_rare")
+
+[node name="Chunk3" parent="Minerals/MineralScatter/HiveBlockout/Hive_14" unique_id=57879164 instance=ExtResource("9_3u1nn")]
+transform = Transform3D(1.0000001, -7.450581e-09, -7.450581e-09, -7.450581e-09, 1, 0, -2.2351742e-08, 0, 1, -0.29253387, 0.06858826, 0.381073)
+mineral_type = ExtResource("9_rare")
+
+[node name="Chunk4" parent="Minerals/MineralScatter/HiveBlockout/Hive_14" unique_id=1239900146 instance=ExtResource("9_3u1nn")]
+transform = Transform3D(1.0000001, -7.450581e-09, -7.450581e-09, -7.450581e-09, 1, 0, -2.2351742e-08, 0, 1, 0.08186722, 0.2179718, -0.83244324)
+mineral_type = ExtResource("9_rare")
+
+[node name="Hive_15" parent="Minerals/MineralScatter/HiveBlockout" unique_id=231423314 groups=["mineral_scatter"] instance=ExtResource("6_deposit")]
+transform = Transform3D(0.14833386, -0.06891433, -0.9865333, 0.19465013, 0.98008925, -0.03919685, 0.9695919, -0.1862146, 0.15879461, 78.7957, -71.53558, 8.619025)
+mineral_type = ExtResource("9_rare")
+chunk_count = 4
+metadata/_scatter_transform = Transform3D(0.14833386, -0.06891433, -0.9865333, 0.19465013, 0.98008925, -0.03919685, 0.9695919, -0.1862146, 0.15879461, 78.7957, -71.53558, 8.619025)
+metadata/_scatter_zone = &"HiveBlockout"
+
+[node name="Chunk1" parent="Minerals/MineralScatter/HiveBlockout/Hive_15" unique_id=1789102211 instance=ExtResource("9_3u1nn")]
+transform = Transform3D(0.99999994, -1.4901161e-08, 0, -1.4901161e-08, 0.99999994, -1.8626451e-09, -1.4901161e-08, 0, 1, 0.2918024, -0.046539307, 0.9211273)
+mineral_type = ExtResource("9_rare")
+
+[node name="Chunk2" parent="Minerals/MineralScatter/HiveBlockout/Hive_15" unique_id=420366755 instance=ExtResource("9_3u1nn")]
+transform = Transform3D(0.99999994, -1.4901161e-08, 0, -1.4901161e-08, 0.99999994, -1.8626451e-09, -1.4901161e-08, 0, 1, 0.78911686, -0.06674194, -0.20970917)
+mineral_type = ExtResource("9_rare")
+
+[node name="Chunk3" parent="Minerals/MineralScatter/HiveBlockout/Hive_15" unique_id=400613777 instance=ExtResource("9_3u1nn")]
+transform = Transform3D(0.99999994, -1.4901161e-08, 0, -1.4901161e-08, 0.99999994, -1.8626451e-09, -1.4901161e-08, 0, 1, 0.445796, -0.06478119, 0.96183777)
+mineral_type = ExtResource("9_rare")
+
+[node name="Chunk4" parent="Minerals/MineralScatter/HiveBlockout/Hive_15" unique_id=1207277740 instance=ExtResource("9_3u1nn")]
+transform = Transform3D(0.99999994, -1.4901161e-08, 0, -1.4901161e-08, 0.99999994, -1.8626451e-09, -1.4901161e-08, 0, 1, 0.74754715, -0.0574646, -0.13122559)
+mineral_type = ExtResource("9_rare")
+
+[node name="Hive_16" parent="Minerals/MineralScatter/HiveBlockout" unique_id=715558225 groups=["mineral_scatter"] instance=ExtResource("6_deposit")]
+transform = Transform3D(0.5456361, -0.837733, 0.022018991, 0.71064955, 0.47646934, 0.5176429, -0.4441379, -0.26679692, 0.85531336, 73.49616, -39.849438, 10.957096)
+mineral_type = ExtResource("9_rare")
+chunk_count = 4
+metadata/_scatter_transform = Transform3D(0.5456361, -0.837733, 0.022018991, 0.71064955, 0.47646934, 0.5176429, -0.4441379, -0.26679692, 0.85531336, 73.49616, -39.849438, 10.957096)
+metadata/_scatter_zone = &"HiveBlockout"
+
+[node name="Chunk1" parent="Minerals/MineralScatter/HiveBlockout/Hive_16" unique_id=1670795340 instance=ExtResource("9_3u1nn")]
+transform = Transform3D(1, 7.450581e-09, 2.9802322e-08, 1.4901161e-08, 0.99999994, 2.9802322e-08, 0, 0, 0.9999999, 0.40969563, 0.08258057, -0.3160143)
+mineral_type = ExtResource("9_rare")
+
+[node name="Chunk2" parent="Minerals/MineralScatter/HiveBlockout/Hive_16" unique_id=78145721 instance=ExtResource("9_3u1nn")]
+transform = Transform3D(1, 7.450581e-09, 2.9802322e-08, 1.4901161e-08, 0.99999994, 2.9802322e-08, 0, 0, 0.9999999, -0.39746428, -0.031158447, 0.2741518)
+mineral_type = ExtResource("9_rare")
+
+[node name="Chunk3" parent="Minerals/MineralScatter/HiveBlockout/Hive_16" unique_id=205237274 instance=ExtResource("9_3u1nn")]
+transform = Transform3D(1, 7.450581e-09, 2.9802322e-08, 1.4901161e-08, 0.99999994, 2.9802322e-08, 0, 0, 0.9999999, 0.6141758, 0.12075043, -0.3489828)
+mineral_type = ExtResource("9_rare")
+
+[node name="Chunk4" parent="Minerals/MineralScatter/HiveBlockout/Hive_16" unique_id=530883457 instance=ExtResource("9_3u1nn")]
+transform = Transform3D(1, 7.450581e-09, 2.9802322e-08, 1.4901161e-08, 0.99999994, 2.9802322e-08, 0, 0, 0.9999999, -0.91441154, 0.28176117, -0.29234886)
+mineral_type = ExtResource("9_rare")
+
+[node name="Hive_17" parent="Minerals/MineralScatter/HiveBlockout" unique_id=1251592650 groups=["mineral_scatter"] instance=ExtResource("6_deposit")]
+transform = Transform3D(0.4038786, -0.071518235, 0.91201276, -0.82537496, 0.4014396, 0.39699173, -0.39451015, -0.913089, 0.10310351, 40.68554, -25.266651, -10.13696)
+mineral_type = ExtResource("9_rare")
+chunk_count = 4
+metadata/_scatter_transform = Transform3D(0.4038786, -0.071518235, 0.91201276, -0.82537496, 0.4014396, 0.39699173, -0.39451015, -0.913089, 0.10310351, 40.68554, -25.266651, -10.13696)
+metadata/_scatter_zone = &"HiveBlockout"
+
+[node name="Chunk1" parent="Minerals/MineralScatter/HiveBlockout/Hive_17" unique_id=1863463421 instance=ExtResource("9_3u1nn")]
+transform = Transform3D(1, 2.9802322e-08, 1.8626451e-08, 0, 1, -7.450581e-09, -7.450581e-09, 0, 1, -0.8136711, 0.22081852, 0.34031677)
+mineral_type = ExtResource("9_rare")
+
+[node name="Chunk2" parent="Minerals/MineralScatter/HiveBlockout/Hive_17" unique_id=1167706230 instance=ExtResource("9_3u1nn")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.9616488, 0.42520285, -0.57386345)
+mineral_type = ExtResource("9_rare")
+
+[node name="Chunk3" parent="Minerals/MineralScatter/HiveBlockout/Hive_17" unique_id=989503470 instance=ExtResource("9_3u1nn")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.0847067, -0.5947937, -1.0319527)
+mineral_type = ExtResource("9_rare")
+
+[node name="Chunk4" parent="Minerals/MineralScatter/HiveBlockout/Hive_17" unique_id=192953895 instance=ExtResource("9_3u1nn")]
+transform = Transform3D(1, 2.9802322e-08, 1.8626451e-08, 0, 1, -7.450581e-09, -7.450581e-09, 0, 1, -0.12309265, -1.0874853, 1.0475025)
+mineral_type = ExtResource("9_rare")
+
+[node name="Hive_18" parent="Minerals/MineralScatter/HiveBlockout" unique_id=320157332 groups=["mineral_scatter"] instance=ExtResource("6_deposit")]
+transform = Transform3D(0.8325021, 0.016191795, 0.55378526, 0.045425892, -0.9982021, -0.039102647, 0.55215645, 0.057709217, -0.8317409, 89.75632, -35.362507, 8.650697)
+mineral_type = ExtResource("9_rare")
+chunk_count = 4
+metadata/_scatter_transform = Transform3D(0.8325021, 0.016191795, 0.55378526, 0.045425892, -0.9982021, -0.039102647, 0.55215645, 0.057709217, -0.8317409, 89.75632, -35.362507, 8.650697)
+metadata/_scatter_zone = &"HiveBlockout"
+
+[node name="Chunk1" parent="Minerals/MineralScatter/HiveBlockout/Hive_18" unique_id=81299153 instance=ExtResource("9_3u1nn")]
+transform = Transform3D(1, 3.7252903e-09, -5.9604645e-08, -3.7252903e-09, 1.0000001, 0, 0, 3.7252903e-09, 1, 0.5516205, -0.4409485, -0.9153786)
+mineral_type = ExtResource("9_rare")
+
+[node name="Chunk2" parent="Minerals/MineralScatter/HiveBlockout/Hive_18" unique_id=1321788249 instance=ExtResource("9_3u1nn")]
+transform = Transform3D(1, 3.7252903e-09, -5.9604645e-08, -3.7252903e-09, 1.0000001, 0, 0, 3.7252903e-09, 1, 0.798378, 0.24894714, 0.7684479)
+mineral_type = ExtResource("9_rare")
+
+[node name="Chunk3" parent="Minerals/MineralScatter/HiveBlockout/Hive_18" unique_id=243176999 instance=ExtResource("9_3u1nn")]
+transform = Transform3D(1, 3.7252903e-09, -5.9604645e-08, -3.7252903e-09, 1.0000001, 0, 0, 3.7252903e-09, 1, -0.43133545, -0.13492203, -1.1013374)
+mineral_type = ExtResource("9_rare")
+
+[node name="Chunk4" parent="Minerals/MineralScatter/HiveBlockout/Hive_18" unique_id=2008922115 instance=ExtResource("9_3u1nn")]
+transform = Transform3D(1, 3.7252903e-09, -5.9604645e-08, -3.7252903e-09, 1.0000001, 0, 0, 3.7252903e-09, 1, 0.96437836, -0.015712738, -0.5883255)
+mineral_type = ExtResource("9_rare")
+
+[node name="Hive_19" parent="Minerals/MineralScatter/HiveBlockout" unique_id=1041705823 groups=["mineral_scatter"] instance=ExtResource("6_deposit")]
+transform = Transform3D(0.076414816, -0.9652129, 0.2500497, 0.49553907, -0.18085428, -0.8495485, 0.8652178, 0.18882751, 0.46448073, 103.57766, -40.527737, -16.680689)
+mineral_type = ExtResource("9_rare")
+chunk_count = 4
+metadata/_scatter_transform = Transform3D(0.076414816, -0.9652129, 0.2500497, 0.49553907, -0.18085428, -0.8495485, 0.8652178, 0.18882751, 0.46448073, 103.57766, -40.527737, -16.680689)
+metadata/_scatter_zone = &"HiveBlockout"
+
+[node name="Chunk1" parent="Minerals/MineralScatter/HiveBlockout/Hive_19" unique_id=587651654 instance=ExtResource("9_3u1nn")]
+transform = Transform3D(1.0000001, 1.4901161e-08, 0, 0, 1.0000001, 0, 2.9802322e-08, -1.4901161e-08, 1.0000001, 0.1547451, 0.99430084, 0.8837013)
+mineral_type = ExtResource("9_rare")
+
+[node name="Chunk2" parent="Minerals/MineralScatter/HiveBlockout/Hive_19" unique_id=1876835020 instance=ExtResource("9_3u1nn")]
+transform = Transform3D(1.0000001, 1.4901161e-08, 0, 0, 1.0000001, 0, 2.9802322e-08, -1.4901161e-08, 1.0000001, -0.46196938, 1.1061859, -0.45618057)
+mineral_type = ExtResource("9_rare")
+
+[node name="Chunk3" parent="Minerals/MineralScatter/HiveBlockout/Hive_19" unique_id=893992686 instance=ExtResource("9_3u1nn")]
+transform = Transform3D(1.0000001, 1.4901161e-08, 0, 0, 1.0000001, 0, 2.9802322e-08, -1.4901161e-08, 1.0000001, -0.63469887, -0.043678284, 0.689373)
+mineral_type = ExtResource("9_rare")
+
+[node name="Chunk4" parent="Minerals/MineralScatter/HiveBlockout/Hive_19" unique_id=1768288302 instance=ExtResource("9_3u1nn")]
+transform = Transform3D(1.0000001, 1.4901161e-08, 0, 0, 1.0000001, 0, 2.9802322e-08, -1.4901161e-08, 1.0000001, 0.43665504, -1.3504028, 0.44034958)
+mineral_type = ExtResource("9_rare")
+
+[node name="Hive_20" parent="Minerals/MineralScatter/HiveBlockout" unique_id=786844560 groups=["mineral_scatter"] instance=ExtResource("6_deposit")]
+transform = Transform3D(-0.88073456, 0.38896757, -0.27020535, 0.27014977, -0.056014452, -0.9611876, -0.38900623, -0.91954696, -0.055745628, 87.95611, -46.196674, -13.307609)
+mineral_type = ExtResource("9_rare")
+chunk_count = 4
+metadata/_scatter_transform = Transform3D(-0.88073456, 0.38896757, -0.27020535, 0.27014977, -0.056014452, -0.9611876, -0.38900623, -0.91954696, -0.055745628, 87.95611, -46.196674, -13.307609)
+metadata/_scatter_zone = &"HiveBlockout"
+
+[node name="Chunk1" parent="Minerals/MineralScatter/HiveBlockout/Hive_20" unique_id=1658163904 instance=ExtResource("9_3u1nn")]
+transform = Transform3D(0.99999994, 2.9802322e-08, 1.6763806e-08, 0, 0.99999994, 0, 2.0489097e-08, 0, 0.99999994, -0.36132813, 0.06128311, -0.835022)
+mineral_type = ExtResource("9_rare")
+
+[node name="Chunk2" parent="Minerals/MineralScatter/HiveBlockout/Hive_20" unique_id=857733208 instance=ExtResource("9_3u1nn")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.67700565, -1.0188628, 0.8913998)
+mineral_type = ExtResource("9_rare")
+
+[node name="Chunk3" parent="Minerals/MineralScatter/HiveBlockout/Hive_20" unique_id=149645430 instance=ExtResource("9_3u1nn")]
+transform = Transform3D(0.99999994, 2.9802322e-08, 1.6763806e-08, 0, 0.99999994, 0, 2.0489097e-08, 0, 0.99999994, 0.912796, -0.29585648, 0.7316189)
+mineral_type = ExtResource("9_rare")
+
+[node name="Chunk4" parent="Minerals/MineralScatter/HiveBlockout/Hive_20" unique_id=1754505077 instance=ExtResource("9_3u1nn")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.8186962, 0.3614498, 1.1675284)
+mineral_type = ExtResource("9_rare")
+
+[node name="Hive_21" parent="Minerals/MineralScatter/HiveBlockout" unique_id=524485247 groups=["mineral_scatter"] instance=ExtResource("6_deposit")]
+transform = Transform3D(-0.10487509, 0.77837616, 0.61897635, 0.58607864, 0.55121493, -0.5938636, -0.8034383, 0.3004873, -0.5139983, 83.83336, -43.80106, -18.872522)
+mineral_type = ExtResource("9_rare")
+chunk_count = 4
+metadata/_scatter_transform = Transform3D(-0.10487509, 0.77837616, 0.61897635, 0.58607864, 0.55121493, -0.5938636, -0.8034383, 0.3004873, -0.5139983, 83.83336, -43.80106, -18.872522)
+metadata/_scatter_zone = &"HiveBlockout"
+
+[node name="Chunk1" parent="Minerals/MineralScatter/HiveBlockout/Hive_21" unique_id=1918702260 instance=ExtResource("9_3u1nn")]
+transform = Transform3D(1, 0, 2.9802322e-08, -1.4901161e-08, 1, 1.4901161e-08, -2.9802322e-08, 0, 1, 0.93014336, 0.12909317, -1.1729507)
+mineral_type = ExtResource("9_rare")
+
+[node name="Chunk2" parent="Minerals/MineralScatter/HiveBlockout/Hive_21" unique_id=88570668 instance=ExtResource("9_3u1nn")]
+transform = Transform3D(1, 0, 2.9802322e-08, -1.4901161e-08, 1, 1.4901161e-08, -2.9802322e-08, 0, 1, -0.858078, -0.105789185, 1.1601334)
+mineral_type = ExtResource("9_rare")
+
+[node name="Chunk3" parent="Minerals/MineralScatter/HiveBlockout/Hive_21" unique_id=295325284 instance=ExtResource("9_3u1nn")]
+transform = Transform3D(1, 0, 2.9802322e-08, -1.4901161e-08, 1, 1.4901161e-08, -2.9802322e-08, 0, 1, 0.6298313, 0.9540367, 0.26102448)
+mineral_type = ExtResource("9_rare")
+
+[node name="Chunk4" parent="Minerals/MineralScatter/HiveBlockout/Hive_21" unique_id=727842735 instance=ExtResource("9_3u1nn")]
+transform = Transform3D(1, 0, 2.9802322e-08, -1.4901161e-08, 1, 1.4901161e-08, -2.9802322e-08, 0, 1, 1.1484928, -0.018321991, 0.47006226)
+mineral_type = ExtResource("9_rare")
+
+[node name="Hive_22" parent="Minerals/MineralScatter/HiveBlockout" unique_id=2092731143 groups=["mineral_scatter"] instance=ExtResource("6_deposit")]
+transform = Transform3D(0.36902648, -0.64641106, 0.6678115, -0.006049745, 0.71684, 0.69721144, -0.92939925, -0.26132956, 0.26062235, 49.439823, -32.53672, 5.493557)
+mineral_type = ExtResource("9_rare")
+chunk_count = 4
+metadata/_scatter_transform = Transform3D(0.36902648, -0.64641106, 0.6678115, -0.006049745, 0.71684, 0.69721144, -0.92939925, -0.26132956, 0.26062235, 49.439823, -32.53672, 5.493557)
+metadata/_scatter_zone = &"HiveBlockout"
+
+[node name="Chunk1" parent="Minerals/MineralScatter/HiveBlockout/Hive_22" unique_id=403084978 instance=ExtResource("9_3u1nn")]
+transform = Transform3D(1.0000001, 2.9802322e-08, -1.4901161e-08, 2.9802322e-08, 1, 4.4703484e-08, -1.4901161e-08, 0, 1, -0.3489666, 0.22760391, -1.0293331)
+mineral_type = ExtResource("9_rare")
+
+[node name="Chunk2" parent="Minerals/MineralScatter/HiveBlockout/Hive_22" unique_id=1674642398 instance=ExtResource("9_3u1nn")]
+transform = Transform3D(1.0000001, 2.9802322e-08, -1.4901161e-08, 2.9802322e-08, 1, 4.4703484e-08, -1.4901161e-08, 0, 1, -0.6058998, 0.64261246, 0.85280037)
+mineral_type = ExtResource("9_rare")
+
+[node name="Chunk3" parent="Minerals/MineralScatter/HiveBlockout/Hive_22" unique_id=512661450 instance=ExtResource("9_3u1nn")]
+transform = Transform3D(1.0000001, 2.9802322e-08, -1.4901161e-08, 2.9802322e-08, 1, 4.4703484e-08, -1.4901161e-08, 0, 1, 0.1836052, 1.1468887, -1.0359888)
+mineral_type = ExtResource("9_rare")
+
+[node name="Chunk4" parent="Minerals/MineralScatter/HiveBlockout/Hive_22" unique_id=1712817625 instance=ExtResource("9_3u1nn")]
+transform = Transform3D(1.0000001, 2.9802322e-08, -1.4901161e-08, 2.9802322e-08, 1, 4.4703484e-08, -1.4901161e-08, 0, 1, -0.624815, 0.24425125, -0.8525114)
+mineral_type = ExtResource("9_rare")
+
+[node name="Hazards" type="Node3D" parent="." unique_id=1441039001]
+
+[node name="MineBlockout" type="Node3D" parent="Hazards" unique_id=1441039002]
+
+[node name="GasPod_01" parent="Hazards/MineBlockout" unique_id=1441039003 instance=ExtResource("18_gas_pod")]
+transform = Transform3D(0, 0, 1, 1, 0, 0, 0, 1, 0, -62.40499, -37.39829, 29.79467)
+
+[node name="GasPod_02" parent="Hazards/MineBlockout" unique_id=1441039004 instance=ExtResource("18_gas_pod")]
+transform = Transform3D(-0.54908, -0.66135, -0.51101, -0.83577, 0.43449, 0.33572, 0, 0.61142, -0.7913, -59.29728, -63.44594, 11.97745)
+
+[node name="GasPod_03" parent="Hazards/MineBlockout" unique_id=1441039005 instance=ExtResource("18_gas_pod")]
+transform = Transform3D(0.19567, -0.97737, 0.08039, -0.98067, -0.19501, 0.01604, 0, -0.08197, -0.99663, -50.43569, -59.95788, 17.26205)
+
+[node name="GasPod_04" parent="Hazards/MineBlockout" unique_id=1441039006 instance=ExtResource("18_gas_pod")]
+transform = Transform3D(-0.99128, 0.10985, -0.07276, 0.13176, 0.82644, -0.54739, 0, -0.5522, -0.83371, -55.55452, -65.5602, 19.18803)
+
+[node name="GasPod_05" parent="Hazards/MineBlockout" unique_id=1441039007 instance=ExtResource("18_gas_pod")]
+transform = Transform3D(-0.3313, -0.54528, -0.77001, -0.94352, 0.19146, 0.27037, 0, 0.8161, -0.57791, -51.81196, -61.27918, 8.79586)
+
+[node name="GasPod_06" parent="Hazards/MineBlockout" unique_id=1441039008 instance=ExtResource("18_gas_pod")]
+transform = Transform3D(-0.58396, 0.22672, 0.77948, 0.81178, 0.16309, 0.56072, 0, 0.96021, -0.27929, -44.43325, -49.90879, 11.71982)
+
+[node name="GasPod_07" parent="Hazards/MineBlockout" unique_id=1441039009 instance=ExtResource("18_gas_pod")]
+transform = Transform3D(0.51282, -0.84695, 0.14032, -0.8585, -0.50592, 0.08382, 0, -0.16345, -0.98655, -57.15811, -66.14342, 21.94102)
+
+[node name="Arc_01" parent="Hazards/MineBlockout" unique_id=1441039010 instance=ExtResource("19_arc")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -33, -42, 24)
+field_radius = 2.2
+
+[node name="AnchorA" parent="Hazards/MineBlockout/Arc_01" index="0" unique_id=1441039011]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -1.7, 0)
+
+[node name="AnchorB" parent="Hazards/MineBlockout/Arc_01" index="1" unique_id=1441039012]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.7, 0)
+
+[node name="Blockage_01" parent="Hazards/MineBlockout" unique_id=1441039013 instance=ExtResource("20_blockage")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -33, -41.3, 17.5)
+
+[node name="Blockage_02" parent="Hazards/MineBlockout" unique_id=1441039014 instance=ExtResource("20_blockage")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -65.5, -54, -3)
+
+[node name="Creatures" type="Node3D" parent="." unique_id=1509311700]
+
+[node name="Clinger_01" parent="Creatures" unique_id=1509311701 instance=ExtResource("21_clinger")]
+transform = Transform3D(0.9957252, 0.09236533, 1.919347e-07, 0, 2.077995e-06, -1, -0.09236533, 0.9957252, 2.069112e-06, -79.47424, -33.680904, 31.097267)
+
+[node name="Clinger_02" parent="Creatures" unique_id=1509311702 instance=ExtResource("21_clinger")]
+transform = Transform3D(-0.9807892, 0.1914621, 0.03734923, 3.7252903e-09, 0.19146481, -0.9814995, -0.19507103, -0.96264404, -0.18778661, -67.47324, -37.373413, 36.697254)

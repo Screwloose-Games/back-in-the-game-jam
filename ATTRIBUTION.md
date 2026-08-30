@@ -1,35 +1,59 @@
-# Game Title
+# Untitled Zero-G Asteroid Horror Game
+
+Made for Back in the Game Jam
 
 ## Credits
 
-### Production
+### Game Design Lead
 
-Your Name
+Steven
 
-### Game Design
+### Technical Direction, Pipeline, and Creature AI
 
-Your Name
+Jonathan Lewis
 
-### Engineering
+### Network Programming
 
-Your Name
+Michael
 
-## Template & Assets
+### Level Design
 
-Built from
-[Screwloose Games — godot-jam-template](https://github.com/Screwloose-Games/godot-jam-template)
+Damien
 
-Menu, settings, and audio systems adapted from
-[Screwloose Games — solar-punk-jam](https://github.com/Screwloose-Games/solar-punk-jam)
+### 3D Art
 
-### Audio
+Dylan (Antic)
 
-UI sound effects and title music from the Screwloose Games solar-punk-jam project
+Sean
 
-Mykola Hein
+### Concept Art and Animation
 
-Emelie Kronquist
+Nestor Tomaselli
+
+### Art Implementation
+
+AJ
+
+### Sound Design
+
+Ryan Burkhart
+
+### Music
+
+Ryan Lemon
+
+## Software
+
+Godot Engine
+
+Goxel
+
+Voxel Tools for Godot, by Zylann
+
+GUT (Godot Unit Test), by Butch Wesley
 
 ### Fonts
 
 Futura Medium BT
+
+PixelPurl

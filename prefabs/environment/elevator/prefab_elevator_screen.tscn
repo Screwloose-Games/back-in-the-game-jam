@@ -1,0 +1,76 @@
+[gd_scene load_steps=7 format=3 uid="uid://cq2n4v8xelsc1"]
+
+[ext_resource type="Script" uid="uid://mm0f0p2b5ftt" path="res://prefabs/environment/elevator/elevator_screen.gd" id="1_screen"]
+[ext_resource type="Shader" uid="uid://cm3woxevqytnk" path="res://prefabs/environment/elevator/elevator_screen.gdshader" id="2_shader"]
+[ext_resource type="Texture2D" uid="uid://dq6sa0wb401mr" path="res://assets/art/environment/elevator_car/screen/t_elevator_screen_plate.png" id="3_plate"]
+[ext_resource type="PackedScene" uid="uid://b1qxk7yvn2rhd" path="res://prefabs/environment/elevator/elevator_screen_readout.tscn" id="5_readout"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_screen"]
+resource_local_to_scene = true
+render_priority = 0
+shader = ExtResource("2_shader")
+shader_parameter/plate_tex = ExtResource("3_plate")
+shader_parameter/screen_rect = Vector4(0.112797, 0.140655, 0.769129, 0.705202)
+shader_parameter/screen_aspect = 1.5929
+shader_parameter/glass_color = Color(0.02, 0.055, 0.052, 1)
+shader_parameter/grime_ceiling = 0.045
+shader_parameter/grime_strength = 0.7
+shader_parameter/scanline_count = 130.0
+shader_parameter/scanline_depth = 0.35
+shader_parameter/aperture_depth = 0.12
+shader_parameter/roll_speed = 0.11
+shader_parameter/roll_width = 0.22
+shader_parameter/roll_gain = 0.22
+shader_parameter/flicker_hz = 12.7
+shader_parameter/flicker_depth = 0.055
+shader_parameter/glitch_rate = 1.4
+shader_parameter/glitch_amount = 0.035
+shader_parameter/fringe = 0.0008
+shader_parameter/curvature = 0.16
+shader_parameter/vignette_strength = 0.55
+shader_parameter/halo_radius = 0.01
+shader_parameter/halo_gain = 0.85
+shader_parameter/bloom_gain = 0.28
+shader_parameter/emission_energy = 1.05
+shader_parameter/bezel_metallic = 0.45
+shader_parameter/bezel_roughness = 0.72
+shader_parameter/bezel_tint = Color(1, 1, 1, 1)
+shader_parameter/power_on = 1.0
+shader_parameter/alarm = 1.0
+shader_parameter/alarm_period = 1.6
+shader_parameter/alarm_min = 0.18
+shader_parameter/alarm_max = 0.66
+shader_parameter/alarm_radius = 0.022
+shader_parameter/content_gamma = 1.0
+
+[sub_resource type="QuadMesh" id="QuadMesh_plate"]
+size = Vector2(1.6, 1.09551)
+
+[node name="prefab_elevator_screen" type="Node3D" unique_id=311204871]
+script = ExtResource("1_screen")
+
+[node name="Content" type="SubViewport" parent="." unique_id=311204872]
+disable_3d = true
+transparent_bg = true
+handle_input_locally = false
+gui_disable_input = true
+msaa_2d = 0
+canvas_item_default_texture_filter = 0
+size = Vector2i(512, 320)
+render_target_update_mode = 1
+
+[node name="Readout" parent="Content" unique_id=311204873 instance=ExtResource("5_readout")]
+
+[node name="Plate" type="MeshInstance3D" parent="." unique_id=311204880]
+layers = 2
+material_override = SubResource("ShaderMaterial_screen")
+cast_shadow = 0
+mesh = SubResource("QuadMesh_plate")
+
+[node name="Spill" type="OmniLight3D" parent="." unique_id=311204881]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0.35)
+light_color = Color(0.55, 0.95, 0.9, 1)
+light_energy = 1.2
+light_cull_mask = 4294967293
+shadow_enabled = false
+omni_range = 2.4

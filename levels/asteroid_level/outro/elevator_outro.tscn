@@ -1,0 +1,109 @@
+; The departure, whole. Local metres, and placed in a level by copying the intro's own
+; transform -- the two shots are composed against the same car in the same bore.
+;
+; POSES ARE IN THIS SCENE'S SPACE, NOT THE LEVEL'S, which is why AnimationPlayer.root_node
+; points three levels up at this root rather than at the level. It carries its own car and
+; shaft for that reason and no other: a track path that walked out into the level would
+; resolve against nodes that are not there while you are authoring it.
+;
+; NO WorldEnvironment and NO Miners. PlayerView writes fog into the level's shared
+; environment, and a second one here would repaint the level; and the crew going home is
+; the player, not a set of stand-ins.
+
+[gd_scene load_steps=11 format=3]
+
+[ext_resource type="Script" uid="uid://cpj6frxxranqt" path="res://levels/asteroid_level/outro/elevator_outro.gd" id="0_outro"]
+[ext_resource type="PackedScene" uid="uid://fsfetmlq0amg" path="res://prefabs/environment/elevator/prefab_elevator_car.tscn" id="1_car"]
+[ext_resource type="PackedScene" uid="uid://c8h4ftvsx1ela" path="res://prefabs/environment/elevator/prefab_elevator_shaft.tscn" id="2_shaft"]
+[ext_resource type="Script" uid="uid://blqxoh7cwh6mv" path="res://common/cutscene/cutscene_camera_driver.gd" id="3_camera"]
+[ext_resource type="Script" uid="uid://b3t5h07mn6ivw" path="res://common/cutscene/cutscene_player.gd" id="4_cutscene"]
+[ext_resource type="AnimationLibrary" path="res://levels/asteroid_level/outro/animations/elevator_outro_library.tres" id="5_animlib"]
+[ext_resource type="Resource" path="res://levels/asteroid_level/outro/cutscenes/elevator_outro.cutscene.tres" id="6_cutscenedata"]
+[ext_resource type="Script" uid="uid://6mu8yqqj1ork" path="res://levels/asteroid_level/outro/elevator_outro_effects.gd" id="7_effects"]
+[ext_resource type="Script" uid="uid://dj3iwba2u32dw" path="res://levels/asteroid_level/outro/elevator_outro_hud.gd" id="8_hud"]
+[ext_resource type="AudioStream" uid="uid://4tf1hontwxxf" path="res://assets/music/Extraction_Success.wav" id="9_music"]
+
+[node name="ElevatorOutro" type="Node3D" unique_id=60046100 node_paths=PackedStringArray("player_start", "player_exit")]
+script = ExtResource("0_outro")
+player_start = NodePath("PlayerStart")
+player_exit = NodePath("PlayerExit")
+
+; The same y offset the intro uses, and for the same reason: both prefabs put their origin
+; on the plane the car stands on, so the two line up with no offset to remember.
+[node name="ElevatorCar" parent="." unique_id=60046101 instance=ExtResource("1_car")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -1.42, 0)
+
+[node name="ElevatorShaft" parent="." unique_id=60046102 instance=ExtResource("2_shaft")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -1.42, 0)
+shaft_height = 7.68
+beam_spacing = 1.8
+first_beam_height = 3.36
+hood_height = 5.52
+
+; Floating in the middle of the car, clear of the floor and of both leaves. The exit is the
+; same spot: the run ends here, so there is nowhere to hand control back to.
+[node name="PlayerStart" type="Marker3D" parent="." unique_id=60046103]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.02, 0.8)
+
+[node name="PlayerExit" type="Marker3D" parent="." unique_id=60046104]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.02, 0.8)
+
+; process_priority 10 so the driver runs AFTER the AnimationPlayer that writes the anchor.
+[node name="CutsceneCamera" type="Camera3D" parent="." unique_id=60046105]
+process_priority = 10
+current = false
+fov = 62.0
+script = ExtResource("3_camera")
+
+; Node3D, NOT Node. A plain Node here detaches everything below it from the 3D hierarchy:
+; Cutscenes/ElevatorOutro would become its own transform root and the whole shot would play
+; at the world origin however the level placed this scene. Nothing errors.
+[node name="Cutscenes" type="Node3D" parent="." unique_id=60046106]
+
+[node name="ElevatorOutro" type="Node3D" parent="Cutscenes" unique_id=60046107]
+script = ExtResource("4_cutscene")
+data = ExtResource("6_cutscenedata")
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="Cutscenes/ElevatorOutro" unique_id=60046108]
+root_node = NodePath("../../..")
+libraries = {
+&"": ExtResource("5_animlib")
+}
+
+[node name="CameraAnchor" type="Node3D" parent="Cutscenes/ElevatorOutro" unique_id=60046109]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.35, 0.45, 1.45)
+
+[node name="Effects" type="Node" parent="Cutscenes/ElevatorOutro" unique_id=60046110]
+script = ExtResource("7_effects")
+
+[node name="Music" type="AudioStreamPlayer" parent="." unique_id=60046111]
+stream = ExtResource("9_music")
+volume_db = -6.0
+bus = &"Music"
+
+[node name="Hud" type="CanvasLayer" parent="." unique_id=60046112]
+layer = 30
+script = ExtResource("8_hud")
+
+[node name="Fade" type="ColorRect" parent="Hud" unique_id=60046113]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+color = Color(0, 0, 0, 0)
+
+; After Fade, so the title reads over the black rather than under it.
+[node name="Title" type="Label" parent="Hud" unique_id=60046114]
+modulate = Color(1, 1, 1, 0)
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+theme_override_font_sizes/font_size = 56
+text = "EXTRACTION COMPLETE"
+horizontal_alignment = 1
+vertical_alignment = 1

@@ -1,0 +1,6 @@
+[gd_scene format=3 uid="uid://b35ko0dnnut64"]
+
+[ext_resource type="PackedScene" uid="uid://diadbxxyseyks" path="res://assets/art/environment/minerals/sm_mineral_chunk.gltf" id="1_cfa02"]
+
+[node name="sm_mineral_chunk" unique_id=184087692 instance=ExtResource("1_cfa02")]
+transform = Transform3D(2, 0, 0, 0, 2, 0, 0, 0, 2, 0, 0, 0)

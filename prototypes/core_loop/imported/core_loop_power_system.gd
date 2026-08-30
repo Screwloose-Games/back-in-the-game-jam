@@ -37,7 +37,7 @@ var charge_per_second := CoreLoopKnobs.SUIT_CHARGE_PER_SECOND
 var crank_per_second := CoreLoopKnobs.CRANK_PER_SECOND
 
 var _suit: CoreLoopSuit
-var _cube: LifeSupportCube
+var _cube: CoreLoopLifeSupportCube
 var _suit_store: PowerStore
 var _cube_store: PowerStore
 
@@ -62,7 +62,10 @@ func _process(delta: float) -> void:
 
 
 func bind(
-	suit: CoreLoopSuit, cube: LifeSupportCube, suit_store: PowerStore, cube_store: PowerStore
+	suit: CoreLoopSuit,
+	cube: CoreLoopLifeSupportCube,
+	suit_store: PowerStore,
+	cube_store: PowerStore
 ) -> void:
 	_suit = suit
 	_cube = cube

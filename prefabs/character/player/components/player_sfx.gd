@@ -26,17 +26,31 @@ const IMPACT_QUIETEST_DB := -18.0
 @export var helmet_failure: AudioStream
 @export var status_downgrade: AudioStream
 
+## Held for as long as an arc has you. Its own channel rather than the helmet's,
+## because a loop has to be able to overlap the one-shots.
+@export var electrified_loop: AudioStream
+
+@export_group("Radar")
+@export var radar_tick: AudioStream
+@export var radar_ping: AudioStream
+
 var _last_status: int = HudState.Status.NOMINAL
 var _impact_base_db := 0.0
+var _pinged_this_pulse := false
 
 @onready var power: PlayerPowerClient = %PowerClient
 @onready var grab: PlayerGrab = %Grab
 @onready var collision: PlayerCollisionResponse = %CollisionResponse
 @onready var life: PlayerLife = %Life
+@onready var health: PlayerHealth = %Health
 @onready var visibility: PlayerVisibility = %Visibility
 @onready var state: HudState = %HudState
+@onready var radar: PlayerRadarDetector = %Radar
 @onready var impact_player: AudioStreamPlayer3D = $Impact
 @onready var helmet_player: AudioStreamPlayer = $Helmet
+@onready var electrified_player: AudioStreamPlayer = $Electrified
+@onready var radar_tick_player: AudioStreamPlayer = $RadarTick
+@onready var radar_ping_player: AudioStreamPlayer = $RadarPing
 
 
 func _ready() -> void:
@@ -52,6 +66,9 @@ func _ready() -> void:
 	_last_status = state.status
 	power.power_lost.connect(_on_power_lost)
 	state.status_changed.connect(_on_status_changed)
+	radar.pulse_started.connect(_on_radar_pulse_started.unbind(3))
+	radar.detected_detectable.connect(_on_radar_detected.unbind(1))
+	health.electrified_changed.connect(_on_electrified_changed)
 
 
 ## Impacts arrive with a negative closing speed — the signal is only emitted when
@@ -73,6 +90,33 @@ func _on_died() -> void:
 	impact_player.volume_db = _impact_base_db
 	impact_player.stream = death_impact
 	impact_player.play(0.0)
+
+
+func _on_radar_pulse_started() -> void:
+	_pinged_this_pulse = false
+	radar_tick_player.stream = radar_tick
+	radar_tick_player.play(0.0)
+
+
+## One return per sweep. Several contacts inside one pulse would machine-gun the channel,
+## and "something is out there" is already delivered by the first; the blips say how many.
+func _on_radar_detected() -> void:
+	if _pinged_this_pulse:
+		return
+	_pinged_this_pulse = true
+	radar_ping_player.stream = radar_ping
+	radar_ping_player.play(0.0)
+
+
+## Non-positional, like the other helmet cues: the arc has hold of the suit you are
+## inside, so it is not a sound coming from somewhere else in the room.
+func _on_electrified_changed(active: bool) -> void:
+	if not active:
+		electrified_player.stop()
+		return
+	electrified_player.stream = electrified_loop
+	if not electrified_player.playing:
+		electrified_player.play(0.0)
 
 
 func _on_power_lost() -> void:

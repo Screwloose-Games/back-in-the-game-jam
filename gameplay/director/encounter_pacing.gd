@@ -197,4 +197,12 @@ static func is_dead(node: Variant) -> bool:
 ## until it has drained, and then the encounter is over whatever the creature is still doing
 ## with its feet.
 static func _is_engaged(state: CreatureState.State) -> bool:
-	return state == CreatureState.State.INVESTIGATING or state == CreatureState.State.HUNTING
+	return (
+		state == CreatureState.State.INVESTIGATING
+		or state == CreatureState.State.HUNTING
+		# RECONSIDERING is a pause INSIDE an investigation, not the end of one. Reading it as
+		# disengaged drains the track toward QUIET for the few seconds the creature stands
+		# still and re-arms the moment it moves again, which flaps the phase over a beat the
+		# player is meant to read as the creature thinking.
+		or state == CreatureState.State.RECONSIDERING
+	)

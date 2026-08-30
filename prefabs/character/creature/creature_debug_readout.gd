@@ -71,6 +71,7 @@ const COLOR_UNALERTED := Color(0.60, 0.66, 0.72)
 const COLOR_INVESTIGATING := Color(1.00, 0.76, 0.22)
 const COLOR_HUNTING := Color(1.00, 0.32, 0.26)
 const COLOR_RETREATING := Color(0.45, 0.76, 1.00)
+const COLOR_RECONSIDERING := Color(0.85, 0.72, 0.95)
 const COLOR_ACTION := Color(0.72, 0.94, 1.00)
 const COLOR_ATTACK := Color(1.00, 0.35, 0.90)
 const COLOR_NAV := Color(0.82, 0.84, 0.88)
@@ -416,4 +417,6 @@ func _state_colour() -> Color:
 			return COLOR_HUNTING
 		CreatureState.State.RETREATING:
 			return COLOR_RETREATING
+		CreatureState.State.RECONSIDERING:
+			return COLOR_RECONSIDERING
 	return COLOR_UNALERTED

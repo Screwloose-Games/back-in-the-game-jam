@@ -1,0 +1,70 @@
+; The tuning harness for levels/asteroid_level/intro/elevator_intro.tscn.
+;
+; THE SAME SUB-SCENE THE LEVEL INSTANCES, at the origin instead of against the
+; mine mouth's back wall. Everything the shot is composed against travels with
+; it, so this scene holds only what a director needs and a level must not have:
+; a greybox tunnel beyond the doors, a shaft environment, the replay key, and
+; the tuning panel.
+;
+; The panel's CanvasLayer sits above the intro's own (layer 30) or the opening
+; full-screen shot would cover the one surface a director needs while the thing
+; they are tuning is playing.
+
+[gd_scene load_steps=8 format=3 uid="uid://crbjmpjny82y5"]
+
+[ext_resource type="Script" uid="uid://befc05xpkqg75" path="res://prototypes/elevator_cutscene/elevator_cutscene_prototype.gd" id="0_root"]
+[ext_resource type="Script" uid="uid://dnwy37y0h7le4" path="res://prototypes/elevator_cutscene/elevator_cutscene_input.gd" id="1_input"]
+[ext_resource type="PackedScene" uid="uid://b1el3v4tor1nt" path="res://levels/asteroid_level/intro/elevator_intro.tscn" id="2_intro"]
+[ext_resource type="PackedScene" path="res://prefabs/character/player/prefab_player.tscn" id="3_player"]
+[ext_resource type="Script" uid="uid://dhdgurme02xkx" path="res://prototypes/elevator_cutscene/mine_tunnel_stub.gd" id="4_tunnel"]
+[ext_resource type="Script" uid="uid://d3fll4pyijab8" path="res://prototypes/shared/prototype_tuning_panel.gd" id="5_tuning"]
+[ext_resource type="Resource" path="res://prototypes/elevator_cutscene/elevator_cutscene_settings.tres" id="6_settings"]
+
+[sub_resource type="Environment" id="Environment_shaft"]
+background_mode = 1
+ambient_light_source = 2
+ambient_light_color = Color(0.44, 0.47, 0.54, 1)
+ambient_light_energy = 0.05
+tonemap_mode = 4
+glow_enabled = true
+glow_intensity = 0.35
+glow_bloom = 0.05
+fog_enabled = true
+fog_mode = 1
+fog_light_color = Color(0.02, 0.022, 0.028, 1)
+fog_light_energy = 0.6
+fog_density = 1.0
+fog_depth_begin = 3.0
+fog_depth_end = 18.0
+
+[node name="ElevatorCutscenePrototype" type="Node3D" unique_id=815750973]
+script = ExtResource("0_root")
+settings = ExtResource("6_settings")
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="." unique_id=1590111574]
+environment = SubResource("Environment_shaft")
+
+[node name="InputActions" type="Node" parent="." unique_id=1371576172]
+script = ExtResource("1_input")
+
+[node name="MineTunnel" type="Node3D" parent="." unique_id=37845903]
+script = ExtResource("4_tunnel")
+
+[node name="Intro" parent="." unique_id=815750980 instance=ExtResource("2_intro")]
+
+[node name="Player" parent="." unique_id=893586101 instance=ExtResource("3_player")]
+
+[node name="View" parent="Player/PlayerBody"]
+applies_fog = false
+
+[node name="Tuning" type="CanvasLayer" parent="." unique_id=815750981]
+layer = 40
+
+[node name="Panel" type="PanelContainer" parent="Tuning" unique_id=764023758]
+anchors_preset = 2
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_left = 16.0
+offset_bottom = -16.0
+grow_vertical = 0
+script = ExtResource("5_tuning")

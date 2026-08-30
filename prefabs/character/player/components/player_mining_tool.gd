@@ -9,6 +9,8 @@ signal started_firing
 signal stopped_firing
 ## Emitted each frame the beam is on something that can be mined.
 signal mining(target: Node3D, at: Vector3, damage: float)
+## Emitted by a mined chunk once it reaches the beam tip and is collected.
+signal mineral_collected(type: MineralType)
 
 @export var settings: PlayerSettings
 
@@ -107,7 +109,7 @@ func _cut(delta: float) -> void:
 		return
 	mining.emit(target, hit["position"], settings.mining_damage_per_second * delta)
 	if target.has_method("take_mining_damage"):
-		target.take_mining_damage(settings.mining_damage_per_second * delta, hit["position"])
+		target.take_mining_damage(settings.mining_damage_per_second * delta, hit["position"], self)
 
 
 ## Where the beam would land right now. Read-only, so a warm-up can pay for the

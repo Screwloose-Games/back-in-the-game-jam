@@ -49,12 +49,22 @@ const SONAR_EASE_X2 := 0.753
 		sonar_duration = maxf(value, 0.01)
 		queue_redraw()
 
+## Seconds from one sweep to the next; blips fade to nothing across it. sweep()
+## overwrites this at runtime, so the default only serves the editor's Ping button.
+@export_range(0.1, 30.0, 0.05, "or_greater", "suffix:s") var pulse_interval := 2.0:
+	set(value):
+		pulse_interval = maxf(value, 0.01)
+		queue_redraw()
+
 @export_tool_button("Ping") var ping_action := ping
 
 var _objective_shown := false
 var _objective_at := Vector2.ZERO
 var _elapsed := 0.0
 var _pinging := false
+var _active_until := 0.0
+var _swept: Array[Vector3] = []
+var _swept_born := PackedFloat32Array()
 
 
 static func in_range(offset: Vector3, distance_limit: float) -> bool:
@@ -95,6 +105,16 @@ static func sonar_ease(x: float) -> float:
 	return HudEase.cubic(x, SONAR_EASE_X1, SONAR_EASE_X2)
 
 
+## Blips die together the moment the next sweep leaves, whenever they arrived, so the
+## dish is empty on the frame the rings go out again rather than a beat either side of
+## it. A late contact simply gets less time to fade than an early one.
+static func blip_alpha(elapsed: float, born_at: float, interval: float) -> float:
+	var span := interval - born_at
+	if span <= 0.0:
+		return 0.0
+	return clampf(1.0 - (elapsed - born_at) / span, 0.0, 1.0)
+
+
 func _ready() -> void:
 	super()
 	set_process(false)
@@ -104,15 +124,37 @@ func _ready() -> void:
 func ping() -> void:
 	_elapsed = 0.0
 	_pinging = true
+	_active_until = sonar_duration
 	set_process(true)
+	queue_redraw()
+
+
+## One sweep, sized to the radar that fired it, so the rings reach the rim of the dish
+## as the pulse reaches its range.
+func sweep(range_m: float, sweep_seconds: float, interval: float) -> void:
+	max_distance = range_m
+	sonar_duration = sweep_seconds
+	pulse_interval = interval
+	_swept.clear()
+	_swept_born.clear()
+	ping()
+
+
+func add_blip(offset: Vector3) -> void:
+	_swept.append(offset)
+	_swept_born.append(_elapsed)
+	# The rings are gone well before the blips are; keep drawing until the last has faded.
+	_active_until = maxf(_active_until, pulse_interval)
 	queue_redraw()
 
 
 func _process(delta: float) -> void:
 	_elapsed += delta
-	if _elapsed >= sonar_duration:
-		_pinging = false
+	_pinging = _elapsed < sonar_duration
+	if _elapsed >= _active_until:
 		set_process(false)
+		_swept.clear()
+		_swept_born.clear()
 	queue_redraw()
 
 
@@ -129,8 +171,8 @@ func _draw() -> void:
 		_draw_ring(HudArt.MINIMAP_LINES01, HudArt.MINIMAP_LINES01_CENTRE, 0)
 	draw_design_texture(HudArt.MINIMAP_REFLECTION, HudArt.MINIMAP_REFLECTION_CENTRE)
 
-	for offset in _visible_blips():
-		_draw_blip(offset)
+	for blip in _visible_blips():
+		_draw_blip(Vector3(blip.x, blip.y, blip.z), blip.w)
 	if _objective_shown:
 		_draw_objective()
 
@@ -138,6 +180,14 @@ func _draw() -> void:
 func bind(state: HudState) -> void:
 	state.contacts_changed.connect(show_contacts)
 	state.objective_changed.connect(show_objective)
+	state.radar_swept.connect(sweep)
+	state.radar_contact.connect(add_blip)
+
+
+## Keeps an editor preview of a contact out of every layout that stores this widget.
+func _validate_property(property: Dictionary) -> void:
+	if property["name"] == "radar_blips":
+		property["usage"] = int(property["usage"]) & ~PROPERTY_USAGE_STORAGE
 
 
 func show_contacts(contacts: PackedVector3Array) -> void:
@@ -150,12 +200,26 @@ func show_objective(shown: bool, at: Vector2) -> void:
 	queue_redraw()
 
 
-func _visible_blips() -> Array[Vector3]:
-	var shown: Array[Vector3] = []
+## xyz is the offset, w the alpha. Sorted far to near so a close contact draws over a
+## distant one, which is why both sets have to be merged rather than drawn in turn.
+## Contacts the dish is currently drawing, part-faded ones included.
+func blip_count() -> int:
+	return _visible_blips().size()
+
+
+func _visible_blips() -> Array[Vector4]:
+	var shown: Array[Vector4] = []
 	for offset in radar_blips:
 		if in_range(offset, max_distance):
-			shown.append(offset)
-	shown.sort_custom(func(a: Vector3, b: Vector3) -> bool: return a.z < b.z)
+			shown.append(Vector4(offset.x, offset.y, offset.z, 1.0))
+	for i in _swept.size():
+		var offset: Vector3 = _swept[i]
+		if not in_range(offset, max_distance):
+			continue
+		var alpha := blip_alpha(_elapsed, _swept_born[i], pulse_interval)
+		if alpha > 0.0:
+			shown.append(Vector4(offset.x, offset.y, offset.z, alpha))
+	shown.sort_custom(func(a: Vector4, b: Vector4) -> bool: return a.z < b.z)
 	return shown
 
 
@@ -169,13 +233,16 @@ func _draw_ring(texture: Texture2D, centre: Vector2, ring: int) -> void:
 	draw_design_texture_scaled(texture, centre, ring_scale(phase), Color(1.0, 1.0, 1.0, alpha))
 
 
-func _draw_blip(offset: Vector3) -> void:
+func _draw_blip(offset: Vector3, alpha: float) -> void:
 	var at := project(offset, max_distance, height_extent)
 	if show_height_stalks:
 		var foot := project(Vector3(offset.x, 0.0, offset.z), max_distance, height_extent)
 		if not at.is_equal_approx(foot):
-			draw_line(scaled_vec(foot), scaled_vec(at), HudPalette.CHROME_DIM, scaled(2.0))
-	draw_design_texture(HudArt.ENEMY_DOT, at)
+			var stalk := HudPalette.CHROME_DIM
+			stalk.a *= alpha
+			draw_line(scaled_vec(foot), scaled_vec(at), stalk, scaled(2.0))
+	# The dot art is already pure red; white modulate carries the fade without tinting it.
+	draw_design_texture(HudArt.ENEMY_DOT, at, Color(1.0, 1.0, 1.0, alpha))
 
 
 func _draw_objective() -> void:

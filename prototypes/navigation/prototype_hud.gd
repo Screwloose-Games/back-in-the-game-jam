@@ -9,11 +9,11 @@ TAB respawn  ESC free mouse"""
 
 @export var player_path: NodePath
 
-@onready var _readout: Label = $Readout
-
 var _player: ZeroGPlayer
 var _rotation_mode_name: String
 var _shows_tumble: bool
+
+@onready var _readout: Label = $Readout
 
 
 func _ready() -> void:

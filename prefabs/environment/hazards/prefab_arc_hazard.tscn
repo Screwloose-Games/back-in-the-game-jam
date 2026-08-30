@@ -1,0 +1,65 @@
+[gd_scene load_steps=6 format=3]
+
+[ext_resource type="Script" path="res://prefabs/environment/hazards/arc_hazard.gd" id="1_arc"]
+[ext_resource type="AudioStream" uid="uid://cu0hh2bdes2un" path="res://assets/sfx/powercube/Cube_Operating_Loop.wav" id="2_arc_loop"]
+[ext_resource type="PackedScene" path="res://prefabs/environment/hazards/hazard_label.tscn" id="9_label"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_arc"]
+shading_mode = 0
+vertex_color_use_as_albedo = true
+blend_mode = 1
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_terminal"]
+top_radius = 0.12
+bottom_radius = 0.18
+height = 0.4
+radial_segments = 8
+rings = 1
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_terminal"]
+albedo_color = Color(0.24, 0.25, 0.28, 1)
+
+[node name="prefab_arc_hazard" type="Node3D" unique_id=1441038300 node_paths=PackedStringArray("anchor_a", "anchor_b")]
+script = ExtResource("1_arc")
+anchor_a = NodePath("AnchorA")
+anchor_b = NodePath("AnchorB")
+metadata/placeholder = true
+
+[node name="AnchorA" type="Marker3D" parent="." unique_id=1441038301]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.5, 0, 0)
+
+[node name="AnchorB" type="Marker3D" parent="." unique_id=1441038302]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.5, 0, 0)
+
+[node name="TerminalA" type="MeshInstance3D" parent="AnchorA" unique_id=1441038303]
+transform = Transform3D(0, -1, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0)
+cast_shadow = 0
+mesh = SubResource("CylinderMesh_terminal")
+surface_material_override/0 = SubResource("StandardMaterial3D_terminal")
+
+[node name="TerminalB" type="MeshInstance3D" parent="AnchorB" unique_id=1441038304]
+transform = Transform3D(0, 1, 0, -1, 0, 0, 0, 0, 1, 0, 0, 0)
+cast_shadow = 0
+mesh = SubResource("CylinderMesh_terminal")
+surface_material_override/0 = SubResource("StandardMaterial3D_terminal")
+
+[node name="Arc" type="MeshInstance3D" parent="." unique_id=1441038305]
+cast_shadow = 0
+material_override = SubResource("StandardMaterial3D_arc")
+
+[node name="ArcLight" type="OmniLight3D" parent="." unique_id=1441038306]
+light_color = Color(0.62, 0.82, 1, 1)
+light_energy = 0.0
+shadow_enabled = false
+omni_range = 6.0
+
+[node name="Sfx" type="AudioStreamPlayer3D" parent="." unique_id=1441038307]
+stream = ExtResource("2_arc_loop")
+volume_db = -8.0
+unit_size = 5.0
+max_distance = 24.0
+bus = &"SFX"
+
+[node name="HazardLabel" parent="." unique_id=1441038390 instance=ExtResource("9_label")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.1, 0)
+text = "ARC"

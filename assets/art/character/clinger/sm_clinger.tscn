@@ -1,0 +1,6 @@
+[gd_scene format=3 uid="uid://dlajdvfmgx027"]
+
+[ext_resource type="PackedScene" uid="uid://b8yfdbhg18c3n" path="res://assets/art/character/clinger/sm_clinger.gltf" id="1_ffba1"]
+
+[node name="sm_clinger" instance=ExtResource("1_ffba1")]
+metadata/placeholder = true

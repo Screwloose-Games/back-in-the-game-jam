@@ -24,6 +24,7 @@ prefab_player (Node3D)
     ├── Locomotion                 thrust, tumble, stabilisers; owns angular_velocity
     ├── CollisionResponse          owns move_and_slide, then resolves what it hit
     ├── Grab                       two-hand grip springs
+    ├── Interactor                 the reach: what F is addressing, and tap versus hold
     ├── Tether                     rope simulation and taut-only spring
     ├── Hands                      the one hand slot
     ├── PowerClient                draws from the shared box
@@ -39,6 +40,7 @@ prefab_player (Node3D)
     ├── HudBinding
     │   ├── HudState               the contract the HUD binds to
     │   └── prefab_hud_04          instanced from an @export
+    ├── Health                     the pool hazards bill; at zero it hands off to Life
     ├── Life                       the one way you die, and what happens next
     ├── Thrusters                  eight positioned emitters; see below
     │   ├── ForwardLoop  ForwardEdge
@@ -84,6 +86,28 @@ be mounted several ways, so they sit just above the opposite ear — `roll_right
 above the left, `roll_left` above the right — where a roll is easiest to place by
 hearing.
 
+### Setting the levels
+
+`Thruster_On`, `Thruster_Loop` and `Thruster_Off` each have a trim under the
+node's **Mix** group, added to whatever the sixteen emitters carry in the scene.
+Three numbers rather than sixteen, and On and Off get one each — they share a
+channel, so before the trims existed there was no way to balance the start
+against the stop at all.
+
+The trims are read at play time, not captured in `_ready()`, and that is what
+makes them tunable: run from the editor, press **F3** then **K** to latch all
+eight lit, `Esc` to release the mouse, and drag the three values in the **Remote**
+scene tree. You hear each decibel as you set it instead of restarting per guess.
+When it sits right, type the values onto the `Thrusters` node in
+`prefab_player.tscn`. `K` is gated on `DebugMode`, so it is inert in an export.
+
+Do not reach for the bus faders instead. `game_settings.gd` writes
+`linear_to_db(volume_percent)` onto Master, SFX and the rest at startup, which
+overwrites whatever `default_bus_layout.tres` holds — the layout's fader
+positions are discarded before the first frame. Master's `AudioEffectHardLimiter`
+survives that (it is an effect, not a volume) and is there because eight
+near-identical loops summing at once is exactly the case that clips.
+
 ## What the rest of the suit sounds like
 
 `Sfx` is one player per **channel**, not per sound: the streams are `@export`s on
@@ -114,8 +138,18 @@ importer enum is offset from `AudioStreamWAV.LoopMode` — `2` in the `.import` 
 `LOOP_FORWARD` (`1`) on the resource. Set to `1` you get Disabled and a loop that
 plays once.
 
+The radar is in neither `DISABLED_ONLINE_COMPONENTS` nor `AUTHORITY_COMPONENTS`, for
+the same reason `Thrusters` is in neither: it is presentation, and every machine needs
+its own. It gates itself on `PlayerVisibility.is_local_player` instead, so a remote
+peer's copy never grows an 80 m sphere or feeds a HUD `PlayerUi` has already freed.
+One consequence: online a client's `PowerClient` is disabled and its charge overwritten
+by `apply_network_fraction`, so `radar_power_per_pulse` is effectively free there.
+Harmless today, because `asteroid_level` only starts the creature for a solo player.
+
 `Cube_Grab` is silent online: `Grab` is in `PlayerNetworkGameplay`'s
-`DISABLED_ONLINE_COMPONENTS`, so `took_hold` never fires. So is death — `Life`
+`DISABLED_ONLINE_COMPONENTS`, so `took_hold` never fires. `Interactor` is in that same
+list and for the same reason — there is no wire protocol for who is focused on what, or
+for how full a hold is, and half-networking it ships a door that opens on one screen. So is death — `Life`
 stands down online, because dying teleports a body and that has to go through
 the prediction reset rather than round it.
 
@@ -147,7 +181,9 @@ Physics runs in `process_physics_priority` order, not tree order:
 | −80 | `Locomotion` | Sets this frame's heading, which the links aim their springs at. |
 | −40 | `Grab` | Grip springs push both bodies. |
 | −30 | `Tether` | Independent of the grip; both push the same two bodies. |
+| −20 | `Interactor` | Reads the head transform this frame's flight already settled. |
 | 100 | `CollisionResponse` | Moves the body last, after every link has had its say. |
+| 110 | `Health` | Reads physics, never writes it. After `CollisionResponse` so an impact billed this step lands inside this step's recovery decision. |
 
 `CollisionResponse` owns the `move_and_slide` call. That looks odd until you need
 the bounce: restitution has to be computed from the velocity *before* the move,
