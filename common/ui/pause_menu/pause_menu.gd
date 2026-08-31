@@ -14,6 +14,7 @@ var options_menu_scene: PackedScene = SceneManager.options_menu
 @onready var session_code_input: LineEdit = %SessionCodeInput
 @onready var copy_session_code_button: Button = %CopySessionCodeButton
 @onready var voice_peer_list: VoicePeerList = %VoicePeerList
+@onready var pointer: PauseMenuPointer = %Pointer
 
 
 func _ready():
@@ -26,6 +27,18 @@ func _ready():
 	_refresh_session_status()
 	if OS.has_feature("web"):
 		quit_button.hide()
+
+	# Hover grabs focus so mouse and keyboard drive one cursor.
+	var items: Array[Button] = [
+		continue_button,
+		options_button,
+		main_menu_button,
+		quit_button,
+		copy_session_code_button,
+	]
+	for item in items:
+		item.mouse_entered.connect(item.grab_focus)
+	pointer.track(pause_menu_body)
 
 
 func _on_quit_button_pressed():
@@ -88,7 +101,7 @@ func on_options_back_pressed(options_menu: OptionsMenu):
 
 func _refresh_session_status() -> void:
 	if not OnlineSession.is_online():
-		pause_title.text = "Paused"
+		pause_title.text = "PAUSED"
 		session_status_label.visible = false
 		session_code_row.visible = false
 		voice_peer_list.visible = false

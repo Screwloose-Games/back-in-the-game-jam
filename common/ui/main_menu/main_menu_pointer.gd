@@ -34,7 +34,7 @@ func _draw() -> void:
 	draw_design_line(TAIL_FROM, TAIL_TO, STROKE, HudPalette.CHROME)
 
 
-func _settle_beside(item: Button) -> void:
+func _settle_beside(item: Control) -> void:
 	var host := get_parent() as Control
 	if host == null:
 		return
